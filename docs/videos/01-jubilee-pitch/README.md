@@ -71,8 +71,8 @@ Other things to know:
   - Scene 02: "On Monday," is held on one line and the search bar stays above the scrolling
     results. "Can believers find you?" wraps as the design has it; held on one line it ran under
     the search feed.
-  - The seal is built in `film.js`, not taken from the shared runtime, which still carries the old
-    ring text. The design's ring text at its 2.1 letter-spacing runs past the circle and cuts
+  - The seal is built in `film.js`, not taken from the shared runtime, which carried the old ring
+    text when this film was built. The design's ring text at its 2.1 letter-spacing runs past the circle and cuts
     "NAME" short, so the text is fitted to the ring (`textLength`).
   - Scene 04 quotes Deuteronomy 8:18 in the words of `docs/scripture.md`: "It is he who gives you
     power to get wealth." (the design has "the ability to produce wealth"). The narration says
@@ -104,8 +104,6 @@ to do elsewhere:
   "Finding someone you can trust", which no longer fits scene 04. Renaming it is a change to the
   site's behaviour: requirement, mock and test first.
 - The film still (`docs/assets/photos/film-still.jpg`) may want a frame from the new opening.
-- The shared seal (`S.seal` in `../assets/pitch.js`) and its description in `../README.md` still say
-  "verified by the Jubilee team".
 - The marketing build copies this MP4 to `media/jubilee-pitch.mp4` and picks up the new film at its
   next build.
 

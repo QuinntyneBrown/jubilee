@@ -4,13 +4,14 @@
 
 Staff handle reports and choose the featured businesses in the admin application (`frontend/projects/admin/src/app/pages/admin-reports`, `admin-report`, `admin-featured`).
 
-Roles: Verification team. Journey 25 in `docs/journey.md`, recorded at 82% complete on 12 November 2026. This prompt takes it to 100%.
+Roles: Jubilee team (moderators). Journey 25 in `docs/journey.md`, recorded at 82% complete on 12 November 2026. This prompt takes it to 100%.
 
 What is left, from an audit of the code and its tests against the acceptance criteria:
 
-- `L2-105` AC1: verifiers are not notified when a report arrives, and there is no `report.created` event.
+- `L2-105` AC1: moderators are not notified when a report arrives, and there is no `report.created` event.
 - There is no count of unresolved reports in the admin bar.
 - A hold or removal does not reach the directory cache and search through the outbox; the consequence is immediate only on a direct read.
+- ADR 0057: the report notices and e-mails still say "the verification team" (for example "The verification team removed your listing from Jubilee." in `Moderation/Reports.cs`); every word to members, owners and staff says "the Jubilee team", and the staff role is `moderator`.
 - `verification/feature-businesses` is recorded at 85% with no named gap; the likely remainder is the cache and outbox path for a change of featured weeks. Check each criterion.
 
 The audit read test titles and spot-checked assertions. Verify each gap against the code before you plan, and treat any other acceptance criterion of the requirements below that has no implementation or no acceptance test as part of this work.
@@ -90,7 +91,7 @@ Mocks (every state file in each folder; the full list is in `docs/mocks/manifest
 - `docs/mocks/dialogs/report-action/`
 - `docs/mocks/pages/admin-shell/`
 
-Decisions already recorded: `docs/adr/0033-moderate-reports-and-feature-businesses-decisions.md`, `docs/adr/0040-separate-admin-application.md`, `docs/adr/0003-directory-read-cache.md`.
+Decisions already recorded: `docs/adr/0033-moderate-reports-and-feature-businesses-decisions.md`, `docs/adr/0040-separate-admin-application.md`, `docs/adr/0003-directory-read-cache.md`, `docs/adr/0057-ship-without-verification.md`.
 
 Code and tests that exist today:
 
@@ -147,12 +148,12 @@ Builds on: journey 21 (Share or report a listing) for the `ReportSubmitted` mess
 
 ## Deferred (out of scope)
 
-- Verifying listings (journey 12).
+- The Listings screen and taking a listing down (journey 12).
 - Reporting from the app (journeys 6 and 21).
 
 ## Done means
 
-- The verification team learns of a report when it arrives, and a held or removed listing disappears from every public page.
+- The Jubilee team learns of a report when it arrives, and a held or removed listing disappears from every public page.
 - Every acceptance criterion of the requirements listed above has a passing test, or is listed as an owner step with the reason.
 - All the new and existing tests pass: `pwsh eng/Test-Backend.ps1` at the root; `npm run lint`, `npm run format:check`, `npm run design:check` and `npm run build` in `frontend/`; `npm run typecheck`, `npm test` and `npm run parity` in `e2e/`. No sweep was run.
 - `docs/estimates/` and row 25 of `docs/journey.md` show the true figures, and the requirements, designs, mocks and code agree.

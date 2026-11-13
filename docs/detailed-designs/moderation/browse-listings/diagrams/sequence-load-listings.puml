@@ -1,0 +1,61 @@
+@startuml
+title UML sequence behaviour — Load the listings
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Jubilee team member" as actor
+box "Frontend — Jubilee Admin Web" #E0F2FE
+  participant "staffGuard" as guard
+  participant "AdminListingsPage" as page
+  participant "AdminApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "AdminListingsController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "GetAdminListingsQueryHandler" as handler
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+actor -> guard : Open /listings
+guard -> guard : Staff session signed in with a second factor (L2-098, L2-188)
+guard --> page : Activate route
+alt staff session without the moderator role
+  page --> actor : The shell shows "Nothing here for your role" and never asks for the listings (L2-188 AC4)
+else staff session with the moderator role
+  page -> client : listings(search)
+  client -> controller : GET /api/admin/listings?q={text}
+  controller -> controller : Authenticate the staff session and apply RequiresModerator (L2-133, L2-191)
+  controller -> handler : Send GetAdminListingsQuery(Search)
+  handler -> db : Read listings Live, published and not deleted (a takedown deletes), with their flags (L2-099)
+  db --> handler : Listings, owners and submission flags
+  handler -> handler : Order newest published first, keep names matching the search, derive Status, StatusLabel and Flagged (L2-099)
+  handler --> controller : AdminListingsDto(Total, PublishedThisWeek, Rows)
+  controller --> client : 200 AdminListingsDto
+  client --> page : AdminListings
+  alt Total is 0
+    page --> actor : Show "No listings yet" with "Refresh"
+  else search matches nothing
+    page --> actor : Show "No listing matches “{text}”." with "Clear search"
+  else rows exist
+    page --> actor : Show "{n} listings · {n} published in the last 7 days" and the table
+  end
+end
+opt request fails
+  controller --> client : 503 ProblemDetails with JB-ADM-503
+  client --> page : Load error
+  page --> actor : Show "We couldn’t load the listings" with JB-ADM-503 and "Try again" (L2-118)
+end
+@enduml

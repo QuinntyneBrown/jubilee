@@ -77,7 +77,7 @@ public sealed class AgreeToStatementCommandHandler(IAppDbContext db, TimeProvide
             db.StatementAgreements.Add(StatementAgreement.Record(request.Subject, request.Version, clock.GetUtcNow()));
         }
 
-        // Each listing the daily job paused is live again at once, without new verification (L2-075 AC6).
+        // Each listing the daily job paused is live again at once (L2-075 AC6).
         foreach (var lapsed in await db.Listings.Where(l => l.OwnerId == request.Subject && l.StatementLapsedAt != null).ToListAsync(cancellationToken))
         {
             lapsed.ResumeAfterStatement();

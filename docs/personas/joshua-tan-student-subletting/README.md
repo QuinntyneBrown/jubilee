@@ -35,8 +35,8 @@ take his room while he is away, so that he is not paying rent on an empty bed.
 
 - He rents. He needs his landlord's consent to take a roommate or to sublet, and he has not asked.
 - "Christian-owned business" does not sound like a student with a spare bedroom.
-- Verification "Within two business days" when he is counting days.
-- No photos until after he submits: on his phone, a listing without photos is not a listing.
+- No photos until after he publishes: his room is live before it has a picture, and on his phone a
+  listing without photos is not a listing.
 
 ## How he serves the mission
 

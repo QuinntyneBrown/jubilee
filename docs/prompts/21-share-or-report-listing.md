@@ -11,7 +11,7 @@ What is left, from an audit of the code and its tests against the acceptance cri
 - `L2-038` AC3: "More…" (the system share sheet) is implemented with no test.
 - `L2-038` AC4: a crawler asking for `/b/{slug}` is not routed to the social preview endpoint, and `og-image.png` does not exist.
 - `L2-038` AC2 and `L2-130`: the copied announcement and the return of focus to the Share button are not asserted.
-- `L2-039` and `L2-105` AC1: no `ReportSubmitted` outbox message; the verification team is not notified of a new report.
+- `L2-039` and `L2-105` AC1: no `ReportSubmitted` outbox message; the Jubilee team is not notified of a new report.
 - The report dialog's in-flight state and its 10-second timeout have no test.
 
 The audit read test titles and spot-checked assertions. Verify each gap against the code before you plan, and treat any other acceptance criterion of the requirements below that has no implementation or no acceptance test as part of this work.
@@ -121,7 +121,7 @@ Progress notes: `docs/estimates/listings.md`.
 
 - Plan thin vertical slices. The list is a guide; where its wording and `docs/specs/L2.md` differ, the requirement wins. For example:
   1. Crawler routing of `/b/{slug}` to the preview, with `og-image.png`, proven by an API test on the user agent.
-  2. The new-report notification to the verification team through the outbox.
+  2. The new-report notification to the Jubilee team through the outbox.
   3. Specs for "More…", the copied announcement, focus return, the in-flight state and the timeout.
 - For each slice:
   - Write the Given-When-Then criteria, taken from the acceptance criteria of the requirements above.
@@ -155,7 +155,7 @@ These need the repository owner. Prepare everything in the repository that they 
 
 ## Done means
 
-- A shared listing link shows a proper preview wherever it is pasted, and the verification team is told when a report arrives.
+- A shared listing link shows a proper preview wherever it is pasted, and the Jubilee team is told when a report arrives.
 - Every acceptance criterion of the requirements listed above has a passing test, or is listed as an owner step with the reason.
 - All the new and existing tests pass: `pwsh eng/Test-Backend.ps1` at the root; `npm run lint`, `npm run format:check`, `npm run design:check` and `npm run build` in `frontend/`; `npm run typecheck`, `npm test` and `npm run parity` in `e2e/`. No sweep was run.
 - `docs/estimates/` and row 21 of `docs/journey.md` show the true figures, and the requirements, designs, mocks and code agree.

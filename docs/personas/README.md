@@ -28,7 +28,7 @@ wish it did is in each `feedback.md`.
 | [Daniel Okafor](daniel-okafor-software-developer/README.md) | 34, software developer, Liberty Village | Member, then owner (Business & tech) | A member who becomes an owner; a technical eye on rough edges. |
 | [Marcus Chen](marcus-chen-financial-consultant/README.md) | 46, independent family financial consultant, Agincourt | Owner (Financial & insurance) | A regulated profession: credentials, compliance and how money is spoken of. |
 | [Sofia Reyes](sofia-reyes-photographer/README.md) | 38, family and wedding photographer, Mimico | Owner (Media) | A visual business with a family calendar: portfolio, bookings, deposits. |
-| [Rajan Thomas](rajan-thomas-software-architect/README.md) | 51, software architect, Willowdale | Member | A buyer who wants evidence: privacy, security and how verification works. |
+| [Rajan Thomas](rajan-thomas-software-architect/README.md) | 51, software architect, Willowdale | Member | A buyer who wants evidence: privacy, security and how Jubilee keeps listings honest. |
 | [Tomasz Kowalski](tomasz-kowalski-construction-worker/README.md) | 29, construction worker, Roncesvalles | Owner (Home & property) | Weekend work that is barely a "business"; a phone on a building site; English as a second language. |
 | [Devon Campbell](devon-campbell-used-car-salesman/README.md) | 44, used car salesman, West Hill | Member, uncertain owner | An employee, not an owner, in a trade with no category. |
 | [Luis Herrera](luis-herrera-mechanic/README.md) | 39, mechanic and garage owner, Weston | Owner | A real shop with no automotive category; urgent calls. |
@@ -62,9 +62,8 @@ Themes that recur across the `feedback.md` files. They are observations, not req
 - **Gaps the personas found in the requirements.** Writing the journeys showed places where
   [`../specs/L2.md`](../specs/L2.md) is silent, and the personas meet them as friction. The
   service business page shows credential tags and "Languages" (L2-033), but no field in listing a
-  business or Edit listing collects them (L2-072, L2-087). The verification checklist asks for "At
-  least one photo of the products or work" (L2-100), but photos are added in Edit listing, not on
-  `/list`. No field says how an owner declares "Free quote", "Emergency calls" or "Open
+  business or Edit listing collects them (L2-072, L2-087). Photos are added in Edit listing, not on `/list`, so a listing
+  goes live without one and its preview shows only the category tile. No field says how an owner declares "Free quote", "Emergency calls" or "Open
   Saturdays", or how a free-text "Area you serve" maps to the five area filters (L2-024). A shop
   has nowhere to set its delivery methods (L2-046, L2-091). Confirming a "Request a viewing"
   releases the exact address (L2-207, L2-208).
@@ -74,8 +73,10 @@ Themes that recur across the `feedback.md` files. They are observations, not req
   fairly (Victoria, Ruth), and several owners want someone else to help run a listing.
 - **Language and access.** The app is in English only (Olena, Tomasz, André), and for Caleb every
   label, focus order and announcement is the product.
-- **Trust.** Members want to know what "verified" covers and to see what other members found
-  (Rajan, Amara), and owners in trades with a poor reputation want a way to earn a good name.
+- **Trust.** Jubilee does not verify businesses (ADR 0057): owners agree to the statement of faith
+  and to deal honestly, and the Jubilee team takes down listings that misrepresent a business.
+  Members want to know how that works and to see what other members found (Rajan, Amara), and
+  owners in trades with a poor reputation want a way to earn a good name.
 
 ## Using the personas
 

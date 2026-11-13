@@ -8,9 +8,9 @@ signed off.
 
 Every week in Toronto, believers ask the same question: who can we trust to do the work?
 
-## 02 Vouched for
+## 02 Dealing honestly
 
-Jubilee is Toronto's Christian marketplace. Every business is Christian-owned, and vouched for by a pastor.
+Jubilee is Toronto's Christian marketplace. Every owner is a Christian who agrees to deal honestly with every customer.
 
 ## 03 Find, message, book
 

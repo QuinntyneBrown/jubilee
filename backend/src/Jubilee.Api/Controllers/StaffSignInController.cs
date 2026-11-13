@@ -24,9 +24,9 @@ public sealed partial class StaffSignInController(
     IConfiguration configuration,
     ILogger<StaffSignInController> logger) : ControllerBase
 {
-    private const string Queue = "/verifications";
+    private const string Listings = "/listings";
 
-    [GeneratedRegex(@"^/(verifications|reports)(/[A-Za-z0-9-]+)?$|^/featured$")]
+    [GeneratedRegex(@"^/(listings|reports)(/[A-Za-z0-9-]+)?$|^/featured$")]
     private static partial Regex AdminScreen();
 
     [HttpGet("start")]
@@ -89,9 +89,9 @@ public sealed partial class StaffSignInController(
         return Redirect(transaction.ReturnUrl);
     }
 
-    /// <summary>The asked-for screen of the admin application, or the queue (L2-189 AC7).</summary>
+    /// <summary>The asked-for screen of the admin application, or the listings (L2-189 AC7).</summary>
     private static string Screen(string? returnUrl) =>
-        returnUrl is not null && AdminScreen().IsMatch(returnUrl) ? returnUrl : Queue;
+        returnUrl is not null && AdminScreen().IsMatch(returnUrl) ? returnUrl : Listings;
 
     private RedirectResult Failure(string error) => Redirect($"/sign-in?error={error}");
 

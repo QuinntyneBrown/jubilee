@@ -1,0 +1,61 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Publish a listing
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(page, "ListBusinessPage", "Angular page", "Publishing and invalid and published states of /list")
+  Component(summary, "FormSummary", "jb-form-summary", "Fix n things to continue with a link to each field")
+  Component(switcher, "ListingSwitcher", "My business", "Names the owner's listings with their stages")
+  Component(client, "ListingDraftsApi", "Typed HTTP client", "Starts, saves and publishes drafts")
+  Component(root, "App", "Angular root component", "Opens the agreement dialog once per load when the session carries statementDue")
+  Component(dialog, "StatementAgreementDialog", "Angular CDK dialog", "The statement of faith has been updated with I agree")
+}
+Container_Boundary(adminweb, "Jubilee Admin Web") {
+  Component(adminpage, "AdminListingPage", "Angular page", "Other listings with their stages")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(ctrl, "ListingDraftsController", "ASP.NET Core controller", "Authenticates and requires a confirmed e-mail to publish")
+  Component(publish, "PublishListingCommandHandler", "MediatR handler", "Answers a repeated key, validates and creates the live listing")
+  Component(start, "SaveListingDraftCommandHandler", "MediatR handler", "Starts a further draft up to 5 listings and drafts per owner")
+  Component(listing, "Listing", "Domain entity", "Publish sets Stage Live and PublishedAt")
+  Component(interceptor, "DirectoryCacheInvalidationInterceptor", "EF Core save interceptor", "Drops the directory read cache after a listing changes")
+  Component(notifier, "NewBusinessNotifier", "Static rule", "Tells members who browsed the category of the published listing")
+  Component(sofctrl, "StatementOfFaithController", "ASP.NET Core controller", "POST /api/statement-of-faith/agreement")
+  Component(agree, "AgreeToStatementCommandHandler", "MediatR handler", "Records a StatementAgreement and resumes listings the job paused")
+  Component(session, "SessionController", "ASP.NET Core controller", "GET /api/session with statementDue")
+  Component(adminq, "GetAdminListingQueryHandler", "MediatR handler", "Returns AdminListingOwner.OtherListings")
+}
+Container_Boundary(worker, "Jubilee Worker") {
+  Component(job, "StatementAgreementJob", "Hosted service", "Ticks once a day")
+  Component(run, "RunStatementAgreementJobCommandHandler", "MediatR handler", "Pauses live listings of owners not agreed after AgreeBy")
+  Component(jobs, "ScheduledJobs", "Application service", "RunOnceAsync claims the occurrence with a JobRun")
+  Component(outbox, "OutboxDispatcherJob", "Hosted service", "Sends queued e-mail")
+}
+ContainerDb(db, "Jubilee database", "SQL Server", "Listings, drafts, listing submissions, agreements, job runs and outbox")
+ContainerDb(cache, "Cache", "Redis", "Directory read cache")
+
+Rel(page, summary, "Shows errors in")
+Rel(page, client, "Publishes through")
+Rel(switcher, page, "List another business opens /list?draft=new")
+Rel(client, ctrl, "POST /api/listing-drafts/id/publish", "JSON/HTTPS")
+Rel(ctrl, publish, "Sends PublishListingCommand")
+Rel(ctrl, start, "Sends SaveListingDraftCommand")
+Rel(publish, listing, "Creates and calls Publish on")
+Rel(publish, db, "Saves listing and submission and removes the draft", "EF Core")
+Rel(start, db, "Counts listings and drafts and inserts a draft", "EF Core")
+Rel(interceptor, cache, "Invalidates")
+Rel(publish, notifier, "Calls TellAsync on")
+Rel(root, session, "Reads statementDue from", "JSON/HTTPS")
+Rel(root, dialog, "Opens")
+Rel(dialog, sofctrl, "Posts the version", "JSON/HTTPS")
+Rel(sofctrl, agree, "Sends AgreeToStatementCommand")
+Rel(agree, db, "Writes the agreement", "EF Core")
+Rel(adminpage, adminq, "Reads the listing through the admin endpoints", "JSON/HTTPS")
+Rel(adminq, db, "Reads", "EF Core")
+Rel(job, run, "Sends RunStatementAgreementJobCommand")
+Rel(run, jobs, "Calls RunOnceAsync on")
+Rel(run, listing, "Calls PauseForStatement on")
+Rel(run, db, "Saves listings and the outbox", "EF Core")
+Rel(outbox, db, "Reads the outbox", "EF Core")
+@enduml

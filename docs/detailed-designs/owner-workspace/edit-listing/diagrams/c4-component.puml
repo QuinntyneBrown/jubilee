@@ -12,17 +12,13 @@ Container_Boundary(web, "Jubilee Web") {
 Container_Boundary(api, "Jubilee API") {
   Component(ctrl, "MyBusinessController", "ASP.NET Core controller", "Exposes /api/my-business/listing and /photos and refuses unknown fields")
   Component(rules, "Workspace", "Application rules", "Owned finds the owner's listing or refuses with 403")
-  Component(save, "SaveListingCommandHandler", "MediatR handler", "Checks fields and version and calls Edit and tells of a re-check")
+  Component(save, "SaveListingCommandHandler", "MediatR handler", "Checks fields and version and calls Edit and audits a new name or category")
   Component(photo, "Photo command handlers", "MediatR handlers", "AddPhoto and MovePhoto and DescribePhoto and RemovePhoto")
   Component(listing, "Listing", "Domain entity", "Edit counts the version and reports a changed name or category")
   Component(image, "SkiaImageProcessor", "IImageProcessor", "Checks content and re-encodes into renditions")
   Component(store, "FileMediaStore", "IMediaStore", "Keeps renditions under random keys")
   Component(mediactrl, "MediaController", "ASP.NET Core controller", "Serves /media/{key}/{width}.{jpg|webp}")
   Component(pageq, "GetListingPageQueryHandler", "MediatR handler", "Adds Photos to the public listing page")
-  Component(tell, "NotificationRules", "Application rules", "Stores the owner's notification")
-}
-Container_Boundary(worker, "Jubilee Worker") {
-  Component(outbox, "OutboxDispatcherJob", "Hosted job", "Sends the e-mails of a re-check")
 }
 ContainerDb(db, "Jubilee database", "SQL Server", "System of record")
 ContainerDb(media, "Media store", "Files under Media:Root", "Photo renditions")
@@ -37,13 +33,11 @@ Rel(ctrl, photo, "Sends the photo commands")
 Rel(save, rules, "Finds the listing with")
 Rel(photo, rules, "Finds the listing with")
 Rel(save, listing, "Calls Edit on")
-Rel(save, tell, "Tells the owner through")
-Rel(save, db, "Saves listing and audit record and notification and outbox", "EF Core")
+Rel(save, db, "Saves listing and audit record", "EF Core")
 Rel(photo, image, "Processes an upload with")
 Rel(photo, store, "Saves and deletes renditions through")
 Rel(photo, db, "Saves ListingPhoto rows", "EF Core")
 Rel(store, media, "Writes files")
 Rel(mediactrl, store, "Reads a rendition through")
 Rel(pageq, db, "Reads the photos in order", "EF Core")
-Rel(outbox, db, "Reads outbox", "EF Core")
 @enduml

@@ -1,37 +1,21 @@
 <div class="container page">
-  @if (submitted(); as done) {
+  @if (published(); as done) {
     <div class="container--narrow" style="margin-inline: auto">
-      <div
-        jb-empty-state
-        icon="verified"
-        [heading]="done.name + ' is in for verification'"
-        [level]="1"
-      >
-        Nothing more to do right now. We’ll e-mail you the moment you’re live.
-        <a slot="actions" jb-button variant="primary" routerLink="/my-business"
-          >Go to My business</a
+      <div jb-empty-state icon="check" [heading]="done.name + ' is live'" [level]="1">
+        @if (done.kind === 'space') {
+          Renters can find it in {{ publishedIn() }} now.
+        } @else {
+          Members can find you in {{ publishedIn() }} now.
+        }
+        <a slot="actions" jb-button variant="primary" [routerLink]="['/b', done.slug]"
+          >View public listing</a
         >
+        <a slot="actions" jb-button routerLink="/my-business">Go to My business</a>
         @if (done.kind !== 'space') {
           <a slot="actions" jb-button routerLink="/my-business">
             {{ done.kind === 'services' ? 'Add more services' : 'Add more products' }}
           </a>
         }
-      </div>
-      <div jb-card heading="What happens next">
-        <ol jb-timeline style="text-align: left; margin-top: var(--space-4)">
-          <li jb-timeline-step state="complete" [heading]="'You submitted ' + done.name"></li>
-          <li
-            jb-timeline-step
-            state="current"
-            heading="We review your listing"
-            text="Within two business days"
-          ></li>
-          <li
-            jb-timeline-step
-            heading="You’re live"
-            text="We e-mail you the moment members can find you"
-          ></li>
-        </ol>
       </div>
       <div jb-section>
         <div
@@ -49,12 +33,8 @@
       <div>
         <h1>{{ isSpace() ? 'List a space' : 'List your business' }}</h1>
         <p class="subtitle" style="margin-bottom: var(--space-6)">
-          @if (isSpace()) {
-            Free for Toronto’s Christian community. Every listing is verified before it goes live.
-          } @else {
-            Free for Christian-owned businesses in Toronto. Every listing is verified before it goes
-            live.
-          }
+          Free for Christian-owned businesses in Toronto. Your listing goes live as soon as you
+          publish it.
         </p>
         @if (loading()) {
           <p class="visually-hidden" role="status">Loading your draft…</p>
@@ -79,7 +59,7 @@
         } @else {
           @if (session.unconfirmed()) {
             <div jb-alert tone="warning" icon="info">
-              Confirm your e-mail to submit. You can write and save your draft meanwhile.
+              Confirm your e-mail to publish. You can write and save your draft meanwhile.
             </div>
           }
           @if (summary().length) {
@@ -89,12 +69,12 @@
             <div jb-alert tone="danger" role="alert">{{ failed() }}</div>
           }
           @if (savedAt(); as at) {
-            <div jb-alert tone="success" icon="verified" heading="Draft saved">
+            <div jb-alert tone="success" icon="check" heading="Draft saved">
               Saved today at {{ at }}. Come back any time from My business; nothing is public until
-              you submit.
+              you publish.
             </div>
           }
-          <form class="form" novalidate (submit)="$event.preventDefault(); submit()">
+          <form class="form" novalidate (submit)="$event.preventDefault(); publish()">
             <fieldset [disabled]="busy()">
               <legend>What do you offer?</legend>
               <jb-choice-cards columns="3">
@@ -129,7 +109,7 @@
                 >
               </jb-choice-cards>
               <p jb-field-help style="margin-top: var(--space-2)">
-                Offer both? Pick the main one now and add the other after you’re verified.
+                Offer both? Pick the main one now and add the other once you’re live.
               </p>
             </fieldset>
             <div
@@ -367,7 +347,7 @@
               <fieldset>
                 <legend>Photos</legend>
                 <p jb-field-help>
-                  Add photos from My business once you submit. The first photo is your cover.
+                  Add photos from My business once you publish. The first photo is your cover.
                 </p>
               </fieldset>
             } @else {
@@ -508,7 +488,7 @@
                 [disabled]="session.unconfirmed()"
                 [busy]="busy()"
               >
-                <svg jb-icon name="verified"></svg>Submit for verification
+                <svg jb-icon name="check"></svg>Publish listing
               </button>
             </div>
           </form>

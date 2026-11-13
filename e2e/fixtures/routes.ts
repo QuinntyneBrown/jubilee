@@ -100,10 +100,8 @@ export type StubName =
   | 'incoming-empty'
   | 'incoming-error'
   | 'business'
-  | 'business-pending'
   | 'business-away'
   | 'business-switcher'
-  | 'business-changes'
   | 'business-empty'
   | 'business-retrying'
   | 'business-paused'
@@ -154,15 +152,13 @@ export type StubName =
   | 'services-error'
   | 'services-hours-pending'
   | 'services-hours-failing'
-  | 'admin-queue'
-  | 'admin-queue-empty'
-  | 'admin-queue-error'
-  | 'admin-review'
-  | 'admin-review-approved'
-  | 'admin-review-changes-requested'
-  | 'admin-review-error'
-  | 'admin-review-space'
-  | 'admin-review-no-items'
+  | 'admin-listings'
+  | 'admin-listings-empty'
+  | 'admin-listings-error'
+  | 'admin-listing'
+  | 'admin-listing-taken-down'
+  | 'admin-listing-error'
+  | 'admin-listing-space'
   | 'moderation-reports'
   | 'moderation-reports-empty'
   | 'moderation-reports-error'
@@ -909,18 +905,6 @@ export const routes = {
     who: 'member',
     stub: 'business-switcher',
   },
-  'my-business.pending': {
-    app: '/my-business',
-    mock: 'pages/my-business/pending.html',
-    who: 'member',
-    stub: 'business-pending',
-  },
-  'my-business.changes-requested': {
-    app: '/my-business',
-    mock: 'pages/my-business/changes-requested.html',
-    who: 'member',
-    stub: 'business-changes',
-  },
   'my-business.empty': {
     app: '/my-business',
     mock: 'pages/my-business/empty.html',
@@ -935,7 +919,7 @@ export const routes = {
   },
   'my-business.paused': {
     app: '/my-business',
-    mock: 'notifications/verification-banner/persistent.html',
+    mock: 'notifications/listing-banner/persistent.html',
     who: 'member',
     stub: 'business-paused',
   },
@@ -1357,68 +1341,54 @@ export const routes = {
     who: 'member',
     stub: 'services',
   },
-  'admin-verifications': {
-    app: '/verifications',
-    mock: 'pages/admin-verifications/default.html',
+  'admin-listings': {
+    app: '/listings',
+    mock: 'pages/admin-listings/default.html',
     who: 'visitor',
     site: 'admin',
-    stub: 'admin-queue',
+    stub: 'admin-listings',
   },
-  'admin-verifications.empty': {
-    app: '/verifications',
-    mock: 'pages/admin-verifications/empty.html',
+  'admin-listings.empty': {
+    app: '/listings',
+    mock: 'pages/admin-listings/empty.html',
     who: 'visitor',
     site: 'admin',
-    stub: 'admin-queue-empty',
+    stub: 'admin-listings-empty',
   },
-  'admin-verifications.error': {
-    app: '/verifications',
-    mock: 'pages/admin-verifications/error.html',
+  'admin-listings.error': {
+    app: '/listings',
+    mock: 'pages/admin-listings/error.html',
     who: 'visitor',
     site: 'admin',
-    stub: 'admin-queue-error',
+    stub: 'admin-listings-error',
   },
-  'admin-verification': {
-    app: '/verifications/3f1d2c4e-7a55-4c0e-9d3a-0a1b2c3d4e5f',
-    mock: 'pages/admin-verification/default.html',
+  'admin-listing': {
+    app: '/listings/3f1d2c4e-7a55-4c0e-9d3a-0a1b2c3d4e5f',
+    mock: 'pages/admin-listing/default.html',
     who: 'visitor',
     site: 'admin',
-    stub: 'admin-review',
+    stub: 'admin-listing',
   },
-  'admin-verification.approved': {
-    app: '/verifications/3f1d2c4e-7a55-4c0e-9d3a-0a1b2c3d4e5f',
-    mock: 'pages/admin-verification/approved.html',
+  'admin-listing.taken-down': {
+    app: '/listings/3f1d2c4e-7a55-4c0e-9d3a-0a1b2c3d4e5f',
+    mock: 'pages/admin-listing/taken-down.html',
     who: 'visitor',
     site: 'admin',
-    stub: 'admin-review-approved',
+    stub: 'admin-listing-taken-down',
   },
-  'admin-verification.changes-requested': {
-    app: '/verifications/3f1d2c4e-7a55-4c0e-9d3a-0a1b2c3d4e5f',
-    mock: 'pages/admin-verification/changes-requested.html',
+  'admin-listing.space': {
+    app: '/listings/3f1d2c4e-7a55-4c0e-9d3a-0a1b2c3d4e5f',
+    mock: 'pages/admin-listing/space.html',
     who: 'visitor',
     site: 'admin',
-    stub: 'admin-review-changes-requested',
+    stub: 'admin-listing-space',
   },
-  'admin-verification.no-items': {
-    app: '/verifications/3f1d2c4e-7a55-4c0e-9d3a-0a1b2c3d4e5f',
-    mock: 'pages/admin-verification/no-items.html',
+  'admin-listing.error': {
+    app: '/listings/3f1d2c4e-7a55-4c0e-9d3a-0a1b2c3d4e5f',
+    mock: 'pages/admin-listing/error.html',
     who: 'visitor',
     site: 'admin',
-    stub: 'admin-review-no-items',
-  },
-  'admin-verification.space': {
-    app: '/verifications/3f1d2c4e-7a55-4c0e-9d3a-0a1b2c3d4e5f',
-    mock: 'pages/admin-verification/space.html',
-    who: 'visitor',
-    site: 'admin',
-    stub: 'admin-review-space',
-  },
-  'admin-verification.error': {
-    app: '/verifications/3f1d2c4e-7a55-4c0e-9d3a-0a1b2c3d4e5f',
-    mock: 'pages/admin-verification/error.html',
-    who: 'visitor',
-    site: 'admin',
-    stub: 'admin-review-error',
+    stub: 'admin-listing-error',
   },
   'admin-reports': {
     app: '/reports',
@@ -1526,7 +1496,7 @@ export const routes = {
     stub: 'staff-signed-out',
   },
   'admin-shell.admin-only': {
-    app: '/verifications',
+    app: '/listings',
     mock: 'pages/admin-shell/admin-only.html',
     who: 'visitor',
     site: 'admin',
@@ -1537,7 +1507,7 @@ export const routes = {
     mock: 'pages/admin-shell/not-found.html',
     who: 'visitor',
     site: 'admin',
-    stub: 'admin-queue',
+    stub: 'admin-listings',
   },
   'admin-moved': {
     app: '/admin/verifications/3f1d2c4e-7a55-4c0e-9d3a-0a1b2c3d4e5f',

@@ -1,0 +1,74 @@
+@startuml
+title UML sequence behaviour — Place a listing on hold
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Jubilee team member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "AdminReportPage" as page
+  participant "ReportActionDialog" as dialog
+  participant "AdminApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "AdminReportsController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "ApplyReportActionCommandHandler" as handler
+  participant "Report" as report
+  participant "Listing" as listing
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+box "Backend — Jubilee Worker" #D1FADF
+  participant "OutboxDispatcherJob" as job
+end box
+participant "Search index" as search
+participant "E-mail provider" as email
+actor -> page : Choose "place the listing on hold"
+page -> dialog : Open
+actor -> dialog : Enter the resolution note and confirm
+dialog -> client : applyAction(reportId, PlaceOnHold, note)
+client -> controller : POST /api/admin/reports/{id}/actions
+controller -> controller : Authenticate session and apply ModeratorPolicy (L2-133)
+controller -> handler : Send ApplyReportActionCommand
+alt resolution note is empty
+  handler --> controller : Validation failure
+  controller --> client : 422 ProblemDetails with the field code (L2-105)
+  client --> dialog : Field error
+  dialog --> actor : Ask for the resolution note
+else note present
+  handler -> db : Load report and listing
+  db --> handler : Current state
+  handler -> listing : PlaceOnHold(reportId, now)
+  listing --> handler : IsUnderModerationHold set; Stage stays Live
+  handler -> report : RecordAction(PlaceOnHold, note, moderator, now)
+  report --> handler : ReportActionEntry
+  handler -> db : Save report, listing, AuditEntry (L2-180) and OutboxMessage in one unit of work
+  db --> handler : Commit result
+  handler --> controller : Typed result
+  controller --> client : 200 with report
+  client --> dialog : Applied
+  dialog --> page : Close
+  page --> actor : Show the listing as on hold
+  job -> db : Read ListingPlacedOnHold from the outbox
+  db --> job : Outbox message
+  job -> search : Remove the listing and invalidate public list caches within 60 seconds (L2-105)
+  search --> job : Removed
+  job -> email : Tell the owner "We've paused your listing while we look into a report"
+  email --> job : Accepted
+  job -> db : Create the owner notification without the reporter's identity (L2-105)
+  db --> job : Commit result
+end
+@enduml

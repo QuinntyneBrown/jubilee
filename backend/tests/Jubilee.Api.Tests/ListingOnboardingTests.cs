@@ -12,7 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 namespace Jubilee.Api.Tests;
 
 // List a business: L2-005 AC2, L2-071 to L2-079, L2-132 and L2-133. A member fills in a draft, saves it
-// on the way and submits it; the listing then goes to the verification team, ready to review. "Today" is Tuesday
+// on the way and publishes it; the listing is then live at once, with nobody verifying it first (ADR 0057). "Today" is Tuesday
 // 10 November 2026 (ListingMother.Now).
 public sealed class ListingOnboardingTests : IClassFixture<JubileeApiFactory>, IAsyncLifetime
 {
@@ -60,8 +60,8 @@ public sealed class ListingOnboardingTests : IClassFixture<JubileeApiFactory>, I
         return await Json(response);
     }
 
-    private Task<HttpResponseMessage> Submit(HttpClient client, Guid draftId, Dictionary<string, object?>? body = null) =>
-        client.PostAsJsonAsync($"/api/listing-drafts/{draftId}/submit", body ?? Body());
+    private Task<HttpResponseMessage> Publish(HttpClient client, Guid draftId, Dictionary<string, object?>? body = null) =>
+        client.PostAsJsonAsync($"/api/listing-drafts/{draftId}/publish", body ?? Body());
 
     private async Task<Listing> ListingOf(string slug)
     {
@@ -142,7 +142,7 @@ public sealed class ListingOnboardingTests : IClassFixture<JubileeApiFactory>, I
 
         Assert.Equal(HttpStatusCode.NotFound, (await sam.GetAsync($"/api/listing-drafts/{id}")).StatusCode);
         Assert.Equal(HttpStatusCode.NotFound, (await sam.PutAsJsonAsync($"/api/listing-drafts/{id}", Body())).StatusCode);
-        Assert.Equal(HttpStatusCode.NotFound, (await Submit(sam, id)).StatusCode);
+        Assert.Equal(HttpStatusCode.NotFound, (await Publish(sam, id)).StatusCode);
         Assert.Equal(HttpStatusCode.NoContent, (await sam.GetAsync("/api/listing-drafts/current")).StatusCode);
     }
 
@@ -162,30 +162,32 @@ public sealed class ListingOnboardingTests : IClassFixture<JubileeApiFactory>, I
         Assert.Equal(HttpStatusCode.NoContent, (await Joanna().GetAsync("/api/listing-drafts/current")).StatusCode);
     }
 
-    // L2-078 AC1, L2-075 AC2: a valid draft, with no church and no pastor named, goes straight to the verification team
+    // L2-078 AC1, L2-028 AC4: a valid draft is published and live straight away (ADR 0057)
     [Fact]
-    public async Task L2_078_AC1_a_valid_submission_creates_a_listing_that_is_ready_to_review()
+    public async Task L2_078_AC1_a_valid_listing_is_published_live_and_public()
     {
         var draft = await SaveNew(Joanna(), Body(items: [Item("Faith heavyweight tee, charcoal"), Item("Gold cross stoneware mug", 2400)]));
         var id = draft.GetProperty("id").GetGuid();
 
-        var response = await Submit(Joanna(), id, Body(items: [Item("Faith heavyweight tee, charcoal"), Item("Gold cross stoneware mug", 2400)]));
+        var response = await Publish(Joanna(), id, Body(items: [Item("Faith heavyweight tee, charcoal"), Item("Gold cross stoneware mug", 2400)]));
 
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
         var body = await Json(response);
         Assert.Equal("luzandre-com", body.GetProperty("slug").GetString());
         Assert.Equal("Luzandre.com", body.GetProperty("name").GetString());
         Assert.Equal("products", body.GetProperty("kind").GetString());
-        Assert.Equal("ready-to-review", body.GetProperty("stage").GetString());
+        Assert.Equal("live", body.GetProperty("stage").GetString());
         Assert.False(body.TryGetProperty("church", out _));
         Assert.False(body.TryGetProperty("pastorEmail", out _));
         var listing = await ListingOf("luzandre-com");
-        Assert.Equal(ListingStage.ReadyToReview, listing.Stage);
+        Assert.Equal(ListingStage.Live, listing.Stage);
+        Assert.Equal(ListingMother.Now, listing.PublishedAt);
         Assert.Equal("member|joanna", listing.OwnerId);
         Assert.Equal(ListingKind.Shop, listing.Kind);
         Assert.Equal("shops", listing.CategorySlug);
         Assert.Equal("Online · ships across Canada", listing.Where);
-        Assert.False(listing.IsPublic());
+        Assert.True(listing.IsPublic());
+        Assert.Equal(HttpStatusCode.OK, (await _factory.CreateClient().GetAsync("/api/listings/luzandre-com")).StatusCode);
         await _factory.WithDb(async db =>
         {
             var products = await db.Products.Where(p => p.ListingId == listing.Id).OrderBy(p => p.Name).ToListAsync();
@@ -196,18 +198,17 @@ public sealed class ListingOnboardingTests : IClassFixture<JubileeApiFactory>, I
         });
     }
 
-    // L2-073 AC4: items added during onboarding are not public
+    // L2-073 AC4: items added during onboarding are public once the listing is published, and not before
     [Fact]
-    public async Task L2_073_AC4_the_products_of_a_listing_that_is_not_live_are_not_public()
+    public async Task L2_073_AC4_the_products_of_a_draft_are_not_public_and_are_once_it_is_published()
     {
         var draft = await SaveNew(Joanna(), Body(items: [Item("Tee")]));
-        await Submit(Joanna(), draft.GetProperty("id").GetGuid(), Body(items: [Item("Tee")]));
+        Assert.Equal(HttpStatusCode.NotFound, (await _factory.CreateClient().GetAsync("/api/listings/luzandre-com")).StatusCode);
+
+        await Publish(Joanna(), draft.GetProperty("id").GetGuid(), Body(items: [Item("Tee")]));
 
         var page = await _factory.CreateClient().GetAsync("/api/listings/luzandre-com/products/tee");
-        var listing = await _factory.CreateClient().GetAsync("/api/listings/luzandre-com");
-
-        Assert.Equal(HttpStatusCode.NotFound, page.StatusCode);
-        Assert.Equal(HttpStatusCode.NotFound, listing.StatusCode);
+        Assert.Equal(HttpStatusCode.OK, page.StatusCode);
     }
 
     // L2-073 AC2: services keep their detail and price
@@ -218,7 +219,7 @@ public sealed class ListingOnboardingTests : IClassFixture<JubileeApiFactory>, I
         var body = Body(kind: "services", category: "media", place: "GTA", items: items);
         var draft = await SaveNew(Joanna(), body);
 
-        var response = await Submit(Joanna(), draft.GetProperty("id").GetGuid(), body);
+        var response = await Publish(Joanna(), draft.GetProperty("id").GetGuid(), body);
 
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
         var listing = await ListingOf("luzandre-com");
@@ -267,7 +268,7 @@ public sealed class ListingOnboardingTests : IClassFixture<JubileeApiFactory>, I
         };
         var draft = await SaveNew(Joanna(), Body(items: items));
 
-        var response = await Submit(Joanna(), draft.GetProperty("id").GetGuid(), Body(items: items));
+        var response = await Publish(Joanna(), draft.GetProperty("id").GetGuid(), Body(items: items));
 
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
         var listing = await ListingOf("luzandre-com");
@@ -298,7 +299,7 @@ public sealed class ListingOnboardingTests : IClassFixture<JubileeApiFactory>, I
         var body = Body(kind: "services", category: "media", place: "GTA", items: items);
         var draft = await SaveNew(Joanna(), body);
 
-        var response = await Submit(Joanna(), draft.GetProperty("id").GetGuid(), body);
+        var response = await Publish(Joanna(), draft.GetProperty("id").GetGuid(), body);
 
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
         var listing = await ListingOf("luzandre-com");
@@ -331,7 +332,7 @@ public sealed class ListingOnboardingTests : IClassFixture<JubileeApiFactory>, I
         var body = Body(kind: "services", category: "media", place: "GTA", items: items);
         var draft = await SaveNew(Joanna(), body);
 
-        var response = await Submit(Joanna(), draft.GetProperty("id").GetGuid(), body);
+        var response = await Publish(Joanna(), draft.GetProperty("id").GetGuid(), body);
 
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
         var listing = await ListingOf("luzandre-com");
@@ -346,11 +347,11 @@ public sealed class ListingOnboardingTests : IClassFixture<JubileeApiFactory>, I
 
     // L2-073 AC3
     [Fact]
-    public async Task L2_073_AC3_a_listing_with_no_products_or_services_may_be_submitted()
+    public async Task L2_073_AC3_a_listing_with_no_products_or_services_may_be_published()
     {
         var draft = await SaveNew(Joanna());
 
-        var response = await Submit(Joanna(), draft.GetProperty("id").GetGuid());
+        var response = await Publish(Joanna(), draft.GetProperty("id").GetGuid());
 
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
     }
@@ -363,7 +364,7 @@ public sealed class ListingOnboardingTests : IClassFixture<JubileeApiFactory>, I
         body["highlight"] = "  Ships across Canada and the United States  ";
 
         var draft = await SaveNew(Joanna(), body);
-        var response = await Submit(Joanna(), draft.GetProperty("id").GetGuid(), body);
+        var response = await Publish(Joanna(), draft.GetProperty("id").GetGuid(), body);
 
         Assert.Equal("Ships across Canada and the Un", draft.GetProperty("highlight").GetString());
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
@@ -377,7 +378,7 @@ public sealed class ListingOnboardingTests : IClassFixture<JubileeApiFactory>, I
         body["highlight"] = "   ";
         var draft = await SaveNew(Joanna(), body);
 
-        await Submit(Joanna(), draft.GetProperty("id").GetGuid(), body);
+        await Publish(Joanna(), draft.GetProperty("id").GetGuid(), body);
 
         Assert.Equal(JsonValueKind.Null, draft.GetProperty("highlight").ValueKind);
         Assert.Null((await ListingOf("luzandre-com")).Highlight);
@@ -388,10 +389,10 @@ public sealed class ListingOnboardingTests : IClassFixture<JubileeApiFactory>, I
     public async Task L2_072_AC5_the_slug_comes_from_the_name_and_takes_a_number_when_it_is_taken()
     {
         var first = await SaveNew(Joanna());
-        await Submit(Joanna(), first.GetProperty("id").GetGuid());
+        await Publish(Joanna(), first.GetProperty("id").GetGuid());
         var second = await SaveNew(Joanna());
 
-        var response = await Submit(Joanna(), second.GetProperty("id").GetGuid());
+        var response = await Publish(Joanna(), second.GetProperty("id").GetGuid());
 
         Assert.Equal("luzandre-com-2", (await Json(response)).GetProperty("slug").GetString());
     }
@@ -410,7 +411,7 @@ public sealed class ListingOnboardingTests : IClassFixture<JubileeApiFactory>, I
         body[field] = value;
         var draft = await SaveNew(Joanna());
 
-        var response = await Submit(Joanna(), draft.GetProperty("id").GetGuid(), body);
+        var response = await Publish(Joanna(), draft.GetProperty("id").GetGuid(), body);
 
         Assert.Equal(HttpStatusCode.UnprocessableEntity, response.StatusCode);
         Assert.Equal(code, (await Json(response)).GetProperty("errors").GetProperty(field).GetString());
@@ -423,7 +424,7 @@ public sealed class ListingOnboardingTests : IClassFixture<JubileeApiFactory>, I
         var body = Body(name: null, tagline: null, agreed: false);
         var draft = await SaveNew(Joanna());
 
-        var response = await Submit(Joanna(), draft.GetProperty("id").GetGuid(), body);
+        var response = await Publish(Joanna(), draft.GetProperty("id").GetGuid(), body);
 
         var errors = (await Json(response)).GetProperty("errors");
         Assert.Equal(["agreed", "name", "tagline"], errors.EnumerateObject().Select(p => p.Name).OrderBy(n => n));
@@ -436,7 +437,7 @@ public sealed class ListingOnboardingTests : IClassFixture<JubileeApiFactory>, I
     {
         var draft = await SaveNew(Joanna());
 
-        var response = await Submit(Joanna(), draft.GetProperty("id").GetGuid(), Body(tagline: new string('t', 94)));
+        var response = await Publish(Joanna(), draft.GetProperty("id").GetGuid(), Body(tagline: new string('t', 94)));
 
         Assert.Equal("TOO_LONG:94", (await Json(response)).GetProperty("errors").GetProperty("tagline").GetString());
     }
@@ -446,7 +447,7 @@ public sealed class ListingOnboardingTests : IClassFixture<JubileeApiFactory>, I
     {
         var draft = await SaveNew(Joanna());
 
-        var response = await Submit(Joanna(), draft.GetProperty("id").GetGuid(), Body(tagline: new string('t', 90)));
+        var response = await Publish(Joanna(), draft.GetProperty("id").GetGuid(), Body(tagline: new string('t', 90)));
 
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
     }
@@ -461,7 +462,7 @@ public sealed class ListingOnboardingTests : IClassFixture<JubileeApiFactory>, I
     {
         var draft = await SaveNew(Joanna());
 
-        var response = await Submit(Joanna(), draft.GetProperty("id").GetGuid(), Body(tagline: tagline));
+        var response = await Publish(Joanna(), draft.GetProperty("id").GetGuid(), Body(tagline: tagline));
 
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
         Assert.Contains("CONTACT_IN_TEXT", await FlagsOf("luzandre-com"));
@@ -471,7 +472,7 @@ public sealed class ListingOnboardingTests : IClassFixture<JubileeApiFactory>, I
     public async Task L2_072_AC6_plain_text_is_not_flagged()
     {
         var draft = await SaveNew(Joanna());
-        await Submit(Joanna(), draft.GetProperty("id").GetGuid());
+        await Publish(Joanna(), draft.GetProperty("id").GetGuid());
 
         Assert.Empty(await FlagsOf("luzandre-com"));
     }
@@ -492,7 +493,7 @@ public sealed class ListingOnboardingTests : IClassFixture<JubileeApiFactory>, I
     public async Task L2_075_AC2_the_agreement_is_recorded_with_the_time_and_the_version()
     {
         var draft = await SaveNew(Joanna());
-        await Submit(Joanna(), draft.GetProperty("id").GetGuid());
+        await Publish(Joanna(), draft.GetProperty("id").GetGuid());
 
         await _factory.WithDb(async db =>
         {
@@ -503,12 +504,12 @@ public sealed class ListingOnboardingTests : IClassFixture<JubileeApiFactory>, I
         });
     }
 
-    // L2-078 AC1: nobody outside Jubilee is written to about a submission
+    // L2-078 AC1: nobody outside Jubilee is written to about a published listing
     [Fact]
-    public async Task L2_078_AC1_a_submission_e_mails_no_third_party()
+    public async Task L2_078_AC1_publishing_e_mails_no_third_party()
     {
         var draft = await SaveNew(Joanna());
-        await Submit(Joanna(), draft.GetProperty("id").GetGuid());
+        await Publish(Joanna(), draft.GetProperty("id").GetGuid());
 
         await _factory.WithDb(async db => Assert.Empty(await db.OutboxMessages.AsNoTracking().Where(m => m.TextBody.Contains("/reference/")).ToListAsync()));
     }
@@ -521,8 +522,8 @@ public sealed class ListingOnboardingTests : IClassFixture<JubileeApiFactory>, I
         var id = draft.GetProperty("id").GetGuid();
         var body = Body(key: "same-key-12345");
 
-        var first = await Submit(Joanna(), id, body);
-        var second = await Submit(Joanna(), id, body);
+        var first = await Publish(Joanna(), id, body);
+        var second = await Publish(Joanna(), id, body);
 
         Assert.Equal(HttpStatusCode.Created, first.StatusCode);
         Assert.Equal((await Json(first)).GetProperty("listingId").GetGuid(), (await Json(second)).GetProperty("listingId").GetGuid());
@@ -535,7 +536,7 @@ public sealed class ListingOnboardingTests : IClassFixture<JubileeApiFactory>, I
 
     // L2-005 AC2, L2-071 AC5
     [Fact]
-    public async Task L2_071_AC5_a_member_with_an_unconfirmed_e_mail_can_save_a_draft_but_not_submit()
+    public async Task L2_071_AC5_a_member_with_an_unconfirmed_e_mail_can_save_a_draft_but_not_publish()
     {
         await _factory.CreateClient().PostAsJsonAsync("/api/account/join", new
         {
@@ -547,7 +548,7 @@ public sealed class ListingOnboardingTests : IClassFixture<JubileeApiFactory>, I
         var una = _factory.CreateMemberClient("Una Confirmed", member.Id.ToString());
 
         var draft = await SaveNew(una);
-        var response = await Submit(una, draft.GetProperty("id").GetGuid());
+        var response = await Publish(una, draft.GetProperty("id").GetGuid());
 
         Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
         Assert.Equal("EMAIL_UNCONFIRMED", (await Json(response)).GetProperty("code").GetString());
@@ -559,7 +560,7 @@ public sealed class ListingOnboardingTests : IClassFixture<JubileeApiFactory>, I
     public async Task L2_079_AC1_a_second_draft_starts_beside_the_first_listing()
     {
         var first = await SaveNew(Joanna());
-        await Submit(Joanna(), first.GetProperty("id").GetGuid());
+        await Publish(Joanna(), first.GetProperty("id").GetGuid());
 
         var second = await SaveNew(Joanna(), Body(name: "Laurent Photography", kind: "services", category: "media"));
 
@@ -591,7 +592,7 @@ public sealed class ListingOnboardingTests : IClassFixture<JubileeApiFactory>, I
         for (var i = 1; i <= 5; i++)
         {
             var draft = await SaveNew(Joanna(), Body(name: $"Business {i}"));
-            await Submit(Joanna(), draft.GetProperty("id").GetGuid(), Body(name: $"Business {i}"));
+            await Publish(Joanna(), draft.GetProperty("id").GetGuid(), Body(name: $"Business {i}"));
         }
 
         var response = await Joanna().PostAsJsonAsync("/api/listing-drafts", Body(name: "Business 6"));

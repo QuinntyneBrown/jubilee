@@ -124,7 +124,7 @@
     </header>
     <section class="ds-section" id="overview"><h2><a href="#overview">Overview</a></h2>
       <p><b>Honest status:</b> <code>.sidebar</code>, <code>.sidebar__group</code> and <code>.sidebar-layout</code> exist in <code>components.css</code>, but none of the 272 mocks use them. The two places with section navigation, My business (5 sections) and Account (4 sections), use <a href="../components/tabs.html">Tabs</a> as page navigation, which is the right choice for five or fewer sections.</p>
-      <p>Reach for the sidebar when a workspace grows past what one tab row holds: more than six sections, sections in groups, or an admin tool used for hours at a desk (a future verification and moderation console for Miriam Castillo's team is the likely first case).</p>
+      <p>Reach for the sidebar when a workspace grows past what one tab row holds: more than six sections, sections in groups, or an admin tool used for hours at a desk (a future moderation console for Miriam Castillo and the Jubilee team is the likely first case).</p>
       <ul>
         <li><b>Grouped</b>: overline group labels (<code>.sidebar__group</code>) over <code>.nav-link</code>s. The current link gets the accent-subtle pill.</li>
         <li><b>Drawer</b> below 1024px: the sidebar is hidden and opened from a <code>.topbar__menu</code> button, setting <code>data-open="true"</code>. Use the <a href="../components/drawer.html">Drawer</a> behaviour for focus and dismissal.</li>
@@ -279,7 +279,7 @@
       <ul>
         <li><a href="../../mocks/pages/my-business/default.html">pages/my-business/default</a> (same sections, rendered as tabs)</li>
         <li><a href="../../mocks/pages/account/default.html">pages/account/default</a> (account sections as tabs)</li>
-        <li><a href="../../mocks/pages/admin-verifications/default.html">pages/admin-verifications/default</a> (admin workspace that may outgrow tabs)</li>
+        <li><a href="../../mocks/pages/admin-listings/default.html">pages/admin-listings/default</a> (admin workspace that may outgrow tabs)</li>
       </ul>
       <p>Drift fixed during extraction: not applicable in the usual sense: the component is in the kit but in no mock, so there is nothing inconsistent to fix. These docs state that plainly and treat it as core, not as an extracted pattern. <code>.sidebar</code> is sticky at <code>100dvh</code> from 1024px, so the examples here reset it with <code>position: static; height: auto</code>.</p>
     </section>

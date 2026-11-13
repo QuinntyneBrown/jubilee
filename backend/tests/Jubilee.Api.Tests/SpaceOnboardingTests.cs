@@ -88,16 +88,16 @@ public sealed class SpaceOnboardingTests : IClassFixture<JubileeApiFactory>, IAs
     }
 
     [Fact]
-    public async Task L2_200_AC2_a_valid_space_is_submitted_into_rooms_and_rentals_ready_to_review()
+    public async Task L2_200_AC2_a_valid_space_is_published_live_into_rooms_and_rentals()
     {
         var id = await Draft(Ruth(), Body());
 
-        var response = await Ruth().PostAsJsonAsync($"/api/listing-drafts/{id}/submit", Body());
+        var response = await Ruth().PostAsJsonAsync($"/api/listing-drafts/{id}/publish", Body());
 
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
         var submitted = await Json(response);
         Assert.Equal("space", submitted.GetProperty("kind").GetString());
-        Assert.Equal("ready-to-review", submitted.GetProperty("stage").GetString());
+        Assert.Equal("live", submitted.GetProperty("stage").GetString());
 
         await _factory.WithDb(async db =>
         {
@@ -108,7 +108,8 @@ public sealed class SpaceOnboardingTests : IClassFixture<JubileeApiFactory>, IAs
             Assert.Equal(950, listing.Space.Rent);
             Assert.Equal(Address, listing.Space.Address);
             Assert.Equal("Ruth Mensah", listing.OwnerName);
-            Assert.Equal(ListingStage.ReadyToReview, listing.Stage);
+            Assert.Equal(ListingStage.Live, listing.Stage);
+            Assert.True(listing.IsPublic());
         });
     }
 
@@ -118,7 +119,7 @@ public sealed class SpaceOnboardingTests : IClassFixture<JubileeApiFactory>, IAs
         var id = await Draft(Ruth(), Body());
 
         var response = await Ruth().PostAsJsonAsync(
-            $"/api/listing-drafts/{id}/submit",
+            $"/api/listing-drafts/{id}/publish",
             Body(Space(rent: 0, available: " ", neighbourhood: null, address: "", household: null)));
 
         Assert.Equal(HttpStatusCode.UnprocessableEntity, response.StatusCode);
@@ -136,7 +137,7 @@ public sealed class SpaceOnboardingTests : IClassFixture<JubileeApiFactory>, IAs
     {
         var id = await Draft(Ruth(), Body());
 
-        var response = await Ruth().PostAsJsonAsync($"/api/listing-drafts/{id}/submit", Body(Space(rent: 50_001)));
+        var response = await Ruth().PostAsJsonAsync($"/api/listing-drafts/{id}/publish", Body(Space(rent: 50_001)));
 
         Assert.Equal("TOO_HIGH", (await Json(response)).GetProperty("errors").GetProperty("space.rent").GetString());
     }
@@ -147,7 +148,7 @@ public sealed class SpaceOnboardingTests : IClassFixture<JubileeApiFactory>, IAs
         var id = await Draft(Ruth(), Body());
 
         var response = await Ruth().PostAsJsonAsync(
-            $"/api/listing-drafts/{id}/submit", Body(Space(term: "long-term", minimumStay: 12, household: null)));
+            $"/api/listing-drafts/{id}/publish", Body(Space(term: "long-term", minimumStay: 12, household: null)));
 
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
     }
@@ -157,20 +158,20 @@ public sealed class SpaceOnboardingTests : IClassFixture<JubileeApiFactory>, IAs
     {
         var id = await Draft(Ruth(), Body());
 
-        var response = await Ruth().PostAsJsonAsync($"/api/listing-drafts/{id}/submit", Body(agreed: false));
+        var response = await Ruth().PostAsJsonAsync($"/api/listing-drafts/{id}/publish", Body(agreed: false));
 
         Assert.Equal("REQUIRED", (await Json(response)).GetProperty("errors").GetProperty("agreed").GetString());
     }
 
     [Fact]
-    public async Task L2_200_AC3_the_verification_team_reviews_the_space_without_its_address()
+    public async Task L2_200_AC3_the_jubilee_team_reads_a_published_space_without_its_address()
     {
         var id = await Draft(Ruth(), Body());
-        var submitted = await Json(await Ruth().PostAsJsonAsync($"/api/listing-drafts/{id}/submit", Body()));
+        var submitted = await Json(await Ruth().PostAsJsonAsync($"/api/listing-drafts/{id}/publish", Body()));
         var listingId = submitted.GetProperty("listingId").GetGuid();
-        var miriam = _factory.CreateStaffClient("Miriam Castillo", "member|miriam", "verifier");
+        var miriam = _factory.CreateStaffClient("Miriam Castillo", "member|miriam", "moderator");
 
-        var raw = await miriam.GetStringAsync($"/api/admin/verifications/{listingId}");
+        var raw = await miriam.GetStringAsync($"/api/admin/listings/{listingId}");
         var review = JsonDocument.Parse(raw).RootElement;
 
         Assert.Equal("space", review.GetProperty("kind").GetString());

@@ -10,28 +10,28 @@ box "Frontend — Jubilee Admin Web" #E0F2FE
   participant "staffGuard" as guard
   participant "StaffSessionService" as session
   participant "App and jb-admin-bar" as shell
-  participant "AdminVerificationsPage" as page
+  participant "AdminListingsPage" as page
 end box
 box "Backend — Jubilee API" #D1FADF
   participant "StaffSessionController" as ctrl
-  participant "AdminVerificationsController" as admin
+  participant "AdminListingsController" as admin
 end box
-actor -> session : Open /verifications: resolve() at start-up
+actor -> session : Open /listings: resolve() at start-up
 session -> ctrl : GET /api/staff/session
 alt no staff session
   ctrl --> session : 401 sign_in_required
   session -> guard : staff() is null
-  guard --> actor : Redirect to /sign-in?returnUrl=/verifications (L2-188)
+  guard --> actor : Redirect to /sign-in?returnUrl=/listings (L2-188)
 else staff session
-  ctrl --> session : Name - roles - verificationCount (L2-190)
+  ctrl --> session : Name - initials - e-mail - roles (L2-190)
   session -> guard : staff() is set
   guard --> shell : Activate the route
-  alt staff member holds verifier
-    shell --> actor : Admin bar with "Verifications {n}" - Reports - Featured (L2-098, L2-188)
+  alt staff member holds moderator
+    shell --> actor : Admin bar with "Listings" - "Reports" - "Featured" (L2-098, L2-188)
     shell -> page : Load the screen
-    page -> admin : GET /api/admin/verifications
-    admin --> page : Queue
-    page --> actor : Verification queue
+    page -> admin : GET /api/admin/listings
+    admin --> page : Listings
+    page --> actor : Listings table (L2-099)
   else only admin
     shell --> actor : Admin bar without navigation - "Nothing here for your role"; the screen is never loaded (L2-188)
   end

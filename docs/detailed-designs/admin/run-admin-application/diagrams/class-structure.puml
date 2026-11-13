@@ -16,10 +16,9 @@ class StaffSessionDto <<view model>> {
   +string initials
   +string email
   +StaffRole[] roles
-  +number verificationCount
 }
 enum StaffRole {
-  verifier
+  moderator
   admin
 }
 class StaffSessionService {
@@ -56,6 +55,6 @@ StaffSessionService o-- StaffSessionDto : holds
 StaffSessionDto --> StaffRole
 App --> StaffSessionService : reads
 App ..> AdminBar : composes
-App ..> AdminOnlyPage : shows without the verifier role
+App ..> AdminOnlyPage : shows without the moderator role
 AdminMovedPage ..> "ADMIN_URL" : reads token
 @enduml

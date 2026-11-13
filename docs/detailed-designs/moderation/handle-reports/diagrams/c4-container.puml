@@ -1,0 +1,23 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Handle reports
+Person(moderator, "Jubilee team member", "Reviews and resolves reports")
+System_Boundary(jubilee, "Jubilee") {
+  Container(web, "Jubilee Web", "Angular single-page application", "Admin reports list and report page")
+  Container(api, "Jubilee API", "ASP.NET Core", "Admin report endpoints and the real-time hub")
+  Container(worker, "Jubilee Worker", ".NET worker service", "Outbox dispatch: notifications and e-mail and index removal")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Reports and listings and audit entries and outbox")
+  ContainerDb(search, "Search index", "Query-time analysis over SQL Server", "Public search over live listings")
+  ContainerDb(cache, "Cache", "Redis", "Short-lived read caches of public lists")
+}
+System_Ext(email, "E-mail provider", "Delivers e-mail")
+
+Rel(moderator, web, "Uses", "HTTPS")
+Rel(web, api, "Calls and subscribes", "JSON/HTTPS and WebSocket")
+Rel(api, db, "Reads and writes", "EF Core")
+Rel(worker, db, "Reads outbox messages", "EF Core")
+Rel(worker, search, "Removes held or removed listings from")
+Rel(worker, cache, "Invalidates public list caches in")
+Rel(worker, email, "Sends e-mail", "HTTPS")
+@enduml

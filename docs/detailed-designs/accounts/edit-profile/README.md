@@ -2,7 +2,7 @@
 
 ## Overview
 
-Jubilee is Toronto's Christian marketplace: a directory of verified
+Jubilee is Toronto's Christian marketplace: a directory of
 Christian-owned businesses that members message, book and order from. A *member*
 is a signed-in account holder. Each member has a *profile* — first name, last
 name, phone, postal code, home church, home church address and optional pronouns
@@ -14,16 +14,17 @@ The account menu is the list of personal links behind the avatar in the top bar.
 It shows the member's initials, full name and e-mail, and links to the account
 page, requests, saved list, notifications, the business workspace, help and sign
 out. The links vary with the member's role: an owner sees "My business" in place
-of "List your business", and a verification team member also sees "Verification
-queue".
+of "List your business". No one, a member of the Jubilee team included, sees a
+link to an admin screen; those screens are in the admin application
+(`admin/run-admin-application`, `L2-194`).
 
 The account page shows the profile fields with their current values and saves
 them as one form. A saved phone number is shared with a business only when the
 member sends a request, and each request keeps the phone it was sent with.
-Pronouns word the messages Jubilee writes about the member, such as a change
-request from the verification team; they have no other use. The hint on the
-field reads "Used in messages we write about you, such as a change request from
-the verification team."
+Pronouns word the messages Jubilee writes about the member, such as a message
+from the Jubilee team; they have no other use. The hint on the field reads
+"Used in messages we write about you, such as a message from the Jubilee
+team."
 
 The home church and the home church address are both optional and independent:
 a member may give the name, the address, both or neither (`L2-196`). Both are
@@ -43,8 +44,8 @@ design introduces.
 - **`AccountMenu`** — Angular component opened by the avatar in the top bar. It
   renders initials, full name and e-mail from `SessionService` and the links
   "Your account", "Your requests", "Saved", "Notifications", "List your
-  business" (or "My business" for an owner), "Help" and "Sign out". It adds
-  "Verification queue" when `MemberRole` is `Verifier` or `Admin`. At a viewport
+  business" (or "My business" for an owner), "Help" and "Sign out", and no
+  link to an admin screen whatever the member's role. At a viewport
   of `640 px` or wider it is anchored under the avatar, arrow keys move between
   items, and Escape closes it and returns focus to the avatar. Below `640 px` it
   renders as a bottom sheet.
@@ -94,7 +95,7 @@ design introduces.
 - **`Member.HomeChurch`** and **`Member.HomeChurchAddress`** — optional text,
   100 and 200 characters at most. `Member.UpdateProfile` trims each value and
   stores a blank one as null. Neither is part of any read model that a
-  business, another member or the verification team receives (`L2-145`); both
+  business, another member or the Jubilee team receives (`L2-145`); both
   are in the member's data download and are removed when the account is erased.
 - **`PhoneNumber`** — value object that accepts a 10-digit North American
   number, ignores punctuation and spaces, and stores the ten digits.

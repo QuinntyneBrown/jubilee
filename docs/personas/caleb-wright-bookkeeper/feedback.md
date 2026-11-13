@@ -29,8 +29,8 @@ good ones. I would like to know the photo order and the cover without asking my 
 
 | Need | Today | Suggestion |
 |---|---|---|
-| Know what a photo shows before hiring | Alt text is optional; without it the photo is "{business} photo {n}" | Ask every owner for a description as the photo is added, say why in one line, and let the verification team look at it with the photo |
-| A photo rule that fits work that is not visual | The verification team checks "At least one photo of the products or work" | Tell owners on `/list` that a photo is expected, and accept a photo of the owner or the workplace for services with nothing to show |
+| Know what a photo shows before hiring | Alt text is optional; without it the photo is "{business} photo {n}" | Ask every owner for a description as the photo is added, say why in one line, and show it beside the photo wherever it appears |
+| Photos for work that is not visual | Photos are added after publishing; a listing without one shows a tinted tile | Tell owners on `/list` what photo helps, and suggest a photo of the owner or the workplace for services with nothing to show |
 | The film's words as text | Captions are part of the picture; no transcript | A transcript under the player, with one line per chapter on what is shown |
 | A pitch he can read | The one-page pitch is often forwarded as an image | Send the pitch as text, or with the text in the same message |
 | Say how he works and what he is qualified to do | No credential fields; About only | A short optional "How I work" line on service listings |

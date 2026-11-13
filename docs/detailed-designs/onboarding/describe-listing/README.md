@@ -2,28 +2,30 @@
 
 ## Overview
 
-Jubilee is Toronto's Christian marketplace: a directory of verified
+Jubilee is Toronto's Christian marketplace: a directory of
 Christian-owned businesses. A *listing* is the record of one business on Jubilee.
 Before a listing is public it passes through onboarding, the form at `/list`
-where a member describes the business and submits it for verification. This
-feature covers the first part of that form: the choice between products and
-services, the listing details, the first products or services, and the live
-preview.
+where a member describes the business and publishes the listing; nobody
+verifies it first (ADR 0057). This feature covers the first part of that form:
+the choice between products and services, the listing details, the first
+products or services, and the live preview.
 
-The slice uses five local terms.
+The slice uses six local terms.
 
 - **listing draft** — form at `/list` as the server keeps it, a `ListingDraft` that only its owner reads
 - **listing kind** — main offer of a business: `Shop` (products), `Services` or `Space`
 - **tagline** — one line on what the business does, 90 characters at most, shown under the business name everywhere on Jubilee
 - **highlight** — optional green line of 30 characters at most on the business card, such as "Free first meeting"
-- **draft item** — product or service added on `/list`, kept with the listing draft until submission
+- **draft item** — product or service added on `/list`, kept with the listing draft until it is published
+- **slug** — unique URL segment generated from the business name, such as `luzandre-com`
 
-Nothing entered here is public. A listing draft is not a `Listing`: the listing
-is created when the draft is submitted, and it is public only after the
-verification team approves it. Saving the draft and submitting it are separate
-features of the `onboarding` subsystem,
+Nothing entered here is public until the owner publishes the listing. A listing
+draft is not a `Listing`: the listing is created, in the stage `Live`, when the
+draft is published. `ListingStage` has two values, `Draft` and `Live`; paused,
+on hold and deleted are flags, not stages. Saving the draft and publishing it
+are separate features of the `onboarding` subsystem,
 [Save a draft](../save-draft/README.md) and
-[Submit for verification](../submit-for-verification/README.md).
+[Publish a listing](../publish-listing/README.md).
 
 ## Description
 
@@ -36,20 +38,20 @@ amended by ADR 0041 and ADR 0042.
   `jb-*` components. It holds the form in signals (`kind`, `name`, `tagline`,
   `categorySlug`, `highlight`, `place`, `agreed`, `items`) and has no store or
   form service. It shows "List your business", the line "Free for
-  Christian-owned businesses in Toronto. Every listing is verified before it
-  goes live.", and "What do you offer?". The layout utility `split` places the
+  Christian-owned businesses in Toronto. Your listing goes live as soon as you
+  publish it.", and "What do you offer?". The layout utility `split` places the
   preview to the right of the form from `1024 px` and below it under `1024 px`
   (`L2-076` AC2).
 - **`memberGuard`** — route guard on `/list` (`app.routes.ts`). A visitor is
   sent to `/sign-in` with `returnUrl=/list` and returns to `/list` afterwards
   (`L2-071` AC4). An unconfirmed member passes the guard and may fill in and
-  save the form. The page then shows the alert "Confirm your e-mail to submit.
-  You can write and save your draft meanwhile." and disables "Submit for
-  verification" from `SessionService.unconfirmed` (`L2-071` AC5, `L2-005`).
+  save the form. The page then shows the alert "Confirm your e-mail to publish.
+  You can write and save your draft meanwhile." and disables "Publish listing"
+  from `SessionService.unconfirmed` (`L2-071` AC5, `L2-005`).
 - **`ChoiceCards` and `ChoiceCard`** (`jb-choice-cards`, `jb-choice-card`) —
   the cards "Products", "Services" and "A space" under "What do you offer?",
-  with the note "Offer both? Pick the main one now and add the other after
-  you’re verified." `ListBusinessPage.setKind` sets the `kind` signal.
+  with the note "Offer both? Pick the main one now and add the other once
+  you’re live." `ListBusinessPage.setKind` sets the `kind` signal.
   "Products" shows "Store address" and the "Products" section. "Services" shows
   "Area you serve" and the "Services" section in their place. A change of kind
   keeps the value of each field and empties `items`, because a product is not a
@@ -70,7 +72,7 @@ amended by ADR 0041 and ADR 0042.
   `ProductEditorDialog` and "Add a service" opens `ServiceEditorDialog`.
 - **`ProductEditorDialog` and `ServiceEditorDialog`** — the CDK dialogs of the
   owner workspace (`L2-091`, `L2-094`), opened with `data.draft = true`. In that
-  mode a dialog says "Nothing is public until your listing is verified." in
+  mode a dialog says "Nothing is public until your listing is published." in
   place of "Changes show on your public listing as soon as you save.", checks
   its fields as it does in the workspace, calls no API and closes with a
   `DraftItem`. The page appends the item to `items` and starts the autosave
@@ -86,7 +88,7 @@ amended by ADR 0041 and ADR 0042.
   members see you". The page binds `name`, `tagline`, `tint` and `icon` (from
   `categoryTile` of the chosen category), `tag` ("Shop" or "Business") and
   `highlight`. The component draws the highlight as the green `jb-perk` before
-  the mark "Pending verification" and draws no perk while the highlight is
+  the mark "Not published yet" and draws no perk while the highlight is
   empty. The bindings are signals of the page, so the card redraws in the same
   change detection as the keystroke, within `100 ms` and without a server call
   (`L2-076` AC1).
@@ -109,23 +111,25 @@ amended by ADR 0041 and ADR 0042.
   without validating it and cuts each value to its length: the name to 120
   characters, the highlight to 30 (`L2-072` AC7), the place to 200 and at most
   50 items. The tagline is kept up to 200 characters so that a tagline over 90
-  survives to the message at submission.
+  survives to the message at publishing.
 
-The rules that run only at submission are part of
-[Submit for verification](../submit-for-verification/README.md):
-`SubmitListingCommandHandler` checks the required fields, builds the slug with
+The rules that run only when the listing is published are part of
+[Publish a listing](../publish-listing/README.md):
+`PublishListingCommandHandler` checks the required fields, builds the slug with
 `Slugs.From`, records the flag `CONTACT_IN_TEXT` on the `ListingSubmission`
 for a name or tagline that contains a URL, an e-mail address, a phone number or
-a discount code, and turns each `DraftItem` into a `Product` or a `Service`
+a discount code (the listing is still published, and the flag shows on the
+listing's screen in the admin application for the Jubilee team, `L2-100`), and
+turns each `DraftItem` into a `Product` or a `Service`
 (`L2-072` AC5 and AC6, `L2-073` AC5). The page applies the same required-field
 checks first in `ListBusinessPage.check` and words each code with `messageFor`:
 `REQUIRED` on `name` reads "Enter your business name as customers know it."
 and `TOO_LONG:{n}` on `tagline` reads "Shorten this to 90 characters. It has
 {n}." (`L2-126` AC5).
 
-A draft with zero items may be submitted. The review screen of the admin
-application then shows "No products or services yet" above the checklist
-(`L2-073` AC3), from `VerificationReviewDto.ItemCount`.
+A draft with zero items may be published (`L2-073` AC3); the owner adds items
+later from My business (`owner-workspace/manage-products`,
+`owner-workspace/manage-services`).
 
 ### Spaces
 
@@ -145,13 +149,13 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 
 | L2 ID | Refines (L1) | Requirement |
 |-------|--------------|-------------|
-| `L2-071` | `L1-011` | `/list` shall start with "What do you offer?" and the cards "Products", "Services" and "A space". The form shall show the sections of the chosen kind and keep the value of each other field when the kind changes. A visitor shall be asked to sign in or join and returned to `/list`; an unconfirmed member may fill in and save a draft but shall not submit. |
-| `L2-072` | `L1-011` | The form shall collect a required business name of at most 120 characters, a required tagline of at most 90 characters with the counter "{n} / 90", one of the ten categories and an optional highlight of at most 30 characters. Input in the highlight shall stop at 30 and the API shall cut a longer one to 30. At submission the system shall generate a unique URL slug from the name and shall flag a name or tagline that contains a URL, e-mail address, phone number or discount code. |
-| `L2-073` | `L1-011` | "Add a product" shall open the product editor (L2-091) and "Add a service" the service editor (L2-094), each saying "Nothing is public until your listing is verified." Each shall check its fields as in the owner workspace and keep the item with the draft; "Remove {name}" shall take it out again. Submission shall be allowed with zero items, and the review screen shall then show "No products or services yet". Items shall not be public while the listing is not live. At submission each product shall become a product of the listing with its name, price, stock and description and each service a service with its name, detail, price and action. |
-| `L2-076` | `L1-011` | "How members see you" shall update within 100 ms as the owner types the name, tagline, category or highlight and shall show the card marked "Pending verification", with the highlight as the green line before the mark and absent while the field is empty. The preview shall sit to the right of the form from 1024 px and below it under 1024 px. |
+| `L2-071` | `L1-011` | `/list` shall start with "What do you offer?" and the cards "Products", "Services" and "A space". The form shall show the sections of the chosen kind and keep the value of each other field when the kind changes. A visitor shall be asked to sign in or join and returned to `/list`; an unconfirmed member may fill in and save a draft but shall not publish. |
+| `L2-072` | `L1-011` | The form shall collect a required business name of at most 120 characters, a required tagline of at most 90 characters with the counter "{n} / 90", one of the ten categories and an optional highlight of at most 30 characters. Input in the highlight shall stop at 30 and the API shall cut a longer one to 30. When the listing is published the system shall generate a unique URL slug from the name, and shall accept and publish a name or tagline that contains a URL, e-mail address, phone number or discount code and flag it for the Jubilee team on the listing's screen in the admin application. |
+| `L2-073` | `L1-011` | "Add a product" shall open the product editor (L2-091) and "Add a service" the service editor (L2-094), each saying "Nothing is public until your listing is published." Each shall check its fields as in the owner workspace and keep the item with the draft; "Remove {name}" shall take it out again. Publishing shall be allowed with zero items. Items shall not be public while the listing is not live. When the listing is published each product shall become a product of the listing with its name, price, stock and description and each service a service with its name, detail, price and action. |
+| `L2-076` | `L1-011` | "How members see you" shall update within 100 ms as the owner types the name, tagline, category or highlight and shall show the card marked "Not published yet", with the highlight as the green line before the mark and absent while the field is empty. The preview shall sit to the right of the form from 1024 px and below it under 1024 px. |
 | `L2-091` | `L1-013` | The product editor shall collect "Product name" (required), "Price (CAD)" (required, 0.01 to 100,000.00 with at most two decimals, stored as cents), "In stock" (a whole number from 0 to 9,999, or empty for not tracked) and "Description" (optional), and shall show "Enter a name for the product." and "Enter a price in dollars, like 24.00." for an empty name and an invalid price. |
 | `L2-094` | `L1-013` | The service editor shall collect "Service name" (required), "Short detail" (optional, 60 characters at most), "Pricing" (Free, Fixed price, Ask for a quote), "Price (CAD)" and "Members can" (Book a time, Ask for a quote). "Book a time" shall take a duration of 15 to 480 minutes and the modes offered (video, in person with place). |
-| `L2-005` | `L1-001` | Until the e-mail is confirmed, a member shall be able to browse, search and save but shall not message, book, request or list a business. |
+| `L2-005` | `L1-001` | Until the e-mail is confirmed, a member shall be able to browse, search and save but shall not message, book, request or publish a listing. |
 | `L2-126` | `L1-018` | A dialog form with errors shall show each message under its field and move focus to the first invalid field. Each rule enforced in the browser shall be enforced on the server with the same message code. |
 | `L2-133` | `L1-019` | Each API endpoint shall check the caller's role and ownership of the specific object before doing anything. A request for another member's object shall return 404, and an update that includes a field the caller may not set shall be rejected with 400. |
 | `L2-198` | `L1-028` | `/list` shall offer "A space" beside "Products" and "Services", relabel the form for a space, preview the space card under "How renters see it", and restore a space saved as a draft. |

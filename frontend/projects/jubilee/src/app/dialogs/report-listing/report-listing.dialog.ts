@@ -52,7 +52,7 @@ const MESSAGES: Record<string, string> = {
 };
 
 /**
- * ReportListingDialog (L2-039): a reason and a description go privately to the verification
+ * ReportListingDialog (L2-039): a reason and a description go privately to the Jubilee
  * team. A retry reuses the idempotency key (L2-132), each message sits under its field and focus
  * goes to the first invalid one (L2-126), and a failure keeps everything typed (L2-128).
  */

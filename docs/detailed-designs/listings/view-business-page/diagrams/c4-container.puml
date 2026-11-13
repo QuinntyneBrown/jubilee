@@ -5,7 +5,7 @@ title Containers — View a business page
 
 Person(member, "Visitor or Member", "Reads a listing")
 Person(owner, "Owner", "Views their own listing")
-Person(team, "Verification team", "Previews a listing that is not public")
+Person(team, "Jubilee team", "Previews a listing that is not public")
 System_Boundary(jubilee, "Jubilee") {
   Container(web, "Jubilee Web", "Angular single-page application", "Service business page and shop page at /b/:slug")
   Container(api, "Jubilee API", "ASP.NET Core", "Serves listing pages and records listing views")

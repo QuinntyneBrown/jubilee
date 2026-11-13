@@ -47,7 +47,7 @@ class Listing {
   +string Name
   +string SortName
   +ListingStage Stage
-  +DateTimeOffset? VerifiedAt
+  +DateTimeOffset? PublishedAt
   +decimal RecommendedScore
   +IsPublic(): bool
 }
@@ -84,7 +84,7 @@ class ListingSortPolicy {
 
 class CategoryPageResult {
   +string CategoryName
-  +int VerifiedBusinessCount
+  +int BusinessCount
   +string? CategoryFact
   +IReadOnlyList<BusinessCardDto> Cards
   +PageWindow Window

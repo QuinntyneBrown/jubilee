@@ -18,7 +18,7 @@ public class PublicListingFilterTests : IDisposable
         var n = 0;
         foreach (var stage in Enum.GetValues<ListingStage>())
         {
-            foreach (var approved in new[] { false, true })
+            foreach (var published in new[] { false, true })
             {
                 foreach (var paused in new[] { false, true })
                 {
@@ -26,15 +26,15 @@ public class PublicListingFilterTests : IDisposable
                     {
                         foreach (var held in new[] { false, true })
                         {
-                            if (stage == ListingStage.Live && !approved)
+                            if (stage == ListingStage.Live && !published)
                             {
-                                continue; // Not reachable: a listing becomes live only by approval.
+                                continue; // Not reachable: a listing becomes live only by being published.
                             }
 
                             var listing = Listing.Create($"l-{n++}", "Name", "Tagline", "media", ListingMother.Now);
-                            if (approved)
+                            if (published)
                             {
-                                listing.Approve("verifier", ListingMother.Now);
+                                listing.Publish(ListingMother.Now);
                             }
 
                             if (stage != ListingStage.Live)
@@ -71,18 +71,14 @@ public class PublicListingFilterTests : IDisposable
         });
 
         var publicInDatabase = await _database.WithDb(db => db.Listings.WherePublic().Select(l => l.Slug).ToListAsync());
-        var verifiedInDatabase = await _database.WithDb(db =>
-            db.Listings.Where(VerifiedListingSpecification.Criteria).Select(l => l.Slug).ToListAsync());
 
-        Assert.Equal(72, listings.Count);
+        Assert.Equal(24, listings.Count);
         Assert.Equal(listings.Where(l => l.IsPublic()).Select(l => l.Slug).Order(), publicInDatabase.Order());
-        Assert.Equal(listings.Where(l => l.IsVerified).Select(l => l.Slug).Order(), verifiedInDatabase.Order());
         Assert.Single(publicInDatabase);
-        Assert.Equal(8, verifiedInDatabase.Count);
     }
 
     [Fact]
-    public async Task L2_025_AC2_approval_times_order_in_the_database()
+    public async Task L2_025_AC2_publish_times_order_in_the_database()
     {
         await _database.WithDb(db =>
         {
@@ -98,6 +94,6 @@ public class PublicListingFilterTests : IDisposable
         var reloaded = await _database.WithDb(db => db.Listings.SingleAsync(l => l.Slug == "newer"));
 
         Assert.Equal(["newer", "middle", "older"], newest);
-        Assert.Equal(ListingMother.Now.AddHours(-1), reloaded.ApprovedAt);
+        Assert.Equal(ListingMother.Now.AddHours(-1), reloaded.PublishedAt);
     }
 }

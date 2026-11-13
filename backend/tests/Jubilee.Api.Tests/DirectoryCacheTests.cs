@@ -153,10 +153,10 @@ public class DirectoryCacheTests : IClassFixture<JubileeApiFactory>, IAsyncLifet
         Assert.All(await ReadAll(), body => Assert.Contains("pauses", body));
     }
 
-    // L2-156 AC2 / L2-020 AC3 (ADR 0003): a listing the verification team approves is counted and
-    // listed on the next request.
+    // L2-156 AC2 / L2-020 AC3 / L2-028 AC4 (ADR 0003, ADR 0057): a listing its owner publishes is
+    // counted and listed on the next request; its draft never is.
     [Fact]
-    public async Task L2_020_AC3_a_listing_a_verifier_approves_is_counted_and_listed_on_the_next_request()
+    public async Task L2_020_AC3_a_listing_its_owner_publishes_is_counted_and_listed_on_the_next_request()
     {
         await _factory.Arrange(ListingMother.Public("first", "shops"));
         var owner = Member.Join(EmailAddress.TryParse("naomi@example.com")!, "Naomi", "Laurent", null, "hash", ListingMother.Now);
@@ -176,16 +176,13 @@ public class DirectoryCacheTests : IClassFixture<JubileeApiFactory>, IAsyncLifet
             ["idempotencyKey"] = Guid.NewGuid().ToString(),
         };
         var draftId = (await Json(await naomi.PostAsJsonAsync("/api/listing-drafts", draft))).GetProperty("id").GetGuid();
-        var id = (await Json(await naomi.PostAsJsonAsync($"/api/listing-drafts/{draftId}/submit", draft))).GetProperty("listingId").GetGuid();
-        var esther = _factory.CreateStaffClient("Esther Mensah", "member|esther", "verifier");
-        await esther.PutAsJsonAsync($"/api/admin/verifications/{id}/checklist", new { ticked = ChecklistItems.All.Select(i => i.Key) });
         Assert.Equal(1, (await _factory.GetJson("/api/directory/welcome")).GetProperty("liveBusinessCount").GetInt32());
         Assert.Equal(1, (await _factory.GetJson("/api/directory/home")).GetProperty("liveBusinessCount").GetInt32());
         Assert.Equal(1, (await _factory.GetJson("/api/categories/shops/listings")).GetProperty("totalCount").GetInt32());
 
-        var approved = await esther.PostAsJsonAsync($"/api/admin/verifications/{id}/approve", new { });
+        var published = await naomi.PostAsJsonAsync($"/api/listing-drafts/{draftId}/publish", draft);
 
-        Assert.Equal(HttpStatusCode.OK, approved.StatusCode);
+        Assert.Equal(HttpStatusCode.Created, published.StatusCode);
         Assert.Equal(2, (await _factory.GetJson("/api/directory/welcome")).GetProperty("liveBusinessCount").GetInt32());
         Assert.Equal(2, (await _factory.GetJson("/api/directory/home")).GetProperty("liveBusinessCount").GetInt32());
         var shops = await _factory.GetJson("/api/categories/shops/listings");
@@ -193,16 +190,16 @@ public class DirectoryCacheTests : IClassFixture<JubileeApiFactory>, IAsyncLifet
         Assert.Contains("Luzandre.com", shops.GetProperty("businesses").EnumerateArray().Select(b => b.GetProperty("name").GetString()));
     }
 
-    // L2-156 AC2 / L2-106 AC1 (ADR 0003): the week a verifier sets as "Featured this week" shows on
+    // L2-156 AC2 / L2-106 AC1 (ADR 0003): the week a moderator sets as "Featured this week" shows on
     // the welcome page and the browse home on the next request.
     [Fact]
-    public async Task L2_106_AC1_the_week_a_verifier_features_shows_on_welcome_and_home_on_the_next_request()
+    public async Task L2_106_AC1_the_week_a_moderator_features_shows_on_welcome_and_home_on_the_next_request()
     {
         var old = ListingMother.Public("old", approvedAt: ListingMother.Now.AddDays(-90));
         await _factory.Arrange(old, ListingMother.Public("recent"));
         Assert.Equal(["recent", "old"], (await _factory.GetJson("/api/directory/welcome")).GetProperty("featured").Slugs());
         Assert.Equal(["recent", "old"], (await _factory.GetJson("/api/directory/home")).GetProperty("featured").Slugs());
-        var miriam = _factory.CreateStaffClient("Miriam Castillo", "member|miriam", "verifier");
+        var miriam = _factory.CreateStaffClient("Miriam Castillo", "member|miriam", "moderator");
 
         var set = await miriam.PutAsJsonAsync("/api/admin/featured-weeks/2026-11-10", new { listingIds = new[] { old.Id } });
 

@@ -10,17 +10,17 @@ box "Backend — Jubilee API" #D1FADF
   participant "Authorization (StaffPolicies)" as authz
   participant "Staff scheme" as staff
   participant "Default scheme" as member
-  participant "AdminVerificationsController" as ctrl
+  participant "AdminListingsController" as ctrl
 end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
   database "Jubilee database" as db
 end box
-actor -> authz : GET /api/admin/verifications
+actor -> authz : GET /api/admin/listings
 authz -> staff : Authenticate
 staff -> db : Find the key within Kind staff
-alt staff session with the verifier role
+alt staff session with the moderator role
   authz -> ctrl : Allowed
-  ctrl --> actor : 200 queue
+  ctrl --> actor : 200 listings
 else staff session without the role
   authz -> staff : Forbid
   staff --> actor : 403 FORBIDDEN (L2-191)

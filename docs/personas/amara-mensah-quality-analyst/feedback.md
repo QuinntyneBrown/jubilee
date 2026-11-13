@@ -27,10 +27,10 @@ each item move from "Received" to "Read by the team" and beyond.
 > page were hard to reach with one thumb. What I expected: the main action stays in reach. Device
 > and version are attached, I see. That saves me typing them. Nicely done.
 
-**Rate: 4 stars, "Good".** "Messages and requests" scored 5, "Trust and verification" scored 3.
+**Rate: 4 stars, "Good".** "Messages and requests" scored 5, "Trust and safety" scored 3.
 
-> I trust "Verified" more than I did, having read how it works. But for a daycare I need more than
-> a verified owner. I do not want star ratings; they are gamed everywhere. I would like to know how
+> I trust the listings more than I did, having read how the team keeps them honest. But for a
+> daycare I need more than an owner's promise. I do not want star ratings; they are gamed everywhere. I would like to know how
 > long a business has been listed and whether members have sent kudos.
 
 **Rate: 5 stars, "Love it".**
@@ -43,7 +43,7 @@ each item move from "Received" to "Read by the team" and beyond.
 | Need | Today | Suggestion |
 |---|---|---|
 | Knowing a request was seen | A request stays open until the owner confirms or declines. After 7 days with no answer the member is offered "Cancel or ask again" and the owner is reminded once. | Show the member when the owner has opened it, and remind the owner sooner than a week. |
-| Judging a business she cannot inspect | The Verified mark, the listing, and kudos shown with a first name if the member ticked the box. No reviews or star ratings. | Show how long a business has been verified, and make kudos easier to find on its page. |
+| Judging a business she cannot inspect | The listing, the owner's agreement to the statement of faith, and kudos shown with a first name if the member ticked the box. No reviews or star ratings. | Show how long a business has been live on Jubilee, and make kudos easier to find on its page. |
 | Quiet nights | E-mail comes "As it happens" or as "One daily summary" at 7:00 a.m. the next morning. | Quiet hours, or a choice of when the summary arrives; let request updates come through at once while the rest waits. |
 | One-handed use | The app works on phones, and the feedback panel is a bottom sheet under 640 px. | Keep the main action of every screen within thumb reach at large text sizes; test it at 200% text. |
 | Control of her phone number | One number on the profile, prefilled into a quote request, where it is optional. | Remember her choice per kind of request, or leave it empty until she adds it. |

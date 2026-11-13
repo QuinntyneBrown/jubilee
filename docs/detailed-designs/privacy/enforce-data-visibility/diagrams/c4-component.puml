@@ -9,7 +9,7 @@ Container_Boundary(web, "Jubilee Web") {
 }
 Container_Boundary(api, "Jubilee API") {
   Component(ctrl, "BusinessRequestsController", "ASP.NET Core controller", "Declares the Business response audience")
-  Component(admin, "AdminReportsController", "ASP.NET Core controller", "Declares the Verifier response audience")
+  Component(admin, "AdminReportsController", "ASP.NET Core controller", "Declares the Moderator response audience")
   Component(modifier, "AudienceJsonModifier", "JSON contract modifier", "Omits personal data the audience may not see")
   Component(handler, "GetIncomingRequestQueryHandler", "MediatR handler", "Projects the request for the receiving business")
   Component(staff, "StaffAccessAuditBehavior", "MediatR pipeline behaviour", "Records staff access with its reason")

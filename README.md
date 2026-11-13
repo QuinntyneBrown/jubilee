@@ -36,10 +36,11 @@ This is the motive of everything in Jubilee and its single level-0 requirement
 ([`docs/specs/L0.md`](docs/specs/L0.md)). Every requirement, design and line of code points back to
 it.
 
-Jubilee is a directory of verified Christian-owned businesses in Toronto. A member finds a
-business, messages it, books a meeting, asks for a quote or requests a product, and the business
-confirms or declines. Every listing is verified by the Jubilee verification team before it goes
-live. Jubilee does not take payment; members pay the business directly.
+Jubilee is a directory of Christian-owned businesses in Toronto. A member finds a business,
+messages it, books a meeting, asks for a quote or requests a product, and the business confirms or
+declines. An owner agrees to the statement of faith, publishes their listing and is live straight
+away; the Jubilee team looks through listings and takes down any that misrepresent a business.
+Jubilee does not take payment; members pay the business directly.
 
 ## Contents
 
@@ -60,7 +61,7 @@ live. Jubilee does not take payment; members pay the business directly.
 
 | Part | Technology | Responsibility |
 |---|---|---|
-| `backend/` | .NET 10, ASP.NET Core, EF Core, MediatR | Accounts, listings, requests, messaging, notifications and verification |
+| `backend/` | .NET 10, ASP.NET Core, EF Core, MediatR | Accounts, listings, requests, messaging, notifications and moderation |
 | `frontend/` | Angular 22, Angular CDK | The app (`jubilee`), the marketing site (`marketing`), the admin application (`admin`), service contracts (`api`) and `jb-*` UI atoms (`components`) |
 | `e2e/` | Playwright (Chromium) | Behaviour tests against the app, with every `/api` request answered from a recording |
 | `docs/` | Markdown, HTML, PlantUML | Requirements, mocks, design system, detailed designs and architecture decisions |
@@ -165,7 +166,7 @@ dotnet run --project backend/src/Jubilee.Cli -- launch list --kind notifications
 
 ### Admin application
 
-The verification team's screens are a third application, served on `http://localhost:4202` with
+The Jubilee team's screens (Listings, Reports, Featured) are a third application, served on `http://localhost:4202` with
 `/api` sent to the local API (ADR 0040). Locally, staff sign-in uses the development identity,
 which signs in the given address with a second factor; `-StaffEmail` gives it both staff roles:
 
@@ -289,7 +290,7 @@ user:
 
 1. **Find a business:** discover, view and search.
 2. **Join and make contact:** accounts, messaging and requests.
-3. **Fill the directory:** list a business and verification.
+3. **Fill the directory:** list a business, publish it and keep listings honest.
 4. **Follow through:** answering and tracking requests, the owner workspace and notifications.
 5. **Convenience and housekeeping:** saved lists, settings, policies, offline use and moderation.
 

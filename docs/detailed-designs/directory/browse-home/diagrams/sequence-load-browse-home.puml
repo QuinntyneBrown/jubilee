@@ -50,9 +50,9 @@ alt Entry younger than 60 s (L2-156)
 else No entry
   cache --> handler : Miss
   handler -> db : Load public listings through PublicListingFilter (L2-028)
-  db --> handler : Verified live listings
+  db --> handler : Live public listings
   handler -> selector : Select(now and 5)
-  selector --> handler : Featured slots or most recently verified (L2-106)
+  selector --> handler : Featured slots or most recently published (L2-106)
   handler -> db : Load 5 shop products of public shops
   db --> handler : Products
   handler -> grouping : Group by category

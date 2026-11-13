@@ -1,0 +1,13 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Browse listings
+Person(moderator, "Jubilee team member", "Looks after published listings and holds the moderator role")
+Person(member, "Member", "Signed-in member with no staff session")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace")
+System_Ext(observability, "Observability platform", "Receives logs carrying error references and correlation IDs")
+
+Rel(moderator, jubilee, "Signs in through single sign-on with a second factor and browses listings in the admin application of", "HTTPS")
+Rel(member, jubilee, "Is refused admin endpoints by", "HTTPS 403")
+Rel(jubilee, observability, "Sends request logs to")
+@enduml

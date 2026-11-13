@@ -3,7 +3,7 @@
 LAYOUT_WITH_LEGEND()
 title Containers — Authorize requests
 
-Person(member, "Member", "Signed-in account holder. Also an owner or verifier by role")
+Person(member, "Member", "Signed-in account holder. Also an owner or moderator by role")
 System_Boundary(jubilee, "Jubilee") {
   Container(web, "Jubilee Web", "Angular single-page application", "Route guards hide routes the role may not open")
   Container(api, "Jubilee API", "ASP.NET Core", "Applies the role check and the object-level check on every endpoint")

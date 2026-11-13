@@ -31,7 +31,7 @@ end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
   database "Jubilee database" as db
 end box
-actor "Verification team member" as verifier
+actor "Jubilee team member" as moderator
 member -> page : Press "More" in the conversation header
 page -> menu : Open with "Mute" and "Report conversation" (L2-061)
 member -> menu : Choose "Report conversation"
@@ -79,7 +79,7 @@ else description given
       controller --> client : 204 No Content
       client --> dialog : Report sent
       dialog --> member : Show "Thanks for telling us." and "{Business} is blocked." when blocked
-      verifier -> db : Sees the report in the reports list (L2-105)
+      moderator -> db : Sees the report in the reports list (L2-105)
     end
   end
 end

@@ -2,7 +2,7 @@ import type { Locator, Page } from '@playwright/test';
 import type { Region, Screen } from '../fixtures/visual';
 import { ShellPage } from './shell.page';
 
-/** "List your business": the form, the live preview and the state after submitting. */
+/** "List your business": the form, the live preview and the state after publishing. */
 export class ListBusinessPage extends ShellPage implements Screen {
   readonly heading: Locator;
   readonly products: Locator;
@@ -27,7 +27,7 @@ export class ListBusinessPage extends ShellPage implements Screen {
   readonly addItem: Locator;
   readonly itemRows: Locator;
   readonly saveDraft: Locator;
-  readonly submit: Locator;
+  readonly publish: Locator;
   readonly summary: Locator;
   readonly summaryLinks: Locator;
   readonly fieldError: Locator;
@@ -49,6 +49,8 @@ export class ListBusinessPage extends ShellPage implements Screen {
   readonly doneText: Locator;
   readonly timeline: Locator;
   readonly goToMyBusiness: Locator;
+  readonly viewPublicListing: Locator;
+  readonly addMore: Locator;
   /** The fields of a space (L2-198, L2-199). */
   readonly space: SpaceFields;
 
@@ -75,7 +77,7 @@ export class ListBusinessPage extends ShellPage implements Screen {
       .locator('.item-list > li')
       .filter({ has: page.locator('.item-list__name') });
     this.saveDraft = this.main.getByRole('button', { name: 'Save draft' });
-    this.submit = this.main.getByRole('button', { name: 'Submit for verification' });
+    this.publish = this.main.getByRole('button', { name: 'Publish listing' });
     this.summary = this.main.locator('#summary');
     this.summaryLinks = this.summary.getByRole('link');
     this.fieldError = this.main.locator('.field__error');
@@ -95,6 +97,8 @@ export class ListBusinessPage extends ShellPage implements Screen {
     this.doneText = this.main.locator('.empty__text');
     this.timeline = this.main.locator('.timeline li');
     this.goToMyBusiness = this.main.getByRole('link', { name: 'Go to My business' });
+    this.viewPublicListing = this.main.getByRole('link', { name: 'View public listing' });
+    this.addMore = this.main.getByRole('link', { name: /^Add more/ });
     this.space = new SpaceFields(page, this.main);
   }
 

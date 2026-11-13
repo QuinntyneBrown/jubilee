@@ -8,15 +8,15 @@ Person(visitor, "Visitor", "Anyone not signed in")
 Container_Boundary(web, "Jubilee Web") {
   Component(guard, "welcomeRedirectGuard", "Angular route guard", "Sends a signed-in member to /")
   Component(page, "WelcomePage", "Angular page", "Hero and categories and steps and featured and owner panel")
-  Component(card, "BusinessCard", "Angular component", "One featured business with the Verified mark")
+  Component(card, "BusinessCard", "Angular component", "One featured business")
   Component(client, "DirectoryApi", "Contract behind DIRECTORY_API", "getWelcome")
 }
 Container_Boundary(api, "Jubilee API") {
   Component(ctrl, "DirectoryController", "ASP.NET Core controller", "GET /api/directory/welcome for anonymous callers")
   Component(handler, "GetWelcomeQueryHandler", "MediatR handler", "Builds the WelcomeDto")
   Component(readCache, "IDirectoryReadCache", "Application service", "60 s read cache")
-  Component(filter, "PublicListingFilter", "Query filter", "Verified and live listings only")
-  Component(selector, "FeaturedSelector", "Domain service", "Current featured slots or most recently verified")
+  Component(filter, "PublicListingFilter", "Query filter", "Live listings that are not paused or deleted or held")
+  Component(selector, "FeaturedSelector", "Domain service", "Current featured slots or most recently published")
   Component(invalidator, "DirectoryCacheInvalidationInterceptor", "EF Core SaveChangesInterceptor", "Removes cached directory entries after a save")
 }
 ContainerDb(cache, "Cache", "IDistributedCache: memory or Redis", "Read cache")

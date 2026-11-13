@@ -4,14 +4,14 @@ Back to [Luis Herrera](README.md).
 
 ## Feedback Luis might send
 
-**Moment check-in after submitting his listing: 3 of 5.** Under "What got in the way?":
+**Moment check-in after publishing his listing: 3 of 5.** Under "What got in the way?":
 
 > No category for a garage. I picked Home & property. A car is not a house.
 
 **Rate: 4 stars, "Good".**
 
-> The form was short and the draft was still there when I came back from a job. Verification took
-> two days like you said. I would give five if people could find me under cars.
+> The form was short and the draft was still there when I came back from a job. I was live the same
+> night, no waiting. I would give five if people could find me under cars.
 
 **Report a bug.** Where did it happen? "Requests". How often? "Sometimes".
 
@@ -21,8 +21,8 @@ Back to [Luis Herrera](README.md).
 
 **Kudos to the Jubilee team.** Chips: "Easy to list", "Feels like church family".
 
-> A brother from a church in Scarborough drove across the city for his brakes because he saw
-> "Verified". He paid me at the counter like any customer. That is how it should be.
+> A brother from a church in Scarborough drove across the city for his brakes because he found
+> me on Jubilee and not on a review site. He paid me at the counter like any customer. That is how it should be.
 
 **Rate: 2 stars, "Not great".**
 
@@ -33,11 +33,11 @@ Back to [Luis Herrera](README.md).
 
 | Need | Today | Suggestion |
 |---|---|---|
-| A category that fits | Eleven categories, none automotive; he sits in "Home & property". | Add an automotive category, or let the verification team record a business that fits none so the gap is counted. |
+| A category that fits | Eleven categories, none automotive; he sits in "Home & property". | Add an automotive category, or let the Jubilee team record a business that fits none so the gap is counted. |
 | Quotes he can answer once | The quote request asks "What do you need?", "Needed by", "Budget" and "Phone". Photos go in messages, one per message. | Let a member attach photos to a quote request, and let an owner name what to include (year, make, model). |
 | Emergency calls | Members can filter by "Emergency calls", but he found no place to say he takes them, and urgent requests arrive as ordinary messages. | A clear place for an owner to say so, and an urgent contact shown on the listing for businesses that do. |
 | Honest reply times | Members are told how quickly he usually replies, and the away status needs a "Back on" date. | Let an owner state when they usually reply, for example "Replies in the evening". |
-| His licence | No licence or credential fields; it is unverified text in About. | An optional trade licence line the verification team can check. |
+| His licence | No licence or credential fields; it is plain text in About that anyone could write. | An optional trade licence line with its number, which a member can check with the province. |
 | Spanish-speaking customers | English only, and language is not searchable. | Let a listing name the languages spoken, and let members search by them. |
 
 > These are a persona's suggestions, not requirements. Anything taken up needs a requirement in

@@ -12,7 +12,6 @@ export interface BusinessCard {
   tagline: string;
   highlight: string | null;
   categorySlug: string;
-  verified: boolean;
   coverPhoto: null;
   /** The business carries the "Replies fast" badge (L2-054). */
   repliesFast: boolean;
@@ -23,7 +22,6 @@ export interface DirectoryRow {
   slug: string;
   name: string;
   tagline: string;
-  verified: boolean;
 }
 
 export type TileTint = 'ink' | 'gold' | 'green' | 'blue';

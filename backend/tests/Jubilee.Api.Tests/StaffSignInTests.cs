@@ -80,7 +80,7 @@ public sealed class StaffSignInTests : IClassFixture<JubileeApiFactory>, IAsyncL
     [Fact]
     public async Task L2_189_AC7_a_staff_account_with_a_second_factor_signs_in_and_opens_the_screen_asked_for()
     {
-        await Grant("esther@jubilee.to", StaffRoles.Verifier);
+        await Grant("esther@jubilee.to", StaffRoles.Moderator);
 
         var (client, callback) = await SignIn("/reports/42");
 
@@ -90,8 +90,8 @@ public sealed class StaffSignInTests : IClassFixture<JubileeApiFactory>, IAsyncL
         var session = await _factory.GetJson("/api/staff/session", client);
         Assert.Equal("Esther Mensah", session.GetProperty("displayName").GetString());
         Assert.Equal("esther@jubilee.to", session.GetProperty("email").GetString());
-        Assert.Equal(["verifier"], session.GetProperty("roles").EnumerateArray().Select(r => r.GetString()));
-        Assert.Equal(HttpStatusCode.OK, (await client.GetAsync("/api/admin/verifications")).StatusCode);
+        Assert.Equal(["moderator"], session.GetProperty("roles").EnumerateArray().Select(r => r.GetString()));
+        Assert.Equal(HttpStatusCode.OK, (await client.GetAsync("/api/admin/listings")).StatusCode);
     }
 
     // L2-189 AC7
@@ -99,22 +99,22 @@ public sealed class StaffSignInTests : IClassFixture<JubileeApiFactory>, IAsyncL
     [InlineData(null)]
     [InlineData("/")]
     [InlineData("/account")]
-    [InlineData("//evil.example/verifications")]
-    [InlineData("https://evil.example/verifications")]
+    [InlineData("//evil.example/listings")]
+    [InlineData("https://evil.example/listings")]
     public async Task L2_189_AC7_a_return_address_that_is_not_an_admin_screen_opens_the_queue(string? returnUrl)
     {
-        await Grant("esther@jubilee.to", StaffRoles.Verifier);
+        await Grant("esther@jubilee.to", StaffRoles.Moderator);
 
         var (_, callback) = await SignIn(returnUrl);
 
-        Assert.Equal("/verifications", callback.Headers.Location!.OriginalString);
+        Assert.Equal("/listings", callback.Headers.Location!.OriginalString);
     }
 
     // L2-189 AC3
     [Fact]
     public async Task L2_189_AC3_a_sign_in_without_a_second_factor_is_refused()
     {
-        await Grant("esther@jubilee.to", StaffRoles.Verifier);
+        await Grant("esther@jubilee.to", StaffRoles.Moderator);
         _factory.StaffDirectory.Identity = FakeStaffDirectory.Esther(methods: ["pwd"]);
 
         var (client, callback) = await SignIn();
@@ -137,7 +137,7 @@ public sealed class StaffSignInTests : IClassFixture<JubileeApiFactory>, IAsyncL
         }
         else if (who == "other-tenant")
         {
-            await Grant("esther@jubilee.to", StaffRoles.Verifier);
+            await Grant("esther@jubilee.to", StaffRoles.Moderator);
             _factory.StaffDirectory.Identity = FakeStaffDirectory.Esther(tenant: "99999999-0000-0000-0000-000000000000");
         }
 
@@ -161,7 +161,7 @@ public sealed class StaffSignInTests : IClassFixture<JubileeApiFactory>, IAsyncL
     [Fact]
     public async Task L2_189_AC5_a_used_state_is_refused_the_second_time()
     {
-        await Grant("esther@jubilee.to", StaffRoles.Verifier);
+        await Grant("esther@jubilee.to", StaffRoles.Moderator);
         var (client, _) = await SignIn();
         var state = _factory.StaffDirectory.QueryValue("state");
 
@@ -176,7 +176,7 @@ public sealed class StaffSignInTests : IClassFixture<JubileeApiFactory>, IAsyncL
     [InlineData("invalid-token")]
     public async Task L2_189_AC5_a_provider_error_or_an_invalid_token_is_refused(string failure)
     {
-        await Grant("esther@jubilee.to", StaffRoles.Verifier);
+        await Grant("esther@jubilee.to", StaffRoles.Moderator);
         _factory.StaffDirectory.Fails = failure == "invalid-token";
 
         var (_, callback) = await SignIn(error: failure == "provider-error" ? "server_error" : null);
@@ -199,7 +199,7 @@ public sealed class StaffSignInTests : IClassFixture<JubileeApiFactory>, IAsyncL
     [Fact]
     public async Task L2_193_AC5_the_first_sign_in_binds_the_account_and_afterwards_only_that_identity_signs_in()
     {
-        await Grant("esther@jubilee.to", StaffRoles.Verifier);
+        await Grant("esther@jubilee.to", StaffRoles.Moderator);
         await SignIn();
 
         _factory.StaffDirectory.Identity = FakeStaffDirectory.Esther(objectId: "oid-someone-else");
@@ -211,48 +211,18 @@ public sealed class StaffSignInTests : IClassFixture<JubileeApiFactory>, IAsyncL
         Assert.Equal("/sign-in?error=not-staff", other.Headers.Location!.OriginalString);
     }
 
-    // L2-193 AC6, L2-098 AC5
-    [Fact]
-    public async Task L2_193_AC6_a_staff_member_who_is_also_the_owner_cannot_decide_on_their_own_listing()
-    {
-        var member = Member.Join(EmailAddress.TryParse("esther@jubilee.to")!, "Esther", "Mensah", null, "hash", ListingMother.Now);
-        member.ConfirmEmail();
-        await _factory.WithDb(async db =>
-        {
-            db.Members.Add(member);
-            await db.SaveChangesAsync();
-        });
-        var owner = _factory.CreateMemberClient("Esther Mensah", member.Id.ToString());
-        var body = new Dictionary<string, object?>
-        {
-            ["kind"] = "products", ["name"] = "Esther Co", ["tagline"] = "Gifts", ["categorySlug"] = "shops", ["highlight"] = null, ["place"] = null,
-            ["agreed"] = true, ["items"] = Array.Empty<object>(), ["idempotencyKey"] = "k1",
-        };
-        var draft = await (await owner.PostAsJsonAsync("/api/listing-drafts", body)).Content.ReadFromJsonAsync<System.Text.Json.JsonElement>();
-        var submitted = await (await owner.PostAsJsonAsync($"/api/listing-drafts/{draft.GetProperty("id").GetGuid()}/submit", body))
-            .Content.ReadFromJsonAsync<System.Text.Json.JsonElement>();
-        var id = submitted.GetProperty("listingId").GetGuid();
-        await Grant("esther@jubilee.to", StaffRoles.Verifier);
-        var (client, _) = await SignIn();
-
-        var approve = await client.PostAsJsonAsync($"/api/admin/verifications/{id}/approve", new { });
-
-        Assert.Equal(HttpStatusCode.Forbidden, approve.StatusCode);
-        Assert.Contains("OWN_LISTING", await approve.Content.ReadAsStringAsync());
-    }
-
     // L2-190 AC6: a revoked account's sessions end
     [Fact]
     public async Task L2_190_AC6_a_staff_session_of_an_account_whose_roles_were_revoked_has_ended()
     {
-        await Grant("esther@jubilee.to", StaffRoles.Verifier);
+        await Grant("esther@jubilee.to", StaffRoles.Moderator);
         var (client, _) = await SignIn();
         var staffId = (await _factory.Query(db => db.StaffMembers.SingleAsync())).Id;
 
         await _factory.WithDb(async db =>
         {
             var account = await db.StaffMembers.SingleAsync();
-            account.Revoke(StaffRoles.Verifier);
+            account.Revoke(StaffRoles.Moderator);
             foreach (var session in await db.Sessions.Where(s => s.StaffMemberId == staffId).ToListAsync())
             {
                 session.End(ListingMother.Now);
@@ -261,7 +231,7 @@ public sealed class StaffSignInTests : IClassFixture<JubileeApiFactory>, IAsyncL
             await db.SaveChangesAsync();
         });
 
-        Assert.Equal(HttpStatusCode.Unauthorized, (await client.GetAsync("/api/admin/verifications")).StatusCode);
+        Assert.Equal(HttpStatusCode.Unauthorized, (await client.GetAsync("/api/admin/listings")).StatusCode);
     }
 }
 

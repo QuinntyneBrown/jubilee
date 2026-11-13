@@ -2,7 +2,7 @@
 
 ## Overview
 
-Jubilee is Toronto's Christian marketplace: a directory of verified
+Jubilee is Toronto's Christian marketplace: a directory of
 Christian-owned businesses. A *service* is one piece of work a business offers,
 such as a consultation, a lesson or custom work. Members do not pay through
 Jubilee; they either book a time for a service or ask for a quote, and the owner

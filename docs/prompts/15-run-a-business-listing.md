@@ -4,13 +4,16 @@
 
 An owner monitors the listing, edits its details, and pauses or resumes it (`frontend/projects/jubilee/src/app/pages/my-business`, `edit-listing`, `dialogs/pause-listing`).
 
-Roles: Owner. Journey 15 in `docs/journey.md`, recorded at 90% complete on 12 November 2026. This prompt takes it to 100%.
+Roles: Owner. Journey 15 in `docs/journey.md`, recorded at 90% complete on 12 November 2026. ADR 0057 (ship without verification) has reopened part of it since. This prompt takes it to 100%.
 
 What is left, from an audit of the code and its tests against the acceptance criteria:
 
 - `L2-085` AC2: "Saved by members" is shown without its weekly change and has no test (`OwnerWorkspace.cs`, `my-business.page.html`).
 - `L2-079` AC1: no switcher between an owner's businesses.
-- `L2-087` AC6: a re-check after editing a verified listing is a stamp and an audit record only; the owner is not e-mailed and the team is not told.
+- `L2-087` AC6 (ADR 0057): nothing is re-checked any more. A change of name or category on a live listing is live when saved, nobody is e-mailed or notified, and it is written to the audit log; the re-check e-mails to the team and the owner and `RecheckRequestedAt` go.
+- `L2-085` and `L2-086` (ADR 0057): My business drops the pending, changes-requested and approved states and the verification banner; with no listing it reads "List your business free. Tell members what you offer, agree to the statement of faith and publish. You're live straight away. It takes about ten minutes."; a live listing's header says "Live since {Month YYYY}", "Your listing" says "Live since {Mon YYYY}" and the switcher names "{Business} · Live" or "{Business} · Draft".
+- `L2-096` (ADR 0057): "Resume listing" makes a paused listing public again within 60 seconds however long it was paused, and the pause dialog no longer says "You keep your verified status."
+- `L2-028` (ADR 0057): the owner's banner on their live listing reads "This is how members see your listing. It's live. Changes you make are published straight away."
 - `L2-088` AC3: photos cannot be reordered by drag, and need a keyboard equivalent.
 - Public photos have no `srcset` anywhere in the frontend, as the design requires.
 - `L2-096` AC2 and `L2-028` AC2: the 60-second bound for a pause reaching public pages is unproven.
@@ -92,7 +95,7 @@ Mocks (every state file in each folder; the full list is in `docs/mocks/manifest
 - `docs/mocks/dialogs/unpublish-listing/`
 - `docs/mocks/dialogs/leave-unsaved/`
 
-Decisions already recorded: `docs/adr/0023-run-a-business-listing-decisions.md`, `docs/adr/0003-directory-read-cache.md`.
+Decisions already recorded: `docs/adr/0023-run-a-business-listing-decisions.md`, `docs/adr/0003-directory-read-cache.md`, `docs/adr/0057-ship-without-verification.md`.
 
 Code and tests that exist today:
 
@@ -101,7 +104,7 @@ Code and tests that exist today:
 
 Progress notes: `docs/estimates/owner-workspace.md`.
 
-Builds on: journey 10 (List a business) for the switcher, journey 12 (Verify a listing) for the re-check in the queue. If the seam this journey needs from another journey is missing, build only that seam and note it. Do not stop.
+Builds on: journey 10 (List a business) for the switcher and for publishing. If the seam this journey needs from another journey is missing, build only that seam and note it. Do not stop.
 
 ## Phase 1: Requirements (`engineering-requirements`)
 
@@ -127,7 +130,7 @@ Builds on: journey 10 (List a business) for the switcher, journey 12 (Verify a l
   1. "Saved by members" with its weekly change.
   2. Reorder photos by drag and by keyboard.
   3. Responsive public photos with `srcset`.
-  4. The re-check e-mail to the owner.
+  4. Remove the re-check, the pending states and the verification banner; "Live since" and the new resume rule.
   5. A pause reaches public pages within 60 seconds, proven by a test on the cache.
 - For each slice:
   - Write the Given-When-Then criteria, taken from the acceptance criteria of the requirements above.

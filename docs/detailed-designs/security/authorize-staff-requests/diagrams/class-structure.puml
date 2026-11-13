@@ -12,7 +12,7 @@ skinparam class {
 title Class structure — Authorize staff requests
 
 class StaffPolicies <<static>> {
-  +Verifier = "staff-verifier"
+  +Moderator = "staff-moderator"
   +Admin = "staff-admin"
   +AddStaffPolicies(builder): AuthorizationBuilder
 }
@@ -20,8 +20,8 @@ class StaffSession <<static>> {
   +Scheme = "Staff"
   +Cookie = "__Host-jubilee.staff"
 }
-class RequiresVerifierAttribute {
-  +Policy = StaffPolicies.Verifier
+class RequiresModeratorAttribute {
+  +Policy = StaffPolicies.Moderator
 }
 class RequiresAdminAttribute {
   +Policy = StaffPolicies.Admin
@@ -31,20 +31,20 @@ class StaffChallenge {
   +OnRedirectToLogin(context): Task
   +OnRedirectToAccessDenied(context): Task
 }
-class AdminVerificationsController
+class AdminListingsController
 class AdminReportsController
 class AdminFeaturedController
 class AdminAuditController
 class AdminContentController
-AuthorizeAttribute <|-- RequiresVerifierAttribute
+AuthorizeAttribute <|-- RequiresModeratorAttribute
 AuthorizeAttribute <|-- RequiresAdminAttribute
-RequiresVerifierAttribute ..> StaffPolicies
+RequiresModeratorAttribute ..> StaffPolicies
 RequiresAdminAttribute ..> StaffPolicies
 StaffPolicies ..> StaffSession : authenticates with
 StaffSession --> StaffChallenge : events
-AdminVerificationsController ..> RequiresVerifierAttribute
-AdminReportsController ..> RequiresVerifierAttribute
-AdminFeaturedController ..> RequiresVerifierAttribute
+AdminListingsController ..> RequiresModeratorAttribute
+AdminReportsController ..> RequiresModeratorAttribute
+AdminFeaturedController ..> RequiresModeratorAttribute
 AdminAuditController ..> RequiresAdminAttribute
 AdminContentController ..> RequiresAdminAttribute
 @enduml

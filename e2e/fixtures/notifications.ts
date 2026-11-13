@@ -142,8 +142,7 @@ export async function stubNotifications(
         unreadNotificationCount: unread(),
         newRequestCount: fake.counts?.newRequestCount ?? 0,
         ownsListing: false,
-        isVerifier: false,
-        verificationCount: 0,
+        isModerator: false,
       },
     }),
   );
@@ -189,8 +188,7 @@ export async function stubNotifications(
           unreadNotificationCount: unread(),
           newRequestCount: fake.counts.newRequestCount,
           ownsListing: false,
-          isVerifier: false,
-          verificationCount: 0,
+          isModerator: false,
         })}\n\n`
       : '';
     return route.fulfill({

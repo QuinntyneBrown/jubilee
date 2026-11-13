@@ -172,7 +172,7 @@ test.describe('handle reports (L2-105)', () => {
 });
 
 test.describe('feature businesses (L2-106)', () => {
-  test('AC1: a verifier searches live businesses, orders them and saves the week', async ({
+  test('AC1: a moderator searches live businesses, orders them and saves the week', async ({
     page,
     jb,
   }) => {

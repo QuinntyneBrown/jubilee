@@ -36,13 +36,8 @@ public static class WireValues
 
     public static string Of(TileIcon value) => value.ToString().ToLowerInvariant();
 
-    /// <summary>"draft", "ready-to-review", "changes-requested" or "live".</summary>
-    public static string Of(ListingStage value) => value switch
-    {
-        ListingStage.ReadyToReview => "ready-to-review",
-        ListingStage.ChangesRequested => "changes-requested",
-        _ => value.ToString().ToLowerInvariant(),
-    };
+    /// <summary>"draft" or "live" (ADR 0057).</summary>
+    public static string Of(ListingStage value) => value.ToString().ToLowerInvariant();
 
     /// <summary>"none", "became-sold-out" or "back-in-stock" (L2-036).</summary>
     public static string Of(StockChange value) => value switch

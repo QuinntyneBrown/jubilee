@@ -19,8 +19,8 @@ public static class ViewerClaims
             return Viewer.Visitor;
         }
 
-        var isVerifier = user.FindAll("role").Concat(user.FindAll(ClaimTypes.Role))
-            .Any(c => string.Equals(c.Value, Viewer.VerifierRole, StringComparison.Ordinal));
-        return new Viewer(subject, isVerifier);
+        var isModerator = user.FindAll("role").Concat(user.FindAll(ClaimTypes.Role))
+            .Any(c => string.Equals(c.Value, Viewer.ModeratorRole, StringComparison.Ordinal));
+        return new Viewer(subject, isModerator);
     }
 }

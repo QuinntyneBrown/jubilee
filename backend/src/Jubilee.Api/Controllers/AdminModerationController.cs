@@ -1,7 +1,6 @@
 using System.Text.Json.Serialization;
 using Jubilee.Api.Errors;
 using Jubilee.Application.Moderation;
-using Jubilee.Application.Verification;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,13 +12,13 @@ public sealed record ReportActionRequest(string? Kind, string? ResolutionNote, s
 [JsonUnmappedMemberHandling(JsonUnmappedMemberHandling.Disallow)]
 public sealed record FeaturedWeekRequest(IReadOnlyList<Guid>? ListingIds);
 
-/// <summary>The verification team's reports: the list, one report and the six actions (L2-105).</summary>
+/// <summary>The Jubilee team's reports: the list, one report and the six actions (L2-105).</summary>
 [ApiController]
-[RequiresVerifier]
+[RequiresModerator]
 [Route("api/admin/reports")]
 public sealed class AdminReportsController(ISender sender) : ControllerBase
 {
-    private Reviewer Reviewer => new(User.ToViewer().Subject!, User.FindFirst("name")?.Value ?? "Verification team");
+    private Reviewer Reviewer => new(User.ToViewer().Subject!, User.FindFirst("name")?.Value ?? "The Jubilee team");
 
     [HttpGet]
     [ErrorReference("JB-ADM-511")]
@@ -38,11 +37,11 @@ public sealed class AdminReportsController(ISender sender) : ControllerBase
 
 /// <summary>Choosing the businesses "Featured this week" (L2-106).</summary>
 [ApiController]
-[RequiresVerifier]
+[RequiresModerator]
 [Route("api/admin")]
 public sealed class AdminFeaturedController(ISender sender) : ControllerBase
 {
-    private Reviewer Reviewer => new(User.ToViewer().Subject!, User.FindFirst("name")?.Value ?? "Verification team");
+    private Reviewer Reviewer => new(User.ToViewer().Subject!, User.FindFirst("name")?.Value ?? "The Jubilee team");
 
     [HttpGet("featured")]
     [ErrorReference("JB-ADM-513")]

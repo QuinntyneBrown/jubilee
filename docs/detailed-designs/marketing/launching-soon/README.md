@@ -21,7 +21,7 @@ The terms below are local to this feature.
 
 - **launching-soon state** — the state of the marketing page before Jubilee opens
 - **launch notification sign-up** — an e-mail address, with an optional first name, left to be told when Jubilee launches
-- **business pre-registration** — the details of a business an owner sends before launch; it neither lists nor verifies the business
+- **business pre-registration** — the details of a business an owner sends before launch; it does not list the business: once Jubilee opens, the owner publishes the listing (`L2-078`)
 - **consent** — the ticked checkbox of a form, stored with its time and the method "marketing site form"
 - **e-mail key** — the e-mail address in lower case, by which two sign-ups are compared
 - **bot challenge** — the privacy-respecting challenge of `L2-137`, shown only when a site key is configured
@@ -29,7 +29,7 @@ The terms below are local to this feature.
 - **marketing host** — the App Service `jubilee-to-www`, whose `server.js` serves the site's files
 - **kept submission** — a sign-up or a pre-registration the marketing host holds because the API could not take it, with the time it was received, until the API accepts it
 - **received time** — the time the marketing host received a submission; it is the consent time of the row
-- **Jubilee team** — the staff who read the submissions and contact owners; the verification team still verifies every listing (`L1-014`)
+- **Jubilee team** — the staff who read the submissions and contact owners; nobody verifies a listing before it goes live (ADR 0057), and the team looks after published listings (`L1-014`)
 
 The design amends ADR 0013: the site is no longer static, it has an HTTP client, and it has no
 `APP_URL`. It still has no router and no session. `L2-185` (links from the site to the app) is
@@ -273,7 +273,7 @@ launching-soon state.
 | L2 ID | Refines (L1) | Requirement |
 |-------|--------------|-------------|
 | `L2-215` | `L1-030`, `L1-026` | While Jubilee is launching soon, the marketing page shall say so in the opening and the top bar, shall show the sections "Be listed on launch day." and "Jubilee is launching soon." with their forms before the footer, shall say or imply nowhere that anyone can browse, message or book today, and shall hold no link to the app: every link moves within the page. |
-| `L2-216` | `L1-030` | The system shall let an owner send their business's details before launch through the form "Business pre-registration", shall validate them in the page and on the server, shall answer 202 and show a confirmation, and shall neither list nor verify the business; when a team address is configured, an e-mail with the details shall go to it through the outbox, once; a failure to reach Jubilee shall show no error: the page shall keep sending. |
+| `L2-216` | `L1-030` | The system shall let an owner send their business's details before launch through the form "Business pre-registration", shall validate them in the page and on the server, shall answer 202 and show a confirmation, and shall not list the business, which its owner publishes once Jubilee opens (`L2-078`); when a team address is configured, an e-mail with the details shall go to it through the outbox, once; a failure to reach Jubilee shall show no error: the page shall keep sending. |
 | `L2-217` | `L1-030` | The system shall let anyone leave an e-mail address through the form "Launch notification" to be told when Jubilee launches, shall keep one sign-up per address, shall answer a repeat sign-up as the first without saying whether the address was already there, and shall e-mail the team address once for each new sign-up, in the same transaction; a failure to reach Jubilee shall show no error: the page shall keep sending. |
 | `L2-218` | `L1-030`, `L1-020`, `L1-019` | What the two forms collect shall be stored with its consent (given, time, method "marketing site form"), accepted without a session but validated on the server, limited to 5 per IP address per hour per form, guarded by the bot challenge before anything else is checked, read only with `jubilee launch list` with an audit record of each run, and deleted after 12 months; a submission with consent that the API cannot take shall be kept by the marketing host with its received time, answered 202 and sent again until the API accepts it, and that time shall be its consent time. |
 | `L2-183` | `L1-026` | The marketing home page shall show the top bar with "Launching soon", the opening with the label "Launching soon" and a preview of the app that states no count and no reply time, the film section, the mission statement of L0-001, the benefits, the steps, five business cards that are not links, the section for businesses, "Be listed on launch day.", "Jubilee is launching soon." and the footer. |

@@ -1,0 +1,100 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Handle reports
+enum ReportStatus {
+  Open
+  InReview
+  Resolved
+}
+enum ReportSubject {
+  Listing
+  Conversation
+}
+enum ReportActionKind {
+  Dismiss
+  MessageReporter
+  MessageOwner
+  PlaceOnHold
+  RemoveListing
+}
+enum ListingStage {
+  Draft
+  Live
+}
+class Report {
+  +Guid Id
+  +ReportSubject Subject
+  +Guid ListingId
+  +Guid? ConversationId
+  +string Reason
+  +string Description
+  +Guid ReporterId
+  +DateTimeOffset CreatedAt
+  +ReportStatus Status
+  +StartReview(moderator: Member, now: DateTimeOffset): void
+  +RecordAction(kind: ReportActionKind, note: string, moderator: Member, now: DateTimeOffset): ReportActionEntry
+}
+class ReportActionEntry {
+  +ReportActionKind Kind
+  +string ResolutionNote
+  +string MessageText
+  +Guid ModeratorId
+  +DateTimeOffset At
+}
+class Listing {
+  +Guid Id
+  +Guid OwnerId
+  +ListingStage Stage
+  +bool IsUnderModerationHold
+  +DateTimeOffset? DeletedAt
+  +PlaceOnHold(reportId: Guid, now: DateTimeOffset): void
+  +Remove(reportId: Guid, now: DateTimeOffset): void
+}
+class ApplyReportActionCommand {
+  +Guid ReportId
+  +ReportActionKind Kind
+  +string ResolutionNote
+  +string MessageText
+}
+class ApplyReportActionCommandValidator {
+  +Validate(command: ApplyReportActionCommand): ValidationResult
+}
+class ApplyReportActionCommandHandler {
+  +Handle(command: ApplyReportActionCommand): Task<Result>
+}
+class ReportListItem {
+  +Guid ReportId
+  +string ListingName
+  +string Reason
+  +string Description
+  +string ReporterName
+  +DateTimeOffset CreatedAt
+  +ReportStatus Status
+  +bool Overdue
+}
+class BusinessDayCalendar {
+  +BusinessDaysBetween(from: DateTimeOffset, to: DateTimeOffset): int
+}
+
+ApplyReportActionCommandHandler ..> ApplyReportActionCommand : handles
+ApplyReportActionCommandValidator ..> ApplyReportActionCommand : validates
+ApplyReportActionCommandHandler --> Report : loads / mutates
+ApplyReportActionCommandHandler --> Listing : holds / removes
+Report "1" *-- "*" ReportActionEntry
+Report "*" --> "1" Listing
+Report --> ReportStatus
+Report --> ReportSubject
+ReportActionEntry --> ReportActionKind
+Listing --> ListingStage
+ReportListItem ..> Report : projects
+ReportListItem ..> BusinessDayCalendar : overdue from
+@enduml

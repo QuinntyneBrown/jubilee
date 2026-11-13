@@ -41,7 +41,7 @@ She uses the product options for the eight verses of the Scripture card, and is 
 works. Each product gets its own photo. The Easter cards trouble her: she can list them early only
 with the stock at 0, which says "Sold out" in November about cards she has not painted yet.
 
-## After she is verified, in My business
+## Once she is live, in My business
 
 - **Photos**: four, taken by the window on a linen cloth. Cover: a fan of greeting cards. Alt
   text, written carefully: "Five watercolour greeting cards with garden flowers".
@@ -51,8 +51,8 @@ with the stock at 0, which says "Sold out" in November about cards she has not p
 - **Hours**: By appointment
 - **Website**: left empty.
 - **Highlight**: Hand-lettered in the Beaches
-- **A service**, added because "Offer both? Pick the main one now and add the other after you're
-  verified.": "Wedding invitations, hand-lettered", short detail "Allow eight weeks. Tell me the
+- **A service**, added because "Offer both? Pick the main one now and add the other once you're
+  live.": "Wedding invitations, hand-lettered", short detail "Allow eight weeks. Tell me the
   date and the number.", pricing "Ask for a quote".
 
 ## What the profile cannot say

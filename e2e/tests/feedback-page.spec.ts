@@ -98,16 +98,16 @@ test.describe('the feedback page (L2-212)', () => {
     await expect(feedback.scoreRows).toContainText('Browse, search and categories');
     await expect(feedback.scoreRows).toContainText('Creating and editing a listing');
     await expect(feedback.scoreRows).toContainText('Meetings, quotes and order requests');
-    await expect(feedback.scoreRows).toContainText('Verification and verified marks');
+    await expect(feedback.scoreRows).toContainText('Reports and honest listings');
 
     await feedback.star(4).click();
     await expect(feedback.starWord).toHaveText('Good');
     await feedback.score('Finding businesses', 5).click();
     await feedback.score('Messages and requests', 2).click();
-    await feedback.score('Trust and verification', 3).click();
+    await feedback.score('Trust and safety', 3).click();
     // Pressing the chosen score again clears it.
-    await feedback.score('Trust and verification', 3).click();
-    await expect(feedback.scoreRadio('Trust and verification', 3)).not.toBeChecked();
+    await feedback.score('Trust and safety', 3).click();
+    await expect(feedback.scoreRadio('Trust and safety', 3)).not.toBeChecked();
     await expect(feedback.scoreRadio('Finding businesses', 5)).toBeChecked();
     await feedback.better.fill('One place for every request to a business.');
     await feedback.mayContact.check();

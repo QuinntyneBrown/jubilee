@@ -16,13 +16,12 @@ public sealed record BusinessCardDto(
     string Tagline,
     string? Highlight,
     string CategorySlug,
-    bool Verified,
     string? CoverPhoto,
     bool RepliesFast)
 {
     /// <summary>
-    /// <c>Verified</c> comes from <see cref="VerifiedListingSpecification"/> (L2-111). <paramref name="fast"/> holds the
-    /// listings that carry the "Replies fast" badge (L2-054 AC1); a space never does (AC3).
+    /// <paramref name="fast"/> holds the listings that carry the "Replies fast" badge (L2-054 AC1); a space never does
+    /// (AC3). No card says a listing is verified (ADR 0057).
     /// </summary>
     public static BusinessCardDto From(Listing listing, IReadOnlySet<Guid> fast) => new(
         listing.Slug,
@@ -30,7 +29,6 @@ public sealed record BusinessCardDto(
         listing.Tagline,
         listing.Highlight,
         listing.CategorySlug,
-        VerifiedListingSpecification.IsSatisfiedBy(listing),
         CoverPhoto: null, // Photo upload arrives with the listing form; cards show the category tile.
         RepliesFast: listing.Kind != ListingKind.Space && fast.Contains(listing.Id));
 }
@@ -96,10 +94,9 @@ public sealed record ProductCardDto(
 }
 
 /// <summary>The compact one-line entry inside a category group (L2-027 AC3).</summary>
-public sealed record DirectoryRowDto(string Slug, string Name, string Tagline, bool Verified)
+public sealed record DirectoryRowDto(string Slug, string Name, string Tagline)
 {
-    public static DirectoryRowDto From(Listing listing) =>
-        new(listing.Slug, listing.Name, listing.Tagline, VerifiedListingSpecification.IsSatisfiedBy(listing));
+    public static DirectoryRowDto From(Listing listing) => new(listing.Slug, listing.Name, listing.Tagline);
 }
 
 public sealed record CategoryGroupDto(

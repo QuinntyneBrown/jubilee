@@ -32,7 +32,7 @@ public sealed class MaintenanceWindow
 
 /// <summary>
 /// A member's request for access to a page they may not open (L2-114 AC2). It records the address and the account
-/// and grants nothing; the verification team reads it.
+/// and grants nothing; the Jubilee team reads it.
 /// </summary>
 public sealed class AccessRequest
 {

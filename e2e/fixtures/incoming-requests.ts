@@ -52,7 +52,7 @@ export const naomi = {
   firstName: 'Naomi',
   displayName: 'Naomi Laurent',
   initials: 'NL',
-  isVerifier: false,
+  isModerator: false,
 };
 
 const problem = (status: number, body: object) => ({
@@ -187,8 +187,7 @@ export async function stubIncoming(
     unreadNotificationCount: 3,
     newRequestCount: count('New'),
     ownsListing: true,
-    isVerifier: false,
-    verificationCount: 0,
+    isModerator: false,
   });
 
   await page.route('**/api/session', (r) => r.fulfill({ json: member }));
@@ -234,7 +233,7 @@ export async function stubIncoming(
       const all = fake.list === 'empty' ? 0 : count();
       return route.fulfill({
         json: {
-          listing: { name: 'Luzandre.com', slug: 'luzandre-com', verified: true },
+          listing: { name: 'Luzandre.com', slug: 'luzandre-com' },
           tab,
           counts:
             fake.list === 'empty'

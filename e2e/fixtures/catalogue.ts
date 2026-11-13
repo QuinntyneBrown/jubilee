@@ -181,7 +181,7 @@ export async function stubCatalogue(
   const products = () => ({
     business: 'Luzandre.com',
     slug: 'luzandre-com',
-    subtitle: 'Verified · live since June 2026',
+    subtitle: 'Live since June 2026',
     live: true,
     total: fake.productRows.length,
     soldOut: fake.productRows.filter((row) => row.stock === 0).length,
@@ -192,7 +192,7 @@ export async function stubCatalogue(
   const services = () => ({
     business: 'Luzandre.com',
     slug: 'luzandre-com',
-    subtitle: 'Verified · live since June 2026',
+    subtitle: 'Live since June 2026',
     live: true,
     total: fake.serviceRows.length,
     max: 50,
@@ -214,8 +214,7 @@ export async function stubCatalogue(
         unreadNotificationCount: 3,
         newRequestCount: 3,
         ownsListing: true,
-        isVerifier: false,
-        verificationCount: 0,
+        isModerator: false,
       },
     }),
   );

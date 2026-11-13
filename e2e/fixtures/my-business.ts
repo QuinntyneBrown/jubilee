@@ -31,15 +31,15 @@ export const LUZANDRE = '7c1d0000-0000-4000-8000-000000000001';
 export const LAURENT_PHOTOGRAPHY = '7c1d0000-0000-4000-8000-000000000002';
 export const LAURENT_STUDIO = '7c1d0000-0000-4000-8000-0000000000d1';
 
-/** Naomi's other business, waiting for verification, and a draft she has not submitted. */
+/** Naomi's other business, live too, and a draft she has not published. */
 export const OTHER_BUSINESSES: FakeBusinessOption[] = [
   {
     id: LAURENT_PHOTOGRAPHY,
     name: 'Laurent Photography',
     kind: 'listing',
-    stageLabel: 'Pending verification',
+    stageLabel: 'Live',
     current: false,
-    state: 'ready-to-review',
+    state: 'live',
   },
   {
     id: LAURENT_STUDIO,
@@ -59,7 +59,7 @@ export interface FakeBusiness {
   pause: Outcome;
   /** How a change of a photo's place is answered. */
   move: Outcome;
-  resume: Outcome | 'review';
+  resume: Outcome;
   /** How saving the away period is answered; `in-past` refuses the date (422). */
   away: Outcome | 'in-past';
   /** The instant the owner is back, or null (L2-062). */
@@ -76,7 +76,6 @@ export interface FakeBusiness {
   /** The listings chosen in the switcher, in order. */
   choices: string[];
   paused: boolean;
-  justApproved: boolean;
   /** "Saved by members": the members who saved the business, and those who first did so this week (L2-085 AC6). */
   saved: { value: number; change: number };
   version: number;
@@ -169,7 +168,6 @@ export async function stubMyBusiness(
     choose: 'ok',
     choices: [],
     paused: false,
-    justApproved: false,
     saved: { value: 28, change: 4 },
     version: 0,
     photos: [],
@@ -211,10 +209,9 @@ export async function stubMyBusiness(
     ...fake.listing,
     categories: CATEGORIES,
     photos: photos(),
-    recheckRequested: recheck,
+    subtitle: fake.paused ? 'Paused · not public' : 'Live since June 2026',
   });
 
-  let recheck = false;
   let current = LUZANDRE;
   const first = { name: fake.listing.name, state: fake.state };
   const businesses = (): FakeBusinessOption[] => [
@@ -244,12 +241,10 @@ export async function stubMyBusiness(
         subtitle: "You haven't listed a business yet",
         paused: false,
         pausedAt: null,
-        justApproved: false,
         newRequests: 0,
         stats: null,
         needsReply: [],
         summary: null,
-        verification: null,
         businesses: [],
       };
     }
@@ -264,16 +259,13 @@ export async function stubMyBusiness(
       categorySlug: fake.listing.categorySlug,
       categoryName: fake.listing.categorySlug === 'rooms-rentals' ? 'Rooms & rentals' : 'Shops',
       subtitle: fake.paused
-        ? 'Verified · paused, not public'
+        ? 'Paused · not public'
         : live
-          ? 'Verified · live since June 2026'
-          : fake.state === 'changes-requested'
-            ? 'Changes requested · not public yet'
-            : 'Pending verification · submitted today',
+          ? 'Live since June 2026'
+          : 'Draft · not published yet',
       paused: fake.paused,
       pausedAt: fake.paused ? '2026-11-10T14:00:00Z' : null,
       awayUntil: fake.awayUntil,
-      justApproved: fake.justApproved,
       newRequests: 3,
       stats: live
         ? {
@@ -305,22 +297,8 @@ export async function stubMyBusiness(
           ]
         : [],
       summary: live
-        ? { products: 4, soldOut: 1, services: 2, verification: 'Verified Jun 2026' }
+        ? { products: 4, soldOut: 1, services: 2, liveSince: 'Live since Jun 2026' }
         : null,
-      verification:
-        fake.state === 'changes-requested'
-          ? {
-              stage: 'changes-requested',
-              stageLabel: 'Changes requested',
-              changesRequested: {
-                areas: ['Tagline', 'Photos'],
-                message: 'Your tagline mentions a discount code. Add at least one photo.',
-                reviewerFirstName: 'Miriam',
-                requestedAt: '2026-11-09T15:00:00Z',
-              },
-              declined: null,
-            }
-          : null,
     };
   };
 
@@ -332,8 +310,7 @@ export async function stubMyBusiness(
         unreadNotificationCount: 3,
         newRequestCount: 3,
         ownsListing: true,
-        isVerifier: false,
-        verificationCount: 0,
+        isModerator: false,
       },
     }),
   );
@@ -383,10 +360,6 @@ export async function stubMyBusiness(
         );
       }
       fake.version += 1;
-      // A new name or category on a live listing asks the verification team to look again (L2-087 AC6).
-      recheck ||=
-        fake.state === 'live' &&
-        (body['name'] !== fake.listing.name || body['category'] !== fake.listing.categorySlug);
       fake.listing = {
         name: String(body['name']),
         tagline: String(body['tagline']),
@@ -420,7 +393,6 @@ export async function stubMyBusiness(
           paused: true,
           pausedAt: '2026-11-10T14:00:00Z',
           state: 'paused',
-          needsReview: false,
         },
       });
     }
@@ -428,11 +400,7 @@ export async function stubMyBusiness(
       if (fake.resume === 'fails') return route.fulfill(problem(500, { code: 'SERVER_ERROR' }));
       fake.resumes += 1;
       fake.paused = false;
-      const review = fake.resume === 'review';
-      if (review) fake.state = 'ready-to-review';
-      return route.fulfill({
-        json: { paused: false, pausedAt: null, state: fake.state, needsReview: review },
-      });
+      return route.fulfill({ json: { paused: false, pausedAt: null, state: fake.state } });
     }
     // photos
     const [, id, what] = path.split('/');

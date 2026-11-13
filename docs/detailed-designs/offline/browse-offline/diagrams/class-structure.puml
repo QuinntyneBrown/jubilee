@@ -39,7 +39,7 @@ class BrowseHomeDto {
   +featuredBusinesses: BusinessCardDto[]
   +featuredProducts: ProductCardDto[]
   +categories: CategoryDto[]
-  +verifiedBusinessCount: number
+  +businessCount: number
 }
 
 class SnapshotStamp {

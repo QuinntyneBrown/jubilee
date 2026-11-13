@@ -1,0 +1,63 @@
+@startuml
+title UML sequence behaviour — Publish a space
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "ListBusinessPage" as page
+  participant "ListingDraftsApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "ListingDraftsController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "PublishListingCommandHandler" as handler
+  participant "Drafts" as validator
+  participant "Listing" as listing
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+actor -> page : Tick the space agreement and press "Publish listing"
+page -> page : Run the same rules in the browser (L2-126)
+alt Browser finds errors
+  page --> actor : "Fix {n} thing(s) to continue" and the field messages
+else Valid
+  page -> client : publish(id, input)
+  client -> controller : POST /api/listing-drafts/{id}/publish
+  controller -> controller : Authenticate, confirmed member, owns the draft (L2-133)
+  controller -> handler : Send PublishListingCommand
+  handler -> validator : ValidateSpace(input.Space) and check agreed (L2-199, L2-200)
+  alt Invalid
+    validator --> handler : space.rent REQUIRED or TOO_HIGH, space.available, space.neighbourhood,
+space.address, space.household REQUIRED, agreed REQUIRED
+    handler --> controller : Validation failure
+    controller --> client : 422 ProblemDetails with errors {field: code}
+    client --> page : Errors
+    page --> actor : Same messages as the browser
+  else Valid
+    handler -> validator : SpaceFrom(input.Space)
+validator --> handler : SpaceDetails with facts and rules trimmed
+    handler -> listing : Create with Kind Space, category forced to rooms-rentals (L2-197)
+    handler -> listing : Publish(now): Stage Live and PublishedAt set (L2-078)
+    handler -> db : Save the listing
+    db --> handler : Commit result
+    handler --> controller : PublishedListingDto
+    controller --> client : 201 Created
+    client --> page : Published
+    page --> actor : "{Listing title} is live. Renters can find it in Rooms & rentals now." with "View public listing" (L2-200)
+  end
+end
+@enduml

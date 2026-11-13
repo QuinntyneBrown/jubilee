@@ -80,7 +80,7 @@ public sealed class SessionController(ISender sender, IGoogleIdentityClient goog
 
     private SessionDto ToDto(MemberAccountDto account, int otherSessions) => new(
         true, account.FirstName, account.DisplayName, account.Initials,
-        account.Email, account.EmailStatus, account.EmailBounced, account.AgreementRequired, otherSessions, User.ToViewer().IsVerifier,
+        account.Email, account.EmailStatus, account.EmailBounced, account.AgreementRequired, otherSessions, User.ToViewer().IsModerator,
         google.IsConfigured);
 
     /// <summary>Who is calling: a visitor (<c>signedIn: false</c>) or a signed-in member.</summary>
@@ -121,7 +121,7 @@ public sealed class SessionController(ISender sender, IGoogleIdentityClient goog
             _ => words[0][..1] + words[^1][..1],
         };
 
-        return new SessionDto(true, firstName, displayName, initials.ToUpperInvariant(), null, "confirmed", false, false, 0, User.ToViewer().IsVerifier,
+        return new SessionDto(true, firstName, displayName, initials.ToUpperInvariant(), null, "confirmed", false, false, 0, User.ToViewer().IsModerator,
             google.IsConfigured, StatementDue: subject is null ? null : await StatementDue(subject, cancellationToken));
     }
 
@@ -140,7 +140,7 @@ public sealed record SessionDto(
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] bool? EmailBounced,
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] bool? AgreementRequired,
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] int? OtherSessionCount,
-    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] bool? IsVerifier = null,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] bool? IsModerator = null,
     bool GoogleSignIn = false,
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? BotChallengeSiteKey = null,
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] StatementDueDto? StatementDue = null)

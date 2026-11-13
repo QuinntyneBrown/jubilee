@@ -14,6 +14,8 @@ export interface FakeMemberRequest {
   businessSlug: string;
   detail: string | null;
   sentAt: string;
+  /** When a confirmed booking starts; the meeting step carries it (L2-047). */
+  startsAt?: string;
   status: Status;
   previous: Status;
   details: { label: string; value: string }[];
@@ -47,7 +49,7 @@ export const joanna = {
   firstName: 'Joanna',
   displayName: 'Joanna Adeyemi',
   initials: 'JA',
-  isVerifier: false,
+  isModerator: false,
 };
 
 const problem = (status: number, body: object) => ({
@@ -92,6 +94,7 @@ export function seedRequests(): FakeMemberRequest[] {
       businessSlug: 'legacy-financial',
       detail: 'Thu 12 Nov, 10:00 a.m. · Video',
       sentAt: '2026-11-09T20:40:00-05:00',
+      startsAt: '2026-11-12T10:00:00-05:00',
       status: 'confirmed',
       previous: 'new',
       details: [
@@ -217,7 +220,8 @@ function timeline(r: FakeMemberRequest) {
     steps.push({ title: 'Meeting', meta: null, at: null, state: 'upcoming' });
   } else if (r.status === 'confirmed') {
     steps.push({ title: `${r.business} confirmed`, meta: null, at: r.sentAt, state: 'complete' });
-    steps.push({ title: 'Meeting', meta: null, at: null, state: 'current' });
+    // As the API does, the meeting step of a confirmed booking carries when it starts.
+    steps.push({ title: 'Meeting', meta: null, at: r.startsAt ?? null, state: 'current' });
     steps.push({ title: 'Completed', meta: null, at: null, state: 'upcoming' });
   } else if (r.status === 'declined') {
     steps.push({ title: `${r.business} declined`, meta: null, at: r.sentAt, state: 'stopped' });
@@ -261,8 +265,7 @@ export async function stubMemberRequests(
         unreadNotificationCount: 0,
         newRequestCount: 0,
         ownsListing: false,
-        isVerifier: false,
-        verificationCount: 0,
+        isModerator: false,
       },
     }),
   );

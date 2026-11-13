@@ -2,6 +2,8 @@
 
 ## Status
 
+Superseded in part by ADR 0057, 12 November 2026: Jubilee ships without verification; a listing goes live when its owner publishes it, there is no Verified mark, and the verification team is the Jubilee team (`moderator` role).
+
 Accepted, 11 November 2026. Supersedes the parts of 0020 that say who is on the verification team
 ("Who is on the team": roles from identity claims, `isVerifier` on the session and the navigation
 summary, `verifierGuard`) and that defer L2-098 criterion 2 (the second factor). The rest of 0020

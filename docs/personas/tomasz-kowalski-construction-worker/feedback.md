@@ -16,8 +16,9 @@ refused, three went in. I don't know how to make a photo smaller. Can the app do
 **Rate, 4 stars, "Good"**
 
 "Good app. The form is short and it works when the signal is bad. I did not lose what I wrote.
-The price can be 'Ask', which is right for my work. One problem: when you asked for a photo, I
-thought I was refused. Please write that message in simpler words."
+The price can be 'Ask', which is right for my work. One problem: my page went live with no photo
+and I thought I did something wrong. Please tell me before, in simple words, that a photo is
+needed."
 
 **Kudos, chips "Easy to list" and "Fair prices"** (to the Jubilee team)
 
@@ -41,8 +42,7 @@ Thank you for this."
 |---|---|---|
 | To know he is welcome before he starts | "Free for Christian-owned businesses in Toronto." | One line under "Own a business?": you do not need a company, a website or a logo; if you are paid for your work, you can list |
 | To add photos from his phone | A listing photo over 5 MB is refused | Shrink listing photos on the device, as message photos already are |
-| To know photos are expected | Photos are added from My business; the checklist asks for at least one | Ask for one photo on `/list`, or say on the confirmation that a photo is needed before approval |
-| To understand a change request | "{n} changes needed before we can publish" | Plainer words at the top, such as "Almost there. Add one thing and we can publish" |
+| To know photos are expected | Photos are added from Edit listing after publishing; nothing says one is expected | Ask for one photo on `/list`, or say on the "is live" page, in plain words, that a photo helps members choose |
 | To write less English | English only; a 1,500-character About | A few plain prompts for About ("Who are you?", "How do you work?") that an owner answers in a sentence each |
 | To say where he works | He types his area freely, but the five areas members filter by have none for the west end of the old city | Review the areas against where owners say they work |
 

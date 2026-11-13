@@ -10,10 +10,8 @@ export class BusinessCard {
   readonly name: Locator;
   readonly tagline: Locator;
   readonly highlight: Locator;
-  readonly verifiedMark: Locator;
   /** "Replies fast", when the business answers within a day (L2-054). */
   readonly repliesFast: Locator;
-  readonly verifiedIcon: Locator;
   readonly mediaTile: Locator;
   readonly categoryLabel: Locator;
   /** The heart beside the card's link (`jb-saveable`, L2-041 AC7). */
@@ -24,8 +22,6 @@ export class BusinessCard {
     this.tagline = root.locator('.biz-card__tagline');
     this.highlight = root.locator('.perk');
     this.repliesFast = root.locator('.biz-card__meta .badge');
-    this.verifiedMark = root.locator('.verified');
-    this.verifiedIcon = this.verifiedMark.locator('svg');
     this.mediaTile = root.locator('.media');
     this.categoryLabel = root.locator('.media__tag');
     this.heart = heartOf(root);

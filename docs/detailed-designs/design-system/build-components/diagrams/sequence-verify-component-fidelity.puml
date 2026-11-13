@@ -31,7 +31,7 @@ pipeline -> audit : Audit templates and styles
 audit -> mocks : Read the classes and state selectors defined in assets/ui.css
 mocks --> audit : Defined classes
 audit -> audit : Check every class in a template is defined in ui.css (L2-171)
-audit -> audit : Check no page stylesheet restyles .topbar, .btn, .media or .verified (L2-171)
+audit -> audit : Check no page stylesheet restyles .topbar, .btn, .media or .badge (L2-171)
 alt unknown class or per-page override
   audit --> pipeline : Fail with file, line and class
   pipeline --> actor : Build failed

@@ -458,13 +458,13 @@
       "fg": "--color-success-icon",
       "bg": "--color-bg-surface",
       "min": 3,
-      "note": "verified tick on cards"
+      "note": "success icon on cards"
     },
     {
       "fg": "--color-success-icon",
       "bg": "--color-bg-canvas",
       "min": 3,
-      "note": "verified tick on the page"
+      "note": "success icon on the page"
     },
     {
       "fg": "--color-warning-fg",

@@ -8,7 +8,6 @@ Container_Boundary(web, "Jubilee Web") {
   Component(button, "Button", "Angular directive", "Emits .btn and its modifiers with aria-busy and aria-pressed")
   Component(card, "BusinessCard", "Angular component", "Emits .biz-card with media, name, tagline and meta")
   Component(media, "MediaTile", "Angular component", "Shows the photo or the category tinted icon tile (.media)")
-  Component(badge, "VerifiedBadge", "Angular component", "Emits .verified with icon and text")
   Component(topbar, "TopBar", "Angular component", "Emits .topbar.topbar--ink")
   Component(tiles, "CategoryTileMap", "Angular service", "Maps a category to its tint modifier and icon")
 }
@@ -22,14 +21,12 @@ Container_Boundary(pipeline, "CI pipeline") {
 Container(storage, "Media storage", "Object storage + CDN", "Photo renditions")
 
 Rel(card, media, "Renders")
-Rel(card, badge, "Renders")
 Rel(media, tiles, "Asks for tint and icon")
 Rel(media, storage, "Loads the cover photo from", "HTTPS")
 Rel(card, listings, "Receives listing summaries from", "JSON/HTTPS")
 Rel(button, css, "Is styled by")
 Rel(card, css, "Is styled by")
 Rel(media, css, "Is styled by")
-Rel(badge, css, "Is styled by")
 Rel(topbar, css, "Is styled by")
 Rel(audit, css, "Reads the defined classes from")
 Rel(visual, card, "Renders screens built from")

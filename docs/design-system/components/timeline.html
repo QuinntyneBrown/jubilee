@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Timeline — Jubilee design system</title>
-<meta name="description" content="The timeline shows where a request or a listing is in its life: done, current, upcoming and stopped steps with times. Used on request detail and listing review. Every step state, both themes.">
+<meta name="description" content="The timeline shows where a request is in its life: done, current, upcoming and stopped steps with times. Used on request detail. Every step state, both themes.">
 <link rel="stylesheet" href="../tokens/tokens.css">
 <link rel="stylesheet" href="../assets/components.css">
 <link rel="stylesheet" href="../assets/ds.css">
@@ -118,12 +118,12 @@
     <header class="ds-header">
       <p class="ds-kicker">Component · Data display</p>
       <h1>Timeline</h1>
-      <p class="ds-lead">The timeline answers "where is this at?" for one request or listing: Joanna asked WaterWorks on Monday, WaterWorks usually replies within a day, then she accepts and arranges a visit. Each step is done, current, next, or stopped.</p>
+      <p class="ds-lead">The timeline answers "where is this at?" for one request: Joanna asked WaterWorks on Monday, WaterWorks usually replies within a day, then she accepts and arranges a visit. Each step is done, current, next, or stopped.</p>
       <div class="ds-meta"><span class="ds-pill ds-pill--ok">WCAG 2.2 AA</span><span class="ds-pill">Status: stable</span><span class="ds-pill">Native <code>&lt;ol&gt;</code></span><span class="ds-pill">13 mock files</span></div>
       <ul class="ds-toc"><li><a href="#overview">Overview</a></li><li><a href="#anatomy">Anatomy</a></li><li><a href="#variants">Variants</a></li><li><a href="#sizes">Sizes</a></li><li><a href="#states">States</a></li><li><a href="#responsive">Responsive behaviour</a></li><li><a href="#theming">Theming</a></li><li><a href="#accessibility">Accessibility</a></li><li><a href="#content">Content</a></li><li><a href="#do-dont">Do and don't</a></li><li><a href="#tokens">Tokens</a></li><li><a href="#code">Code</a></li><li><a href="#sources">Sources</a></li></ul>
     </header>
     <section class="ds-section" id="overview"><h2><a href="#overview">Overview</a></h2>
-      <p>Use a timeline for the steps of one record’s process, shown read-only beside its details: a quote or booking request, a listing going through verification. Use a <a href="../components/stepper.html">Stepper</a> for steps the person moves through in a form, and a <a href="../components/notification-item.html">Notification item</a> list for an activity feed across many records.</p>
+      <p>Use a timeline for the steps of one record’s process, shown read-only beside its details: a quote or booking request. Use a <a href="../components/stepper.html">Stepper</a> for steps the person moves through in a form, and a <a href="../components/notification-item.html">Notification item</a> list for an activity feed across many records.</p>
       <ul>
         <li><b>In progress</b>: done steps (<code>data-complete</code>, green check), one current step (<code>aria-current="step"</code>, gold), then upcoming steps (outlined).</li>
         <li><b>Stopped</b>: the step where the process ended carries <code>data-stopped</code> (red ×), and no steps follow it. Used for declined and cancelled requests.</li>
@@ -162,12 +162,6 @@
       </div>
         <div class="ds-example__caption"><span>WaterWorks declined: the process ends at the stopped step.</span></div>
         <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;ol class="timeline"&gt;&lt;li data-complete&gt;&lt;span class="timeline__dot" aria-hidden="true"&gt;✓&lt;/span&gt;&lt;div&gt;&lt;div class="timeline__title"&gt;&lt;span class="visually-hidden"&gt;Done: &lt;/span&gt;You asked&lt;/div&gt;&lt;div class="timeline__meta"&gt;Mon 9 Nov, 4:20 p.m.&lt;/div&gt;&lt;/div&gt;&lt;/li&gt;&lt;li data-stopped&gt;&lt;span class="timeline__dot" aria-hidden="true"&gt;×&lt;/span&gt;&lt;div&gt;&lt;div class="timeline__title"&gt;&lt;span class="visually-hidden"&gt;Stopped: &lt;/span&gt;WaterWorks declined&lt;/div&gt;&lt;div class="timeline__meta"&gt;Today, 7:55 a.m.&lt;/div&gt;&lt;/div&gt;&lt;/li&gt;&lt;/ol&gt;</code></pre></details></div>
-      <h3>Listing review</h3>
-      <div class="ds-example"><div class="ds-example__canvas">
-<ol class="timeline"><li data-complete><span class="timeline__dot" aria-hidden="true">✓</span><div><div class="timeline__title"><span class="visually-hidden">Done: </span>You submitted Luzandre.com</div><div class="timeline__meta">Today, 9:40 a.m.</div></div></li><li aria-current="step"><span class="timeline__dot" aria-hidden="true"></span><div><div class="timeline__title"><span class="visually-hidden">Current step: </span>We review your listing</div><div class="timeline__meta">Within two business days</div></div></li><li><span class="timeline__dot" aria-hidden="true"></span><div><div class="timeline__title"><span class="visually-hidden">Next: </span>You’re live</div><div class="timeline__meta">We e-mail you the moment members can find you</div></div></li></ol>
-      </div>
-        <div class="ds-example__caption"><span>Luzandre.com after submitting: waiting on the verification team’s review.</span></div>
-        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;ol class="timeline"&gt;&lt;li data-complete&gt;&lt;span class="timeline__dot" aria-hidden="true"&gt;✓&lt;/span&gt;&lt;div&gt;&lt;div class="timeline__title"&gt;&lt;span class="visually-hidden"&gt;Done: &lt;/span&gt;You submitted Luzandre.com&lt;/div&gt;&lt;div class="timeline__meta"&gt;Today, 9:40 a.m.&lt;/div&gt;&lt;/div&gt;&lt;/li&gt;&lt;li aria-current="step"&gt;&lt;span class="timeline__dot" aria-hidden="true"&gt;&lt;/span&gt;&lt;div&gt;&lt;div class="timeline__title"&gt;&lt;span class="visually-hidden"&gt;Current step: &lt;/span&gt;We review your listing&lt;/div&gt;&lt;div class="timeline__meta"&gt;Within two business days&lt;/div&gt;&lt;/div&gt;&lt;/li&gt;&lt;li&gt;&lt;span class="timeline__dot" aria-hidden="true"&gt;&lt;/span&gt;&lt;div&gt;&lt;div class="timeline__title"&gt;&lt;span class="visually-hidden"&gt;Next: &lt;/span&gt;You’re live&lt;/div&gt;&lt;div class="timeline__meta"&gt;We e-mail you the moment members can find you&lt;/div&gt;&lt;/div&gt;&lt;/li&gt;&lt;/ol&gt;</code></pre></details></div>
     </section>
     <section class="ds-section" id="sizes"><h2><a href="#sizes">Sizes</a></h2>
       <p>One size. The dot is 24px so the ✓ and × glyphs stay legible; steps are spaced <code>--space-5</code>. In a narrow card the text wraps beside the dot.</p>
@@ -297,8 +291,6 @@
         <li><a href="../../mocks/pages/request-detail/confirmed.html">pages/request-detail/confirmed</a> (booking confirmed)</li>
         <li><a href="../../mocks/pages/request-detail/declined.html">pages/request-detail/declined</a> (stopped: declined)</li>
         <li><a href="../../mocks/pages/request-detail/cancelled.html">pages/request-detail/cancelled</a> (stopped: cancelled)</li>
-        <li><a href="../../mocks/pages/list-business/success.html">pages/list-business/success</a> (listing review)</li>
-        <li><a href="../../mocks/pages/my-business/pending.html">pages/my-business/pending</a> (four-step listing review)</li>
       </ul>
       <p>Drift fixed during extraction: the dots were correctly <code>aria-hidden</code>, but no step had status text, so a screen reader heard the titles with no idea which were done or stopped (only <code>aria-current</code> was announced); the docs add visually hidden "Done:" / "Current step:" / "Next:" / "Stopped:" prefixes. Upcoming steps carried empty <code>.timeline__meta</code> divs; omit them. The listing-review timeline had an inline <code>style="text-align: left; margin-top: …"</code> to undo its centred parent. The connector offset is computed from <code>--target-min</code> and the hairline, so changing the dot size moves it correctly.</p>
     </section>

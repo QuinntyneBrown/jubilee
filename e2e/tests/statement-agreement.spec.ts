@@ -149,6 +149,6 @@ test.describe('list a business: agreeing to an updated statement of faith (L2-07
     await expect(dialog.root).toHaveCount(0);
     await expect(business.statementBanner).toHaveCount(0);
     await expect(business.pausedBanner).toHaveCount(0);
-    await expect(business.subtitle).toHaveText('Verified · live since June 2026');
+    await expect(business.subtitle).toHaveText('Live since June 2026');
   });
 });

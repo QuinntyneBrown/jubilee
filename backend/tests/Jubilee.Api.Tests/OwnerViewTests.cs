@@ -73,36 +73,34 @@ public class OwnerViewTests : IClassFixture<JubileeApiFactory>, IAsyncLifetime
     }
 
     [Fact]
-    public async Task L2_133_AC1_the_verification_team_is_recognised_by_its_role()
+    public async Task L2_133_AC1_the_jubilee_team_is_recognised_by_its_role()
     {
         await _factory.Arrange(Legacy());
 
         var json = await _factory.GetJson(
             "/api/listings/legacy-financial",
-            _factory.CreateMemberClient("Miriam Castillo", role: "verifier"));
+            _factory.CreateMemberClient("Miriam Castillo", role: "moderator"));
 
-        Assert.Equal("verifier", json.GetProperty("viewerRelation").GetString());
+        Assert.Equal("moderator", json.GetProperty("viewerRelation").GetString());
     }
 
     [Theory]
     [InlineData("owner")]
-    [InlineData("verifier")]
-    public async Task L2_028_AC3_a_listing_that_is_not_live_is_a_preview_for_its_owner_and_the_verification_team(string who)
+    [InlineData("moderator")]
+    public async Task L2_028_AC3_a_listing_that_is_not_live_is_a_preview_for_its_owner_and_the_jubilee_team(string who)
     {
-        await _factory.Arrange(Legacy(ListingMother.NonPublic(NonPublicState.ChangesRequested, "legacy-financial", "financial-insurance")));
-        var client = who == "owner" ? Owner() : _factory.CreateMemberClient("Miriam Castillo", role: "verifier");
+        await _factory.Arrange(Legacy(ListingMother.NonPublic(NonPublicState.Draft, "legacy-financial", "financial-insurance")));
+        var client = who == "owner" ? Owner() : _factory.CreateMemberClient("Miriam Castillo", role: "moderator");
 
         var json = await _factory.GetJson("/api/listings/legacy-financial", client);
 
         Assert.Equal(who, json.GetProperty("viewerRelation").GetString());
-        Assert.Equal("changes-requested", json.GetProperty("stage").GetString());
-        Assert.False(json.GetProperty("verified").GetBoolean());
+        Assert.Equal("draft", json.GetProperty("stage").GetString());
+        Assert.False(json.TryGetProperty("verified", out _)); // ADR 0057: no listing is called verified
     }
 
     [Theory]
     [InlineData(NonPublicState.Draft, "draft")]
-    [InlineData(NonPublicState.ReadyToReview, "ready-to-review")]
-    [InlineData(NonPublicState.ChangesRequested, "changes-requested")]
     [InlineData(NonPublicState.Paused, "paused")]
     [InlineData(NonPublicState.UnderModerationHold, "on-hold")]
     public async Task L2_219_AC2_the_preview_gives_the_status_of_the_listing(NonPublicState state, string status)
@@ -112,22 +110,10 @@ public class OwnerViewTests : IClassFixture<JubileeApiFactory>, IAsyncLifetime
         var asOwner = await _factory.GetJson("/api/listings/legacy-financial", Owner());
         var asTeam = await _factory.GetJson(
             "/api/listings/legacy-financial",
-            _factory.CreateMemberClient("Miriam Castillo", role: "verifier"));
+            _factory.CreateMemberClient("Miriam Castillo", role: "moderator"));
 
         Assert.Equal(status, asOwner.GetProperty("status").GetString());
         Assert.Equal(status, asTeam.GetProperty("status").GetString());
-    }
-
-    [Fact]
-    public async Task L2_219_AC2_a_declined_listing_says_so()
-    {
-        var listing = ListingMother.NonPublic(NonPublicState.Draft, "legacy-financial", "financial-insurance");
-        listing.MoveTo(ListingStage.Declined);
-        await _factory.Arrange(Legacy(listing));
-
-        var json = await _factory.GetJson("/api/listings/legacy-financial", Owner());
-
-        Assert.Equal("declined", json.GetProperty("status").GetString());
     }
 
     [Fact]
@@ -144,11 +130,11 @@ public class OwnerViewTests : IClassFixture<JubileeApiFactory>, IAsyncLifetime
 
     [Theory]
     [InlineData("owner")]
-    [InlineData("verifier")]
-    public async Task L2_219_AC5_a_deleted_listing_is_not_found_even_for_its_owner_and_the_verification_team(string who)
+    [InlineData("moderator")]
+    public async Task L2_219_AC5_a_deleted_listing_is_not_found_even_for_its_owner_and_the_jubilee_team(string who)
     {
         await _factory.Arrange(Legacy(ListingMother.NonPublic(NonPublicState.Deleted, "legacy-financial", "financial-insurance")));
-        var client = who == "owner" ? Owner() : _factory.CreateMemberClient("Miriam Castillo", role: "verifier");
+        var client = who == "owner" ? Owner() : _factory.CreateMemberClient("Miriam Castillo", role: "moderator");
 
         var response = await client.GetAsync("/api/listings/legacy-financial");
 
@@ -159,7 +145,7 @@ public class OwnerViewTests : IClassFixture<JubileeApiFactory>, IAsyncLifetime
     public async Task L2_219_AC3_a_preview_counts_no_listing_view()
     {
         await _factory.Arrange(Legacy(ListingMother.NonPublic(NonPublicState.Paused, "legacy-financial", "financial-insurance")));
-        var team = _factory.CreateMemberClient("Miriam Castillo", role: "verifier");
+        var team = _factory.CreateMemberClient("Miriam Castillo", role: "moderator");
 
         var response = await team.PostAsync("/api/listings/legacy-financial/views", null);
 

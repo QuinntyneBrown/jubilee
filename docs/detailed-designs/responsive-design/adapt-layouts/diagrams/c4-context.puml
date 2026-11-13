@@ -6,11 +6,11 @@ title System Context — Adapt layouts
 Person(visitor, "Visitor", "Reads directory, listing and product pages on any viewport")
 Person(member, "Member", "Uses the inbox, requests and forms on a phone or desktop")
 Person(owner, "Owner", "Manages products and statistics on a phone or desktop")
-Person(verifier, "Verification team member", "Works the verification queue on any viewport")
+Person(moderator, "Jubilee team member", "Works the listings and reports tables on any viewport")
 System(jubilee, "Jubilee", "Toronto's Christian marketplace. Lays out grids, detail pages, the inbox, tables and forms by viewport width")
 
 Rel(visitor, jubilee, "Reads pages on", "HTTPS")
 Rel(member, jubilee, "Messages and fills forms on", "HTTPS")
 Rel(owner, jubilee, "Manages a listing on", "HTTPS")
-Rel(verifier, jubilee, "Reviews listings on", "HTTPS")
+Rel(moderator, jubilee, "Reviews listings on", "HTTPS")
 @enduml

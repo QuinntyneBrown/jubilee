@@ -39,9 +39,9 @@ public static class BrowsedCategories
 }
 
 /// <summary>
-/// Tells the members who asked to hear of new businesses that one was verified in a category they
-/// browsed (L2-222 AC1, L2-064 AC6): in the app, as it is approved. It runs in the handler that
-/// approves the listing, so the notices are saved with the approval or not at all.
+/// Tells the members who asked to hear of new businesses that one was published in a category they
+/// browsed (L2-222 AC1, L2-064 AC6): in the app, as it is published. It runs in the handler that
+/// publishes the listing, so the notices are saved with it or not at all (ADR 0057).
 /// </summary>
 public static class NewBusinessNotifier
 {
@@ -66,7 +66,7 @@ public static class NewBusinessNotifier
 
 /// <summary>
 /// The weekly note (L2-222 AC2 to AC4): once it is Monday 7:00 a.m. in Toronto, each member with "New
-/// businesses" on gets one e-mail of the businesses approved in the last 7 days in the categories they
+/// businesses" on gets one e-mail of the businesses published in the last 7 days in the categories they
 /// browsed. The answer is how many notes were queued, or null when this week's were already sent.
 /// </summary>
 public sealed record SendNewBusinessNotesCommand : IRequest<int?>
@@ -107,7 +107,7 @@ public sealed class SendNewBusinessNotesCommandHandler(
         }
 
         var since = now - SendNewBusinessNotesCommand.Covers;
-        var fresh = await db.Listings.AsNoTracking().WherePublic().Where(l => l.ApprovedAt >= since).ToListAsync(cancellationToken);
+        var fresh = await db.Listings.AsNoTracking().WherePublic().Where(l => l.PublishedAt >= since).ToListAsync(cancellationToken);
         if (fresh.Count == 0)
         {
             return 0;
@@ -121,7 +121,7 @@ public sealed class SendNewBusinessNotesCommandHandler(
         {
             var browsed = await BrowsedCategories.OfAsync(db, member.Id, now, cancellationToken);
             var theirs = fresh.Where(l => browsed.Contains(l.CategorySlug) && l.OwnerId != member.Id.ToString())
-                .OrderBy(l => l.ApprovedAt).ThenBy(l => l.Name, StringComparer.Ordinal).ToList();
+                .OrderBy(l => l.PublishedAt).ThenBy(l => l.Name, StringComparer.Ordinal).ToList();
             if (theirs.Count == 0)
             {
                 continue;
@@ -133,7 +133,7 @@ public sealed class SendNewBusinessNotesCommandHandler(
                 member,
                 EmailCategories.NewBusinesses,
                 "New on Jubilee this week",
-                $"Hi {member.FirstName},\n\nThese businesses were verified this week in categories you’ve browsed.\n\n{string.Join("\n\n", lines)}\n\nBrowse businesses: {root}/\n\nJubilee · Toronto's Christian marketplace\n",
+                $"Hi {member.FirstName},\n\nThese businesses joined Jubilee this week in categories you’ve browsed.\n\n{string.Join("\n\n", lines)}\n\nBrowse businesses: {root}/\n\nJubilee · Toronto's Christian marketplace\n",
                 now))
             {
                 queued++;

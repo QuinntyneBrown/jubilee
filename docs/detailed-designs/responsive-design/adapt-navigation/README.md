@@ -2,7 +2,7 @@
 
 ## Overview
 
-Jubilee is Toronto's Christian marketplace: a directory of verified
+Jubilee is Toronto's Christian marketplace: a directory of
 Christian-owned businesses that members browse, message and send requests to.
 People use it on phones, tablets and desktops, and every screen shall work at
 each viewport size with no horizontal scrolling and no lost function. This

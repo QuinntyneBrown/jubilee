@@ -2,7 +2,7 @@
 
 ## Overview
 
-Jubilee is Toronto's Christian marketplace: a directory of verified
+Jubilee is Toronto's Christian marketplace: a directory of
 Christian-owned businesses that members browse, message and send requests to.
 Every screen shall work from a `360 px` phone to a `1280 px` desktop with no
 horizontal page scrolling and no lost function. This feature covers the content
@@ -63,7 +63,7 @@ viewport; no endpoint varies by width.
 - **`.table-wrap`** — wrapper of each data table. It has `overflow-x: auto`,
   so a wide table scrolls inside its own region; the first column is sticky in
   that mode.
-- **`ResponsiveTableDirective`** — Angular directive on the verification queue
+- **`ResponsiveTableDirective`** — Angular directive on the listings, reports
   and products tables. It copies each column heading into a `data-label`
   attribute on the cells of that column. Under `768 px` it sets
   `data-layout="stacked"`, and each row renders as a stacked card with labelled
@@ -88,7 +88,7 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 |-------|--------------|-------------|
 | `L2-165` | `L1-023` | Business and product card grids shall show 2 columns under 768 px, 3 from 768 px and 4 from 1024 px (3 for `card-grid--3`), and the first "Featured this week" card shall span two columns and two rows from 1024 px. Directory groups shall be one column under 1024 px and two from 1024 px, owner statistics shall be 2 columns under 1024 px and 4 from 1024 px, and listing, product and request detail pages shall use a main and a side column (1.6 : 1) from 1024 px with the side column stacked below under 1024 px. Category chips and the product scroller shall scroll horizontally within themselves with snap points under 768 px and chips shall wrap from 768 px; under 640 px definition-list labels shall stack above values and row action buttons shall become full width. |
 | `L2-166` | `L1-023` | From 1024 px `/messages` and `/messages/:id` shall show the list (22rem) and the conversation side by side. Under 1024 px `/messages` shall show only the list and `/messages/:id` only the conversation with a back control to the list, and on a phone the composer shall stay visible above the on-screen keyboard with the latest message in view. |
-| `L2-167` | `L1-023` | Under 768 px each row of the verification queue and products tables shall become a stacked card with labelled values, or the table shall scroll within its own region with a sticky first column; the page shall not scroll horizontally. Row actions shall be always visible on touch devices. |
+| `L2-167` | `L1-023` | Under 768 px each row of the listings, reports and products tables shall become a stacked card with labelled values, or the table shall scroll within its own region with a sticky first column; the page shall not scroll horizontally. Row actions shall be always visible on touch devices. |
 | `L2-168` | `L1-023` | Paired fields and the choice cards "Products" / "Services" shall sit side by side from 640 px and stack under 640 px. Inputs on phones shall use the right `type`, `inputmode` and `autocomplete` and a font size of at least 16 px. |
 | `L2-163` | `L1-023` | Every screen and state rendered at 360, 576, 768, 992 and 1280 px wide in light and dark themes shall show no horizontal overflow and no overlapping content, and every function shown at XL shall be reachable at XS. |
 
@@ -96,7 +96,7 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 
 ### System context
 
-Visitors, members, owners and verification team members use the same pages on
+Visitors, members, owners and Jubilee team members use the same pages on
 any viewport. The feature involves no external system.
 
 ![C4 system context for adapting layouts](diagrams/c4-context.png)

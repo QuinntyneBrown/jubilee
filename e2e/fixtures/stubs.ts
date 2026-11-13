@@ -4,7 +4,7 @@ import { browseHomeFromMock, categoryPageFromMock, listingFromMock } from './moc
 import { fulfil, recordedAnswer } from './mock-api';
 import { legacyMessages, ownerRows, photoMessages, requestCards, stubMessaging } from './messaging';
 import { stubAccountData } from './account-data';
-import { SPACE_REVIEW, stubAdmin } from './admin';
+import { SPACE_LISTING, stubAdmin } from './admin';
 import { daniel, stubStaff } from './staff';
 import { stubModeration } from './moderation';
 import { stubIncoming } from './incoming-requests';
@@ -381,13 +381,12 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
         ),
       }));
     case 'business-preview':
-      // The owner's preview of a listing the verification team sent back (L2-219).
+      // The owner's preview of a listing that is not public (L2-219).
       return patchListing(page, legacyFinancial, (listing) => ({
         ...listing,
         viewerRelation: 'owner',
-        verified: false,
-        stage: 'changes-requested',
-        status: 'changes-requested',
+        stage: 'draft',
+        status: 'draft',
       }));
     case 'shop-loading':
       return page.route(luzandre, pending);
@@ -474,10 +473,6 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
       return stubMyBusiness(page, { awayUntil: '2026-11-16T05:00:00Z' });
     case 'business-switcher':
       return stubMyBusiness(page, { others: OTHER_BUSINESSES });
-    case 'business-pending':
-      return stubMyBusiness(page, { state: 'ready-to-review' });
-    case 'business-changes':
-      return stubMyBusiness(page, { state: 'changes-requested' });
     case 'business-empty':
       return stubMyBusiness(page, { state: 'none' });
     case 'business-retrying':
@@ -639,24 +634,27 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
       return stubCatalogue(page, { hours: 'hangs' });
     case 'services-hours-failing':
       return stubCatalogue(page, { hours: 'fails' });
-    case 'admin-queue':
+    case 'admin-listings':
       return stubAdmin(page);
-    case 'admin-queue-empty':
-      return stubAdmin(page, { queue: 'empty' });
-    case 'admin-queue-error':
-      return stubAdmin(page, { queue: 'fails' });
-    case 'admin-review':
+    case 'admin-listings-empty':
+      return stubAdmin(page, { listings: 'empty' });
+    case 'admin-listings-error':
+      return stubAdmin(page, { listings: 'fails' });
+    case 'admin-listing':
       return stubAdmin(page);
-    case 'admin-review-approved':
-      return stubAdmin(page, { stage: 'live' });
-    case 'admin-review-changes-requested':
-      return stubAdmin(page, { stage: 'changes-requested' });
-    case 'admin-review-space':
-      return stubAdmin(page, { listing: SPACE_REVIEW });
-    case 'admin-review-no-items':
-      return stubAdmin(page, { listing: { itemCount: 0 } });
-    case 'admin-review-error':
-      return stubAdmin(page, { review: 'fails' });
+    case 'admin-listing-taken-down':
+      return stubAdmin(page, {
+        takenDown: {
+          at: '2026-11-10T14:05:00-05:00',
+          byName: 'Miriam Castillo',
+          reason:
+            'The web address in the listing’s name leads to a different company’s store, so members could not tell who they were buying from. You’re welcome to list again with your own shop’s address.',
+        },
+      });
+    case 'admin-listing-space':
+      return stubAdmin(page, { fields: SPACE_LISTING });
+    case 'admin-listing-error':
+      return stubAdmin(page, { listing: 'fails' });
     case 'moderation-reports':
     case 'moderation-report':
     case 'moderation-featured':
@@ -844,7 +842,12 @@ export function stubConfirmation(page: Page, body: unknown, status = 200): Promi
 
 /** What the change of an unconfirmed address is answered with (L2-004 AC5, AC9, AC10). */
 export type UnconfirmedEmailChange =
-  'replaced' | 'in-use' | 'limited' | 'invalid' | 'fail' | 'hang';
+  | 'replaced'
+  | 'in-use'
+  | 'limited'
+  | 'invalid'
+  | 'fail'
+  | 'hang';
 
 /**
  * Answers "Use another e-mail" and keeps the bodies it was sent. The API answers 204 whether or not

@@ -1,0 +1,89 @@
+@startuml
+title UML sequence behaviour — Take down a listing
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Jubilee team member" as actor
+box "Frontend — Jubilee Admin Web" #E0F2FE
+  participant "TakeDownListingDialog" as dialog
+  participant "AdminApi" as client
+  participant "AdminListingPage" as page
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "AdminListingsController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "TakeDownListingCommandHandler" as handler
+  participant "Listing" as entity
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+  participant "DirectoryCacheInvalidationInterceptor" as interceptor
+end box
+participant "Cache" as cache
+box "Backend — Jubilee Worker" #D1FADF
+  participant "OutboxDispatcherJob" as job
+end box
+participant "E-mail provider" as email
+actor -> page : Press "Take down listing"
+page -> dialog : Open
+dialog --> actor : Ask "Take down {business}?" with "Reason for {owner}" (L2-101 AC1)
+actor -> dialog : Enter the reason and confirm
+alt reason is empty
+  dialog --> actor : Show "Tell the owner why it was taken down." and send nothing (L2-101 AC2)
+else reason given
+  dialog -> client : takeDown(id, reason)
+  client -> controller : POST /api/admin/listings/{id}/take-down {reason}
+  controller -> controller : Authenticate the staff session and apply RequiresModerator (L2-098)
+  controller -> handler : Send TakeDownListingCommand(Reviewer, ListingId, Reason)
+  alt reason empty or longer than 1,000 characters
+    handler --> controller : ValidationFailed reason REQUIRED or TOO_LONG
+    controller --> client : 422 ProblemDetails validation_failed
+  else reason valid
+    handler -> db : Load the listing
+    db --> handler : Current state
+    alt the moderator owns the listing
+      handler --> controller : Forbidden OWN_LISTING
+      controller --> client : 403 ProblemDetails with code OWN_LISTING (L2-098 AC5)
+    else TakenDownAt already set
+      handler --> controller : Conflict ALREADY_TAKEN_DOWN
+      controller --> client : 409 ProblemDetails with code ALREADY_TAKEN_DOWN, nothing changed (L2-101 AC6)
+    else published listing
+      handler -> entity : TakeDown(reviewer name, reason, now)
+      entity --> handler : TakenDownAt, TakenDownByName, TakedownReason and DeletedAt set
+      handler -> handler : NotificationRules.Tell(owner, "listing-removed", "We’ve taken down {Business}")
+      handler -> handler : OutboxMessage.Email(owner, subject "We’ve taken down {Business}", body with the reason)
+      handler -> handler : AuditLog.Record listing.taken-down with before, after and reason (L2-101 AC5, L2-180)
+      handler -> db : SaveChanges: listing, notification, outbox e-mail and audit record together
+      db --> handler : Committed
+      interceptor -> cache : Invalidate the directory read cache (a Listing changed)
+      handler --> controller : AdminListingDto with TakenDown
+      controller --> client : 200 AdminListingDto
+      client --> dialog : Taken down
+      dialog --> page : Close with the updated listing
+      page --> actor : Show "Taken down. You took down {business} today at {time} {Owner} has been e-mailed your reason." (L2-101 AC3)
+      note over cache : Public reads apply PublicListingFilter (DeletedAt == null);\nbrowser and edge copies expire within 60 seconds (max-age=60)
+      job -> db : Read the outbox e-mail
+      db --> job : Outbox message
+      job -> email : Send the reason to the owner
+      email --> job : Accepted
+    end
+  end
+end
+opt takedown fails
+  controller --> client : Error ProblemDetails
+  client --> dialog : Failure
+  dialog --> actor : Keep the reason and show "We couldn’t take it down. The listing is still live. Try again." (L2-101 AC4)
+end
+@enduml

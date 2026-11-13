@@ -5,7 +5,7 @@ namespace Jubilee.Domain;
 public enum StaffRoles
 {
     None = 0,
-    Verifier = 1,
+    Moderator = 1,
     Admin = 2,
 }
 
@@ -61,7 +61,7 @@ public sealed class StaffMember
 
     /// <summary>The role names, in the order the admin application shows them.</summary>
     public IReadOnlyList<string> RoleNames() =>
-        [.. new[] { (StaffRoles.Verifier, "verifier"), (StaffRoles.Admin, "admin") }
+        [.. new[] { (StaffRoles.Moderator, "moderator"), (StaffRoles.Admin, "admin") }
             .Where(r => Roles.HasFlag(r.Item1))
             .Select(r => r.Item2)];
 }

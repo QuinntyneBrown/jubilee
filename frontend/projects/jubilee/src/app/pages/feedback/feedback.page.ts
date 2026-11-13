@@ -97,7 +97,7 @@ const AREAS: { key: FeedbackArea; name: string; detail: string }[] = [
     name: 'Messages and requests',
     detail: 'Meetings, quotes and order requests',
   },
-  { key: 'trust', name: 'Trust and verification', detail: 'Verification and verified marks' },
+  { key: 'trust', name: 'Trust and safety', detail: 'Reports and honest listings' },
 ];
 
 const PLACES: { value: BugPlace; label: string }[] = [

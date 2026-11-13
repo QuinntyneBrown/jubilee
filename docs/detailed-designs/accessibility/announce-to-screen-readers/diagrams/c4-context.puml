@@ -5,14 +5,14 @@ title System Context — Announce to screen readers
 
 Person(member, "Member", "Uses Jubilee with a screen reader")
 Person(visitor, "Visitor", "Uses public pages with a screen reader")
-Person(verifier, "Verification team member", "Uses staff pages with a screen reader")
+Person(moderator, "Jubilee team member", "Uses staff pages with a screen reader")
 System(jubilee, "Jubilee", "Toronto's Christian marketplace")
 System_Ext(at, "Screen reader", "NVDA or VoiceOver or TalkBack")
 System_Ext(ci, "CI pipeline", "Scans every mocked screen and state with axe-core")
 
 Rel(member, at, "Listens and navigates with")
 Rel(visitor, at, "Listens and navigates with")
-Rel(verifier, at, "Listens and navigates with")
+Rel(moderator, at, "Listens and navigates with")
 Rel(at, jubilee, "Reads titles and headings and landmarks and live regions of")
 Rel(ci, jubilee, "Scans each screen and state of")
 @enduml

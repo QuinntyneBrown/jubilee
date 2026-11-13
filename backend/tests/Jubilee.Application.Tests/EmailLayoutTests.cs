@@ -44,9 +44,9 @@ public class EmailLayoutTests
     [Fact]
     public void L2_179_AC5_the_preheader_is_the_first_thing_said_after_the_greeting()
     {
-        var html = Html("Hello,\n\nEsther from the Jubilee verification team asked for changes to Okafor Bakery.\n\nAnswer here: https://jubilee.test/my-business\n\n" + Signature);
+        var html = Html("Hello,\n\nEsther from the Jubilee team wrote about Okafor Bakery.\n\nAnswer here: https://jubilee.test/my-business\n\n" + Signature);
 
-        Assert.Contains("opacity:0;color:transparent;\">Esther from the Jubilee verification team asked for changes to Okafor Bakery.</div>", html);
+        Assert.Contains("opacity:0;color:transparent;\">Esther from the Jubilee team wrote about Okafor Bakery.</div>", html);
         Assert.Contains(">Answer here</a>", html);
     }
 
@@ -79,7 +79,7 @@ public class EmailLayoutTests
     public void L2_149_AC1_a_promotional_e_mail_names_the_mailing_address_and_the_unsubscribe_in_both_parts()
     {
         var message = EmailLayout.Render(
-            "joanna.adeyemi@example.com", "New on Jubilee this week", "Hi Joanna,\n\nThese businesses were verified this week.\n\n" + Signature + "\n",
+            "joanna.adeyemi@example.com", "New on Jubilee this week", "Hi Joanna,\n\nThese businesses joined Jubilee this week.\n\n" + Signature + "\n",
             "https://jubilee.test/api/email/unsubscribe/abc", "https://jubilee.test/unsubscribe/abc", "1 Example Street, Toronto, ON M5H 0A1");
 
         Assert.Contains(">Jubilee, 1 Example Street, Toronto, ON M5H 0A1</p>", message.HtmlBody);

@@ -2,7 +2,7 @@
 
 ## Overview
 
-Jubilee is Toronto's Christian marketplace: a directory of verified
+Jubilee is Toronto's Christian marketplace: a directory of
 Christian-owned businesses where members find a business, message it, book a
 meeting, ask for a quote or request a product. A *visitor* is anyone who is not
 signed in. This feature is the public landing page at `/welcome`, the first
@@ -11,14 +11,14 @@ page a visitor sees.
 The page explains the marketplace and invites the visitor to join or to browse.
 It shows the tagline "Toronto's Christian marketplace", the heading "Do business
 with Toronto's Christian community.", and a *live count* — number of businesses
-that are verified and currently public. Below that it lists the eleven categories
+that are currently public. Below that it lists the eleven categories
 as links, three "How Jubilee works" steps, up to four *featured businesses*
 under "Featured this week", and an "Own a business?" panel for owners who want
 to list.
 
-A featured business is a live listing that the verification team chose for the
-week. The page shows only listings that are verified and live; a listing that
-is paused, removed or not yet verified never appears and is never counted.
+A featured business is a live listing that the Jubilee team chose for the
+week. The page shows only listings that are live; a listing that is paused,
+removed or not yet published never appears and is never counted.
 
 The page is for visitors. A signed-in member who opens `/welcome` is taken to
 the browse home at `/`.
@@ -30,7 +30,7 @@ The feature is a read-only vertical slice from the welcome page in
 between. The names below are the names in the code.
 
 - **`WelcomePage`** — Angular page at `/welcome`. It renders the hero with the
-  line "{n} verified businesses — shops, advisors, trades and more. Free to
+  line "{n} businesses — shops, advisors, trades and more. Free to
   join, free to list." and the actions "Join free" (to `/join`) and "Browse
   businesses" (to `/`); the category links; the three steps "Find someone you
   can trust", "Ask, book or order" and "Keep wealth working for the kingdom";
@@ -49,7 +49,7 @@ between. The names below are the names in the code.
   "How Jubilee works", "Featured this week" and the "Own a business?" panel.
 - **`BusinessCard`** — shared component (`jb-business-card`) for one featured business:
   category media tile or cover photo, short category label, name, tagline,
-  optional highlight and the "Verified" mark (L2-027). The name wraps and the
+  and optional highlight (L2-027), and no "Verified" mark (ADR 0057). The name wraps and the
   tagline is clamped to two lines.
 - **`DirectoryApi`** — contract of the public directory, injected through the
   token `DIRECTORY_API`; `HttpDirectoryApi` implements it. `getWelcome()` calls
@@ -68,9 +68,9 @@ between. The names below are the names in the code.
 - **`FeaturedSelector`** — application service in `Jubilee.Application`, because it queries the database. `Select(now, limit)` returns the
   public listings of the `FeaturedSlot` rows whose 7-day window contains `now`,
   in slot order, skipping any listing that is no longer public. When no slot is
-  current it returns the most recently verified public listings. The welcome
+  current it returns the most recently published public listings. The welcome
   page asks for 4.
-- **`FeaturedSlot`** — entity written by the verification team: listing,
+- **`FeaturedSlot`** — entity written by the Jubilee team: listing,
   position, start date and a 7-day duration.
 - **`IDirectoryReadCache`** — read cache for directory responses, declared in
   `Jubilee.Application`. `DistributedDirectoryReadCache` in
@@ -83,7 +83,7 @@ between. The names below are the names in the code.
   in `Jubilee.Infrastructure`. After `AppDbContext` saves an added, changed or
   deleted `Listing`, `Product`, `Service` or `FeaturedSlot`, it calls
   `IDirectoryReadCache.InvalidateAsync`, which replaces the cache version and
-  so orphans every directory entry at once. A listing that is approved, paused,
+  so orphans every directory entry at once. A listing that is published, paused,
   resumed, removed or featured therefore shows on the next request the API
   builds. A save that fails removes nothing.
 
@@ -110,9 +110,9 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 | L2 ID | Refines (L1) | Requirement |
 |-------|--------------|-------------|
 | `L2-020` | `L1-003` | The system shall serve `/welcome` as the public landing page for visitors. |
-| `L2-028` | `L1-003` | Browse, category, search, featured and related lists shall show only listings that are verified and not paused, deleted or under a moderation hold. |
+| `L2-028` | `L1-003` | Browse, category, search, featured and related lists shall show only listings that are live and not paused, deleted or under a moderation hold. |
 | `L2-027` | `L1-003` | Business cards, product cards and directory rows shall follow fixed display rules. |
-| `L2-106` | `L1-014` | The listings a verifier chooses as "Featured this week" shall show on the welcome and browse pages from the start date for 7 days, and a featured listing that is paused or removed shall be skipped. |
+| `L2-106` | `L1-014` | The listings a moderator chooses as "Featured this week" shall show on the welcome and browse pages from the start date for 7 days, and a featured listing that is paused or removed shall be skipped. |
 
 ## Diagrams
 

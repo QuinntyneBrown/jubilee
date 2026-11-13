@@ -23,7 +23,7 @@ enum Pronouns {
 
 enum MemberRole {
   Member
-  Verifier
+  Moderator
   Admin
 }
 

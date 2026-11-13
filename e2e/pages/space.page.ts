@@ -49,7 +49,6 @@ export class SpacePage extends ShellPage implements Screen {
   readonly householdText: Locator;
   readonly hostCard: Locator;
   readonly hostName: Locator;
-  readonly hostVerified: Locator;
   readonly hostAbout: Locator;
   readonly more: Locator;
   readonly moreCards: Locator;
@@ -86,7 +85,6 @@ export class SpacePage extends ShellPage implements Screen {
     this.householdText = this.household.locator('.household__text');
     this.hostCard = this.main.getByRole('region', { name: 'Your host' });
     this.hostName = this.hostCard.locator('.host-card__name');
-    this.hostVerified = this.hostCard.locator('.host-card__verified');
     this.hostAbout = this.hostCard.locator('.host-card__about');
     this.more = this.main.getByRole('region', { name: 'More rooms & rentals' });
     this.moreCards = this.more.locator('a.space-card');

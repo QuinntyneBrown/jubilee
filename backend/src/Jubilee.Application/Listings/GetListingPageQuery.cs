@@ -29,7 +29,7 @@ public sealed class GetListingPageQueryHandler(IAppDbContext db, IDirectoryReadC
         var slug = request.Slug.Trim().ToLowerInvariant();
         var viewer = request.Viewer;
 
-        // The owner and the verification team see the listing whatever its stage, uncached, as a
+        // The owner and the Jubilee team see the listing whatever its stage, uncached, as a
         // preview with its status (L2-219); the relation comes from the session, never from the
         // client (L2-133). A deleted listing has nothing to preview.
         if (viewer.Subject is { } subject)
@@ -39,7 +39,7 @@ public sealed class GetListingPageQueryHandler(IAppDbContext db, IDirectoryReadC
                 .Select(l => l.OwnerId)
                 .SingleOrDefaultAsync(cancellationToken);
             var relation = ownerId == subject ? ViewerRelation.Owner
-                : viewer.IsVerifier ? ViewerRelation.Verifier
+                : viewer.IsModerator ? ViewerRelation.Moderator
                 : ViewerRelation.Member;
             if (relation != ViewerRelation.Member)
             {
@@ -104,7 +104,7 @@ public sealed class GetListingPageQueryHandler(IAppDbContext db, IDirectoryReadC
             ? []
             : await ListingSortPolicy.Apply(others, ListingSort.Recommended).Take(RelatedCount).ToListAsync(cancellationToken);
         var relatedSpaces = isSpace
-            ? await others.OrderByDescending(l => l.ApprovedAt).ThenBy(l => l.SortName).Take(RelatedSpaceCount).ToListAsync(cancellationToken)
+            ? await others.OrderByDescending(l => l.PublishedAt).ThenBy(l => l.SortName).Take(RelatedSpaceCount).ToListAsync(cancellationToken)
             : [];
 
         var fast = await Requests.ResponseTimes.FastListings(db, cancellationToken);
@@ -117,7 +117,6 @@ public sealed class GetListingPageQueryHandler(IAppDbContext db, IDirectoryReadC
             WireValues.Of(listing.Kind),
             listing.Name,
             CategoryLinkDto.From(category),
-            VerifiedListingSpecification.IsSatisfiedBy(listing),
             WireValues.Of(listing.Stage),
             ListingStatus.Of(listing),
             Wire(ViewerRelation.Visitor),

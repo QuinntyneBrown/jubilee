@@ -120,11 +120,11 @@ public static class StaffSession
 /// <summary>The two staff policies: a staff session, authenticated by the staff scheme only, holding the role (L2-191).</summary>
 public static class StaffPolicies
 {
-    public const string Verifier = "staff-verifier";
+    public const string Moderator = "staff-moderator";
     public const string Admin = "staff-admin";
 
     public static AuthorizationBuilder AddStaffPolicies(this AuthorizationBuilder builder) => builder
-        .AddPolicy(Verifier, Policy(Application.Abstractions.Viewer.VerifierRole))
+        .AddPolicy(Moderator, Policy(Application.Abstractions.Viewer.ModeratorRole))
         .AddPolicy(Admin, Policy("admin"));
 
     private static AuthorizationPolicy Policy(string role) => new AuthorizationPolicyBuilder(StaffSession.Scheme)

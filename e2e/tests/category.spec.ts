@@ -22,7 +22,7 @@ test.describe('category page (L2-023)', () => {
       '/',
     );
     await expect(category.heading).toHaveText('Home & property');
-    await expect(category.subtitle).toHaveText('10 verified businesses · 3 take emergency calls');
+    await expect(category.subtitle).toHaveText('10 businesses · 3 take emergency calls');
     await expect(category.chips).toHaveText([
       'Free quote',
       'Emergency calls',
@@ -44,17 +44,11 @@ test.describe('category page (L2-023)', () => {
     await expect(category.filterChips).toBeHidden();
   });
 
-  test('L2-111 AC1 and AC2: every listed business carries the Verified mark, icon and text', async ({
-    page,
-    jb,
-  }) => {
+  test('ADR 0057: no listed business carries a Verified mark', async ({ page, jb }) => {
     const category = new CategoryPage(page);
     await jb.open('category');
     await expect(category.cards).toHaveCount(10);
-    for (let index = 0; index < 10; index++) {
-      await expect(category.card(index).verifiedMark).toHaveText('Verified');
-      await expect(category.card(index).verifiedIcon).toBeVisible();
-    }
+    await expect(category.cards.filter({ hasText: 'Verified' })).toHaveCount(0);
   });
 
   test('a category without emergency-call businesses shows the count alone', async ({
@@ -64,7 +58,7 @@ test.describe('category page (L2-023)', () => {
     const category = new CategoryPage(page);
     await jb.goto('/c/learning');
     await expect(category.heading).toHaveText('Learning');
-    await expect(category.subtitle).toHaveText('2 verified businesses');
+    await expect(category.subtitle).toHaveText('2 businesses');
     await expect(category.showing).toHaveText('Showing all 2');
   });
 
@@ -128,7 +122,7 @@ test.describe('pagination (L2-026)', () => {
   }) => {
     const category = new CategoryPage(page);
     await jb.open('category.long');
-    await expect(category.subtitle).toHaveText('312 verified businesses · 41 take emergency calls');
+    await expect(category.subtitle).toHaveText('312 businesses · 41 take emergency calls');
     await expect(category.cards).toHaveCount(16);
     await expect(category.showing).toHaveText('Showing 1–16 of 312');
     await expect(category.pageLinks).toHaveText(['‹', '1', '2', '3', '…', '20', '›']);

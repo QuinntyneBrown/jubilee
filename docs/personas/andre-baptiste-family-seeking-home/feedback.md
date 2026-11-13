@@ -34,7 +34,7 @@ ticked."
 | Need | Today | Suggestion |
 |---|---|---|
 | Find a home that fits five people and a budget | `/c/rooms-rentals` has a term filter only | Filters for the most rent, the number of bedrooms and the area, as the business categories already have "Area served" |
-| Say that his family is looking | Renters cannot post a notice | A short "looking for a home" notice, checked by the verification team like a listing, that owners of spaces can read and answer |
+| Say that his family is looking | Renters cannot post a notice | A short "looking for a home" notice, kept honest by the Jubilee team like a listing, that owners of spaces can read and answer |
 | Tell his story once | Each request has its own optional note; no renter profile | A saved note about the household that he can attach to a request, and change or remove at any time |
 | Be heard before being sorted by income | The request does not ask about work, and an owner who declines must write a note, both of which he values; nothing guides owners on choosing fairly | A line for owners of spaces, where they answer a request, on dealing fairly and on what Ontario law does not let them decide by, such as the source of a renter's income |
 | Use little data | Space pages load photos; cached pages work offline | A light mode that holds photos back until asked, and saved spaces kept for offline reading |

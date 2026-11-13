@@ -368,9 +368,9 @@ public sealed class MessagingTests : IClassFixture<JubileeApiFactory>, IAsyncLif
     {
         var id = await StartedId(Joanna());
         var stranger = _factory.CreateMemberClient("Sam Stranger", "member|sam");
-        var verifier = _factory.CreateMemberClient("Vera Verifier", "member|vera", role: "verifier");
+        var moderator = _factory.CreateMemberClient("Vera Moderator", "member|vera", role: "moderator");
 
-        foreach (var client in new[] { stranger, verifier })
+        foreach (var client in new[] { stranger, moderator })
         {
             Assert.Equal(HttpStatusCode.NotFound, (await client.GetAsync($"/api/conversations/{id}")).StatusCode);
             Assert.Equal(HttpStatusCode.NotFound, (await Send(client, id, "Let me in")).StatusCode);

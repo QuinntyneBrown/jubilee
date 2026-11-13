@@ -9,7 +9,8 @@ Roles: Visitor, Member. Journey 3 in `docs/journey.md`, recorded at 85% complete
 What is left, from an audit of the code and its tests against the acceptance criteria:
 
 - `L2-182` and the design's `SearchIndexingJob`: no indexing job and no index separate from the tables. ADR 0011 deferred it. Decide whether the database index is the final design (then change the design and the requirement's wording to say so, and prove the criteria on it) or build the job through the outbox, behind the existing search contract. The design marks the index vendor `<TO SUPPLY>`; choose the simplest option that needs no new hosted service unless a criterion cannot be met without one.
-- Check every criterion of the requirements the search design cites (grouping, no results, paused and unverified listings never returned) for a test and close what you find.
+- Check every criterion of the requirements the search design cites (grouping, no results, paused, draft and taken-down listings never returned) for a test and close what you find.
+- ADR 0057: search results drop `verified` and carry no "Verified" mark; a published listing is found as soon as it is live.
 
 The audit read test titles and spot-checked assertions. Verify each gap against the code before you plan, and treat any other acceptance criterion of the requirements below that has no implementation or no acceptance test as part of this work.
 

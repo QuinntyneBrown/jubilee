@@ -19,15 +19,6 @@
   font-size: var(--font-size-lg);
 }
 
-.host-card__verified {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-1);
-  font: var(--text-caption);
-  color: var(--color-fg-muted);
-  --jb-icon-color: var(--color-success-icon);
-}
-
 .host-card__about {
   margin-top: var(--space-2);
 }

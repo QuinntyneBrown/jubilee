@@ -1,7 +1,7 @@
 @if (view() === 'success') {
   <jb-dialog heading="Thanks for telling us" icon="check" (closed)="close()">
     <span slot="description"
-      >Your report is private. Our verification team reviews it within one business day.
+      >Your report is private. Our team reviews it within one business day.
       @if (data.canBlock && block()) {
         {{ data.businessName }} is blocked.
       }
@@ -15,7 +15,7 @@
 } @else {
   <jb-dialog
     heading="Report this conversation"
-    description="Reports are private. Our verification team reads this conversation only while the report is open."
+    description="Reports are private. Our team reads this conversation only while the report is open."
     icon="flag"
     [busy]="busy()"
     (closed)="close()"

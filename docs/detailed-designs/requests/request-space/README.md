@@ -2,7 +2,7 @@
 
 ## Overview
 
-Jubilee is Toronto's Christian marketplace. A member finds a verified listing
+Jubilee is Toronto's Christian marketplace. A member finds a listing
 and asks it for something without paying through the platform. A *request* is
 that ask; every request follows one lifecycle shared by the member and the
 owner (`L2-043`): `new`, then `confirmed` or `declined`, and `cancelled` or
@@ -185,7 +185,7 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 |-------|--------------|-------------|
 | `L2-206` | `L1-028` | A member shall send the space request of the term from a dialog with the term's dates and an optional note, validated against today, the next year and the minimum stay; the server shall compute nights, months and the Short stay total from the stored rent, refuse the owner's own space with 403 and a second open request of the same member with 409 `ALREADY_REQUESTED`, and the request shall be `new`, notify the owner and appear in the member's requests. |
 | `L2-207` | `L1-028` | A space request shall be listed in Incoming requests with the call to action and the space, "Space · {customer} · {time}" and its dates or move-in, confirmed through a dialog that warns the address is shared, declined as any request, and shown to the member with the type "Space", When and the Short stay Total. |
-| `L2-208` | `L1-028` | The exact address shall reach only the member whose space request is `confirmed` or `completed`; every public endpoint, every other member and the verification team shall never receive it, and the owner shall see and change it on Edit listing. |
+| `L2-208` | `L1-028` | The exact address shall reach only the member whose space request is `confirmed` or `completed`; every public endpoint, every other member and the Jubilee team shall never receive it, and the owner shall see and change it on Edit listing. |
 | `L2-043` | `L1-007` | Each booking, quote, order and space request shall follow one lifecycle shared by the member's and the owner's views. |
 | `L2-052` | `L1-008` | The owner shall confirm a request through a confirmation dialog, with an undo for a short time. |
 | `L2-053` | `L1-008` | The owner shall decline a request with an optional reason and message. |

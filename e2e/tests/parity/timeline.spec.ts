@@ -1,22 +1,22 @@
 import { parity } from '../../fixtures/parity';
-import { MyBusinessPage } from '../../pages/my-business.page';
+import { RequestDetailPage } from '../../pages/request-detail.page';
 
-// jb-timeline and its steps: the step in hand and the last one, still to come. A done and a
-// stopped step are not compared: every one the mocks show says something else than the app's
-// recorded answers ("Today, 9:40 a.m." against "today"), so they differ in words, not in drawing.
+// jb-timeline and its steps: the step in hand and the last one, still to come, on a member's
+// confirmed request (L2-047). A done step is not compared: the mocks' times say something else than the
+// app's recorded answers, so they differ in words, not in drawing.
 parity('timeline', {
   cases: [
     {
       name: 'current',
-      route: 'my-business.changes-requested',
-      screen: (page) => new MyBusinessPage(page),
-      region: (screen: MyBusinessPage) => screen.timeline.nth(1),
+      route: 'request-detail.confirmed',
+      screen: (page) => new RequestDetailPage(page),
+      region: (screen: RequestDetailPage) => screen.steps.nth(2),
     },
     {
       name: 'upcoming-last',
-      route: 'my-business.pending',
-      screen: (page) => new MyBusinessPage(page),
-      region: (screen: MyBusinessPage) => screen.timeline.nth(2),
+      route: 'request-detail.confirmed',
+      screen: (page) => new RequestDetailPage(page),
+      region: (screen: RequestDetailPage) => screen.steps.nth(3),
     },
   ],
   reference: {

@@ -5,10 +5,8 @@ title System Context — Pause and resume a listing
 
 Person(owner, "Owner", "Member who owns a live listing")
 Person(member, "Member or visitor", "Finds live listings in browse and search")
-Person(verifier, "Verification team member", "Reviews a listing resumed after 12 months or more")
 System(jubilee, "Jubilee", "Toronto's Christian marketplace")
 
 Rel(owner, jubilee, "Pauses and resumes the listing using", "HTTPS")
 Rel(member, jubilee, "Finds only listings that are live and not paused in", "HTTPS")
-Rel(verifier, jubilee, "Reviews the re-queued listing in", "HTTPS")
 @enduml

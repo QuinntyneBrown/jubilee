@@ -29,7 +29,7 @@ background path for stock alerts.
 - **`ProductPage`** — Angular page for `/b/:slug/p/:product`. It shows the
   breadcrumb, the product's tile (`jb-media-tile`), the name, the price ("$34",
   or "$22 ea" for per-unit pricing), the delivery line (for example "· plus $9
-  shipping, or free pickup"), "Sold by {shop} · Verified", the "Details" list
+  shipping, or free pickup"), "Sold by {shop}" with no "Verified" mark, the "Details" list
   with the description and attributes such as Fit, Care, Ready in and Returns,
   and "More from {shop}" with up to three other products and "Visit shop". On
   failure it shows "We couldn't load this product" with the reference
@@ -128,7 +128,7 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 | `L2-034` | `L1-005` | A sold-out product's card shall carry a "Sold out" badge. |
 | `L2-035` | `L1-005` | The page `/b/:slug/p/:product` shall show one product with options, quantity and a request action. |
 | `L2-036` | `L1-005` | A product with stock 0 in every option shall show as sold out with its request action disabled, and shall offer a back-in-stock alert. A member who asks for the alert shall be notified in-app and by e-mail once, the next time stock goes above 0. |
-| `L2-028` | `L1-003` | Browse, category, search, featured and related lists shall show only listings that are verified and not paused, deleted or under a moderation hold. |
+| `L2-028` | `L1-003` | Browse, category, search, featured and related lists shall show only listings that are live and not paused, deleted or under a moderation hold. |
 | `L2-064` | `L1-010` | A product back in stock shall create a notification for the member who asked. |
 | `L2-068` | `L1-010` | An e-mail shall be sent only when the member has it turned on, with a one-click unsubscribe link. |
 | `L2-118` | `L1-016` | Every load-error state shall show a reference that the user can quote to support. |

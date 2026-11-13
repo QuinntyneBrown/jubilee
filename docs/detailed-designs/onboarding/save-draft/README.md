@@ -15,10 +15,10 @@ The slice uses three local terms.
 - **occurrence** — one period of a scheduled job, the UTC day for a job that runs every 24 hours
 
 A listing draft is not a `Listing`. It has no stage and no slug, each of its
-fields may be empty, and nothing in it is public. Submission turns it into a
-listing and deletes it
-([Submit for verification](../submit-for-verification/README.md)). An
-unconfirmed member may save a draft; only submission is blocked (`L2-005`).
+fields may be empty, and nothing in it is public. Publishing turns it into a
+listing in the stage `Live` and deletes it
+([Publish a listing](../publish-listing/README.md), ADR 0057). An unconfirmed
+member may save a draft; only publishing is blocked (`L2-005`).
 
 ## Description
 
@@ -27,18 +27,18 @@ with one scheduled job in `Jubilee Worker`. The names below are the names in the
 code; the decisions are in ADR 0018 and, for scheduled work, ADR 0050.
 
 - **`ListBusinessPage`** — Angular page at `/list`. It offers "Save draft"
-  beside "Submit for verification". `saveDraft` sends the form through
+  beside "Publish listing". `saveDraft` sends the form through
   `ListingDraftsApi`: `create` while the page has no draft id, `save`
   afterwards. A successful save sets the `savedAt` signal, and the page shows
   the success alert "Draft saved. Saved today at {time}. Come back any time
-  from My business; nothing is public until you submit." The next edit clears
+  from My business; nothing is public until you publish." The next edit clears
   the alert. A failed save by the button shows "We couldn’t save that. Try
   again.", or the detail of an HTTP 409 answer.
 - **Autosave** — a timer of the page, with no service of its own. Each edit
   calls `touched`, which restarts a timer of `AUTOSAVE_MS` (`10 s`). When the
   timer ends, the page calls `saveDraft(true)`. A failed autosave shows nothing
   and the next edit starts the timer again. The page clears the timer when it
-  is destroyed and while a submission is in flight.
+  is destroyed and while publishing is in flight.
 - **Loading** — `ListBusinessPage.load` reads the query parameter `draft`.
   `/list` loads the draft the member touched last through `current`,
   `/list?draft={id}` loads that draft through `get`, and `/list?draft=new`

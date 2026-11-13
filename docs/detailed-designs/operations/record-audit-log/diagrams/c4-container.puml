@@ -3,13 +3,13 @@
 LAYOUT_WITH_LEGEND()
 title Containers — Record audit log
 
-Person(verifier, "Verification team member", "Takes sensitive actions. An admin searches the audit log")
+Person(moderator, "Jubilee team member", "Takes sensitive actions. An admin searches the audit log")
 System_Boundary(jubilee, "Jubilee") {
   Container(web, "Jubilee Web", "Angular single-page application", "Admin pages and the audit log page")
   Container(api, "Jubilee API", "ASP.NET Core", "Records an audit entry with each sensitive action and serves the search")
   ContainerDb(db, "Jubilee database", "SQL Server", "Append-only AuditEntries table")
 }
-Rel(verifier, web, "Uses", "HTTPS")
+Rel(moderator, web, "Uses", "HTTPS")
 Rel(web, api, "Calls", "JSON/HTTPS")
 Rel(api, db, "Inserts and selects audit entries in", "EF Core")
 @enduml

@@ -2,18 +2,18 @@
 
 ## Overview
 
-Jubilee is Toronto's Christian marketplace: a directory of verified
+Jubilee is Toronto's Christian marketplace: a directory of
 Christian-owned businesses. A *listing* is the record of one business on
 Jubilee, and onboarding at `/list` is the form where a member describes a
-listing and submits it for verification
-(`onboarding/describe-listing`).
+listing and publishes it (`onboarding/describe-listing`,
+`onboarding/publish-listing`).
 
 This feature adds a third answer to "What do you offer?": "A space". A *space*
 is a listing for a room, suite, apartment, house or hall that an owner rents
 out. Every space sits in the category "Rooms & rentals" (`rooms-rentals`) and is
 rented under exactly one *term*. The slice covers choosing "A space", the space
 fields and their validation, the "How renters see it" preview, saving the space
-as a draft, and the space's agreement line at submission.
+as a draft, and the space's agreement line when it is published.
 
 The slice uses the following local terms.
 
@@ -33,9 +33,9 @@ The slice uses the following local terms.
   that reaches only the renter whose request the owner accepts
   (`requests/request-space`)
 
-A space keeps every other onboarding rule: after submission it is "Ready to
-review" in the verification queue (`L2-078`), and nothing is public until the
-verification team approves it (`L2-101`).
+A space keeps every other onboarding rule: when its owner publishes it, it is
+live at once and public within 60 seconds (`L2-078`); nobody verifies it first
+(ADR 0057).
 
 ## Description
 
@@ -85,7 +85,7 @@ The feature extends the onboarding slice from `ListBusinessPage` to the
     your cover." (`L2-199` AC11).
 - **Preview** — the region headed "How renters see it". It renders
   `jb-space-card-preview` (`directory/browse-spaces`) from `SpaceForm`'s values
-  with the mark "Pending verification" and redraws without a server call
+  with the mark "Not published yet" and redraws without a server call
   (`L2-076`).
 - **Term rules** — `SpaceForm` mirrors `SpaceTerms`: the price unit, the
   minimum-stay choices and whether the household is asked, so the form
@@ -94,7 +94,7 @@ The feature extends the onboarding slice from `ListBusinessPage` to the
 - **`ListingDraftsApi`** — typed HTTP client for the existing endpoints: `POST
   /api/listing-drafts` and `PUT /api/listing-drafts/{id}` save, `GET
   /api/listing-drafts/current` resumes and `POST
-  /api/listing-drafts/{id}/submit` submits. For a space the body carries `kind`
+  /api/listing-drafts/{id}/publish` publishes. For a space the body carries `kind`
   `space` and a nested `space` object with `term`, `rent`, `available`,
   `minimumStay`, `neighbourhood`, `address`, `place`, `facts`, `included`,
   `household` and `rules`. No `categorySlug` is needed for a space.
@@ -106,14 +106,15 @@ The feature extends the onboarding slice from `ListBusinessPage` to the
   `space` and `space` (`SpaceDraftDto`, address included, since only the
   draft's owner reads it), so the page restores "A space", the term and every
   field (`L2-198` AC4).
-- **`SubmitListingCommandHandler`** — for a space, validates the fields with
+- **`PublishListingCommandHandler`** — for a space, validates the fields with
   `Drafts.ValidateSpace`, checks the agreement (`agreed` `REQUIRED`), builds
   the `SpaceDetails` with `Drafts.SpaceFrom`, and creates the `Listing` with
   `Kind` `Space`. The category is forced to `rooms-rentals` whatever the body
-  says. It then follows `L2-078`: the listing is "Ready to review" in the
-  verification queue. The success page reads "{Listing title} is in
-  for verification. Nothing more to do right now. We'll e-mail you the moment
-  you're live." with "Go to My business".
+  says. It then follows `L2-078`: `Listing.Publish` makes the listing live. The
+  success page reads "{Listing title} is live. Renters can find it in Rooms &
+  rentals now." with "View public listing" and "Go to My business". An
+  unticked agreement shows "Agree to the statement of faith and the rental
+  terms to publish your space." (`L2-200` AC1).
 - **`Drafts.ValidateSpace`** — static rules in
   `Jubilee.Application/Onboarding/Onboarding.cs`. They write field errors
   with the keys and codes below, returned as HTTP 422 with `errors`, and the page
@@ -131,8 +132,8 @@ The feature extends the onboarding slice from `ListBusinessPage` to the
   are kept, and each line is cut to `SpaceTerms.MaxLineLength` (60) characters.
 - **Space agreement** — for a space the checkbox reads "I agree to Jubilee’s
   statement of faith, and confirm I’m allowed to rent this space and will
-  follow Ontario’s tenancy rules."; unticked, submitting shows "Agree to the
-  statement of faith and the rental terms to submit your space." (code
+  follow Ontario’s tenancy rules."; unticked, publishing shows "Agree to the
+  statement of faith and the rental terms to publish your space." (code
   `REQUIRED` on `agreed`).
 - **`SpaceTerm`** — enum in `Jubilee.Domain`: `ShortStay`, `LongTerm`, `Room`,
   `Roommate`, written as the wire values `short-stay`, `long-term`, `room` and
@@ -152,15 +153,16 @@ The feature extends the onboarding slice from `ListBusinessPage` to the
 - **`Category.All`** — "Rooms & rentals" (`rooms-rentals`) becomes the second
   of eleven, after Shops (`L2-197` AC4).
 
-The verification team's review (`L2-100`, `GET /api/admin/verifications/{id}`)
-has the kind `space` and a `space` object (`ReviewSpace`) with the term, rent,
-minimum stay, neighbourhood, the space, key facts, what's included, the
-household and the house rules, and no exact address (`L2-200` AC3).
-`AdminVerificationPage` shows them in a card "The space" after the owner, with
+The Jubilee team's listing screen (`L2-100`, `GET /api/admin/listings/{id}`,
+`moderation/take-down-listing`) has the kind `space` and a `space` object
+(`AdminListingSpace`) with the term, rent and its period
+(`Per`), when it is available, minimum stay, neighbourhood, the space
+(`Place`), key facts, what's included, the household and the house rules, and no exact address (`L2-200` AC3).
+`AdminListingPage` shows them in a card "The space" after the owner, with
 the caption "The exact address is never shown here; only the renter the owner
 accepts receives it.", and previews the space with `jb-space-card-preview`
-under "How renters see it". Approval makes the
-space live in "Rooms & rentals" and the rooms shelf (`L2-200` AC4).
+under "How renters see it". Publishing makes the space live in "Rooms &
+rentals" and the rooms shelf within 60 seconds (`L2-200` AC4).
 
 ### Open questions
 
@@ -176,7 +178,7 @@ differ or leave a gap.
   "From {text}" for a monthly term, and the text as given for a Short stay;
   the server does not parse it as a date.
 - **Photos** — onboarding has no photo upload; photos are added from Edit
-  listing after submitting (`L2-088`).
+  listing after publishing (`L2-088`).
 - **Sign-up intents** — the design's "Find a place" and "Rent out a space"
   sign-up intents are deferred; sign-up has no intent step.
 - **Editing a space** — happens in the existing edit-listing screen
@@ -193,8 +195,8 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 | `L2-197` | `L1-028` | A space shall be in the category "Rooms & rentals", the second of eleven, under exactly one of the terms Short stay, Long term, Room and Roommate, priced per night for a Short stay and per month otherwise, and shall never move to another category. |
 | `L2-198` | `L1-028` | `/list` shall offer "A space" beside "Products" and "Services", relabel the form for a space, preview the space card under "How renters see it", and restore a space saved as a draft. |
 | `L2-199` | `L1-028` | The space form shall ask the term, rent, availability, minimum stay, neighbourhood, exact address, the space, key facts, what's included, house rules and, for a Room or Roommate, the household, keep values across terms, and validate them on the browser and the server. |
-| `L2-200` | `L1-028` | A space shall be submitted with its own agreement line, follow submission for verification, show its details but never its exact address to the verification team, and appear in "Rooms & rentals" and the rooms shelf once approved. |
-| `L2-076` | `L1-011` | The preview shall update within 100 ms as the owner types and shall show the card marked "Pending verification". |
+| `L2-200` | `L1-028` | A space shall be published with its own agreement line, follow `L2-078` so that it is live at once, show its details but never its exact address to the Jubilee team in the admin application, and appear in "Rooms & rentals" and the rooms shelf within 60 seconds. |
+| `L2-076` | `L1-011` | The preview shall update within 100 ms as the owner types and shall show the card marked "Not published yet". |
 | `L2-077` | `L1-011` | The owner shall be able to save the form as a draft without validation and resume it later. |
 | `L2-126` | `L1-018` | A page form submitted with errors shall show the summary "Fix {n} thing(s) to continue", mark each invalid field, keep typed values, and apply the same rules and message codes on the server. |
 | `L2-133` | `L1-019` | Each API endpoint shall check the caller's role and ownership of the specific object before doing anything. |
@@ -203,7 +205,7 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 
 ### System context
 
-A member lists a space in Jubilee; the verification team takes it from there
+A member lists a space in Jubilee; the Jubilee team takes it from there
 as for any listing.
 
 ![C4 system context for describing a space](diagrams/c4-context.png)
@@ -211,7 +213,7 @@ as for any listing.
 ### Containers
 
 `Jubilee Web` renders the space form and preview. `Jubilee API` stores the draft
-and the submitted listing, each with its `Space` JSON column, in the `Jubilee
+and the published listing, each with its `Space` JSON column, in the `Jubilee
 database`.
 
 ![C4 container view for describing a space](diagrams/c4-container.png)
@@ -220,7 +222,7 @@ database`.
 
 `ListBusinessPage` composes the space fields and the preview, and holds them
 in `SpaceForm`. `ListingDraftsController` sends the save and
-submit commands, which use `Drafts.ValidateSpace`, `Drafts.SpaceFrom` and
+publish commands, which use `Drafts.ValidateSpace`, `Drafts.SpaceFrom` and
 `SpaceTerms`.
 
 ![C4 component view for describing a space](diagrams/c4-component.png)
@@ -240,10 +242,10 @@ validation.
 
 ![Sequence diagram for choosing a space and saving a draft](diagrams/sequence-describe-space.png)
 
-### Behaviour — submit a space
+### Behaviour — publish a space
 
-Submission validates the space fields and the space agreement on the server,
+Publishing validates the space fields and the space agreement on the server,
 answers HTTP 422 with field codes when they fail, and otherwise creates the
-listing in "Rooms & rentals" with kind `Space`, ready to review.
+listing in "Rooms & rentals" with kind `Space`, live at once.
 
-![Sequence diagram for submitting a space](diagrams/sequence-submit-space.png)
+![Sequence diagram for publishing a space](diagrams/sequence-publish-space.png)

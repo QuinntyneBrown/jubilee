@@ -15,10 +15,7 @@ title Class structure — Pause and resume a listing
 
 enum ListingStage {
   Draft
-  ReadyToReview
-  ChangesRequested
   Live
-  Declined
 }
 
 class Listing {
@@ -29,10 +26,9 @@ class Listing {
   +ListingStage Stage
   +bool IsPaused
   +DateTimeOffset? PausedAt
-  +DateTimeOffset? ApprovedAt
+  +DateTimeOffset? PublishedAt
   +DateTimeOffset? DeletedAt
   +bool IsUnderModerationHold
-  +{static} TimeSpan PausedTooLong = 365 days
   +Pause(now: DateTimeOffset?): void
   +Resume(now: DateTimeOffset?): void
   +IsPublic(): bool
@@ -64,7 +60,6 @@ class PauseResultDto {
   +bool Paused
   +DateTimeOffset? PausedAt
   +string State
-  +bool NeedsReview
 }
 
 class Workspace <<static>> {
@@ -101,7 +96,7 @@ class PublicDirectoryCacheAttribute {
 class SessionAwareCacheAttribute
 
 Listing --> ListingStage : has
-PublicListingFilter ..> Listing : reads Stage, ApprovedAt, IsPaused, DeletedAt and the hold
+PublicListingFilter ..> Listing : reads Stage, PublishedAt, IsPaused, DeletedAt and the hold
 PauseListingCommandHandler ..> PauseListingCommand : handles
 ResumeListingCommandHandler ..> ResumeListingCommand : handles
 PauseListingCommandHandler ..> Workspace : finds the listing with

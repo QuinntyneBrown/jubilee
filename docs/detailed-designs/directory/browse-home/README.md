@@ -2,7 +2,7 @@
 
 ## Overview
 
-Jubilee is Toronto's Christian marketplace: a directory of verified
+Jubilee is Toronto's Christian marketplace: a directory of
 Christian-owned businesses. The *browse home* at `/` is the main page of the
 directory. It is the first page a signed-in *member* sees, and a *visitor* —
 anyone who is not signed in — sees the same directory with prompts to join in
@@ -10,7 +10,7 @@ place of the personal parts.
 
 The page has four parts. Category chips ("All" plus the eleven categories) lead to
 the category pages. "Featured this week" shows up to five businesses that the
-verification team chose for the week. "From the shops" shows up to five
+Jubilee team chose for the week. "From the shops" shows up to five
 products with a link "All shops". "All {n} businesses" is the full directory
 grouped by category; each *category group* shows its count and up to four
 businesses, with "See all {n}" when the category holds more.
@@ -20,8 +20,8 @@ Three kinds of item appear on the page, each with fixed display rules. A
 shows one product with its shop and price. A *directory row* is the compact
 one-line entry used inside a category group.
 
-Every item on the page is a *public listing* — listing that is verified and
-live, and not paused, deleted or under a moderation hold. A listing in any
+Every item on the page is a *public listing* — listing that its owner
+published (live), and not paused, deleted or under a moderation hold. A listing in any
 other state does not appear and is not counted, and it leaves the page within
 60 seconds of being paused.
 
@@ -53,8 +53,8 @@ members and visitors. The names below are the names in the code.
   eleven categories, each a link to `/c/:category`.
 - **`FeatureGrid`** and **`BusinessCard`** — up to five featured businesses.
   Each card has a category media tile or cover photo, a short category label,
-  the name, the tagline, an optional highlight (green line) and the "Verified"
-  mark. The name wraps and is never truncated; the tagline is clamped to two
+  the name, the tagline and an optional highlight (green line); it carries no
+  "Verified" mark (ADR 0057). The name wraps and is never truncated; the tagline is clamped to two
   lines.
 - **`Scroller`** and **`ProductCard`** — up to five products with "All
   shops". Each card shows photo, product name, shop name and price, formatted by
@@ -84,12 +84,11 @@ members and visitors. The names below are the names in the code.
   or builds it: total count, featured businesses from `FeaturedSelector`, five
   shop products, and the groups from `DirectoryGrouping`.
 - **`PublicListingFilter`** — query filter that keeps only public listings. It
-  excludes the stages draft, ready to review, changes requested and
-  declined, and each paused, deleted or held listing
+  excludes a listing in the stage draft, and each paused, deleted or held listing
   (L2-028). Each public list and count in the slice applies it.
 - **`FeaturedSelector`** — application service in `Jubilee.Application`, because it queries the database. It returns the public listings of
   the current week's `FeaturedSlot` rows, up to five; when none is set it
-  returns the most recently verified public listings.
+  returns the most recently published public listings (`PublishedAt`).
 - **`DirectoryGrouping`** — application service that turns public listings into
   `CategoryGroupDto` items: the category's count, its first four listings, and
   `HasMore` when the count exceeds four. It omits a category whose count is 0.
@@ -110,7 +109,7 @@ businesses inside a category group are the first four in "Recommended" order
 messages and notifications lead to screens of later journeys; "Open messages"
 is offered to a member only, and a visitor gets "Sign in" in its place. The direct-URL rule of
 L2-028 (HTTP `404` for a listing that is not public, with a preview for its
-owner and the verification team) is enforced by the business page slice.
+owner and the Jubilee team) is enforced by the business page slice.
 
 `DirectoryCacheInvalidationInterceptor` is registered on `AppDbContext` in every
 process that uses it (`Jubilee API`, `Jubilee Worker` and the `jubilee` CLI).
@@ -143,9 +142,9 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 | `L2-021` | `L1-003` | The system shall serve `/` as the browse home: greeting, search, category chips, featured businesses, products from the shops, and the full directory grouped by category. |
 | `L2-022` | `L1-003` | Visitors shall see the same directory with join prompts in place of personal actions. |
 | `L2-027` | `L1-003` | Business cards, product cards and directory rows shall follow fixed display rules. |
-| `L2-028` | `L1-003` | Browse, category, search, featured and related lists shall show only listings that are verified and not paused, deleted or under a moderation hold. |
+| `L2-028` | `L1-003` | Browse, category, search, featured and related lists shall show only listings that are live and not paused, deleted or under a moderation hold. |
 | `L2-012` | `L1-001` | When a visitor tries an action that needs an account (message, book, ask, order, save), the system shall prompt them to join or sign in and bring them straight back. |
-| `L2-106` | `L1-014` | The listings a verifier chooses as "Featured this week" shall show on the welcome and browse pages from the start date for 7 days, and a featured listing that is paused or removed shall be skipped. |
+| `L2-106` | `L1-014` | The listings a moderator chooses as "Featured this week" shall show on the welcome and browse pages from the start date for 7 days, and a featured listing that is paused or removed shall be skipped. |
 | `L2-118` | `L1-016` | Each load-error state shall show a reference that the user can quote to support. |
 | `L2-156` | `L1-021` | Responses for the public directory and category pages shall be cached for up to 60 seconds and invalidated when a listing changes state. |
 | `L2-201` | `L1-028` | The browse home shall show "Rooms & places to stay" with "All {n}", a term filter and up to four space cards when a space is live, filter it by term without reloading, leave spaces out of "All {n} businesses", and use the placeholder "Plumber, lawyer, room to rent…". |
@@ -154,7 +153,7 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 
 ### System context
 
-Visitors and members browse the directory in Jubilee. The verification team
+Visitors and members browse the directory in Jubilee. The Jubilee team
 sets the featured businesses, and owners' listings appear only while public.
 The slice calls no external system.
 

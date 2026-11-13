@@ -62,6 +62,6 @@ Rita persuades her that a plain price is the honest starting point, and â€œAskâ€
 - Minimum notice and minimum order as rules a request must respect; they are sentences in About.
 - Allergens, per tray, in a place a member with an allergy would be sure to see.
 - Her telephone number. There is no phone field on the listing, and a number typed into the name
-  or the one line is flagged for the verification team.
+  or the one line is flagged for the Jubilee team.
 - That Rita may answer. One owner account, no staff or delegate accounts.
 - That her kitchen is a home kitchen and what that means: Jubilee neither asks nor tells.

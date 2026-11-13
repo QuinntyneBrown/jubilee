@@ -73,9 +73,6 @@
         </p>
         <p jb-detail-head-kicker>
           Sold by <a [routerLink]="['/b', product.shop.slug]">{{ product.shop.name }}</a>
-          @if (product.shop.verified) {
-            <svg jb-icon name="verified"></svg>Verified
-          }
         </p>
         @if (requestView(); as view) {
           <jb-product-request-form

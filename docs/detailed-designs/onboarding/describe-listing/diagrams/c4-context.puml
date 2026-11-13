@@ -5,7 +5,7 @@ title System Context — Describe a listing
 
 Person(visitor, "Visitor", "Opens /list before signing in")
 Person(member, "Member", "Describes a business to list it on Jubilee")
-System(jubilee, "Jubilee", "Toronto's Christian marketplace of verified Christian-owned businesses")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace of Christian-owned businesses")
 System_Ext(google, "Google Identity", "OpenID Connect sign-in used on the way back to /list")
 
 Rel(visitor, jubilee, "Opens /list and is asked to sign in or join")

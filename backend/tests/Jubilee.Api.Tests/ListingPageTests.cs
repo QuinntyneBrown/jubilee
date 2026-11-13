@@ -60,7 +60,7 @@ public class ListingPageTests : IClassFixture<JubileeApiFactory>, IAsyncLifetime
         Assert.Equal("Legacy Financial", json.GetProperty("name").GetString());
         Assert.Equal("financial-insurance", json.GetProperty("category").GetProperty("slug").GetString());
         Assert.Equal("Financial & insurance", json.GetProperty("category").GetProperty("name").GetString());
-        Assert.True(json.GetProperty("verified").GetBoolean()); // L2-111 AC1
+        Assert.False(json.TryGetProperty("verified", out _)); // ADR 0057: no listing is called verified
         Assert.Equal("Trevor Chew, CKA®, CFP®, CLU®", json.GetProperty("ownerName").GetString());
         Assert.Equal("Build a Legacy. Protect a Legacy. Leave a Legacy.", json.GetProperty("tagline").GetString());
         Assert.Equal(["CKA® · CFP® · CLU®"], json.GetProperty("credentials").EnumerateArray().Select(c => c.GetString()));
@@ -147,8 +147,6 @@ public class ListingPageTests : IClassFixture<JubileeApiFactory>, IAsyncLifetime
 
     [Theory]
     [InlineData(NonPublicState.Draft)]
-    [InlineData(NonPublicState.ReadyToReview)]
-    [InlineData(NonPublicState.ChangesRequested)]
     [InlineData(NonPublicState.Paused)]
     [InlineData(NonPublicState.Deleted)]
     [InlineData(NonPublicState.UnderModerationHold)]
@@ -188,7 +186,7 @@ public class ListingPageTests : IClassFixture<JubileeApiFactory>, IAsyncLifetime
         Assert.Equal(["deeks", "jd-smith"], related.Slugs());
         Assert.All(related.EnumerateArray(), card =>
         {
-            Assert.True(card.GetProperty("verified").GetBoolean());
+            Assert.False(card.TryGetProperty("verified", out _)); // ADR 0057: no listing is called verified
             Assert.Equal("financial-insurance", card.GetProperty("categorySlug").GetString());
         });
     }

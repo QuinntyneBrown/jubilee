@@ -114,15 +114,19 @@
         })}><i></i></div>`;
       },
 
-      /** The seal: the J mark in a ring of set text, turning at `spin` degrees a second. */
+      /**
+       * The seal: the J mark in a ring of set text (John 15:16 and the mission), turning at `spin`
+       * degrees a second. Jubilee does not verify businesses (ADR 0057), so the ring says nothing of a
+       * check; the text is fitted to the ring as in film 01.
+       */
       seal(size, spin) {
         const id = `seal-${Math.round(start * 10)}-${fns.length}`;
-        const text = 'VERIFIED BY THE JUBILEE TEAM · VERIFIED BY THE JUBILEE TEAM · ';
+        const text = 'FRUIT THAT WILL LAST · RESOURCE THE KINGDOM · IN JESUS’ NAME · ';
         return `<svg width="${size}" height="${size}" viewBox="0 0 200 200" aria-hidden="true">` +
           `<circle cx="100" cy="100" r="98" fill="${COLOR.ink}"/><circle cx="100" cy="100" r="64" fill="${COLOR.cream}"/>` +
           `<defs><path id="${id}" d="M100 100 m-81 0 a81 81 0 1 1 162 0 a81 81 0 1 1 -162 0"/></defs>` +
           `<g ${S.ref((el, t) => el.setAttribute('transform', `rotate(${t * spin} 100 100)`))}>` +
-          `<text font-family="Inter, sans-serif" font-weight="600" font-size="12.4" letter-spacing="1.55" fill="${COLOR.cream}"><textPath href="#${id}">${text}</textPath></text></g>` +
+          `<text font-family="Inter, sans-serif" font-weight="600" font-size="12.4" fill="${COLOR.cream}"><textPath href="#${id}" textLength="506" lengthAdjust="spacing">${text}</textPath></text></g>` +
           `<g transform="translate(62 62) scale(0.76)"><path d="M60 8 V60 A20 20 0 0 1 20 60 V38" stroke="${COLOR.ink}" stroke-width="14.5" fill="none"/>` +
           `<path d="M36 27 H84" stroke="${COLOR.gold}" stroke-width="14.5"/></g></svg>`;
       },

@@ -1,10 +1,10 @@
 import { parity } from '../../fixtures/parity';
-import { AdminVerificationPage } from '../../pages/admin-verification.page';
+import { AdminListingPage } from '../../pages/admin-listing.page';
 import { EditListingPage } from '../../pages/edit-listing.page';
 import { ListBusinessPage } from '../../pages/list-business.page';
 
-// jb-space-card-preview: how renters will see a space while it waits for verification (L2-198 AC3,
-// L2-200 AC3), and as its owner edits it (L2-209).
+// jb-space-card-preview: how renters will see a space before it is published (L2-198 AC3), as the
+// Jubilee team reads it (L2-200 AC3), and as its owner edits it (L2-209).
 parity('space-card-preview', {
   cases: [
     {
@@ -15,10 +15,10 @@ parity('space-card-preview', {
       arrange: (screen: ListBusinessPage) => screen.space.fillExample(screen.name),
     },
     {
-      name: 'review',
-      route: 'admin-verification.space',
-      screen: (page) => new AdminVerificationPage(page),
-      region: (screen: AdminVerificationPage) => screen.spacePreview,
+      name: 'admin',
+      route: 'admin-listing.space',
+      screen: (page) => new AdminListingPage(page),
+      region: (screen: AdminListingPage) => screen.spacePreview,
     },
     {
       name: 'edit-a-space',
@@ -35,7 +35,7 @@ parity('space-card-preview', {
         frame: 'list-a-space-1280.png',
         clip: { x: 863, y: 135, width: 320, height: 352 },
         knownDifference:
-          'The reference shows the space with a photo, its own title and "From Mar 1", and marks nothing as pending; the app draws the tinted tile by term until the owner adds photos from My business, and marks the card "Pending verification" until it is approved (L2-198 AC3).',
+          'The reference shows the space with a photo, its own title and "From Mar 1", and marks nothing as pending; the app draws the tinted tile by term until the owner adds photos from My business, and marks the card "Not published yet" until it is published (L2-198 AC3).',
       },
     ],
   },

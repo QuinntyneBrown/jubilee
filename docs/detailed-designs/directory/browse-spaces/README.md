@@ -2,7 +2,7 @@
 
 ## Overview
 
-Jubilee is Toronto's Christian marketplace: a directory of verified
+Jubilee is Toronto's Christian marketplace: a directory of
 Christian-owned businesses. Besides businesses and shops, the directory holds
 *spaces*: listings for a room, suite, apartment, house or hall that an owner
 rents out (`onboarding/describe-space`). Every space is in the category "Rooms
@@ -21,7 +21,7 @@ A *term filter* narrows a list of spaces to one term. It has "Any length"
 (pressed by default), "Short stays", "Long term", "Rooms" and "Roommates", each
 a toggle button whose pressed state is carried by `aria-pressed`.
 
-Every space shown is a *public listing* by the rules of `L2-028`: verified,
+Every space shown is a *public listing* by the rules of `L2-028`:
 live, and not paused, deleted or held. The *exact address* of a space is never
 part of any list, card or search response, and is never searched (`L2-208`).
 
@@ -42,8 +42,8 @@ The feature extends the three directory slices (`directory/browse-home`,
   never colour alone (`L2-203`). It takes a space card view model matching
   `SpaceCardDto`. Previews of a space that is not live use its sibling
   **`jb-space-card-preview`** (`SpaceCardPreview`), which shares the card's
-  rules, follows nothing and is marked "Pending verification" until it is
-  `verified` (`onboarding/describe-space`).
+  rules, follows nothing and is marked "Not published yet" until it is
+  published (`onboarding/describe-space`).
 - **`jb-term-filter`** (`TermFilter`, `components/src/lib/term-filter/`) —
   the five toggle buttons with `aria-pressed`. It emits the chosen term's wire
   value or `null` for "Any length".
@@ -63,7 +63,7 @@ The feature extends the three directory slices (`directory/browse-home`,
 - **`BrowseHomeDto.Rooms`** — new `RoomsShelfDto(Count, Spaces)` on `GET
   /api/directory/home`, built by `GetBrowseHomeQueryHandler`: `Count` (live
   spaces) and `Spaces`, the union of the four newest spaces overall and the four
-  newest of each term (`RoomsShelfLimit` 4), newest first by `ApprovedAt`, as
+  newest of each term (`RoomsShelfLimit` 4), newest first by `PublishedAt`, as
   `SpaceCardDto` items (at most 20). With no live space, `Count` is 0 and
   `Spaces` is empty, so the shelf is not shown. The whole DTO stays in
   `IDirectoryReadCache` (ADR 0003).
@@ -133,9 +133,9 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 | `L2-202` | `L1-028` | `/c/rooms-rentals` shall list the space cards newest first, 16 to a page, filtered by the term carried in the URL, without the business filters or "Sort", and shall end with "List a space". |
 | `L2-203` | `L1-028` | A space card shall show the cover or tile, the term badge, the rent, the title, up to two key facts, the neighbourhood and the availability, open the space page from click, tap, Enter or Space, announce its parts as text, and carry no exact address. |
 | `L2-204` | `L1-028` | Search shall match live spaces by title, line, neighbourhood, the space and key facts, list them under "Businesses" as space cards, and never search or return the exact address. |
-| `L2-208` | `L1-028` | No public endpoint shall return the exact address of a space to a visitor, a member or the verification team. |
+| `L2-208` | `L1-028` | No public endpoint shall return the exact address of a space to a visitor, a member or the Jubilee team. |
 | `L2-026` | `L1-003` | Long categories shall be paged 16 at a time. |
-| `L2-028` | `L1-003` | Browse, category, search, featured and related lists shall show only listings that are verified and not paused, deleted or under a moderation hold. |
+| `L2-028` | `L1-003` | Browse, category, search, featured and related lists shall show only listings that are live and not paused, deleted or under a moderation hold. |
 | `L2-118` | `L1-016` | Every load-error state shall show a reference that the user can quote to support. |
 | `L2-156` | `L1-021` | Responses for the public directory and category pages shall be cached for up to 60 seconds and invalidated when a listing changes state. |
 

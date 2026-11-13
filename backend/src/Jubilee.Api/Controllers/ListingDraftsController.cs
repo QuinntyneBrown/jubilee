@@ -45,7 +45,7 @@ public sealed record SpaceDraftRequest(
 }
 
 /// <summary>
-/// The listing form. It has no stage, owner or verified field: unknown fields are refused with 400
+/// The listing form. It has no stage or owner field: unknown fields are refused with 400
 /// and nothing is changed (L2-133 AC4).
 /// </summary>
 [JsonUnmappedMemberHandling(JsonUnmappedMemberHandling.Disallow)]
@@ -67,7 +67,7 @@ public sealed record ListingDraftRequest(
         Space?.ToInput());
 }
 
-/// <summary>Listing a business: drafts, saving them and submitting for verification (L2-071 to L2-079).</summary>
+/// <summary>Listing a business: drafts, saving them and publishing them (L2-071 to L2-079, ADR 0057).</summary>
 [ApiController]
 [Route("api/listing-drafts")]
 public sealed class ListingDraftsController(ISender sender) : ControllerBase
@@ -93,12 +93,12 @@ public sealed class ListingDraftsController(ISender sender) : ControllerBase
     public Task<ListingDraftDto> Save(Guid id, [FromBody] ListingDraftRequest request, CancellationToken cancellationToken) =>
         sender.Send(new SaveListingDraftCommand(Subject, id, request.ToInput()), cancellationToken);
 
-    [HttpPost("{id:guid}/submit")]
+    [HttpPost("{id:guid}/publish")]
     [RequiresConfirmedEmail]
-    public async Task<IActionResult> Submit(Guid id, [FromBody] ListingDraftRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> Publish(Guid id, [FromBody] ListingDraftRequest request, CancellationToken cancellationToken)
     {
         var listing = await sender.Send(
-            new SubmitListingCommand(Subject, User.FindFirst("name")?.Value ?? "Member", id, request.ToInput(), request.IdempotencyKey),
+            new PublishListingCommand(Subject, User.FindFirst("name")?.Value ?? "Member", id, request.ToInput(), request.IdempotencyKey),
             cancellationToken);
         return StatusCode(StatusCodes.Status201Created, listing);
     }

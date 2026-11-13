@@ -1,4 +1,4 @@
-/** What the verification team sees of reports and featured businesses (L2-105, L2-106). */
+/** What the Jubilee team sees of reports and featured businesses (L2-105, L2-106). */
 
 export type ReportStatus = 'open' | 'in-review' | 'resolved';
 

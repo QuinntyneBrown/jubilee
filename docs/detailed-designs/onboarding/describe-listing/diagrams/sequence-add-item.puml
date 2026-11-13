@@ -32,7 +32,7 @@ box "Backend — Jubilee Infrastructure" #FFF4E5
 end box
 actor -> page : Press "Add a product"
 page -> dialog : Open with data.draft = true (L2-091)
-dialog --> actor : Show "Nothing is public until your listing is verified."
+dialog --> actor : Show "Nothing is public until your listing is published."
 actor -> dialog : Enter name and price and stock and description
 actor -> dialog : Press "Add product"
 dialog -> dialog : Check the fields as L2-091 does

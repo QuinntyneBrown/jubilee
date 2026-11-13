@@ -2,7 +2,7 @@ import type { Page, Route } from '@playwright/test';
 import { stubAdmin } from './admin';
 import { miriam, type StaffMember } from './staff';
 
-// A stand-in for the verification team's reports and featured businesses (L2-105, L2-106). The
+// A stand-in for the Jubilee team's reports and featured businesses (L2-105, L2-106). The
 // requests the app makes are kept so a test can prove what it sent (ADR 0009).
 
 export const REPORT_ID = '5b0c7a10-2d4e-4f6a-8b1c-0123456789ab';

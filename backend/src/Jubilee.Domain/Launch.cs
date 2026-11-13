@@ -45,8 +45,8 @@ public sealed class LaunchSubscriber
 
 /// <summary>
 /// The details an owner sent before launch, so that the Jubilee team can arrange for the listing to
-/// be on Jubilee on launch day (L2-216). It is not a listing and not a draft, and it verifies
-/// nothing: verification still applies to every listing. Every one sent is kept, because one owner
+/// be on Jubilee on launch day (L2-216). It is not a listing and not a draft, and it
+/// lists nothing: the owner publishes the listing once Jubilee opens. Every one sent is kept, because one owner
 /// may have two businesses.
 /// </summary>
 public sealed class BusinessPreRegistration

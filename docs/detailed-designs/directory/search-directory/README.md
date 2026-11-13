@@ -78,7 +78,7 @@ The feature is a vertical slice from the search box to the search index.
 - **`DatabaseSearchIndex`** — the implementation of `ISearchIndex` in
   `Jubilee.Infrastructure`. For each query it reads the public listings with
   their services and their products that are not deleted, and matches them with
-  `SearchAnalyzer`. It keeps no documents, so an approval, an edit, a pause, a
+  `SearchAnalyzer`. It keeps no documents, so a publish, an edit, a pause, a
   resume, a deletion, a moderation hold and a change to a service or a product
   each reach the next search (`L2-029` AC7), and only public listings are found
   (`L2-028`). It returns at most 20 hits of each kind; the counts are of all the
@@ -132,7 +132,7 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 | `L2-030` | `L1-004` | When a query matches nothing, the page shall say so, shall offer a close term and a search button for it when one exists, and shall link to the most relevant category or, with no close term, to all categories. |
 | `L2-031` | `L1-004` | The page `/search` with no query shall help the member start, with up to 5 recent searches and popular categories. |
 | `L2-032` | `L1-004` | The system shall truncate a query to 100 characters, shall treat a whitespace-only query as empty, shall render a query as text, and shall answer more than 60 searches a minute from one IP address with HTTP 429. |
-| `L2-028` | `L1-003` | Browse, category, search, featured and related lists shall show only listings that are verified and not paused, deleted or under a moderation hold. |
+| `L2-028` | `L1-003` | Browse, category, search, featured and related lists shall show only listings that are live and not paused, deleted or under a moderation hold. |
 | `L2-118` | `L1-016` | Every load-error state shall show a reference that the user can quote to support. |
 | `L2-133` | `L1-019` | The server shall check the caller's role and ownership of the specific object on every API endpoint, and shall answer a request for another member's object with 404. |
 | `L2-181` | `L1-025` | When the search index is unavailable, the application shall fall back to a database name search of the public listings and shall show results without match explanations. |

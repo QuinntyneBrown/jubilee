@@ -48,7 +48,6 @@ class ListingSummary {
   +name: string
   +tagline: string
   +categorySlug: string
-  +verified: boolean
   +coverPhoto: PhotoRef | null
 }
 
@@ -83,10 +82,6 @@ class CategoryTileMap {
   +tileFor(categorySlug: string): CategoryTile
 }
 
-class VerifiedBadge {
-  +label: string
-}
-
 class ClassNameAudit {
   +definedClasses(uiCssPath: string): Set<string>
   +check(templatePaths: string[]): AuditFinding[]
@@ -102,7 +97,6 @@ class AuditFinding {
 Button --> ButtonVariant : has
 BusinessCard --> ListingSummary : shows
 BusinessCard *-- MediaTile
-BusinessCard *-- "0..1" VerifiedBadge
 ListingSummary "1" o-- "0..1" PhotoRef : cover
 MediaTile --> MediaShape : has
 MediaTile ..> CategoryTileMap : asks

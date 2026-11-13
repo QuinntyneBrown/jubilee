@@ -8,7 +8,6 @@ interface FakeCard {
   tagline: string;
   highlight: string | null;
   categorySlug: string;
-  verified: boolean;
   coverPhoto: null;
 }
 
@@ -61,7 +60,6 @@ const card = (
   tagline,
   highlight,
   categorySlug,
-  verified: true,
   coverPhoto: null,
 });
 

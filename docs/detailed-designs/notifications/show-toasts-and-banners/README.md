@@ -2,7 +2,7 @@
 
 ## Overview
 
-Jubilee is Toronto's Christian marketplace, in which members message verified
+Jubilee is Toronto's Christian marketplace, in which members message
 businesses and send them requests. The notifications subsystem tells members
 and owners about events that concern them. This feature covers the two transient
 surfaces inside the page: toasts and banners. Both are components of the
@@ -88,9 +88,9 @@ come from design-system tokens.
 - **`Alert`** — component `jb-alert` that both banner components are built on.
   With the attribute `banner` it is also used directly by a page for a
   condition that page owns: `MyBusinessPage` shows "Your listing is paused."
-  with "Resume listing", the success banner "{Business} is verified and
-  live." and the informational "We're reviewing {Business}". The feature that
-  owns such a condition decides whether its banner can be dismissed.
+  with "Resume listing", and the warning "The statement of faith has been
+  updated." with "Read and agree" (L2-075). The feature that owns such a
+  condition decides whether its banner can be dismissed.
 - **Announcement** — each banner is a polite live region: a banner that appears
   or changes is announced and focus does not move.
 

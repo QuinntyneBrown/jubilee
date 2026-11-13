@@ -38,7 +38,7 @@ test.describe('run a business listing: My business (L2-085, L2-086, L2-096, L2-0
     await jb.goto(OVERVIEW);
 
     await expect(business.heading).toHaveText('Luzandre.com');
-    await expect(business.subtitle).toHaveText('Verified · live since June 2026');
+    await expect(business.subtitle).toHaveText('Live since June 2026');
     await expect(business.publicLink).toBeVisible();
     await expect(business.stat('Listing views, 7 days')).toContainText('312');
     await expect(business.stat('Listing views, 7 days')).toContainText('↑ 18% on last week');
@@ -48,8 +48,8 @@ test.describe('run a business listing: My business (L2-085, L2-086, L2-096, L2-0
     await expect(business.section(/^Requests/)).toContainText('3');
     await expect(business.listingCard).toContainText('4 products');
     await expect(business.listingCard).toContainText('1 sold out');
-    await expect(business.listingCard).toContainText('Verification');
-    await expect(business.listingCard).toContainText('Verified Jun 2026');
+    await expect(business.listingCard).toContainText('Live since Jun 2026');
+    await expect(business.listingCard).not.toContainText(/Verif/);
     await expect(business.listingCard).not.toContainText('Church reference');
   });
 
@@ -97,47 +97,18 @@ test.describe('run a business listing: My business (L2-085, L2-086, L2-096, L2-0
     await expect(toasts.withTitle('Order confirmed')).toBeVisible();
   });
 
-  test('L2-086: a submitted listing says it is being reviewed, with the progress and no numbers', async ({
+  test('L2-097 AC3: a listing that is not live yet gives its stage and no numbers', async ({
     page,
     jb,
   }) => {
     const business = new MyBusinessPage(page);
     await business.setWidth(1280);
-    await stubMyBusiness(page, { state: 'ready-to-review' });
+    await stubMyBusiness(page, { state: 'draft' });
     await jb.goto(OVERVIEW);
 
-    await expect(business.subtitle).toHaveText('Pending verification · submitted today');
-    await expect(business.alert.first()).toContainText('We’re reviewing Luzandre.com');
-    await expect(business.alert.first()).toContainText(
-      'You submitted it today. We review and publish within two business days.',
-    );
-    await expect(business.alert.first().getByRole('button')).toHaveCount(0);
-    await expect(business.timeline).toContainText([
-      'Listing submitted',
-      'Review by Jubilee',
-      'Live on Jubilee',
-    ]);
-    await expect(business.timeline.nth(1)).toHaveAttribute('aria-current', 'step');
-    await expect(business.publicLink).toHaveText(/Preview listing/);
+    await expect(business.subtitle).toHaveText('Draft · not published yet');
     await expect(business.stats).toHaveCount(0);
-  });
-
-  test('L2-086: when changes are requested the reviewer asks are shown with Edit listing', async ({
-    page,
-    jb,
-  }) => {
-    const business = new MyBusinessPage(page);
-    await business.setWidth(1280);
-    await stubMyBusiness(page, { state: 'changes-requested' });
-    await jb.goto(OVERVIEW);
-
-    await expect(business.subtitle).toHaveText('Changes requested · not public yet');
-    await expect(business.alert.first()).toContainText('Your tagline mentions a discount code');
-    await expect(business.alert.first()).toContainText('Two changes needed before we can publish');
-    await expect(business.alert.first()).toContainText(
-      'Miriam from the verification team, Mon 9 Nov.',
-    );
-    await expect(business.main.getByRole('link', { name: 'Edit listing' })).toBeVisible();
+    await expect(business.main).not.toContainText(/verif|\breview/i);
   });
 
   test('L2-086: a member with no business is invited to list one', async ({ page, jb }) => {
@@ -147,6 +118,12 @@ test.describe('run a business listing: My business (L2-085, L2-086, L2-096, L2-0
     await jb.goto(OVERVIEW);
 
     await expect(business.empty).toContainText('List your business free');
+    await expect(business.empty).toContainText(
+      'Tell members what you offer, agree to the statement of faith and publish. You’re live straight away. It takes about ten minutes.',
+    );
+    await expect(business.main.getByRole('link', { name: 'How verification works' })).toHaveCount(
+      0,
+    );
     await expect(business.listYours).toBeVisible();
     await expect(business.switcher).toHaveCount(0);
     await expect(business.listAnother).toHaveCount(0);
@@ -189,22 +166,6 @@ test.describe('run a business listing: My business (L2-085, L2-086, L2-096, L2-0
     await expect(forbidden.heading).toBeVisible();
     await expect(page).toHaveURL(/\/forbidden$/);
   });
-
-  test('L2-085: a listing just verified shows a banner that can be dismissed', async ({
-    page,
-    jb,
-  }) => {
-    const business = new MyBusinessPage(page);
-    await business.setWidth(1280);
-    await stubMyBusiness(page, { justApproved: true });
-    await jb.goto(OVERVIEW);
-
-    await expect(business.liveBanner).toContainText(
-      'Luzandre.com is verified and live. Members can find you in Shops.',
-    );
-    await business.liveBanner.getByRole('button', { name: 'Dismiss' }).click();
-    await expect(business.liveBanner).toHaveCount(0);
-  });
 });
 
 test.describe('run a business listing: more than one business (L2-079)', () => {
@@ -236,7 +197,7 @@ test.describe('run a business listing: more than one business (L2-079)', () => {
 
     await expect(business.switcherOptions).toHaveText([
       'Luzandre.com · Live',
-      'Laurent Photography · Pending verification',
+      'Laurent Photography · Live',
       'Laurent Studio · Draft',
     ]);
     await expect(business.switcher).toHaveValue('7c1d0000-0000-4000-8000-000000000001');
@@ -253,10 +214,10 @@ test.describe('run a business listing: more than one business (L2-079)', () => {
     await expect(business.heading).toHaveText('Luzandre.com');
 
     await business.switcher.focus();
-    await business.chooseBusiness('Laurent Photography · Pending verification');
+    await business.chooseBusiness('Laurent Photography · Live');
 
     await expect(business.heading).toHaveText('Laurent Photography');
-    await expect(business.subtitle).toHaveText('Pending verification · submitted today');
+    await expect(business.subtitle).toHaveText('Live since June 2026');
     await expect(business.switcher).toHaveValue(LAURENT_PHOTOGRAPHY);
 
     // The select is a native control and keeps focus, so the keyboard goes on choosing from it.
@@ -290,7 +251,7 @@ test.describe('run a business listing: more than one business (L2-079)', () => {
     await stubMyBusiness(page, { others: OTHER_BUSINESSES, choose: 'fails' });
     await jb.goto(OVERVIEW);
 
-    await business.chooseBusiness('Laurent Photography · Pending verification');
+    await business.chooseBusiness('Laurent Photography · Live');
 
     await expect(toasts.danger('We couldn’t switch businesses')).toContainText(
       'Luzandre.com is still shown. Try again.',
@@ -315,8 +276,9 @@ test.describe('run a business listing: pause and resume (L2-096)', () => {
     await business.pause.click();
     await expect(dialog.title).toHaveText('Pause Luzandre.com?');
     await expect(dialog.description).toContainText(
-      'Your listing is hidden from browse and search until you resume it. Your 3 open requests and your messages stay. You keep your verified status.',
+      'Your listing is hidden from browse and search until you resume it. Your 3 open requests and your messages stay.',
     );
+    await expect(dialog.description).not.toContainText('verified');
     await expect(dialog.keep).toBeFocused();
     await dialog.pause.click();
 
@@ -325,7 +287,7 @@ test.describe('run a business listing: pause and resume (L2-096)', () => {
       'It’s hidden from browse and search until you resume it.',
     );
     await expect(business.resume).toBeVisible();
-    await expect(business.subtitle).toHaveText('Verified · paused, not public');
+    await expect(business.subtitle).toHaveText('Paused · not public');
     expect(fake.pauses).toBe(1);
   });
 
@@ -376,24 +338,8 @@ test.describe('run a business listing: pause and resume (L2-096)', () => {
 
     await expect(toasts.withTitle('Listing resumed')).toBeVisible();
     await expect(business.pausedBanner).toHaveCount(0);
-    await expect(business.subtitle).toHaveText('Verified · live since June 2026');
+    await expect(business.subtitle).toHaveText('Live since June 2026');
     expect(fake.resumes).toBe(1);
-  });
-
-  test('L2-096 AC4: a listing paused for a year goes back to verification when resumed', async ({
-    page,
-    jb,
-  }) => {
-    const business = new MyBusinessPage(page);
-    const toasts = new Toasts(page);
-    await business.setWidth(1280);
-    await stubMyBusiness(page, { paused: true, resume: 'review' });
-    await jb.goto(OVERVIEW);
-
-    await business.resume.click();
-
-    await expect(toasts.withTitle('Back in the verification queue')).toBeVisible();
-    await expect(business.subtitle).toHaveText('Pending verification · submitted today');
   });
 });
 
@@ -541,6 +487,8 @@ test.describe('run a business listing: the editor (L2-087, L2-088)', () => {
     await jb.goto(EDITOR);
 
     await expect(editor.heading).toHaveText('Luzandre.com');
+    // L2-097 AC3: the workspace header says since when the listing is live
+    await expect(editor.subtitle).toHaveText('Live since June 2026');
     await expect(editor.name).toHaveValue('Luzandre.com');
     await expect(editor.tagline).toHaveValue(/^Unique & custom Christian apparel/);
     await expect(editor.counter).toHaveText('66 / 90');
@@ -646,10 +594,7 @@ test.describe('run a business listing: the editor (L2-087, L2-088)', () => {
     });
   });
 
-  test('L2-087 AC6: a new name is live at once and the owner is told the team will look again', async ({
-    page,
-    jb,
-  }) => {
+  test('L2-087 AC6: a new name is live at once and nothing is re-checked', async ({ page, jb }) => {
     const editor = new EditListingPage(page);
     await editor.setWidth(1280);
     await stubMyBusiness(page);
@@ -659,25 +604,7 @@ test.describe('run a business listing: the editor (L2-087, L2-088)', () => {
     await editor.save.click();
 
     await expect(editor.success).toContainText('Your changes are live now.');
-    await expect(editor.success).toContainText(
-      'Because you changed the name or category, the verification team will take another look within two business days. Your listing stays live.',
-    );
-  });
-
-  test('L2-087 AC6: a save that changes neither the name nor the category promises no re-check', async ({
-    page,
-    jb,
-  }) => {
-    const editor = new EditListingPage(page);
-    await editor.setWidth(1280);
-    await stubMyBusiness(page);
-    await jb.goto(EDITOR);
-
-    await editor.tagline.fill('Church tees printed in Toronto');
-    await editor.save.click();
-
-    await expect(editor.success).toContainText('Your changes are live now.');
-    await expect(editor.success).not.toContainText('verification team');
+    await expect(editor.success).not.toContainText(/verification|another look|re-check/);
   });
 
   test('L2-087: discarding puts the saved words back', async ({ page, jb }) => {

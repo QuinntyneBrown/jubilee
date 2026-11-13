@@ -10,7 +10,7 @@
 | Household | Divorced; shares custody of his daughter Kezia, 13, who is with him every other week |
 | Work | Commissioned used car salesman at an independent dealership on Kingston Road for 12 years; a registered salesperson |
 | Church | Pentecostal church in east Scarborough, with a large Caribbean congregation; he is an usher and serves in the men's ministry |
-| Role on Jubilee | Member. He has drafted and submitted a listing; it is in "Changes requested", so he is not yet an Owner in any way a member can see |
+| Role on Jubilee | Member. He has drafted a listing and not published it, because nothing tells him whether an employee may list, so he is not yet an Owner in any way a member can see |
 | Devices and comfort with technology | His phone, between customers on the lot; the shared desktop at the dealership for anything long. Comfortable: he works leads in a sales system every day |
 
 ## Story

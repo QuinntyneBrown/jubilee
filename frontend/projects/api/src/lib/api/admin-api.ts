@@ -9,22 +9,15 @@ import {
   ReportFilter,
   ReportList,
 } from '../models/moderation';
-import {
-  DecisionResult,
-  QueueStage,
-  ReviewCheck,
-  VerificationQueue,
-  VerificationReview,
-} from '../models/verification';
+import { AdminListing, AdminListings } from '../models/admin-listings';
 
-/** Contract of the verification team's endpoints (L2-098 to L2-104). */
+/** Contract of the Jubilee team's endpoints (L2-098 to L2-106, ADR 0057). */
 export interface AdminApi {
-  queue(stage: QueueStage | null, search: string): Observable<VerificationQueue>;
-  review(id: string): Observable<VerificationReview>;
-  saveChecklist(id: string, ticked: string[]): Observable<ReviewCheck[]>;
-  approve(id: string, note: string | null): Observable<DecisionResult>;
-  requestChanges(id: string, areas: string[], message: string): Observable<DecisionResult>;
-  decline(id: string, reason: string): Observable<DecisionResult>;
+  /** Every published listing, newest first, or those whose name contains `search` (L2-099). */
+  listings(search: string): Observable<AdminListings>;
+  listing(id: string): Observable<AdminListing>;
+  /** Takes a listing off Jubilee and e-mails the owner the reason (L2-101). */
+  takeDown(id: string, reason: string): Observable<AdminListing>;
   reports(filter: ReportFilter): Observable<ReportList>;
   /** Opens a report: it moves to review and a reported conversation's messages come with it (L2-105, L2-063). */
   openReport(id: string): Observable<ReportDetail>;
@@ -45,34 +38,18 @@ export const ADMIN_API = new InjectionToken<AdminApi>('ADMIN_API');
 export class HttpAdminApi implements AdminApi {
   private readonly http = inject(HttpClient);
 
-  queue(stage: QueueStage | null, search: string): Observable<VerificationQueue> {
+  listings(search: string): Observable<AdminListings> {
     const params: Record<string, string> = {};
-    if (stage) params['stage'] = stage;
     if (search) params['q'] = search;
-    return this.http.get<VerificationQueue>('/api/admin/verifications', { params });
+    return this.http.get<AdminListings>('/api/admin/listings', { params });
   }
 
-  review(id: string): Observable<VerificationReview> {
-    return this.http.get<VerificationReview>(`/api/admin/verifications/${id}`);
+  listing(id: string): Observable<AdminListing> {
+    return this.http.get<AdminListing>(`/api/admin/listings/${id}`);
   }
 
-  saveChecklist(id: string, ticked: string[]): Observable<ReviewCheck[]> {
-    return this.http.put<ReviewCheck[]>(`/api/admin/verifications/${id}/checklist`, { ticked });
-  }
-
-  approve(id: string, note: string | null): Observable<DecisionResult> {
-    return this.http.post<DecisionResult>(`/api/admin/verifications/${id}/approve`, { note });
-  }
-
-  requestChanges(id: string, areas: string[], message: string): Observable<DecisionResult> {
-    return this.http.post<DecisionResult>(`/api/admin/verifications/${id}/request-changes`, {
-      areas,
-      message,
-    });
-  }
-
-  decline(id: string, reason: string): Observable<DecisionResult> {
-    return this.http.post<DecisionResult>(`/api/admin/verifications/${id}/decline`, { reason });
+  takeDown(id: string, reason: string): Observable<AdminListing> {
+    return this.http.post<AdminListing>(`/api/admin/listings/${id}/take-down`, { reason });
   }
 
   reports(filter: ReportFilter): Observable<ReportList> {

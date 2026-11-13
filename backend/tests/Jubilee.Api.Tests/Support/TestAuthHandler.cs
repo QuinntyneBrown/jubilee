@@ -25,7 +25,7 @@ public sealed class TestAuthHandler(
     /// <summary>The session's subject; without it the subject follows from the name.</summary>
     public const string SubjectHeader = "X-Test-Subject";
 
-    /// <summary>A role of the session, for example <c>verifier</c>.</summary>
+    /// <summary>A role of the session, for example <c>moderator</c>.</summary>
     public const string RoleHeader = "X-Test-Role";
 
     protected override async Task<AuthenticateResult> HandleAuthenticateAsync()

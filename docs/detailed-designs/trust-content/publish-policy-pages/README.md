@@ -2,7 +2,7 @@
 
 ## Overview
 
-Jubilee is Toronto's Christian marketplace: a directory of verified
+Jubilee is Toronto's Christian marketplace: a directory of
 Christian-owned businesses. Trust in the directory rests on four public pages
 that say what Jubilee stands for and how it works. This feature covers those
 pages: the statement of faith at `/statement-of-faith`, the terms of use at
@@ -31,8 +31,8 @@ content tables in the `Jubilee database`.
 
 - **`StatementOfFaithPage`** — Angular page at `/statement-of-faith`. It shows
   the introduction ("Jubilee is open to everyone as a customer…"), "What we
-  believe", "How we do business" with four commitments, "How a listing is
-  confirmed" with a link to Help, and "Last updated {date}".
+  believe", "How we do business" with four commitments, "How listings stay
+  honest" with a link to Help, and "Last updated {date}".
 - **`TermsPage`** — Angular page at `/terms`. It shows "Your account" (18 or
   older, real name), "Listings", "Requests and payment" ("Jubilee does not take
   payment or hold funds; you pay the business directly."), "Conduct" and "Last
@@ -42,13 +42,18 @@ content tables in the `Jubilee database`.
   the account page, and "Last updated {date}". The published text names the
   privacy contact and explains how to request access or correction, as PIPEDA
   requires; the contact is the placeholder address `privacy@jubilee.example` until the owner supplies the real one (ADR 0030).
-- **`HelpPage`** — Angular page at `/help`. It shows the questions "How does a
-  business get verified?", "Does Jubilee take payment?", "Is it free?", "Who can
-  see my messages?" and "How do I report a listing?" with their answers.
+- **`HelpPage`** — Angular page at `/help`. It shows the questions "How does
+  Jubilee keep listings honest?", "Does Jubilee take payment?", "Is it free?",
+  "Who can see my messages?" and "How do I report a listing?" with their
+  answers. The first answers "Every owner agrees to Jubilee's statement of faith
+  and to deal honestly with every customer when they list. If a listing isn't
+  honest about its business, report it from the listing page: the Jubilee team
+  reads every report and takes down listings that misrepresent a business."
+  (ADR 0057).
 - **`HelpDisclosure`** — Angular component for one question. It renders a
   `button` with `aria-expanded` that opens by Enter and Space, and an element ID
   equal to the section's anchor (for example
-  `/help#how-does-a-business-get-verified`). `HelpPage` opens and scrolls to the
+  `/help#how-does-jubilee-keep-listings-honest`). `HelpPage` opens and scrolls to the
   disclosure whose anchor matches the URL fragment.
 - **`PolicyPageLayout`** — shared Angular layout for the four pages: heading,
   section list and the "Last updated {date}" line, formatted from
@@ -87,7 +92,7 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 
 | L2 ID | Refines (L1) | Requirement |
 |-------|--------------|-------------|
-| `L2-107` | `L1-015` | The system shall show the statement of faith at `/statement-of-faith` with its introduction, "What we believe", "How we do business", "How a listing is confirmed" and "Last updated {date}". The statement's text shall be managed as versioned content without a code deployment, and previous versions shall be kept. |
+| `L2-107` | `L1-015` | The system shall show the statement of faith at `/statement-of-faith` with its introduction, "What we believe", "How we do business", "How listings stay honest" with a link to Help, and "Last updated {date}". The statement's text shall be managed as versioned content without a code deployment, and previous versions shall be kept. |
 | `L2-108` | `L1-015` | The system shall show the terms of use at `/terms` with the sections "Your account", "Listings", "Requests and payment", "Conduct" and "Last updated {date}". A visitor who creates an account shall confirm being 18 or older as part of agreeing to the terms, and the terms version shall be recorded. |
 | `L2-109` | `L1-015` | The system shall show the privacy notice at `/privacy` with "What we keep", "Your choices" and "Last updated {date}". The notice shall name the privacy contact and explain how to request access or correction, as PIPEDA requires. |
 | `L2-110` | `L1-015` | The system shall show the help page at `/help` with its five questions and answers and the contact line with "E-mail help@jubilee.example". Each question shall be a disclosure button with `aria-expanded` that opens by keyboard and has an anchor for direct links. |
@@ -97,8 +102,8 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 
 ### System context
 
-Visitors and members read the policy pages. A `Verification team member` with
-the `Admin` role publishes new versions of the text.
+Visitors and members read the policy pages. A Jubilee administrator, a staff
+account with the `Admin` role, publishes new versions of the text.
 
 ![C4 system context for publishing policy pages](diagrams/c4-context.png)
 

@@ -25,7 +25,7 @@ test.describe('marketing home page (L2-183)', () => {
     await expect(home.heading).toHaveText('Toronto’s Christian businesses, in one place.');
     await expect(home.badge).toHaveText('Launching soon');
     await expect(home.lead).toHaveText(
-      'Jubilee is where Toronto’s Christian community will find shops, advisors and trades it can trust. Every business is verified before it appears. We are launching soon.',
+      'Jubilee is where Toronto’s Christian community will find shops, advisors and trades it can trust. We are launching soon.',
     );
     await expect(home.tellMe).toBeVisible();
     await expect(home.watchTheFilm).toBeVisible();
@@ -54,12 +54,12 @@ test.describe('marketing home page (L2-183)', () => {
     await jb.open('marketing-home');
     await expect(home.glimpseSearch).toHaveText('Home repairs near Leslieville');
     await expect(home.glimpseCaption).toHaveText('Home & property · a preview');
-    // Each name carries the Verified mark as text for assistive technology, not as colour alone
+    // ADR 0057: the names carry no Verified mark
     await expect(home.glimpseNames).toHaveText([
-      'WaterWorks Plumbing & Drains Verified',
-      'Norris Roofing & Contracting Verified',
-      'Moore’s Cleaning Service Verified',
-      'Tony’s Flooring Centre Verified',
+      'WaterWorks Plumbing & Drains',
+      'Norris Roofing & Contracting',
+      'Moore’s Cleaning Service',
+      'Tony’s Flooring Centre',
     ]);
     await expect(home.glimpseTaglines).toHaveText([
       'Treating Every Customer As Family',
@@ -68,7 +68,7 @@ test.describe('marketing home page (L2-183)', () => {
       'Family owned and operated since 1961',
     ]);
     await expect(home.glimpseNotes).toHaveText([
-      'Verified by the Jubilee team',
+      'Every owner agrees to our statement of faith',
       'Message a business directly',
     ]);
   });
@@ -83,7 +83,7 @@ test.describe('marketing home page (L2-183)', () => {
       'The recommendations you already ask your church for, gathered in one place and ready when you need them.',
     );
     await expect(home.benefits).toHaveText([
-      'Know who you’re dealing with. Every business is verified by the Jubilee team before it appears. No more guessing from star ratings.',
+      'Know who you’re dealing with. Every owner agrees to Jubilee’s statement of faith and to deal honestly with every customer. No more guessing from star ratings.',
       'Keep your money in the community. Every purchase supports a family that shares your faith and your city, and helps them build something lasting.',
       'Find it in seconds, not Sundays. A plumber, a lawyer, a study Bible. Look in one place instead of asking around after service.',
     ]);
@@ -97,7 +97,7 @@ test.describe('marketing home page (L2-183)', () => {
       'Reach believers across Toronto who would rather buy from someone who shares their faith.',
     );
     await expect(home.points).toHaveText([
-      'Customers who already trust youThe Verified mark travels with your listing, so first conversations start warm.',
+      'Customers who already trust youBelievers across Toronto look for businesses that share their faith, so first conversations start warm.',
       'A page that sells for youShow your products or services, prices and story. Update it whenever you like.',
       'Free to joinNo listing fees and no cut of your sales. Just honest business, done well.',
     ]);
@@ -144,9 +144,8 @@ test.describe('marketing home page (L2-183)', () => {
       'Ships across Canada',
       'Book a consultation',
     ]);
-    // The Verified mark is an icon and the word, never colour alone
-    await expect(home.cardVerified).toHaveText(Array(5).fill('Verified'));
-    await expect(home.cardVerifiedIcons).toHaveCount(5);
+    // ADR 0057: no card calls a business verified
+    await expect(home.cards.filter({ hasText: 'Verified' })).toHaveCount(0);
     await expect(home.featuredCards).toHaveCount(1);
     await expect(home.featuredCards).toContainText('Legacy Financial');
   });
@@ -256,7 +255,7 @@ test.describe('launching-soon marketing page (L2-215)', () => {
     const home = new MarketingHomePage(page);
     await jb.open('marketing-home');
     await expect(home.preRegister).toContainText(
-      'Send your business’s details now and the Jubilee team will be in touch before launch to prepare your listing. Sending this form does not list or verify your business: every business is verified before it appears.',
+      'Send your business’s details now and the Jubilee team will be in touch before launch to prepare your listing. Sending this form does not list your business yet.',
     );
     await expect(home.notify).toContainText(
       'Leave your e-mail address and we will tell you the day Jubilee opens. One e-mail, and nothing else.',
@@ -277,6 +276,7 @@ test.describe('launching-soon marketing page (L2-215)', () => {
       'See all',
       '47',
       '11 verified',
+      'verified',
       'replied in',
       'open for business',
       'List your business free',

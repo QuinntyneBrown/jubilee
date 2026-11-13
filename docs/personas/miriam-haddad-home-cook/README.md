@@ -33,7 +33,7 @@ order, and to be told about allergies, and she repeats all three in every call.
 ## What worries her
 
 - The rules for selling food made at home. She has heard there are some and has never been sure
-  which apply to her, and she fears verification will ask.
+  which apply to her, and she fears that listing will make her answerable for them.
 - That no category is for food.
 - That writing it all down makes it a "business", with all that follows.
 

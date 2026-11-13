@@ -5,10 +5,10 @@ title System Context — Report a conversation
 
 Person(member, "Member", "Participant who mutes or reports and may block the business")
 Person(owner, "Owner", "Participant who mutes or reports or is blocked")
-Person(verifier, "Verification team member", "Reviews reported conversations")
+Person(moderator, "Jubilee team member", "Reviews reported conversations")
 System(jubilee, "Jubilee", "Toronto's Christian marketplace")
 
 Rel(member, jubilee, "Mutes and reports a conversation and blocks a business using")
 Rel(owner, jubilee, "Mutes and reports a conversation and sends messages using")
-Rel(verifier, jubilee, "Reads reported conversations using")
+Rel(moderator, jubilee, "Reads reported conversations using")
 @enduml

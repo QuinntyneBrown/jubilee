@@ -2,8 +2,8 @@
 
 ## Overview
 
-Jubilee is Toronto's Christian marketplace: a directory of businesses that the
-Jubilee verification team has verified. The directory is
+Jubilee is Toronto's Christian marketplace: a directory of Christian-owned
+businesses, each published by its owner. The directory is
 divided into eleven fixed categories: Shops, Rooms & rentals, Financial & insurance, Legal &
 immigration, Home & property, Real estate & living, Health & family, Business &
 tech, Learning, Media and Community. This feature covers the page that lists the
@@ -11,13 +11,13 @@ businesses of one category at `/c/:category`.
 
 A visitor or member opens a category from the browse home, from a breadcrumb or
 from a shared link. The page shows the breadcrumb "Browse / Home & property",
-the category heading, the line "{n} verified businesses", an optional category
+the category heading, the line "{n} businesses", an optional category
 fact such as "3 take emergency calls", filter chips, a "Filters" button, a
 "Sort" control and one business card per result. Only live listings appear.
 
 The feature uses the following local terms.
 
-- **live listing** — listing that is verified and not paused, deleted or under a moderation hold
+- **live listing** — listing that its owner published and that is not paused, deleted or under a moderation hold
 - **filter group** — set of filter values of one kind; the two groups are "Offers" and "Area served"
 - **category query** — combination of filters, sort order and page number that the query string of the page URL carries
 - **category fact** — short count shown beside the business count, derived from one offer filter
@@ -76,7 +76,7 @@ The feature is a read-only vertical slice from the Angular page to the database.
 - **`ListingSortPolicy`** — domain service that maps `ListingSort` to an
   ordering. `NameAscending` orders by `Listing.SortName`, a stored form of the
   name that is case-folded, stripped of accents and stripped of a leading
-  "The". `Newest` orders by `Listing.ApprovedAt`, the date of verification, descending. `Recommended`
+  "The". `Newest` orders by `Listing.PublishedAt`, the date the listing was published (renamed from `ApprovedAt`, ADR 0057), descending. `Recommended`
   orders by `Listing.RecommendedScore` descending and then by `SortName`.
 - **`Listing.RecommendedScore`** — stored score that combines profile
   completeness, response time and recency. The score is `0.5 × completeness + 0.3 × responsiveness +
@@ -122,7 +122,7 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 | `L2-024` | `L1-003` | Filters shall narrow a category by offer attributes and area served. From 768 px the filters shall be inline chips; below 768 px they shall open in a sheet. |
 | `L2-025` | `L1-003` | Category results shall be sortable by Recommended, Newest or Name A–Z. |
 | `L2-026` | `L1-003` | Long categories shall be paged 16 businesses at a time. |
-| `L2-028` | `L1-003` | Browse, category, search, featured and related lists shall show only listings that are verified and not paused, deleted or under a moderation hold. |
+| `L2-028` | `L1-003` | Browse, category, search, featured and related lists shall show only listings that are live and not paused, deleted or under a moderation hold. |
 | `L2-113` | `L1-016` | An unknown URL, a removed listing or a resource the user may not know exists shall produce a 404 response and the not-found page. |
 | `L2-118` | `L1-016` | Every load-error state shall show a reference that the user can quote to support. |
 | `L2-202` | `L1-028` | `/c/rooms-rentals` shall list the space cards newest first, 16 to a page, filtered by the term carried in the URL, without the business filters or "Sort", and shall end with "List a space". |

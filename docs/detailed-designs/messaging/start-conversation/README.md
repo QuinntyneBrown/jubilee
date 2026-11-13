@@ -2,7 +2,7 @@
 
 ## Overview
 
-Jubilee is Toronto's Christian marketplace: a directory of verified
+Jubilee is Toronto's Christian marketplace: a directory of
 Christian-owned businesses that members find, message and send requests to.
 Messaging is the private channel between one member and one business. This
 feature covers the first step of that channel: a member presses "Message" on a

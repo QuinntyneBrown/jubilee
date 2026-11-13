@@ -1,0 +1,21 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Take down a listing
+Person(moderator, "Jubilee team member", "Takes down a listing that misrepresents a business")
+System_Boundary(jubilee, "Jubilee") {
+  Container(web, "Jubilee Admin Web", "Angular single-page application", "Listing page and take-down dialog")
+  Container(api, "Jubilee API", "ASP.NET Core", "Listing and take-down endpoints under /api/admin/listings")
+  Container(worker, "Jubilee Worker", ".NET worker service", "Dispatches the outbox e-mails")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Listings and notifications and audit records and outbox")
+  ContainerDb(cache, "Cache", "Redis", "Directory read cache")
+}
+System_Ext(email, "E-mail provider", "Delivers the takedown e-mail")
+
+Rel(moderator, web, "Uses", "HTTPS")
+Rel(web, api, "Calls", "JSON/HTTPS")
+Rel(api, db, "Reads and writes", "EF Core")
+Rel(api, cache, "Drops the directory read cache after the save")
+Rel(worker, db, "Reads outbox messages", "EF Core")
+Rel(worker, email, "Sends the takedown e-mail", "HTTPS")
+@enduml

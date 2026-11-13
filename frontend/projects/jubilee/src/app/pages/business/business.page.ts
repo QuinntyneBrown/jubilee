@@ -30,7 +30,6 @@ import {
   MediaTile,
   ProductCard,
   ServiceRow,
-  VerifiedBusinessLabel,
   categoryTile,
   Button,
   Alert,
@@ -118,17 +117,14 @@ interface DetailRow {
 }
 
 const STATUS_WORDS: Record<ListingStatus, string> = {
-  live: 'Verified · live',
-  draft: 'Draft · not submitted yet',
-  'ready-to-review': 'Pending verification',
-  'changes-requested': 'Changes requested · not public yet',
-  declined: 'Declined · not public',
-  paused: 'Verified · paused, not public',
+  live: 'Live',
+  draft: 'Draft · not published yet',
+  paused: 'Paused · not public',
   'on-hold': 'On hold while we look into a report · not public',
 };
 
 /**
- * The listing page at /b/:slug (L2-033): header with the verified label and the actions, the
+ * The listing page at /b/:slug (L2-033): header with the category and the actions, the
  * services, About, Details and "More in {category}". Actions of later journeys are links to
  * their routes (ADR 0007).
  */
@@ -146,7 +142,6 @@ const STATUS_WORDS: Record<ListingStatus, string> = {
     MediaTile,
     ProductCard,
     ServiceRow,
-    VerifiedBusinessLabel,
     Button,
     Alert,
     RowListSkeleton,

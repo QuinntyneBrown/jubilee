@@ -3,12 +3,12 @@
     headingId="pre-register-title"
     text="Be listed"
     accent="on launch day."
-    lead="Send your business’s details now and the Jubilee team will be in touch before launch to prepare your listing. Sending this form does not list or verify your business: every business is verified before it appears."
+    lead="Send your business’s details now and the Jubilee team will be in touch before launch to prepare your listing. Sending this form does not list your business yet."
   />
   @if (view() === 'sent') {
     <div jb-launch-confirmation heading="Thank you. We have your details.">
       The Jubilee team will be in touch at {{ sentTo() }} before launch. Your business is not listed
-      or verified yet: every business is verified before it appears.
+      yet.
     </div>
   } @else {
     <form jb-launch-form aria-label="Business pre-registration" (submit)="send($event)">

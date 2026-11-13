@@ -25,8 +25,8 @@ public static class JubileeCli
           migrate   Apply the EF Core migrations (SQL Server) or create the schema from the model (SQLite).
           seed      Add the demo directory. Safe to run again.
           reset     Delete the database.
-          staff grant  --email {address} --role verifier|admin   Give a staff account a role (creates the account).
-          staff revoke --email {address} --role verifier|admin   Take a role away and end the account's staff sessions.
+          staff grant  --email {address} --role moderator|admin   Give a staff account a role (creates the account).
+          staff revoke --email {address} --role moderator|admin   Take a role away and end the account's staff sessions.
           staff list                                             Print each staff account and its roles.
           launch list --kind notifications|businesses            Print the launch sign-ups or the business pre-registrations as CSV.
         """;

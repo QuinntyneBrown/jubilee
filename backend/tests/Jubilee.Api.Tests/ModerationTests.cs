@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Jubilee.Api.Tests;
 
 // Moderate reports and feature businesses: L2-063 AC3, L2-105, L2-106, L2-133, L2-150 AC1 and L2-180.
-// Joanna reports Legacy Financial, which Trevor owns; Miriam of the verification team resolves the report.
+// Joanna reports Legacy Financial, which Trevor owns; Miriam of the Jubilee team resolves the report.
 // "Today" is Tuesday 10 November 2026.
 public sealed class ModerationTests : IClassFixture<JubileeApiFactory>, IAsyncLifetime
 {
@@ -29,7 +29,7 @@ public sealed class ModerationTests : IClassFixture<JubileeApiFactory>, IAsyncLi
 
     private HttpClient AsTrevor() => _factory.CreateMemberClient("Trevor Chew", Trevor);
 
-    private HttpClient AsMiriam() => _factory.CreateStaffClient("Miriam Castillo", "member|miriam", "verifier");
+    private HttpClient AsMiriam() => _factory.CreateStaffClient("Miriam Castillo", "member|miriam", "moderator");
 
     private static async Task<JsonElement> Json(HttpResponseMessage response) =>
         JsonDocument.Parse(await response.Content.ReadAsStringAsync()).RootElement;
@@ -188,7 +188,7 @@ public sealed class ModerationTests : IClassFixture<JubileeApiFactory>, IAsyncLi
 
     // L2-105 AC2
     [Fact]
-    public async Task L2_105_AC2_a_message_to_the_reporter_reaches_them_from_the_verification_team_and_keeps_the_report_in_review()
+    public async Task L2_105_AC2_a_message_to_the_reporter_reaches_them_from_the_jubilee_team_and_keeps_the_report_in_review()
     {
         var id = await ReportedListing();
         var miriam = AsMiriam();
@@ -197,8 +197,26 @@ public sealed class ModerationTests : IClassFixture<JubileeApiFactory>, IAsyncLi
 
         Assert.Equal("in-review", (await Json(response)).GetProperty("status").GetString());
         var item = Assert.Single((await Json(await AsJoanna().GetAsync("/api/notifications"))).GetProperty("items").EnumerateArray());
-        Assert.Equal("Message from the Jubilee verification team", item.GetProperty("title").GetString());
+        Assert.Equal("Message from the Jubilee team", item.GetProperty("title").GetString());
         Assert.Equal("Thank you. Could you tell us which address you visited?", item.GetProperty("detail").GetString());
+    }
+
+    // ADR 0057: what the owner is told of a hold, its lifting and a removal comes from the Jubilee team
+    [Theory]
+    [InlineData("hold")]
+    [InlineData("remove")]
+    public async Task L2_105_AC3_the_owner_is_told_in_the_name_of_the_jubilee_team(string kind)
+    {
+        var id = await ReportedListing();
+        await Act(AsMiriam(), id, kind);
+        if (kind == "hold")
+        {
+            await Act(AsMiriam(), id, "lift-hold");
+        }
+
+        var notifications = await (await AsTrevor().GetAsync("/api/notifications")).Content.ReadAsStringAsync();
+        Assert.Contains("Jubilee team", notifications);
+        Assert.DoesNotContain("verification", notifications, StringComparison.OrdinalIgnoreCase);
     }
 
     // L2-105 AC2, AC5
@@ -211,7 +229,7 @@ public sealed class ModerationTests : IClassFixture<JubileeApiFactory>, IAsyncLi
 
         var notifications = await (await AsTrevor().GetAsync("/api/notifications")).Content.ReadAsStringAsync();
         Assert.Contains("Please confirm your office address.", notifications);
-        Assert.Contains("Message from the Jubilee verification team", notifications);
+        Assert.Contains("Message from the Jubilee team", notifications);
         Assert.DoesNotContain("Joanna", notifications);
         Assert.DoesNotContain(Joanna, notifications);
     }
@@ -351,7 +369,7 @@ public sealed class ModerationTests : IClassFixture<JubileeApiFactory>, IAsyncLi
 
     // L2-098 AC5 applied to reports
     [Fact]
-    public async Task L2_098_AC5_a_verifier_cannot_act_on_a_report_of_their_own_listing()
+    public async Task L2_098_AC5_a_moderator_cannot_act_on_a_report_of_their_own_listing()
     {
         await _factory.Arrange(OwnedBy(ListingMother.Public("legacy-financial", "financial-insurance", "Legacy Financial"), "member|miriam"));
         var created = await AsJoanna().PostAsJsonAsync("/api/listings/legacy-financial/reports", new { reason = "other", description = "x" });
@@ -365,7 +383,7 @@ public sealed class ModerationTests : IClassFixture<JubileeApiFactory>, IAsyncLi
 
     // L2-133 AC1, AC5, L2-098 AC1
     [Fact]
-    public async Task L2_133_a_member_without_the_verifier_role_is_refused_by_every_report_endpoint()
+    public async Task L2_133_a_member_without_the_moderator_role_is_refused_by_every_report_endpoint()
     {
         var id = await ReportedListing();
         var joanna = AsJoanna();
@@ -502,7 +520,7 @@ public sealed class ModerationTests : IClassFixture<JubileeApiFactory>, IAsyncLi
 
     // L2-106 AC1
     [Fact]
-    public async Task L2_106_AC1_a_verifier_chooses_up_to_five_live_listings_and_they_show_on_the_browse_home_from_the_start_date()
+    public async Task L2_106_AC1_a_moderator_chooses_up_to_five_live_listings_and_they_show_on_the_browse_home_from_the_start_date()
     {
         var names = new[] { "Alpha", "Bravo", "Charlie", "Delta", "Echo" };
         var ids = new List<Guid>();
@@ -524,7 +542,7 @@ public sealed class ModerationTests : IClassFixture<JubileeApiFactory>, IAsyncLi
         Assert.Equal(names.Reverse(), home.GetProperty("featured").EnumerateArray().Select(l => l.GetProperty("name").GetString()!).ToArray());
     }
 
-    // L2-106 AC1: from the start date, for seven days; outside it the pages show the newest verified listings
+    // L2-106 AC1: from the start date, for seven days; outside it the pages show the newest published listings
     [Fact]
     public async Task L2_106_AC1_the_selection_shows_from_its_start_date_for_seven_days()
     {
@@ -688,7 +706,7 @@ public sealed class ModerationTests : IClassFixture<JubileeApiFactory>, IAsyncLi
 
     // L2-133 AC1, AC5
     [Fact]
-    public async Task L2_133_a_member_without_the_verifier_role_is_refused_by_every_featured_endpoint()
+    public async Task L2_133_a_member_without_the_moderator_role_is_refused_by_every_featured_endpoint()
     {
         var alpha = ListingMother.Public("alpha", "home-property", "Alpha");
         await _factory.Arrange(alpha);

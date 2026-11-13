@@ -12,7 +12,7 @@ on the bus home, on mobile data.
 
 | Step | What André does | What Jubilee shows | What André thinks or feels |
 |---|---|---|---|
-| 1 | Opens the shared link | The space page: "Verified host · Scarborough", "Long term", the rent per month, "12-month lease min.", "Request a viewing", "Message host", "You won’t pay anything until the host accepts." | He can read all of it without an account. The rent is $2,950. Too high, but the first owner here has a name and a face |
+| 1 | Opens the shared link | The space page: "Scarborough", "Long term", the rent per month, "12-month lease min.", "Request a viewing", "Message host", "You won’t pay anything until the host accepts." | He can read all of it without an account. The rent is $2,950. Too high, but the first owner here has a name and a face |
 | 2 | Presses "Request a viewing" | The sign-in prompt, with "Sign in" and "Join free" | Fair. He waits for the library, to save data |
 | 3 | Next morning at the library, opens `/join` | "Join Jubilee", "Free for everyone in Toronto’s Christian community." | "Free" matters. He types his name, e-mail and a password, and leaves Home church for now |
 | 4 | Ticks the checkbox and submits | "Check your e-mail": a link that works once, for 24 hours | Friction: his e-mail is on his phone, and the library session has 20 minutes left. He confirms on the phone and signs in again on the computer |

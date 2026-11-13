@@ -64,7 +64,7 @@ public sealed class DraftItem
 /// <summary>
 /// A listing the member is still filling in (L2-077). Nothing is public until it is submitted, and
 /// every field may be empty or invalid while it is a draft. Submitting turns it into a
-/// <see cref="Listing"/> the verification team reviews.
+/// published <see cref="Listing"/>.
 /// </summary>
 public sealed class ListingDraft
 {

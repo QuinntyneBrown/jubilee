@@ -15,7 +15,7 @@ box "Backend — Jubilee API" #ECFDF3
   participant "StaffProxyMiddleware" as key
   participant "StaffNetworkMiddleware" as net
 end box
-actor -> appfront : GET app.jubilee.to/api/admin/verifications\nX-Forwarded-For: 203.0.113.5 (forged)
+actor -> appfront : GET app.jubilee.to/api/admin/listings\nX-Forwarded-For: 203.0.113.5 (forged)
 appfront -> appproxy : X-Forwarded-For: 203.0.113.5, caller address
 appproxy -> fwd : From loopback
 fwd -> key : Remote address = caller address (last entry)

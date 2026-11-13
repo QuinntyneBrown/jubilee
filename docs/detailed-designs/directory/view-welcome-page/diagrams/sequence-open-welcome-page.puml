@@ -55,7 +55,7 @@ else Visitor
     selector -> db : Load current FeaturedSlot rows with public listings (L2-106)
     db --> selector : Featured listings or none
     opt No current slot
-      selector -> db : Load the 4 most recently verified public listings
+      selector -> db : Load the 4 most recently published public listings
       db --> selector : Listings
     end
     selector --> handler : Up to 4 listings

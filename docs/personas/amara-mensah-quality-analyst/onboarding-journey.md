@@ -13,8 +13,8 @@ on a Tuesday, with her son asleep on her left arm.
 
 | Step | What Amara does | What Jubilee shows | What Amara thinks or feels |
 |---|---|---|---|
-| 1 | Opens the shared link as a visitor. | The lawyer's listing page: the Verified mark, services, "Book a meeting", "Message". | No wall, no pop-up asking her to join first. She approves. |
-| 2 | Scrolls to the footer and opens "Help" to find what "Verified" means. | The help pages, and the statement of faith linked beside them. | She wants to know who checks and what they check. She reads for six minutes. |
+| 1 | Opens the shared link as a visitor. | The lawyer's listing page: the category, services, "Book a meeting", "Message". | No wall, no pop-up asking her to join first. She approves. |
+| 2 | Scrolls to the footer and opens "Help" to find who stands behind a listing. | "How does Jubilee keep listings honest?", and the statement of faith linked beside it. | She wants to know what an owner promises and what happens when one lies. She reads for six minutes. |
 | 3 | Goes back and presses "Book a meeting". | The sign-in prompt, with "Sign in" and "Join free". | Expected. She checks that the prompt opens as a sheet she can reach with her thumb. It does. |
 | 4 | Joins with Google, one-handed. | An account from her Google name and e-mail, already confirmed, then the agreement to the statement of faith and terms. | The right choice at 3 a.m.: no password to type. She reads the terms later, properly. |
 | 5 | Returns to the listing and presses "Book a meeting" again. | "Ask for a time. {Owner} confirms it or suggests another; nothing is charged." Service, Day, How (video call or in person), Time, "What would you like to talk about?" | She tries a Sunday first, to see what happens. It cannot be selected. Good. |

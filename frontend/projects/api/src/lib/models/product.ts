@@ -16,7 +16,7 @@ export interface ProductPage {
   /** For example "plus $9 shipping, or free pickup". */
   deliveryLine: string | null;
   tile: ProductCard['tile'];
-  shop: { slug: string; name: string; verified: boolean };
+  shop: { slug: string; name: string };
   description: string | null;
   attributes: { label: string; value: string }[];
   /** What the options choose, for example "Size"; null without options. */

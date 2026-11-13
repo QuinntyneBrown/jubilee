@@ -4,15 +4,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Jubilee.Application.Navigation;
 
-public sealed record GetNavigationSummaryQuery(string? Subject = null, bool IsVerifier = false) : IRequest<NavigationSummary>;
+public sealed record GetNavigationSummaryQuery(string? Subject = null, bool IsModerator = false) : IRequest<NavigationSummary>;
 
 public sealed record NavigationSummary(
     int UnreadConversationCount,
     int UnreadNotificationCount,
     int NewRequestCount,
     bool OwnsListing,
-    bool IsVerifier = false,
-    int VerificationCount = 0);
+    bool IsModerator = false);
 
 public sealed class GetNavigationSummaryQueryHandler(IAppDbContext db, TimeProvider clock) : IRequestHandler<GetNavigationSummaryQuery, NavigationSummary>
 {
@@ -31,14 +30,10 @@ public sealed class GetNavigationSummaryQueryHandler(IAppDbContext db, TimeProvi
                         && (r.Conversation.MemberReadAt == null || m.CreatedAt > r.Conversation.MemberReadAt))),
                 cancellationToken);
         var owns = await db.Listings.AnyAsync(l => l.OwnerId == subject, cancellationToken);
-        // The team sees how many listings wait for a review (L2-098 AC3).
-        var waiting = request.IsVerifier
-            ? await db.Listings.CountAsync(l => l.Stage == Domain.ListingStage.ReadyToReview && l.DeletedAt == null, cancellationToken)
-            : 0;
         var newRequests = owns && request.Subject is not null
             ? await (from r in db.Requests join l in db.Listings on r.ListingId equals l.Id where l.OwnerId == request.Subject && r.Status == Domain.RequestStatus.New select r.Id).CountAsync(cancellationToken)
             : 0;
         var notifications = await Notifications.NotificationRules.UnreadCount(db, subject, clock.GetUtcNow(), cancellationToken);
-        return new NavigationSummary(unread, notifications, newRequests, owns, request.IsVerifier, waiting);
+        return new NavigationSummary(unread, notifications, newRequests, owns, request.IsModerator);
     }
 }

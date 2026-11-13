@@ -177,8 +177,8 @@ At launch, revert the marketing site's commits of ADR 0044 and remove the four s
 
 ## The admin application
 
-The verification team's screens are a separate application at `https://admin.jubilee.to` (ADR
-0040). Staff sign in through Microsoft Entra ID with a second factor, and the staff endpoints of
+The Jubilee team's screens (Listings, Reports, Featured) are a separate application at
+`https://admin.jubilee.to` (ADR 0040, ADR 0057). Staff sign in through Microsoft Entra ID with a second factor, and the staff endpoints of
 the API (`/api/admin/*`, `/api/staff/*`) answer only an allowed network. The App Service, its
 proxy key, the DNS records and the certificate were set up on 11 November 2026 (steps 4 and 6, and
 the key of step 5), and every deployment publishes the application. Until the remaining steps are
@@ -224,10 +224,11 @@ step 6; it prints the two DNS records and is run again once they are published. 
    staff migrations). It now deploys `jubilee-to-admin` too.
 8. **The first administrator.** In Cloud Shell, with the connection string as in `deploy.sh`:
    `dotnet run --project backend/src/Jubilee.Cli -- staff grant --email {address} --role admin`,
-   and `--role verifier` for each member of the verification team. The address is the staff
+   and `--role moderator` for each member of the Jubilee team (ADR 0057 renamed the role
+   from `verifier`; existing grants carry over). The address is the staff
    member's Entra ID address; the first sign-in binds the account to that identity.
 9. **Check.** From a staff network, open `https://admin.jubilee.to`, sign in with a second factor
-   and see the queue. From any other network the screen says "You're not on an allowed network."
+   and see Listings. From any other network the screen says "You're not on an allowed network."
    `az webapp log tail -n jubilee-to-app` shows a refused staff request as `Failed authorization`
    or `NETWORK_NOT_ALLOWED`.
 

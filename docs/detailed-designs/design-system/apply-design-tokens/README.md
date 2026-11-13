@@ -2,10 +2,10 @@
 
 ## Overview
 
-Jubilee is Toronto's Christian marketplace: a directory of verified
+Jubilee is Toronto's Christian marketplace: a directory of
 Christian-owned businesses. Its visual language comes from the HTML mocks in
 `docs/mocks/`: ink and cream neutrals, a gold accent that always carries ink
-text, green for verified marks, links and success, Archivo for headings and
+text, green for highlights, links and success, Archivo for headings and
 Inter for text. This feature makes that language the single source of every
 visual value in `Jubilee Web`, in a light and a dark theme, and checks at build
 time that no stylesheet bypasses it.

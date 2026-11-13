@@ -25,9 +25,9 @@ journey that is implemented: the effort-weighted average of its feature designs 
 | 7 | Book a meeting | Request a meeting time for a service with a business. | 6 | 100% |
 | 8 | Request a quote | Describe a job and ask a business for a quote. | 3 | 100% |
 | 9 | Request a product | Send a shop an order request for a product, without payment. | 3 | 100% |
-| 10 | List a business | Describe a business and submit it for verification. | 12 | 100% |
+| 10 | List a business | Describe a business, agree to the statement of faith and publish it; it is live straight away. | 12 | 100% |
 | 11 | Removed: answer a church reference | Jubilee no longer asks for a church reference (ADR 0041). The number is not reused. | 0 | n/a |
-| 12 | Verify a listing | Staff review submitted listings, then approve or request changes. | 10 | 85% |
+| 12 | Keep listings honest | The Jubilee team looks through published listings and takes down one that misrepresents a business. | 10 | 93% |
 | 13 | Respond to customer requests | See incoming requests and confirm or decline each one. | 6 | 100% |
 | 14 | Track and cancel requests | Follow each request's progress and cancel an open one. | 6 | 89% |
 | 15 | Run a business listing | Monitor the listing, edit its details, pause or resume it. | 9 | 100% |
@@ -52,7 +52,7 @@ journey that is implemented: the effort-weighted average of its feature designs 
 
 ## Notes
 
-- The order is by user value: first finding and viewing verified businesses, then joining and contacting
+- The order is by user value: first finding and viewing businesses, then joining and contacting
   them, then the supply side that fills the directory, then follow-up, convenience and housekeeping. It is
   not a strict dependency order. Journeys 28 to 30 were added later and keep the number they were given.
 - [`AGENTS.md`](../AGENTS.md) holds the rules and the folder structure every journey follows.
@@ -65,7 +65,12 @@ journey that is implemented: the effort-weighted average of its feature designs 
   counts the two security designs that exist only for staff (authorize staff requests, restrict staff
   network) beside the admin application and staff sign-in. Production operations work that no
   journey reaches (backups, deployment pipeline, load and penetration testing) is not estimated here.
-- The percentages were last recalculated from the code and its tests on 12 November 2026.
+- The percentages were last recalculated from the code and its tests on 12 November 2026, after
+  Jubilee began shipping without verification (ADR 0057) and that work was implemented: journey 10
+  publishes a listing that is live at once (publish-listing), journey 12 is the Jubilee team's
+  Listings screen and the takedown (browse-listings, take-down-listing), and the "Verified" mark and
+  the verification copy have left journeys 1, 2, 3, 15, 22, 25, 27, 28 and 30, whose figures stand.
+  What keeps journeys 10 and 12 below 100% is listed in [`estimates/`](estimates/README.md).
 - [`prompts/`](prompts/) holds one implementation prompt per unfinished journey, named by its number. Each
   lists what the journey still lacks and runs it to 100%, from requirements to a pull request. Journey 28
   is complete and has none. The prompt for journey 27 is for launch day: it restores the links to the app.
