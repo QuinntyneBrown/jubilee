@@ -67,6 +67,8 @@ test.describe('privacy notice (L2-109)', () => {
       '/account/notifications',
     );
     await expect(policy.link('your account')).toHaveAttribute('href', '/account');
+    // A link runs into the text after it, with no space before the comma.
+    await expect(policy.text(/in notification settings, and download/)).toBeVisible();
     await expect(policy.updated).toHaveText('Last updated 2 November 2026');
   });
 

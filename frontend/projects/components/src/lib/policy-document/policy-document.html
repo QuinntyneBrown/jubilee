@@ -43,7 +43,8 @@
     @if (part.href) {
       <a [href]="part.href">{{ part.text }}</a>
     } @else {
-      {{ part.text }}
+      <!-- The container keeps the line breaks around the text out of the page. -->
+      <ng-container>{{ part.text }}</ng-container>
     }
   }
 </ng-template>
