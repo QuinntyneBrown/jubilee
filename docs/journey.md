@@ -41,7 +41,7 @@ journey that is implemented: the effort-weighted average of its feature designs 
 | 23 | Recover from errors | See clear pages for missing, forbidden, failed or maintenance states. | 3 | 100% |
 | 24 | Use Jubilee offline | Browse cached pages and queue messages on poor connections. | 7 | 99% |
 | 25 | Moderate reports and feature businesses | Staff handle reports and choose the featured businesses. | 5 | 100% |
-| 26 | Download data and delete account | Export personal data or permanently delete the account. | 5 | 83% |
+| 26 | Download data and delete account | Export personal data or permanently delete the account. | 5 | 98% |
 | 27 | Meet Jubilee on the marketing site | Read the marketing page and watch the pitch film, by pointer or keyboard, with its captions in the picture. Its links to the app and to listing (L2-185) are suspended while Jubilee is launching soon and wait on the owner's decision to open it; journey 31 takes their place until launch. | 4 | 95% |
 | 28 | Rent a room or space | List a room, suite or hall; find spaces by term on Browse, the category and search; request one and let the owner confirm. | 19 | 100% |
 | 29 | Give feedback | Rate Jubilee, report a bug or send kudos from any screen, answer a check-in, and follow past feedback. | 9 | 99% |
@@ -49,7 +49,7 @@ journey that is implemented: the effort-weighted average of its feature designs 
 | 31 | Get ready for launch | Before Jubilee opens: see that it is launching soon, leave an e-mail address for the launch notice, or send a business's details to be listed on launch day; the team reads them with the CLI. | 7 | 100% |
 | 32 | Write and read reviews | After a request the owner confirmed, write a review of the business, shop or space; read every listing's rating and reviews, sorted and filtered, and its average on the cards; edit or remove your review; the owner replies in public; anyone signed in reports a review and the Jubilee team takes it down. Requirements L2-226 to L2-240. | 14 | 95% |
 
-**Total: 233 days** for the 31 journeys, **98% complete** weighted by effort.
+**Total: 233 days** for the 31 journeys, **99% complete** weighted by effort.
 
 ## Notes
 
