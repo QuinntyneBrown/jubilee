@@ -45,6 +45,11 @@
           @if (saved()) {
             <div jb-alert tone="success" heading="Listing updated">
               <div>Your changes are live now.</div>
+              @if (moved(); as moved) {
+                <div>
+                  Your address is now {{ moved.now }}. {{ moved.before }} still opens your listing.
+                </div>
+              }
 
               <a slot="actions" [routerLink]="['/b', e.slug]">View public listing</a>
 
@@ -206,6 +211,14 @@
               (ngModelChange)="set('name', $event)"
               [readOnly]="busy()"
             />
+          </div>
+          <div
+            jb-field
+            label="Your address"
+            hint="Your address comes from your business name. If you change the name, the address follows and the old one keeps working."
+            hintAfter
+          >
+            <input jb-input type="text" [value]="listingLink(e).text" readonly />
           </div>
           <div
             jb-field

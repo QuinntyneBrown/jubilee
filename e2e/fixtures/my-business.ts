@@ -370,6 +370,13 @@ export async function stubMyBusiness(
         );
       }
       fake.version += 1;
+      // The slug follows a new name, as the API's does (L2-245 AC1).
+      if (String(body['name']) !== fake.listing.name) {
+        fake.slug = String(body['name'])
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/^-|-$/g, '');
+      }
       fake.listing = {
         name: String(body['name']),
         tagline: String(body['tagline']),

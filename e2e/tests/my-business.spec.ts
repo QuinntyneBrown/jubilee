@@ -630,6 +630,66 @@ test.describe('run a business listing: the editor (L2-087, L2-088)', () => {
     await expect(editor.about).toHaveAttribute('maxlength', '1500');
   });
 
+  test('L2-244 AC4: the editor shows the address as text that cannot be edited, and says where it comes from', async ({
+    page,
+    jb,
+  }) => {
+    const editor = new EditListingPage(page);
+    await editor.setWidth(360);
+    await stubMyBusiness(page, { addressDomain: 'jubilee.to' });
+    await jb.goto(EDITOR);
+
+    await expect(editor.address.value).toHaveValue('luzandre-com.jubilee.to');
+    await expect(editor.address.value).toHaveAttribute('readonly', '');
+    await expect(editor.address.help).toHaveText(
+      'Your address comes from your business name. If you change the name, the address follows and the old one keeps working.',
+    );
+    await expect(editor.address.copy).toHaveCount(0);
+    // L2-244 AC7
+    expect(await editor.overflowsHorizontally()).toBe(false);
+  });
+
+  test('L2-245 AC4: a save that changes the name says the new address and that the old one still works', async ({
+    page,
+    jb,
+  }) => {
+    const editor = new EditListingPage(page);
+    await editor.setWidth(1280);
+    await stubMyBusiness(page, { addressDomain: 'jubilee.to' });
+    await jb.goto(EDITOR);
+
+    await editor.name.fill('Luzandre Print Co.');
+    await editor.save.click();
+
+    await expect(editor.success).toContainText('Listing updated');
+    await expect(editor.success).toContainText('Your changes are live now.');
+    await expect(editor.success).toContainText(
+      'Your address is now luzandre-print-co.jubilee.to. luzandre-com.jubilee.to still opens your listing.',
+    );
+    await expect(editor.address.value).toHaveValue('luzandre-print-co.jubilee.to');
+    await expect(
+      editor.success.getByRole('link', { name: 'View public listing' }),
+    ).toHaveAttribute('href', '/b/luzandre-print-co');
+  });
+
+  test('L2-245 AC5: a save that keeps the name says nothing about the address', async ({
+    page,
+    jb,
+  }) => {
+    const editor = new EditListingPage(page);
+    await editor.setWidth(1280);
+    await stubMyBusiness(page);
+    await jb.goto(EDITOR);
+
+    await editor.tagline.fill('Church tees printed in Toronto');
+    await editor.save.click();
+
+    await expect(editor.success).toContainText('Your changes are live now.');
+    await expect(editor.success).not.toContainText('Your address is now');
+    // L2-244 AC6: with no address domain, the listing's page on this host.
+    await expect(editor.address.value).toHaveValue(/^localhost:\d+\/b\/luzandre-com$/);
+  });
+
   test('L2-087 AC5: saving publishes at once and offers the public listing', async ({
     page,
     jb,
