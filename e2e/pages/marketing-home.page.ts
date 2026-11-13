@@ -471,22 +471,6 @@ export class MarketingHomePage implements Screen {
     );
   }
 
-  /** The names of the links and buttons reached by pressing Tab `presses` times from the top. */
-  async tabThrough(presses: number): Promise<string[]> {
-    const names: string[] = [];
-    for (let press = 0; press < presses; press++) {
-      await this.page.keyboard.press('Tab');
-      names.push(
-        await this.page.evaluate(() => {
-          const element = document.activeElement as HTMLElement;
-          const text = element.getAttribute('aria-label') ?? element.textContent ?? '';
-          return text.replace(/\s+/g, ' ').trim();
-        }),
-      );
-    }
-    return names;
-  }
-
   /** Reaches "Skip to content" with Tab from the top of the page and activates it. */
   async skipToContent(): Promise<void> {
     await this.page.keyboard.press('Tab');
@@ -496,14 +480,6 @@ export class MarketingHomePage implements Screen {
   /** Whether `main` holds the focus. */
   mainFocused(): Promise<boolean> {
     return this.main.evaluate((main) => document.activeElement === main);
-  }
-
-  /** Whether the focused element shows a focus ring. */
-  focusRingShown(): Promise<boolean> {
-    return this.page.evaluate(() => {
-      const style = getComputedStyle(document.activeElement as HTMLElement);
-      return style.outlineStyle !== 'none' && parseFloat(style.outlineWidth) > 0;
-    });
   }
 
   async ready(): Promise<void> {
