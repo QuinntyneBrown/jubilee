@@ -234,6 +234,11 @@ public sealed class SaveProductCommandHandler(IAppDbContext db, TimeProvider clo
             errors["options"] = "INVALID";
         }
 
+        if ((request.OptionName?.Trim().Length ?? 0) > CatalogueRules.MaxOptionLabel)
+        {
+            errors["optionName"] = "TOO_LONG";
+        }
+
         // A product takes only a photo its own owner uploaded (L2-138 AC6).
         var photo = request.PhotoId is { } photoId
             ? await db.ProductPhotos.SingleOrDefaultAsync(p => p.Id == photoId && p.ListingId == listing.Id, cancellationToken)

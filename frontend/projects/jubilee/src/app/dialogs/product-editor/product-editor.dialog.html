@@ -91,7 +91,7 @@
         [readOnly]="busy()"
       />
     </div>
-    <div class="form-grid form-grid--2">
+    <div class="form-grid" [class.form-grid--2]="options().length === 0">
       <div jb-field label="Price (CAD)" controlId="d-price" required [error]="errors().price">
         <input
           jb-input
@@ -104,7 +104,7 @@
           [readOnly]="busy()"
         />
       </div>
-      @if (!hasOptions) {
+      @if (options().length === 0) {
         <div
           jb-field
           label="In stock"
@@ -136,6 +136,99 @@
         [readOnly]="busy()"
       ></textarea>
     </div>
+    @if (!data.draft) {
+      <div
+        jb-field
+        label="Minimum order"
+        controlId="d-min"
+        optional
+        hint="The fewest a member can ask for. Empty is 1."
+        [error]="errors().minimumQuantity"
+      >
+        <input
+          jb-input
+          name="minimumQuantity"
+          type="number"
+          min="1"
+          max="999"
+          [ngModel]="minimum()"
+          (ngModelChange)="minimum.set($event === null ? '' : '' + $event)"
+          [readOnly]="busy()"
+        />
+      </div>
+      <fieldset
+        jb-field
+        class="stack"
+        label="Options"
+        controlId="d-options"
+        [hint]="optionsHint()"
+        [error]="errors().options"
+      >
+        @if (options().length > 0) {
+          <div jb-field label="What the options choose" controlId="d-option-name">
+            <input
+              jb-input
+              name="optionName"
+              type="text"
+              maxlength="40"
+              placeholder="Size"
+              [ngModel]="optionName()"
+              (ngModelChange)="optionName.set($event)"
+              [readOnly]="busy()"
+            />
+          </div>
+        }
+        @for (option of options(); track option.id; let n = $index) {
+          <div class="cluster">
+            <div jb-field [label]="'Option ' + (n + 1)" [controlId]="'d-opt-' + option.id">
+              <input
+                jb-input
+                type="text"
+                maxlength="40"
+                [name]="'option-' + option.id"
+                [ngModel]="option.label"
+                (ngModelChange)="setOption(n, { label: $event })"
+                [readOnly]="busy()"
+              />
+            </div>
+            <div
+              jb-field
+              [label]="'Stock of option ' + (n + 1)"
+              [controlId]="'d-opt-' + option.id + '-stock'"
+            >
+              <input
+                jb-input
+                type="number"
+                min="0"
+                max="9999"
+                [name]="'option-stock-' + option.id"
+                [ngModel]="option.stock"
+                (ngModelChange)="setOption(n, { stock: $event === null ? '' : '' + $event })"
+                [readOnly]="busy()"
+              />
+            </div>
+            <button
+              jb-button
+              iconOnly
+              variant="ghost"
+              type="button"
+              [attr.aria-label]="'Remove option ' + (n + 1)"
+              [disabled]="busy()"
+              (click)="removeOption(n)"
+            >
+              <svg jb-icon name="close"></svg>
+            </button>
+          </div>
+        }
+        @if (options().length < maxOptions) {
+          <div>
+            <button jb-button size="sm" type="button" [disabled]="busy()" (click)="addOption()">
+              <svg jb-icon name="plus"></svg>Add option
+            </button>
+          </div>
+        }
+      </fieldset>
+    }
   </form>
   <div jb-dialog-footer>
     @if (view() === 'discard') {

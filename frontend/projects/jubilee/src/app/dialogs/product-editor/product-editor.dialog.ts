@@ -46,7 +46,17 @@ export interface ProductSaved {
 
 type View = 'form' | 'busy' | 'failed' | 'discard';
 
-type FieldName = 'name' | 'price' | 'stock' | 'description';
+type FieldName = 'name' | 'price' | 'stock' | 'description' | 'minimumQuantity' | 'options';
+
+/** One option as the editor holds it: its name and stock as typed, and a key for the list. */
+interface OptionDraft {
+  id: number;
+  label: string;
+  stock: string;
+}
+
+/** A product has at most this many options (L2-091 AC8). */
+const MAX_OPTIONS = 10;
 
 /** A submission that takes longer than this fails rather than spinning (L2-127 AC2). */
 const SAVE_TIMEOUT_MS = 10_000;
@@ -109,7 +119,25 @@ export class ProductEditorDialog {
   protected readonly price = signal(this.product ? (this.product.priceCents / 100).toFixed(2) : '');
   protected readonly stock = signal(this.product?.stock?.toString() ?? '');
   protected readonly description = signal(this.product?.description ?? '');
-  protected readonly hasOptions = (this.product?.options.length ?? 0) > 0;
+  protected readonly maxOptions = MAX_OPTIONS;
+  private nextOption = 0;
+  /** "Minimum order" as typed; empty is 1 (L2-091 AC8). */
+  protected readonly minimum = signal(
+    this.product && this.product.minimumQuantity > 1 ? `${this.product.minimumQuantity}` : '',
+  );
+  protected readonly optionName = signal(this.product?.optionName ?? '');
+  protected readonly options = signal<OptionDraft[]>(
+    (this.product?.options ?? []).map((option) => ({
+      id: this.nextOption++,
+      label: option.label,
+      stock: option.stock?.toString() ?? '',
+    })),
+  );
+  protected readonly optionsHint = computed(() =>
+    this.options().length >= MAX_OPTIONS
+      ? '10 options is the most a product can have.'
+      : 'Sizes or colours, each with its own stock.',
+  );
 
   /** The tile beside "Add photo" until a photo fills it. */
   protected readonly tint = (this.product?.tint ?? 'gold') as TileTint;
@@ -120,9 +148,16 @@ export class ProductEditorDialog {
   protected readonly photoError = signal<string | null>(null);
 
   private readonly values = () =>
-    [this.name(), this.price(), this.stock(), this.description(), this.photo()?.id ?? ''].join(
-      '\u0000',
-    );
+    [
+      this.name(),
+      this.price(),
+      this.stock(),
+      this.description(),
+      this.photo()?.id ?? '',
+      this.minimum(),
+      this.optionName(),
+      ...this.options().flatMap((option) => [option.label, option.stock]),
+    ].join('\u0000');
 
   private readonly initial = this.values();
 
@@ -159,6 +194,24 @@ export class ProductEditorDialog {
     });
   }
 
+  /** Adds an empty option and puts the cursor in its name. */
+  protected addOption(): void {
+    if (this.options().length >= MAX_OPTIONS) return;
+    const option = { id: this.nextOption++, label: '', stock: '' };
+    this.options.update((options) => [...options, option]);
+    setTimeout(() => document.getElementById(`d-opt-${option.id}`)?.focus());
+  }
+
+  protected removeOption(index: number): void {
+    this.options.update((options) => options.filter((_, i) => i !== index));
+  }
+
+  protected setOption(index: number, change: Partial<OptionDraft>): void {
+    this.options.update((options) =>
+      options.map((option, i) => (i === index ? { ...option, ...change } : option)),
+    );
+  }
+
   protected removePhoto(): void {
     this.photo.set(null);
     this.photoError.set(null);
@@ -190,12 +243,20 @@ export class ProductEditorDialog {
       return;
     }
     this.view.set('busy');
+    const options = this.options().map((option) => ({
+      label: option.label.trim(),
+      stock: option.stock.trim() === '' ? null : Number(option.stock.trim()),
+    }));
+    const minimum = this.minimum().trim();
     this.api
       .saveProduct(this.product?.id ?? null, {
         name: this.name().trim(),
         price: this.price().trim(),
-        stock: stock === '' ? null : Number(stock),
+        stock: options.length > 0 || stock === '' ? null : Number(stock),
         description: this.description().trim(),
+        minimumQuantity: minimum === '' ? 1 : Number(minimum),
+        optionName: options.length > 0 ? this.optionName().trim() || null : null,
+        options,
         idempotencyKey: this.key,
         photoId: this.photo()?.id ?? null,
       })
@@ -236,8 +297,25 @@ export class ProductEditorDialog {
       problems.price = 'Enter a price in dollars, like 24.00.';
     }
     const stock = this.stock().trim();
-    if (stock !== '' && (!/^\d{1,4}$/.test(stock) || Number(stock) > 9999)) {
+    if (
+      this.options().length === 0 &&
+      stock !== '' &&
+      (!/^\d{1,4}$/.test(stock) || Number(stock) > 9999)
+    ) {
       problems.stock = 'Enter a whole number from 0 to 9,999, or leave it empty.';
+    }
+    if (!this.data.draft) {
+      const minimum = this.minimum().trim();
+      if (minimum !== '' && (!/^\d{1,3}$/.test(minimum) || Number(minimum) < 1)) {
+        problems.minimumQuantity = 'Enter a whole number from 1 to 999.';
+      }
+      const names = this.options().map((option) => option.label.trim().toLowerCase());
+      const stocks = this.options().map((option) => option.stock.trim());
+      if (names.some((name) => name === '') || new Set(names).size !== names.length) {
+        problems.options = 'Give each option its own name.';
+      } else if (stocks.some((value) => value !== '' && !/^\d{1,4}$/.test(value))) {
+        problems.options = 'Give each option a stock from 0 to 9,999, or leave it empty.';
+      }
     }
     // A draft has no server to refuse a long description, so the editor says it (L2-091).
     if (this.data.draft && this.description().trim().length > 1000) {
@@ -252,11 +330,17 @@ export class ProductEditorDialog {
       price: 'Enter a price in dollars, like 24.00.',
       stock: 'Enter a whole number from 0 to 9,999, or leave it empty.',
       description: 'Shorten the description to 1,000 characters.',
+      minimumQuantity: 'Enter a whole number from 1 to 999.',
+      options: 'Give each option its own name.',
+      optionName: 'Name what the options choose in 40 characters or fewer.',
     };
+    // A photo the server would not take is told beside the photo, not as a field (L2-091 AC9).
+    if (fields['photo']) this.photo.set(null);
+    if (fields['photo']) this.photoError.set('We couldn’t add the photo. Try again.');
     return Object.fromEntries(
       Object.keys(fields)
         .filter((key) => key in text)
-        .map((key) => [key, text[key]]),
+        .map((key) => [key === 'optionName' ? 'options' : key, text[key]]),
     );
   }
 
