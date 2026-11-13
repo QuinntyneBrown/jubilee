@@ -98,7 +98,7 @@ public sealed class AccountController(ISender sender, IBotChallengeVerifier bot)
     [ErrorReference("JB-AUTH-503")]
     public async Task<IActionResult> RequestPasswordReset(PasswordResetRequestBody request, CancellationToken cancellationToken)
     {
-        await sender.Send(new RequestPasswordResetCommand(request.Email), cancellationToken);
+        await sender.Send(new RequestPasswordResetCommand(request.Email, HttpContext.Connection.RemoteIpAddress?.ToString()), cancellationToken);
         return Accepted();
     }
 

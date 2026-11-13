@@ -7,10 +7,14 @@ using Microsoft.Extensions.Logging;
 
 namespace Jubilee.Application.Accounts;
 
-/// <summary>"Send reset link": records the request and nothing else, so it is the same for any address (L2-008, L2-141).</summary>
-public sealed record RequestPasswordResetCommand(string? Email) : IRequest;
+/// <summary>
+/// "Send reset link": counts the address's requests and records this one, and nothing else, so it is the same for any
+/// address (L2-008, L2-141). A fourth request for one address within an hour is refused with 429 (L2-137 AC1, ADR 0064).
+/// </summary>
+public sealed record RequestPasswordResetCommand(string? Email, string? Address) : IRequest;
 
-public sealed class RequestPasswordResetCommandHandler(IAppDbContext db, TimeProvider clock) : IRequestHandler<RequestPasswordResetCommand>
+public sealed class RequestPasswordResetCommandHandler(
+    IAppDbContext db, TimeProvider clock, ILogger<RequestPasswordResetCommandHandler> logger) : IRequestHandler<RequestPasswordResetCommand>
 {
     public async Task Handle(RequestPasswordResetCommand request, CancellationToken cancellationToken)
     {
@@ -21,7 +25,21 @@ public sealed class RequestPasswordResetCommandHandler(IAppDbContext db, TimePro
             throw new ValidationFailedException(new Dictionary<string, string> { ["email"] = raw.Length == 0 ? "REQUIRED" : "EMAIL_INVALID" });
         }
 
-        db.PasswordResetRequests.Add(PasswordResetRequest.Record(email, clock.GetUtcNow()));
+        // The rows of the address, never the account: the answer is the same whether or not it has one (L2-141 AC1).
+        var now = clock.GetUtcNow();
+        var since = now - PasswordResetLinks.Window;
+        var recent = (await db.PasswordResetRequests
+            .Where(r => r.EmailKey == email.Key)
+            .Select(r => r.RequestedAt)
+            .ToListAsync(cancellationToken))
+            .Where(at => at > since).Order().ToList();
+        if (recent.Count >= PasswordResetLinks.LimitPerHour)
+        {
+            logger.LogWarning("Security event: RateLimitTrip PasswordReset refused from {Address}", request.Address ?? "unknown");
+            throw new RateLimitedException("rate_limited", recent[recent.Count - PasswordResetLinks.LimitPerHour] + PasswordResetLinks.Window - now);
+        }
+
+        db.PasswordResetRequests.Add(PasswordResetRequest.Record(email, now));
         await db.SaveChangesAsync(cancellationToken);
     }
 }
@@ -34,6 +52,9 @@ public sealed class PasswordResetLinks(IAppDbContext db, AccountSettings setting
 {
     public const int LimitPerHour = 3;
 
+    /// <summary>The hour the limit counts in.</summary>
+    public static readonly TimeSpan Window = TimeSpan.FromHours(1);
+
     public async Task<int> IssueAsync(CancellationToken cancellationToken)
     {
         var pending = (await db.PasswordResetRequests.Where(r => r.ProcessedAt == null).ToListAsync(cancellationToken))
@@ -42,7 +63,7 @@ public sealed class PasswordResetLinks(IAppDbContext db, AccountSettings setting
         foreach (var request in pending)
         {
             var now = clock.GetUtcNow();
-            var since = request.RequestedAt - TimeSpan.FromHours(1);
+            var since = request.RequestedAt - Window;
             var earlier = (await db.PasswordResetRequests
                 .Where(r => r.EmailKey == request.EmailKey && r.ProcessedAt != null)
                 .ToListAsync(cancellationToken)).Count(r => r.RequestedAt > since);

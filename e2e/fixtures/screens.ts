@@ -48,7 +48,7 @@ import {
   ListBusinessCheckInThanksScreen,
   ListBusinessSubmittedScreen,
 } from '../pages/feedback.screens';
-import { ForgotPasswordPage } from '../pages/forgot-password.page';
+import { ForgotPasswordPage, ForgotPasswordRateLimitedScreen } from '../pages/forgot-password.page';
 import { ResetPasswordPage } from '../pages/reset-password.page';
 import { NotificationsPage } from '../pages/notifications.page';
 import { MyProductsPage } from '../pages/my-products.page';
@@ -205,6 +205,10 @@ export const screens: {
   { key: 'saved.empty', screen: (page) => new SavedPage(page) },
   { key: 'saved.error', screen: (page) => new SavedPage(page) },
   { key: 'forgot-password', screen: (page) => new ForgotPasswordPage(page) },
+  {
+    key: 'forgot-password.rate-limited',
+    screen: (page) => new ForgotPasswordRateLimitedScreen(page),
+  },
   { key: 'reset-password', screen: (page) => new ResetPasswordPage(page) },
   { key: 'reset-password.expired', screen: (page) => new ResetPasswordPage(page) },
   { key: 'reset-password.error', screen: (page) => new ResetPasswordPage(page) },
