@@ -1,0 +1,73 @@
+WEBVTT
+
+00:00:00.650 --> 00:00:04.033
+Journey thirty: work in the admin application.
+
+00:00:04.033 --> 00:00:09.109
+Staff sign in through single sign-on from an allowed network, work in
+
+00:00:09.109 --> 00:00:10.874
+its shell, and sign out.
+
+00:00:11.750 --> 00:00:17.245
+The sign-in screen offers one way in: the staff account, confirmed with
+
+00:00:17.245 --> 00:00:21.425
+a second factor. There is no e-mail or password field.
+
+00:00:21.425 --> 00:00:24.830
+Here a stand-in plays the identity provider.
+
+00:00:25.533 --> 00:00:30.783
+Miriam is a moderator. The admin bar shows Listings, Reports with the
+
+00:00:30.783 --> 00:00:36.261
+unresolved reports, and Featured, with her name, her role, and Sign out.
+
+00:00:37.204 --> 00:00:40.304
+Daniel holds only the administrator role.
+
+00:00:40.304 --> 00:00:45.369
+Every Jubilee team screen tells him it is not for his role, and his
+
+00:00:45.369 --> 00:00:47.788
+navigation offers only Policies.
+
+00:00:48.500 --> 00:00:53.060
+Sign out ends the staff session on the server, and says so.
+
+00:00:54.026 --> 00:00:59.373
+Off an allowed network, the admin application says so, and offers no
+
+00:00:59.373 --> 00:01:00.002
+sign-in.
+
+00:01:01.129 --> 00:01:05.800
+In the app, an old admin link says the page has moved, and opens the
+
+00:01:05.800 --> 00:01:08.617
+matching screen in the admin application.
+
+00:01:09.667 --> 00:01:13.607
+Behind the screen, the tests prove that every admin-only endpoint
+
+00:01:13.607 --> 00:01:17.607
+refuses a member session; that signing out of the app or the admin
+
+00:01:17.607 --> 00:01:21.668
+application leaves the other signed in; that staff cannot take down
+
+00:01:21.668 --> 00:01:25.123
+their own listing; and that every role change is audited.
+
+00:01:26.001 --> 00:01:30.339
+What is left is the owner's, in one checklist: register the application
+
+00:01:30.339 --> 00:01:34.677
+with the identity provider and require a second factor, set the allowed
+
+00:01:34.677 --> 00:01:38.649
+networks, grant the first administrator, and sign in once against
+
+00:01:38.649 --> 00:01:39.321
+production.
