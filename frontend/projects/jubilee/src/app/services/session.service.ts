@@ -2,6 +2,8 @@ import { DOCUMENT } from '@angular/common';
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { Member, SESSION_API, SessionDto, SignInRequest } from 'api';
 import { catchError, map, of, switchMap, tap, Observable } from 'rxjs';
+import { OfflineSnapshotStore } from './offline/offline-snapshot.store';
+import { OutgoingMessageQueue } from './offline/outgoing-message.queue';
 import { timings } from './offline/timings';
 
 export type SessionState =
@@ -29,6 +31,8 @@ function toState(dto: SessionDto): SessionState {
 @Injectable({ providedIn: 'root' })
 export class SessionService {
   private readonly api = inject(SESSION_API);
+  private readonly saved = inject(OfflineSnapshotStore);
+  private readonly queue = inject(OutgoingMessageQueue);
   private readonly current = signal<SessionState>({ status: 'resolving' });
   private readonly google = signal(false);
   private readonly challengeKey = signal<string | null>(null);
@@ -123,7 +127,13 @@ export class SessionService {
 
   /** Signs out of this session only (L2-011 AC2). */
   signOut(): Observable<void> {
-    return this.api.signOut().pipe(tap(() => this.current.set({ status: 'visitor' })));
+    return this.api.signOut().pipe(
+      tap(() => this.current.set({ status: 'visitor' })),
+      // Nothing the member saw or wrote stays on the device: the saved pages and the outgoing
+      // queue are cleared (L2-119 AC3, ADR 0068). Drafts stay, kept for this member (L2-011 AC3).
+      switchMap(() => Promise.all([this.saved.clear(), this.queue.clear().catch(() => undefined)])),
+      map(() => undefined),
+    );
   }
 
   /**

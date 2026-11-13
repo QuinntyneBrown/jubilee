@@ -1,11 +1,18 @@
 import { expect, test } from '../fixtures/jb-test';
 import { nextInboxRead, stubMessaging } from '../fixtures/messaging';
 import { smallJpeg } from '../fixtures/photos';
-import { goOffline, goOnline, restoreJubilee, waitForSnapshot } from '../fixtures/offline';
+import {
+  goOffline,
+  goOnline,
+  restoreJubilee,
+  savedOnDevice,
+  waitForSnapshot,
+} from '../fixtures/offline';
 import { BrowsePage } from '../pages/browse.page';
 import { ConnectionBannerRegion } from '../pages/connection-banner';
 import { ConversationPage, MessagesPage } from '../pages/messages.page';
 import { OfflinePage } from '../pages/offline.page';
+import { AccountMenuRegion, SignInPage } from '../pages/sign-in.page';
 
 // Use Jubilee offline: L2-119 to L2-122. The network is cut at the page's edge (fixtures/offline.ts);
 // the API is answered by Playwright mocking (ADR 0009) and the requests it receives are kept.
@@ -327,5 +334,46 @@ test.describe('messages written offline (L2-120)', () => {
 
     await expect(conversation.heading).toHaveText('Legacy Financial');
     await expect(conversation.bubbles).toHaveCount(3);
+  });
+});
+
+test.describe('signing out (L2-119 AC3)', () => {
+  test('the saved pages and the outgoing queue leave the device when the member signs out', async ({
+    page,
+    jb,
+  }) => {
+    const conversation = new ConversationPage(page);
+    const menu = new AccountMenuRegion(page);
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await jb.signInAs('member');
+    await stubMessaging(page);
+    await jb.goto('/messages/c-legacy');
+    await conversation.ready();
+    await waitForSnapshot(page, 'conversation:c-legacy');
+    // A message written offline that the server then refuses stays on the device as "Not sent".
+    await goOffline(page);
+    await conversation.composer.fill('See you on Tuesday');
+    await conversation.send.click();
+    await page.route('**/api/conversations/c-legacy/messages', (route) =>
+      route.fulfill({
+        status: 422,
+        contentType: 'application/problem+json',
+        body: JSON.stringify({ title: 'Problem', status: 422, code: 'invalid' }),
+      }),
+    );
+    await goOnline(page);
+    await expect(conversation.bubble('See you on Tuesday').time).toContainText('Not sent.');
+    expect((await savedOnDevice(page)).queued).toBe(1);
+    expect((await savedOnDevice(page)).pages).toBeGreaterThan(0);
+    await page.route('**/api/session', (route) =>
+      route.request().method() === 'DELETE' ? route.fulfill({ status: 204 }) : route.fallback(),
+    );
+
+    await new SignInPage(page).avatar.click();
+    await menu.signOut.click();
+    await menu.confirmSignOut.click();
+
+    await expect.poll(() => new SignInPage(page).dataPage()).toBe('welcome');
+    await expect.poll(() => savedOnDevice(page)).toEqual({ pages: 0, queued: 0 });
   });
 });
