@@ -80,6 +80,18 @@ public partial class LaunchTests
     }
 
     // L2-216 AC1: the phone and the website are optional; one owner may send two businesses
+    // L2-248 AC2: the twelfth category is one a business can pre-register in.
+    [Fact]
+    public async Task L2_248_AC2_a_founder_pre_registers_a_software_platform()
+    {
+        var response = await factory.CreateClient().PostAsJsonAsync(
+            Businesses, Details(("businessName", "Lanternread"), ("category", "software-platforms"), ("website", "https://lanternread.example")));
+
+        Assert.Equal(HttpStatusCode.Accepted, response.StatusCode);
+        var stored = Assert.Single(await PreRegistrations());
+        Assert.Equal("software-platforms", stored.CategorySlug);
+    }
+
     [Fact]
     public async Task L2_216_AC1_phone_and_website_are_optional_and_every_pre_registration_is_kept()
     {
