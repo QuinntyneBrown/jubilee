@@ -5,10 +5,10 @@ title System Context — Publish policy pages
 
 Person(visitor, "Visitor", "Anyone not signed in")
 Person(member, "Member", "Signed-in account holder")
-Person(admin, "Jubilee administrator", "Jubilee staff with the Admin role")
+Person(admin, "Jubilee administrator", "Jubilee staff with the admin role")
 System(jubilee, "Jubilee", "Toronto's Christian marketplace")
 
 Rel(visitor, jubilee, "Reads policy pages and agrees to the terms when joining", "HTTPS")
 Rel(member, jubilee, "Reads policy pages and help in", "HTTPS")
-Rel(admin, jubilee, "Publishes new versions of policy text in", "HTTPS")
+Rel(admin, jubilee, "Edits, previews and publishes policy text in the admin application", "HTTPS")
 @enduml

@@ -17,14 +17,14 @@ skinparam package {
 actor "Visitor" as actor
 box "Frontend — Jubilee Web" #E0F2FE
   participant "HelpPage" as page
-  participant "HelpDisclosure" as disc
-  participant "ContentApi" as client
+  participant "jb-accordion-item" as disc
+  participant "HttpContentApi" as client
 end box
 box "Backend — Jubilee API" #D1FADF
   participant "ContentController" as controller
 end box
 box "Backend — Jubilee Application and Domain" #ECFDF3
-  participant "GetPublishedContentQueryHandler" as handler
+  participant "ContentReader" as handler
 end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
   database "Cache" as cache
@@ -36,15 +36,15 @@ client -> controller : GET /api/content/help
 controller -> handler : Send GetPublishedContentQuery
 handler -> cache : Read published help content
 alt Cache hit
-  cache --> handler : PolicyDocumentDto
+  cache --> handler : ContentDto
 else Cache miss
   cache --> handler : None
-  handler -> db : Load published ContentVersion with sections
+  handler -> db : Load the highest ContentVersion, else ContentDefaults
   db --> handler : Version
-  handler -> cache : Store PolicyDocumentDto
+  handler -> cache : Store ContentDto
   cache --> handler : Stored
 end
-handler --> controller : PolicyDocumentDto
+handler --> controller : ContentDto
 controller --> client : 200 content
 client --> page : Sections
 page -> disc : Render one disclosure per question with its anchor (L2-110)

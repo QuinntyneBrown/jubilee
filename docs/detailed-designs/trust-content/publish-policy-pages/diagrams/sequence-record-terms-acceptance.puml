@@ -1,51 +1,35 @@
 @startuml
-title UML sequence behaviour — Record terms acceptance at joining
+title UML sequence behaviour — Record the terms version at joining
 skinparam backgroundColor #FFFFFF
 skinparam shadowing false
 skinparam roundcorner 12
 skinparam defaultFontName Arial
 skinparam ArrowColor #344054
-skinparam rectangle {
-  BorderColor #344054
-  FontColor #101828
-}
-skinparam package {
-  BorderColor #667085
-  FontColor #101828
-  BackgroundColor #F9FAFB
-}
 actor "Visitor" as actor
-box "Frontend — Jubilee Web" #E0F2FE
+box "Frontend — Jubilee app" #E0F2FE
   participant "JoinPage" as page
-  participant "AccountApi" as client
 end box
 box "Backend — Jubilee API" #D1FADF
   participant "AccountController" as controller
 end box
-box "Backend — Jubilee Application and Domain" #ECFDF3
-  participant "CreateAccountCommandHandler" as handler
-  participant "ITermsVersionProvider" as terms
+box "Backend — Jubilee Application" #ECFDF3
+  participant "JoinWithEmailCommandHandler" as handler
+  participant "ContentReader" as terms
 end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
   database "Jubilee database" as db
 end box
-actor -> page : Agree to the terms and confirm being 18 or older at /join
-page -> client : Build typed request with the confirmation
-client -> controller : POST /api/account
-controller -> handler : Send CreateAccountCommand
-alt 18-or-older confirmation missing
-  handler --> controller : ADULT_CONFIRMATION_REQUIRED
-  controller --> client : 422 ProblemDetails with per-field code
-  client --> page : Validation error
-  page --> actor : Show the error on the confirmation field
-else Confirmation given
-  handler -> terms : CurrentAsync
-  terms --> handler : Published terms version number
-  handler -> db : Save Member and TermsAcceptance in one unit of work (L2-108)
-  db --> handler : Commit result
-  handler --> controller : Account created
-  controller --> client : 201 account
-  client --> page : Created
-  page --> actor : Continue with e-mail confirmation
+actor -> page : Tick "I am 18 or older and I agree to..." and join
+page -> controller : POST /api/account
+controller -> handler : JoinWithEmailCommand
+alt Agreement not accepted
+  handler --> controller : 422 AGREEMENT_REQUIRED
+  controller --> page : The error on the agreement
+else Accepted
+  handler -> terms : TermsVersion (through the read cache)
+  terms --> handler : Published terms version
+  handler -> db : Save Member with TermsVersionNumber (L2-108)
+  handler --> controller : Created
+  controller --> page : 201
 end
 @enduml
