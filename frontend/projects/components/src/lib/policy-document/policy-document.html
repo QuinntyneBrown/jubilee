@@ -1,0 +1,49 @@
+@if (level() === 1) {
+  <h1 class="policy-document__title">{{ heading() }}</h1>
+} @else {
+  <h2 class="policy-document__title">{{ heading() }}</h2>
+}
+@if (lead()) {
+  <p class="policy-document__lead">{{ lead() }}</p>
+}
+@for (section of sections(); track $index) {
+  @if (level() === 1) {
+    <h2 class="policy-document__heading" [id]="section.anchor">{{ section.heading }}</h2>
+  } @else {
+    <h3 class="policy-document__heading" [id]="'preview-' + section.anchor">
+      {{ section.heading }}
+    </h3>
+  }
+  @for (block of section.blocks; track $index) {
+    @if (block.kind === 'list') {
+      <ul class="policy-document__list">
+        @for (item of block.items; track $index) {
+          <li>
+            <ng-container
+              [ngTemplateOutlet]="text"
+              [ngTemplateOutletContext]="{ $implicit: item }"
+            />
+          </li>
+        }
+      </ul>
+    } @else {
+      <p class="policy-document__text">
+        <ng-container
+          [ngTemplateOutlet]="text"
+          [ngTemplateOutletContext]="{ $implicit: block.parts }"
+        />
+      </p>
+    }
+  }
+}
+<p class="policy-document__updated">Last updated {{ updatedLabel() }}</p>
+
+<ng-template #text let-parts>
+  @for (part of parts; track $index) {
+    @if (part.href) {
+      <a [href]="part.href">{{ part.text }}</a>
+    } @else {
+      {{ part.text }}
+    }
+  }
+</ng-template>

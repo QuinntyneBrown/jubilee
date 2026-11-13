@@ -258,10 +258,6 @@ a[data-state="hover"] { color: var(--color-fg-link-hover); text-decoration-thick
   .split--even { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .split__sticky { position: sticky; top: calc(var(--layout-topbar-height) + var(--space-6)); }
 }
-.prose { max-width: var(--layout-measure); }
-.prose h2 { margin-top: var(--space-8); }
-.prose p, .prose ul, .prose ol { margin-top: var(--space-3); }
-.prose li { margin-top: var(--space-1); }
 
 /* ---------- Forms: choice cards, grids, item lists ----------------------------------- */
 .form-grid { display: grid; gap: var(--space-4); }

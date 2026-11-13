@@ -1,22 +1,23 @@
 import type { Locator, Page } from '@playwright/test';
+import type { Region, Screen } from '../fixtures/visual';
 
 /** One of the statement of faith, terms of use and privacy notice (L2-107 to L2-109). */
-export class PolicyPage {
+export class PolicyPage implements Screen {
   readonly title: Locator;
   readonly lead: Locator;
   readonly sectionHeadings: Locator;
   readonly bullets: Locator;
   readonly updated: Locator;
   readonly tryAgain: Locator;
-  private readonly article: Locator;
+  readonly article: Locator;
 
   constructor(private readonly page: Page) {
-    this.article = page.locator('article.prose');
+    this.article = page.locator('article.policy-document');
     this.title = this.article.getByRole('heading', { level: 1 });
-    this.lead = this.article.locator('p.lead');
+    this.lead = this.article.locator('.policy-document__lead');
     this.sectionHeadings = this.article.getByRole('heading', { level: 2 });
     this.bullets = this.article.locator('li');
-    this.updated = this.article.locator('.text-caption');
+    this.updated = this.article.locator('.policy-document__updated');
     this.tryAgain = page.getByRole('button', { name: 'Try again' });
   }
 
@@ -30,5 +31,14 @@ export class PolicyPage {
 
   text(text: string | RegExp): Locator {
     return this.article.getByText(text);
+  }
+
+  async ready(): Promise<void> {
+    await this.updated.waitFor();
+  }
+
+  /** The policy document, `jb-policy-document` (L2-107 to L2-109). */
+  regions(): Region[] {
+    return [{ name: 'document', locator: this.article }];
   }
 }

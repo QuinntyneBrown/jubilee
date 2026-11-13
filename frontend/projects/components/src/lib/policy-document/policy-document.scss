@@ -1,0 +1,46 @@
+// The policy document (L2-107 to L2-109, L2-226): a policy page in reading measure. The title and
+// section headings keep the page's type whether they are h1/h2 or, in a preview, h2/h3.
+:host(.policy-document) {
+  display: block;
+  max-width: var(--layout-measure);
+}
+
+.policy-document__title {
+  font: var(--text-h1);
+  font-size: var(--font-size-3xl);
+  letter-spacing: var(--letter-spacing-tight);
+  text-wrap: balance;
+  margin: 0;
+
+  @media (min-width: 48rem) {
+    font-size: var(--font-size-4xl);
+  }
+}
+
+.policy-document__lead {
+  font: var(--text-body-lg);
+  color: var(--color-fg-muted);
+  margin: var(--space-3) 0 0;
+}
+
+.policy-document__heading {
+  font: var(--text-h2);
+  letter-spacing: var(--letter-spacing-tight);
+  text-wrap: balance;
+  margin: var(--space-8) 0 0;
+}
+
+.policy-document__text,
+.policy-document__list {
+  margin: var(--space-3) 0 0;
+}
+
+.policy-document__list li {
+  margin-top: var(--space-1);
+}
+
+.policy-document__updated {
+  font: var(--text-caption);
+  color: var(--color-fg-muted);
+  margin: var(--space-8) 0 0;
+}
