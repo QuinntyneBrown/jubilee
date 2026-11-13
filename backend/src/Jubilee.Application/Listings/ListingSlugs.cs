@@ -1,4 +1,3 @@
-using System.Globalization;
 using Jubilee.Application.Abstractions;
 using Jubilee.Domain;
 using Microsoft.EntityFrameworkCore;
@@ -11,28 +10,36 @@ namespace Jubilee.Application.Listings;
 /// </summary>
 public static class ListingSlugs
 {
-    /// <summary>A free slug for <paramref name="name"/>; the slugs <paramref name="listingId"/> has or had stay free for it.</summary>
-    public static async Task<string> UniqueAsync(IAppDbContext db, string name, Guid? listingId, CancellationToken cancellationToken)
+    /// <summary>
+    /// A free slug for <paramref name="name"/> by the rules of <see cref="AddressRules"/>; the slugs
+    /// <paramref name="listingId"/> has or had stay free for it. A reserved word is taken (L2-242 AC4).
+    /// </summary>
+    public static async Task<string> UniqueAsync(
+        IAppDbContext db, AddressSettings settings, string name, ListingKind kind, Guid? listingId, CancellationToken cancellationToken)
     {
-        var baseSlug = global::Jubilee.Application.Onboarding.Slugs.From(name, "business");
+        var (baseSlug, numbered) = AddressRules.SlugOf(name, kind);
+
+        // A suffix may cut the base (L2-241 AC4), so every slug that shares its first 30 characters is read.
+        var stem = baseSlug.Length > 30 ? baseSlug[..30] : baseSlug;
         var current = await db.Listings.AsNoTracking()
-            .Where(l => l.Id != listingId && (l.Slug == baseSlug || l.Slug.StartsWith(baseSlug + "-")))
+            .Where(l => l.Id != listingId && l.Slug.StartsWith(stem))
             .Select(l => l.Slug)
             .ToListAsync(cancellationToken);
         var kept = await db.ListingSlugs.AsNoTracking()
-            .Where(s => s.ListingId != listingId && (s.Slug == baseSlug || s.Slug.StartsWith(baseSlug + "-")))
+            .Where(s => s.ListingId != listingId && s.Slug.StartsWith(stem))
             .Select(s => s.Slug)
             .ToListAsync(cancellationToken);
-        var taken = current.Concat(kept).ToHashSet(StringComparer.Ordinal);
-        if (!taken.Contains(baseSlug))
+        var taken = current.Concat(kept).ToHashSet(StringComparer.OrdinalIgnoreCase);
+        bool Free(string candidate) => !taken.Contains(candidate) && !settings.IsReserved(candidate);
+        if (!numbered && Free(baseSlug))
         {
             return baseSlug;
         }
 
-        for (var n = 2; ; n++)
+        for (var n = numbered ? 1 : 2; ; n++)
         {
-            var candidate = $"{baseSlug}-{n.ToString(CultureInfo.InvariantCulture)}";
-            if (!taken.Contains(candidate))
+            var candidate = AddressRules.WithNumber(baseSlug, n);
+            if (Free(candidate))
             {
                 return candidate;
             }
@@ -43,9 +50,10 @@ public static class ListingSlugs
     /// Moves <paramref name="listing"/> to the slug of its name when that changed: the old slug is kept, and a kept
     /// slug of this listing that it takes back is no longer kept.
     /// </summary>
-    public static async Task FollowNameAsync(IAppDbContext db, Listing listing, DateTimeOffset now, CancellationToken cancellationToken)
+    public static async Task FollowNameAsync(
+        IAppDbContext db, AddressSettings settings, Listing listing, DateTimeOffset now, CancellationToken cancellationToken)
     {
-        var slug = await UniqueAsync(db, listing.Name, listing.Id, cancellationToken);
+        var slug = await UniqueAsync(db, settings, listing.Name, listing.Kind, listing.Id, cancellationToken);
         if (slug == listing.Slug)
         {
             return;

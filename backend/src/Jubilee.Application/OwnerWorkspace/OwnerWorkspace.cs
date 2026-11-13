@@ -296,7 +296,7 @@ public sealed record SaveListingCommand(
     string Subject, int Version, string? Name, string? Tagline, string? CategorySlug, string? About, string? Where,
     string? Hours, string? Website, string? Highlight, Onboarding.SpaceInput? Space = null, Guid? ListingId = null) : IRequest<ListingEditorDto>;
 
-public sealed partial class SaveListingCommandHandler(IAppDbContext db, TimeProvider clock)
+public sealed partial class SaveListingCommandHandler(IAppDbContext db, TimeProvider clock, AddressSettings addresses)
     : IRequestHandler<SaveListingCommand, ListingEditorDto>
 {
     public async Task<ListingEditorDto> Handle(SaveListingCommand request, CancellationToken cancellationToken)
@@ -406,7 +406,7 @@ public sealed partial class SaveListingCommandHandler(IAppDbContext db, TimeProv
         // The address follows the name; the old one keeps answering with 301 (L2-113 AC2, ADR 0056).
         if (!string.Equals(oldName, listing.Name, StringComparison.Ordinal))
         {
-            await ListingSlugs.FollowNameAsync(db, listing, now, cancellationToken);
+            await ListingSlugs.FollowNameAsync(db, addresses, listing, now, cancellationToken);
         }
 
         if (reworded && listing.Stage == ListingStage.Live)

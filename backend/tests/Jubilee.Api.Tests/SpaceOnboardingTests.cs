@@ -113,6 +113,18 @@ public sealed class SpaceOnboardingTests : IClassFixture<JubileeApiFactory>, IAs
         });
     }
 
+    // L2-241 AC3: a space whose name gives no slug still has an address
+    [Fact]
+    public async Task L2_241_AC3_a_space_whose_name_gives_fewer_than_3_characters_becomes_space_with_a_number()
+    {
+        var id = await Draft(Ruth(), Body(name: "🏠"));
+
+        var response = await Ruth().PostAsJsonAsync($"/api/listing-drafts/{id}/publish", Body(name: "🏠"));
+
+        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+        Assert.Equal("space-1", (await Json(response)).GetProperty("slug").GetString());
+    }
+
     [Fact]
     public async Task L2_199_AC6_AC7_AC8_an_incomplete_space_is_refused_field_by_field_and_needs_no_category()
     {

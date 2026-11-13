@@ -75,6 +75,11 @@ public static class DependencyInjection
 
         services.AddScoped<Application.Search.ISearchIndex, Search.DatabaseSearchIndex>();
         services.AddSingleton(new Application.Accounts.AccountSettings(configuration["App:PublicBaseUrl"] ?? "http://localhost:4200"));
+        // Addresses:Reserved is a list, or one comma-separated value an App Service setting can hold (ADR 0067).
+        var reserved = configuration.GetSection("Addresses:Reserved");
+        services.AddSingleton(new Application.Listings.AddressSettings(
+            configuration["Addresses:Domain"],
+            reserved.Value is { } words ? [words] : reserved.GetChildren().Select(word => word.Value ?? string.Empty)));
         services.AddSingleton(new Application.Accounts.EmailSettings(configuration["Email:MailingAddress"]));
         services.AddSingleton(new Application.Launch.LaunchSettings(configuration["Launch:TeamEmail"]));
         services.AddSingleton(new Application.Moderation.TeamSettings(

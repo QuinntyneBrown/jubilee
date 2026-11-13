@@ -21,6 +21,12 @@ public sealed class DatabaseOutage
 
     public bool Unavailable { get; set; }
 
+    /// <summary>
+    /// What another request does to the database just before the next save, which then fails as a unique index would
+    /// (InMemory enforces none). Used once.
+    /// </summary>
+    public Func<Task>? RaceBeforeNextSave { get; set; }
+
     internal void ThrowIfUnavailable()
     {
         if (Unavailable)
@@ -128,10 +134,17 @@ public sealed class OutageAwareDbContext(AppDbContext inner, DatabaseOutage outa
 
     public DbSet<BusinessPreRegistration> BusinessPreRegistrations => Use(inner.BusinessPreRegistrations);
 
-    public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         outage.ThrowIfUnavailable();
-        return inner.SaveChangesAsync(cancellationToken);
+        if (outage.RaceBeforeNextSave is { } race)
+        {
+            outage.RaceBeforeNextSave = null;
+            await race();
+            throw new DbUpdateException("Cannot insert duplicate key row in object with unique index.");
+        }
+
+        return await inner.SaveChangesAsync(cancellationToken);
     }
 
     private T Use<T>(T set)

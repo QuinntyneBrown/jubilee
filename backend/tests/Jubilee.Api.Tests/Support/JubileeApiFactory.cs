@@ -199,6 +199,7 @@ public class JubileeApiFactory : WebApplicationFactory<Program>
     {
         _clock.Current = new FakeTimeProvider(ListingMother.Now);
         Database.Unavailable = false;
+        Database.RaceBeforeNextSave = null;
         Maintenance.Off();
         Emails.Clear();
         Emails.Failing = false;
