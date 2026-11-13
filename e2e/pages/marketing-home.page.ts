@@ -310,6 +310,22 @@ export class MarketingHomePage implements Screen {
     return this.video.evaluate((video: HTMLVideoElement) => video.currentTime);
   }
 
+  /**
+   * Each heading of the page (the opening's and every section's): its name as assistive technology
+   * reads it, and whether its second part is set in a colour of its own.
+   */
+  headingParts(): Promise<{ name: string; accented: boolean }[]> {
+    return this.main.locator('h1, h2').evaluateAll((headings) =>
+      headings.map((heading) => {
+        const accent = heading.querySelector('.mkt-heading__accent');
+        return {
+          name: (heading.textContent ?? '').replace(/\s+/g, ' ').trim(),
+          accented: !!accent && getComputedStyle(accent).color !== getComputedStyle(heading).color,
+        };
+      }),
+    );
+  }
+
   /** Whether the film is paused. */
   filmPaused(): Promise<boolean> {
     return this.video.evaluate((video: HTMLVideoElement) => video.paused);

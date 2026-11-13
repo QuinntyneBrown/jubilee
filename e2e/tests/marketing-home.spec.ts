@@ -104,6 +104,24 @@ test.describe('marketing home page (L2-183)', () => {
     await expect(home.sendDetails).toBeVisible();
   });
 
+  test('AC7: each heading reads as one sentence, its second part in the accent colour', async ({
+    page,
+    jb,
+  }) => {
+    const home = new MarketingHomePage(page);
+    await jb.open('marketing-home');
+    await home.ready();
+    // Assistive technology reads each heading as one sentence
+    await expect(home.heading).toHaveAccessibleName(
+      'Toronto’s Christian businesses, in one place.',
+    );
+    await expect(home.missionHeading).toHaveAccessibleName('Our mission.');
+    // And the second part of every heading is set in a colour of its own
+    const parts = await home.headingParts();
+    expect(parts).toHaveLength(9);
+    expect(parts.filter(({ accented }) => !accented)).toEqual([]);
+  });
+
   test('AC8: the page states the mission word for word', async ({ page, jb }) => {
     const home = new MarketingHomePage(page);
     // Given anyone, when they open the marketing site
