@@ -43,3 +43,16 @@ public interface IMediaStore
 
     Task Delete(string key, CancellationToken cancellationToken);
 }
+
+/// <summary>
+/// The export store (L2-018 AC5, ADR 0069): data archives, outside the database, in a private place no address serves.
+/// Only the download reads an archive; it is deleted when the link expires or the account is deleted.
+/// </summary>
+public interface IExportStore
+{
+    Task Save(string key, string archive, CancellationToken cancellationToken);
+
+    Task<string?> Read(string key, CancellationToken cancellationToken);
+
+    Task Delete(string key, CancellationToken cancellationToken);
+}

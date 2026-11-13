@@ -44,8 +44,8 @@ public sealed class DataExport
     /// <summary>The hash of the e-mailed link's token (L2-140): the link is found by it.</summary>
     public string? TokenHash { get; private set; }
 
-    /// <summary>The archive, a JSON document. Kept in a private column that no endpoint serves except the download.</summary>
-    public string? ArchiveJson { get; private set; }
+    /// <summary>The key of the archive in the export store (ADR 0069).</summary>
+    public string? ArchiveKey { get; private set; }
 
     public static DataExport Request(Guid memberId, DateTimeOffset now) => new()
     {
@@ -55,10 +55,10 @@ public sealed class DataExport
         RequestedAt = now,
     };
 
-    public void MarkReady(string archiveJson, string tokenHash, DateTimeOffset now)
+    public void MarkReady(string archiveKey, string tokenHash, DateTimeOffset now)
     {
         Status = DataExportStatus.Ready;
-        ArchiveJson = archiveJson;
+        ArchiveKey = archiveKey;
         TokenHash = tokenHash;
         ReadyAt = now;
         ExpiresAt = now + LinkToken.DataDownloadLifetime;
@@ -88,11 +88,11 @@ public sealed class DataExport
     public void Expire()
     {
         Status = DataExportStatus.Expired;
-        ArchiveJson = null;
+        ArchiveKey = null;
         TokenHash = null;
     }
 
     /// <summary>The link works for the member who asked, until it expires (L2-018 AC2).</summary>
     public bool IsDownloadableBy(Guid memberId, DateTimeOffset now) =>
-        Status == DataExportStatus.Ready && MemberId == memberId && ExpiresAt is { } until && now < until && ArchiveJson is not null;
+        Status == DataExportStatus.Ready && MemberId == memberId && ExpiresAt is { } until && now < until && ArchiveKey is not null;
 }

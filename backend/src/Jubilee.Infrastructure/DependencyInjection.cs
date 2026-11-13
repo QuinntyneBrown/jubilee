@@ -114,6 +114,9 @@ public static class DependencyInjection
         // The deletion ledger, outside the database, so that a restore can delete again (L2-017 AC7, ADR 0069).
         services.AddSingleton<Application.Accounts.IDeletionLedger>(new Accounts.FileDeletionLedger(
             configuration["Deletions:LedgerPath"] ?? Path.Combine(AppContext.BaseDirectory, "deletions", "ledger.jsonl")));
+        // The export store: data archives on persistent storage, outside the database (L2-018 AC5, ADR 0069).
+        services.AddSingleton<IExportStore>(new Media.FileExportStore(
+            configuration["Exports:Root"] ?? Path.Combine(AppContext.BaseDirectory, "exports")));
         services.AddSingleton<IImageProcessor, Media.SkiaImageProcessor>();
         services.AddSingleton<IMediaStore>(new Media.FileMediaStore(
             configuration["Media:Root"] ?? Path.Combine(AppContext.BaseDirectory, "media")));

@@ -86,21 +86,25 @@ public sealed class GetDataExportStatusQueryHandler(IAppDbContext db, TimeProvid
 /// </summary>
 public sealed record DownloadDataExportQuery(Guid MemberId, string Token) : IRequest<string>;
 
-public sealed class DownloadDataExportQueryHandler(IAppDbContext db, TimeProvider clock, ILogger<DownloadDataExportQueryHandler> logger)
+public sealed class DownloadDataExportQueryHandler(
+    IAppDbContext db, IExportStore exports, TimeProvider clock, ILogger<DownloadDataExportQueryHandler> logger)
     : IRequestHandler<DownloadDataExportQuery, string>
 {
     public async Task<string> Handle(DownloadDataExportQuery request, CancellationToken cancellationToken)
     {
         var hash = LinkTokens.Hash(request.Token);
         var export = await db.DataExports.AsNoTracking().SingleOrDefaultAsync(e => e.TokenHash == hash, cancellationToken);
-        if (export is null || !export.IsDownloadableBy(request.MemberId, clock.GetUtcNow()))
+        var archive = export is not null && export.IsDownloadableBy(request.MemberId, clock.GetUtcNow())
+            ? await exports.Read(export.ArchiveKey!, cancellationToken)
+            : null;
+        if (archive is null)
         {
             logger.LogWarning("Security event: DataDownload refused");
             throw new NotFoundException("DATA_LINK_UNAVAILABLE", "This link has expired or isn’t yours.");
         }
 
         logger.LogInformation("Security event: DataDownload served");
-        return export.ArchiveJson!;
+        return archive;
     }
 }
 
@@ -109,7 +113,7 @@ public sealed class DownloadDataExportQueryHandler(IAppDbContext db, TimeProvide
 /// the files whose link has expired (L2-018, L2-182). A build that fails is tried again, up to 5 times.
 /// </summary>
 public sealed class DataExportBuilder(
-    IAppDbContext db, AccountSettings settings, SecuritySettings security, TimeProvider clock, ILogger<DataExportBuilder> logger)
+    IAppDbContext db, IExportStore exports, AccountSettings settings, SecuritySettings security, TimeProvider clock, ILogger<DataExportBuilder> logger)
 {
     public async Task<int> BuildDueAsync(CancellationToken cancellationToken)
     {
@@ -119,14 +123,18 @@ public sealed class DataExportBuilder(
         var built = 0;
         foreach (var export in waiting)
         {
+            string? stored = null;
             try
             {
                 var now = clock.GetUtcNow();
                 var member = await db.Members.AsNoTracking().SingleOrDefaultAsync(m => m.Id == export.MemberId && m.DeletedAt == null, cancellationToken)
                     ?? throw new InvalidOperationException("The member of the export is gone.");
                 var archive = await DataArchive.BuildAsync(db, member, now, cancellationToken);
+                var key = Convert.ToHexStringLower(System.Security.Cryptography.RandomNumberGenerator.GetBytes(16));
+                await exports.Save(key, archive, cancellationToken);
+                stored = key;
                 var token = LinkTokens.NewValue();
-                export.MarkReady(archive, LinkTokens.Hash(token), now);
+                export.MarkReady(key, LinkTokens.Hash(token), now);
                 db.OutboxMessages.Add(OutboxMessage.Email(
                     member.Id,
                     member.Email,
@@ -139,6 +147,12 @@ public sealed class DataExportBuilder(
             catch (Exception exception) when (exception is not OperationCanceledException)
             {
                 logger.LogError(exception, "The data export {ExportId} could not be built.", export.Id);
+                if (stored is not null)
+                {
+                    // An archive whose export was not recorded as ready is never served: it is not kept either.
+                    await exports.Delete(stored, cancellationToken);
+                }
+
                 if (export.RecordFailedAttempt(clock.GetUtcNow()))
                 {
                     DeadLetter(export);
@@ -180,11 +194,24 @@ public sealed class DataExportBuilder(
             .Where(e => e.ExpiresAt is { } until && now >= until).ToList();
         foreach (var export in stale)
         {
+            await ExportFiles.DeleteAsync(exports, export, cancellationToken);
             export.Expire();
         }
 
         await db.SaveChangesAsync(cancellationToken);
         return stale.Count;
+    }
+}
+
+/// <summary>Deletes an export's archive from the export store, once (ADR 0069).</summary>
+internal static class ExportFiles
+{
+    public static async Task DeleteAsync(IExportStore exports, DataExport export, CancellationToken cancellationToken)
+    {
+        if (export.ArchiveKey is { } key)
+        {
+            await exports.Delete(key, cancellationToken);
+        }
     }
 }
 

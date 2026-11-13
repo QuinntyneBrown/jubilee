@@ -40,7 +40,7 @@ public sealed record DeleteAccountCommand(Guid MemberId, string? Confirmation, s
 
 public sealed class DeleteAccountCommandHandler(
     IAppDbContext db, TimeProvider clock, AccountSettings settings, IDirectoryReadCache directory, IDeletionLedger ledger,
-    ILogger<DeleteAccountCommandHandler> logger)
+    IExportStore exports, ILogger<DeleteAccountCommandHandler> logger)
     : IRequestHandler<DeleteAccountCommand>
 {
     public const string Phrase = "DELETE";
@@ -74,7 +74,7 @@ public sealed class DeleteAccountCommandHandler(
                 cancellationToken);
         }
 
-        await AccountDeletion.ApplyAsync(db, member, now, now, "account.deleted", cancellationToken);
+        var archives = await AccountDeletion.ApplyAsync(db, member, now, now, "account.deleted", cancellationToken);
         db.OutboxMessages.Add(OutboxMessage.Email(
             member.Id,
             member.Email,
@@ -84,6 +84,7 @@ public sealed class DeleteAccountCommandHandler(
         await db.SaveChangesAsync(cancellationToken);
         directory.Invalidate();
         SecurityLog.Credential(logger, "AccountDeletion", "succeeded", member.Id, command.Address);
+        await AccountDeletion.DeleteArchivesAsync(exports, archives, logger, cancellationToken);
 
         // Outside the database, so a restore deletes the account again (L2-017 AC7). A write that fails is made by the
         // worker's next pass, from the database.
@@ -102,11 +103,12 @@ public sealed class DeleteAccountCommandHandler(
 /// What deleting an account changes, in the caller's unit of work (L2-017 AC3, AC4): open requests are cancelled, the
 /// member's listings are deleted, what is the member's alone goes, every session ends, nothing can sign in again and the
 /// audit log records it. Shared by the deletion and by its re-application after a restore (ADR 0069); telling others is
-/// the caller's.
+/// the caller's. It answers the keys of the archives to delete from the export store once the unit of work is committed,
+/// so a deletion that fails removes nothing.
 /// </summary>
 public static class AccountDeletion
 {
-    public static async Task ApplyAsync(
+    public static async Task<IReadOnlyList<string>> ApplyAsync(
         IAppDbContext db, Member member, DateTimeOffset deletedAt, DateTimeOffset now, string auditAction, CancellationToken cancellationToken)
     {
         var subject = member.Id.ToString();
@@ -142,8 +144,14 @@ public static class AccountDeletion
         db.RecentSearches.RemoveRange(await db.RecentSearches.Where(s => s.MemberSubject == subject).ToListAsync(cancellationToken));
         db.Notifications.RemoveRange(await db.Notifications.Where(n => n.MemberSubject == subject).ToListAsync(cancellationToken));
         db.LinkTokens.RemoveRange(await db.LinkTokens.Where(t => t.MemberId == member.Id).ToListAsync(cancellationToken));
+        var archives = new List<string>();
         foreach (var export in await db.DataExports.Where(e => e.MemberId == member.Id).ToListAsync(cancellationToken))
         {
+            if (export.ArchiveKey is { } key)
+            {
+                archives.Add(key);
+            }
+
             export.Expire();
         }
 
@@ -154,6 +162,23 @@ public static class AccountDeletion
 
         member.Delete(deletedAt);
         AuditLog.Record(db, new Reviewer(subject, "Member"), auditAction, "member", subject, null, null, null, now);
+        return archives;
+    }
+
+    /// <summary>Deletes the archives once the deletion is committed; one that cannot be deleted is deleted at erasure.</summary>
+    public static async Task DeleteArchivesAsync(IExportStore exports, IReadOnlyList<string> keys, ILogger logger, CancellationToken cancellationToken)
+    {
+        foreach (var key in keys)
+        {
+            try
+            {
+                await exports.Delete(key, cancellationToken);
+            }
+            catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+            {
+                logger.LogError(exception, "An archive of a deleted account could not be deleted yet.");
+            }
+        }
     }
 }
 
@@ -161,7 +186,7 @@ public static class AccountDeletion
 /// The worker's side of deletion: 30 days after an account was deleted its personal data is erased. What the member wrote
 /// stays for the business, from a "Former member" (L2-017 AC6, L2-148).
 /// </summary>
-public sealed class AccountErasure(IAppDbContext db, TimeProvider clock)
+public sealed class AccountErasure(IAppDbContext db, IExportStore exports, TimeProvider clock)
 {
     public async Task<int> EraseDueAsync(CancellationToken cancellationToken)
     {
@@ -186,7 +211,11 @@ public sealed class AccountErasure(IAppDbContext db, TimeProvider clock)
                 request.ForgetMember();
             }
 
-            db.DataExports.RemoveRange(await db.DataExports.Where(e => e.MemberId == member.Id).ToListAsync(cancellationToken));
+            foreach (var export in await db.DataExports.Where(e => e.MemberId == member.Id).ToListAsync(cancellationToken))
+            {
+                await ExportFiles.DeleteAsync(exports, export, cancellationToken);
+                db.DataExports.Remove(export);
+            }
             db.Notifications.RemoveRange(await db.Notifications.Where(n => n.MemberSubject == subject).ToListAsync(cancellationToken));
             db.ConsentRecords.RemoveRange(await db.ConsentRecords.Where(c => c.MemberId == member.Id).ToListAsync(cancellationToken));
             db.PasswordResetRequests.RemoveRange(await db.PasswordResetRequests.Where(r => r.EmailKey == member.EmailKey).ToListAsync(cancellationToken));

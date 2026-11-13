@@ -22,7 +22,8 @@ public interface IDeletionLedger
 /// The worker's side of the ledger: deletes again every account the ledger names and a restored database does not show
 /// as deleted, and writes to the ledger any deletion it is missing (L2-017 AC7).
 /// </summary>
-public sealed class DeletionLedgerReplay(IAppDbContext db, IDeletionLedger ledger, TimeProvider clock, ILogger<DeletionLedgerReplay> logger)
+public sealed class DeletionLedgerReplay(
+    IAppDbContext db, IDeletionLedger ledger, IExportStore exports, TimeProvider clock, ILogger<DeletionLedgerReplay> logger)
 {
     public async Task<int> ReapplyAsync(CancellationToken cancellationToken)
     {
@@ -35,8 +36,9 @@ public sealed class DeletionLedgerReplay(IAppDbContext db, IDeletionLedger ledge
         foreach (var member in restored)
         {
             var deletedAt = entries.Where(e => e.MemberId == member.Id).Min(e => e.DeletedAt);
-            await AccountDeletion.ApplyAsync(db, member, deletedAt, clock.GetUtcNow(), "account.deletion-reapplied", cancellationToken);
+            var archives = await AccountDeletion.ApplyAsync(db, member, deletedAt, clock.GetUtcNow(), "account.deletion-reapplied", cancellationToken);
             await db.SaveChangesAsync(cancellationToken);
+            await AccountDeletion.DeleteArchivesAsync(exports, archives, logger, cancellationToken);
         }
 
         // Written to the ledger: a deletion whose entry could not be written when it was made.
