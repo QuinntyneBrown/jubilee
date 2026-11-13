@@ -24,6 +24,11 @@ export class QueueDrainer {
   readonly delivered = signal(0);
 
   constructor() {
+    // The service worker sent the queue (Background Sync, ADR 0068): show what it did.
+    navigator.serviceWorker?.addEventListener('message', (event: MessageEvent) => {
+      const data = event.data as { type?: string; count?: number } | null;
+      if (data?.type === 'jubilee-outbox-sent') void this.sentByTheWorker(data.count ?? 0);
+    });
     let seen = this.connection.returned();
     effect(() => {
       const now = this.connection.returned();
@@ -42,11 +47,21 @@ export class QueueDrainer {
     setInterval(() => void this.queue.expire(), timings().expiryEvery);
   }
 
+  private async sentByTheWorker(count: number): Promise<void> {
+    await this.queue.reload();
+    if (count > 0) {
+      this.delivered.update((n) => n + count);
+      this.connection.announceSent(count);
+    }
+  }
+
   async drain(announce: boolean): Promise<void> {
     await this.queue.ready;
     await this.queue.expire();
     if (this.connection.cannotDeliver()) return;
     const run = async () => {
+      // The service worker may have sent some while this tab waited for the lock.
+      await this.queue.reload();
       let sent = 0;
       for (let next = this.queue.nextWaiting(); next; next = this.queue.nextWaiting()) {
         try {

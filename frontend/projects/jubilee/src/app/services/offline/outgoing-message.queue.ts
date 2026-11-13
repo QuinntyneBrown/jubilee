@@ -16,6 +16,8 @@ export interface QueuedMessage {
 }
 
 const STORE = 'messages';
+/** The Background Sync tag the service worker sends the queue under (L2-120 AC5, ADR 0068). */
+export const OUTBOX_SYNC = 'jubilee-outbox';
 
 /**
  * OutgoingMessageQueue: the messages written offline, kept in the `jubilee-outbox` database.
@@ -31,7 +33,7 @@ export class OutgoingMessageQueue {
   readonly ready: Promise<void>;
 
   constructor() {
-    this.ready = this.refresh();
+    this.ready = this.reload();
   }
 
   private open(): Promise<IDBDatabase> {
@@ -41,7 +43,8 @@ export class OutgoingMessageQueue {
     return this.db;
   }
 
-  private async refresh(): Promise<void> {
+  /** Reads the queue again: the service worker may have sent or changed messages. */
+  async reload(): Promise<void> {
     try {
       const db = await this.open();
       const list = ((await inStore(db, STORE, 'readonly', (store) => store.getAll())) ??
@@ -67,7 +70,24 @@ export class OutgoingMessageQueue {
       state: 'waiting',
     };
     await inStore(db, STORE, 'readwrite', (store) => store.add(message));
-    await this.refresh();
+    await this.reload();
+    void this.askForSync();
+  }
+
+  /**
+   * Asks the browser to wake the service worker when the connection is back, so the message is
+   * sent even if Jubilee is closed by then. Where there is no Background Sync, or no worker, the
+   * in-page QueueDrainer sends it.
+   */
+  private async askForSync(): Promise<void> {
+    try {
+      const registration = (await navigator.serviceWorker?.getRegistration()) as
+        | (ServiceWorkerRegistration & { sync?: { register(tag: string): Promise<void> } })
+        | undefined;
+      await registration?.sync?.register(OUTBOX_SYNC);
+    } catch {
+      // The in-page drainer is the fallback.
+    }
   }
 
   /** The message that is next to be sent: the first one still waiting. */
@@ -91,7 +111,7 @@ export class OutgoingMessageQueue {
   async remove(message: QueuedMessage): Promise<void> {
     const db = await this.open();
     await inStore(db, STORE, 'readwrite', (store) => store.delete(message.sequence));
-    await this.refresh();
+    await this.reload();
   }
 
   /** Marks the messages that waited longer than a day as "Not sent"; returns how many changed. */
@@ -109,12 +129,12 @@ export class OutgoingMessageQueue {
   async clear(): Promise<void> {
     const db = await this.open();
     await inStore(db, STORE, 'readwrite', (store) => store.clear());
-    await this.refresh();
+    await this.reload();
   }
 
   private async update(message: QueuedMessage, change: Partial<QueuedMessage>): Promise<void> {
     const db = await this.open();
     await inStore(db, STORE, 'readwrite', (store) => store.put({ ...message, ...change }));
-    await this.refresh();
+    await this.reload();
   }
 }
