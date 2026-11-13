@@ -40,7 +40,7 @@ Only the tests prove what the server does:
 - that the change ends every other session and sends the security e-mail (`PasswordResetTests`,
   `L2-009` AC4, `L2-134` AC3). Said in the narration.
 
-Owner step: set `Security__OnCallEmail` on `jubilee-to-app` (`eng/azure/README.md`).
+Owner step at the time of the video: set `Security__OnCallEmail` on `jubilee-to-app` (`eng/azure/README.md`). The owner set it on 13 November 2026.
 
 ## Run sheet
 
