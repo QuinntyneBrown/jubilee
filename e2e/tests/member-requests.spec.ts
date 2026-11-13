@@ -220,6 +220,7 @@ test.describe('track requests: the list (L2-047)', () => {
     await requests.setWidth(1280);
     const fake = await stubMemberRequests(page);
     await jb.goto('/requests');
+    await expect(requests.row('Kitchen drain')).toContainText('Awaiting reply');
     fake.answer(DRAIN, 'confirmed');
     await expect(requests.row('Kitchen drain')).toContainText('Confirmed', { timeout: 2_500 });
 
