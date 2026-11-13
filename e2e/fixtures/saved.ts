@@ -10,6 +10,8 @@ interface FakeCard {
   categorySlug: string;
   verified: boolean;
   coverPhoto: null;
+  /** Null below 3 reviews (L2-230). */
+  rating: { average: number; count: number } | null;
 }
 
 export interface FakeSavedItem {
@@ -63,6 +65,7 @@ const card = (
   categorySlug,
   verified: true,
   coverPhoto: null,
+  rating: null,
 });
 
 export const SAVED_ITEMS: FakeSavedItem[] = [
@@ -119,13 +122,16 @@ export const SAVED_ITEMS: FakeSavedItem[] = [
     name: 'Legacy Financial',
     savedAt: '2026-11-07T14:00:00Z',
     available: true,
-    business: card(
-      'legacy-financial',
-      'Legacy Financial',
-      'Build a Legacy. Protect a Legacy. Leave a Legacy.',
-      'financial-insurance',
-      'Free first meeting',
-    ),
+    business: {
+      ...card(
+        'legacy-financial',
+        'Legacy Financial',
+        'Build a Legacy. Protect a Legacy. Leave a Legacy.',
+        'financial-insurance',
+        'Free first meeting',
+      ),
+      rating: { average: 4.6, count: 5 },
+    },
     product: null,
   },
 ];
