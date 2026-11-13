@@ -64,6 +64,8 @@ export interface FakeListingDrafts {
   saves: FakeDraftBody[];
   /** Every listing the app published (L2-078). */
   publishes: FakeDraftBody[];
+  /** The address the API states for the published listing; none where no address domain is set (L2-244). */
+  address?: string | null;
   /** The field codes of an `invalid` answer. */
   errors: DraftErrors;
 }
@@ -134,6 +136,7 @@ export async function stubListingDrafts(
           json: {
             listingId: 'l-1',
             slug: 'luzandre-com',
+            address: fake.address ?? null,
             name: body.name,
             kind: body.kind,
             stage: 'live',

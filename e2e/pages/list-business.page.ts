@@ -1,5 +1,6 @@
 import type { Locator, Page } from '@playwright/test';
 import type { Region, Screen } from '../fixtures/visual';
+import { AddressField } from './address-field';
 import { ShellPage } from './shell.page';
 
 /** "List your business": the form, the live preview and the state after publishing. */
@@ -46,6 +47,9 @@ export class ListBusinessPage extends ShellPage implements Screen {
   /** The card of "How members see you". */
   readonly previewCard: Locator;
   readonly doneHeading: Locator;
+  /** "Your address" on the state after publishing (L2-244 AC2). */
+  readonly addressHeading: Locator;
+  readonly address: AddressField;
   readonly doneText: Locator;
   readonly timeline: Locator;
   readonly goToMyBusiness: Locator;
@@ -94,6 +98,8 @@ export class ListBusinessPage extends ShellPage implements Screen {
     this.previewPerks = this.preview.locator('.biz-card .perk');
     this.previewCard = this.preview.locator('.biz-card');
     this.doneHeading = this.main.getByRole('heading', { level: 1 });
+    this.addressHeading = this.main.getByRole('heading', { name: 'Your address' });
+    this.address = new AddressField(this.main);
     this.doneText = this.main.locator('.empty__text');
     this.timeline = this.main.locator('.timeline li');
     this.goToMyBusiness = this.main.getByRole('link', { name: 'Go to My business' });
