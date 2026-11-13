@@ -42,7 +42,7 @@ journey that is implemented: the effort-weighted average of its feature designs 
 | 24 | Use Jubilee offline | Browse cached pages and queue messages on poor connections. | 7 | 83% |
 | 25 | Moderate reports and feature businesses | Staff handle reports and choose the featured businesses. | 5 | 100% |
 | 26 | Download data and delete account | Export personal data or permanently delete the account. | 5 | 83% |
-| 27 | Meet Jubilee on the marketing site | Read the marketing page and watch the pitch film. Its links to the app and to listing (L2-185) are suspended while Jubilee is launching soon; journey 31 takes their place until launch. | 4 | 95% |
+| 27 | Meet Jubilee on the marketing site | Read the marketing page and watch the pitch film, by pointer or keyboard, with its captions in the picture. Its links to the app and to listing (L2-185) are suspended while Jubilee is launching soon and wait on the owner's decision to open it; journey 31 takes their place until launch. | 4 | 95% |
 | 28 | Rent a room or space | List a room, suite or hall; find spaces by term on Browse, the category and search; request one and let the owner confirm. | 19 | 100% |
 | 29 | Give feedback | Rate Jubilee, report a bug or send kudos from any screen, answer a check-in, and follow past feedback. | 9 | 97% |
 | 30 | Work in the admin application | Staff sign in to the admin application through single sign-on from an allowed network, work in its shell and sign out; old admin links in the app point there. | 20 | 92% |
@@ -73,4 +73,6 @@ journey that is implemented: the effort-weighted average of its feature designs 
   What keeps journeys 10 and 12 below 100% is listed in [`estimates/`](estimates/README.md).
 - [`prompts/`](prompts/) holds one implementation prompt per unfinished journey, named by its number. Each
   lists what the journey still lacks and runs it to 100%, from requirements to a pull request. Journey 28
-  is complete and has none. The prompt for journey 27 is for launch day: it restores the links to the app.
+  is complete and has none. The prompt for journey 27 is for launch day: it restores the links to the app. Its part that did not wait on
+  launch (a behaviour spec for every criterion of L2-183, L2-184 and L2-186) was run on 12 November 2026; the
+  row stays at 95% because L2-185 waits on the owner's launch decision.

@@ -74,10 +74,24 @@ async function standIn(host, answer) {
   return api;
 }
 
-/** Starts server.js with these settings and waits until it serves. */
+/**
+ * Starts server.js with these settings and waits until it serves. The port is free when it is
+ * chosen, but another socket of the machine can take it before server.js listens; then it starts
+ * again on another port.
+ */
 async function host(settings) {
   const root = folder();
   fs.writeFileSync(path.join(root, 'index.html'), '<!doctype html><title>Jubilee</title>');
+  for (let attempt = 1; ; attempt++) {
+    try {
+      return await start(root, settings);
+    } catch (error) {
+      if (attempt === 5 || !/EADDRINUSE/.test(error.message)) throw error;
+    }
+  }
+}
+
+async function start(root, settings) {
   const port = await freePort();
   const child = spawn(process.execPath, [serverFile], {
     env: { PATH: process.env.PATH, PORT: String(port), STATIC_ROOT: root, ...settings },
