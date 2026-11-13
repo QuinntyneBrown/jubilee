@@ -70,7 +70,10 @@ internal static partial class CatalogueRules
     public const int MaxPlace = 200;
     public static readonly TimeSpan IdempotencyWindow = TimeSpan.FromHours(24);
 
-    /// <summary>The window of <see cref="ProductPhoto.MaxPerHour"/> (L2-138 AC6).</summary>
+    /// <summary>An owner uploads at most this many product photos an hour (L2-138 AC6).</summary>
+    public const int PhotosPerHour = 30;
+
+    /// <summary>The window of <see cref="PhotosPerHour"/>.</summary>
     public static readonly TimeSpan PhotoWindow = TimeSpan.FromHours(1);
 
     [GeneratedRegex(@"^\d{1,6}(\.\d{1,2})?$")]
@@ -362,9 +365,9 @@ public sealed class UploadProductPhotoCommandHandler(IAppDbContext db, IImagePro
         var recent = await db.ProductPhotos.AsNoTracking()
             .Where(p => p.ListingId == listing.Id && p.UploadedAt > since)
             .OrderBy(p => p.UploadedAt).Select(p => p.UploadedAt).ToListAsync(cancellationToken);
-        if (recent.Count >= ProductPhoto.MaxPerHour)
+        if (recent.Count >= CatalogueRules.PhotosPerHour)
         {
-            throw new RateLimitedException("rate_limited", recent[recent.Count - ProductPhoto.MaxPerHour] + CatalogueRules.PhotoWindow - now);
+            throw new RateLimitedException("rate_limited", recent[recent.Count - CatalogueRules.PhotosPerHour] + CatalogueRules.PhotoWindow - now);
         }
 
         ProcessedImage processed;

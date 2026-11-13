@@ -6,9 +6,6 @@ namespace Jubilee.Domain;
 /// </summary>
 public sealed class ProductPhoto
 {
-    /// <summary>An owner uploads at most this many product photos an hour (L2-138 AC6).</summary>
-    public const int MaxPerHour = 30;
-
     private ProductPhoto()
     {
     }
