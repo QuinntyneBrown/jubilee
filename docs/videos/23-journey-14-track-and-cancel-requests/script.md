@@ -1,4 +1,4 @@
-# 22 · Journey 14: Track and cancel requests
+# 23 · Journey 14: Track and cancel requests
 
 The transcript, written from `narration.json` by `tools/video-demo/build.mjs`.
 

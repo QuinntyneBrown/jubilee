@@ -8,7 +8,7 @@ import { RealtimeService } from './realtime.service';
 export const REQUEST_POLL_MS = 5000;
 
 /**
- * When a member's request page should read again, quietly (L2-070 AC6; ADR 0060): a request
+ * When a member's request page should read again, quietly (L2-070 AC6; ADR 0061): a request
  * notification it concerns arrives over the event stream; the stream connects again after being
  * down; the unread notification count falls, because an owner took back a confirmation and its
  * notification went with it; or, only while the stream cannot connect, every 5 seconds.

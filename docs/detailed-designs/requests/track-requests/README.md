@@ -56,7 +56,7 @@ scheduled lifecycle work in `Jubilee Worker`.
   pages read again, without a loading state, when a `request` notification for them arrives on `received`
   (the list for any target under `/requests/`, the detail for its own), when the stream connects again, and
   when the unread notification count falls (an owner took back a confirmation). While `connected` is false
-  they ask every 5 seconds (`L2-070` AC6, ADR 0060). The page announces a change of status in its own words
+  they ask every 5 seconds (`L2-070` AC6, ADR 0061). The page announces a change of status in its own words
   (`statusChangeToast`), so the service shows no toast of its own for a request notification on the page it
   concerns.
 - **`REQUESTS_API`** — the injection token of `RequestsApi`, the typed Angular HTTP client. `list` calls
@@ -72,7 +72,7 @@ scheduled lifecycle work in `Jubilee Worker`.
 - **`FulfilRequestCommand`** and **`FulfilRequestCommandHandler`** — apply `Confirmed` → `Completed` when the
   owner marks an order fulfilled, through `POST /api/my-business/requests/{id}/fulfil` (403 for another
   business, 409 unless a confirmed order), and tell the customer in the app and by e-mail. The owner's control
-  is "Mark fulfilled" in Incoming requests (`L2-225`, ADR 0060); see
+  is "Mark fulfilled" in Incoming requests (`L2-225`, ADR 0061); see
   [Handle incoming requests](../handle-incoming-requests/README.md).
 - **`BookingCompletionJob`** — hosted job in `Jubilee Worker`. Every minute it sends
   `RunBookingCompletionJobCommand`, which runs `CompleteFinishedBookingsCommand` once per 5-minute occurrence

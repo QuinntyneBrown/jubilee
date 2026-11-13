@@ -43,7 +43,7 @@ marked with it.
   {summary}." It polls every 5 seconds only while `RealtimeService.connected` is false, and reads once and stops
   the moment it is true again (ADR 0050, `L2-051` AC5 and AC7).
 - **Mark fulfilled** — a confirmed order, under "Confirmed" or "All", carries "Mark fulfilled" (`L2-225`, ADR
-  0060). It opens `FulfilRequestDialog`: "Mark {first name}'s order fulfilled?", "Only mark it fulfilled once
+  0061). It opens `FulfilRequestDialog`: "Mark {first name}'s order fulfilled?", "Only mark it fulfilled once
   {first name} has it.", the customer, the order and the total, "{first name} is told it's done and the order
   moves to Completed.", "Not yet" (first focus) and "Mark fulfilled". On success the page reads the list again and
   shows the toast "Order fulfilled. {first name} has been told."; there is no Undo, because `completed` is final.

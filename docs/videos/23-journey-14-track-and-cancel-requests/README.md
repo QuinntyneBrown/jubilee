@@ -1,13 +1,13 @@
-# 22 · Journey 14: Track and cancel requests
+# 23 · Journey 14: Track and cancel requests
 
 > **Runtime:** 1:29 · **Format:** 1920×1080, 30 fps, captions burned in · **Audience:** the repository owner and reviewers of journey 14
 
-**Video:** [22-journey-14-track-and-cancel-requests.mp4](22-journey-14-track-and-cancel-requests.mp4) · **Audio:** [22-journey-14-track-and-cancel-requests.mp3](22-journey-14-track-and-cancel-requests.mp3) · [Transcript](script.md) · [Captions sidecar](captions.vtt)
+**Video:** [23-journey-14-track-and-cancel-requests.mp4](23-journey-14-track-and-cancel-requests.mp4) · **Audio:** [23-journey-14-track-and-cancel-requests.mp3](23-journey-14-track-and-cancel-requests.mp3) · [Transcript](script.md) · [Captions sidecar](captions.vtt)
 
 ## What it shows
 
 The run of `docs/prompts/14-track-and-cancel-requests.md`, which took journey 14 from 89% to 100%
-(ADR 0060). Joanna's "Your requests" reads "3 open · 1 awaiting reply"; when WaterWorks Plumbing &
+(ADR 0061). Joanna's "Your requests" reads "3 open · 1 awaiting reply"; when WaterWorks Plumbing &
 Drains confirms her quote, the row reads "Confirmed" about a second later, with the one toast
 "WaterWorks Plumbing & Drains confirmed your quote request", because the page now listens to the
 event stream (`L2-070` AC6). Naomi's Incoming requests, on "Confirmed", offers "Mark fulfilled" on
@@ -67,8 +67,8 @@ Jubilee takes no payment: members pay the business directly.
 
 ```sh
 pip install edge-tts
-node tools/video-demo/build.mjs docs/videos/22-journey-14-track-and-cancel-requests --check   # speak the lines, print their lengths
-node tools/video-demo/build.mjs docs/videos/22-journey-14-track-and-cancel-requests           # record and encode
+node tools/video-demo/build.mjs docs/videos/23-journey-14-track-and-cancel-requests --check   # speak the lines, print their lengths
+node tools/video-demo/build.mjs docs/videos/23-journey-14-track-and-cancel-requests           # record and encode
 ```
 
 `narration.json` holds the lines and `demo.spec.ts` drives the app, one `demo.scene` per line. The

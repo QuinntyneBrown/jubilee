@@ -8,7 +8,7 @@ import { RequestDetailPage } from '../../../e2e/pages/request-detail.page';
 import { RequestsPage } from '../../../e2e/pages/requests.page';
 import { Toasts } from '../../../e2e/pages/toasts';
 
-// Video 22: journey 14, track and cancel requests (ADR 0060). Joanna's Your requests changes over the
+// Video 23: journey 14, track and cancel requests (ADR 0061). Joanna's Your requests changes over the
 // event stream when WaterWorks confirms; Naomi marks Grace's confirmed order fulfilled from Incoming
 // requests; Joanna's open order completes on screen; a request nobody answered for a week is cancelled
 // and the cancel taken back. The app is answered by the stand-ins of the behaviour specs (ADR 0009);
@@ -125,7 +125,7 @@ test('journey 14: track and cancel requests', async ({ demo }) => {
   await demo.card('Behind the screen', [
     'A cancel and its withdrawal reach the owner as in-app notifications as well as e-mails (MemberRequestTests, L2-049 AC2, AC3).',
     'Mark fulfilled tells the customer in the app and by e-mail; a cancelled order, a booking or a quote is refused with 409 (IncomingRequestTests, L2-225).',
-    'The booking-completion and unanswered-request jobs claim each occurrence once in JobRun and record their success (RequestJobTests, L2-182 AC1, ADR 0060).',
+    'The booking-completion and unanswered-request jobs claim each occurrence once in JobRun and record their success (RequestJobTests, L2-182 AC1, ADR 0061).',
   ]);
   await demo.scene('behind');
 

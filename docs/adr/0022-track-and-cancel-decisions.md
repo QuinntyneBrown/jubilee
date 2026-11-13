@@ -1,6 +1,6 @@
 # 0022. Track and cancel requests decisions
 
-Status: accepted, amended by ADR 0060 (the event stream on the member's request pages, the owner's "Mark fulfilled" control, and the two jobs run once per schedule)
+Status: accepted, amended by ADR 0061 (the event stream on the member's request pages, the owner's "Mark fulfilled" control, and the two jobs run once per schedule)
 
 ## Context
 
