@@ -2457,7 +2457,7 @@
     "body": {
       "title": "Sign in to continue.",
       "status": 401,
-      "correlationId": "cd882653ae44414ea1a992b7df18a65a",
+      "correlationId": "68ae089dc8ff4a3fa1cb96ed9f05e727",
       "code": "sign_in_required"
     }
   },
@@ -4117,7 +4117,7 @@
     "body": {
       "title": "Sign in to continue.",
       "status": 401,
-      "correlationId": "94ecf1cb6fe247b1ba4e38fb375ab23e",
+      "correlationId": "9adefb56726b4213849ab92deb314358",
       "code": "sign_in_required"
     }
   },
@@ -4255,6 +4255,37 @@
               {
                 "start": 8,
                 "length": 5
+              }
+            ]
+          },
+          "space": null
+        }
+      ],
+      "suggestion": null
+    }
+  },
+  "GET /api/search?q=reading": {
+    "status": 200,
+    "body": {
+      "query": "reading",
+      "businessCount": 1,
+      "serviceCount": 0,
+      "productCount": 0,
+      "hasMatchExplanations": true,
+      "hits": [
+        {
+          "kind": "business",
+          "name": "Lanternread",
+          "slug": "lanternread",
+          "productSlug": null,
+          "businessName": "Lanternread",
+          "categorySlug": "software-platforms",
+          "explanation": {
+            "text": "Matches reading in tagline and what it does",
+            "highlights": [
+              {
+                "start": 8,
+                "length": 7
               }
             ]
           },

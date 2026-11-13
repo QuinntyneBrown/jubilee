@@ -979,6 +979,12 @@ export const routes = {
     who: 'visitor',
     stub: 'search-spaces',
   },
+  // A software platform among the businesses (L2-253 AC2).
+  'search.platforms': {
+    app: '/search?q=reading',
+    mock: 'pages/search/platforms.html',
+    who: 'member',
+  },
   'search.no-results': {
     app: '/search?q=plumbre',
     mock: 'pages/search/no-results.html',
