@@ -17,4 +17,4 @@ id, so the review keeps its product); the parity crops of the rating under the n
 review subject are not measured yet; and the owner runs the sweeps. Photos on reviews and
 "Helpful" are deferred by ADR 0066.
 
-review-a-platform (ADR 0071): eligibility by the statement of use for platforms only, the statement on the Write a review screen, `Review.StatedUseAt`, the line that says the reviews are the members' own word, and editing, removing, replying to, reporting and taking down such a review are done with tests (`PlatformReviewTests`, `PlatformReviewChangesTests`, `write-platform-review.spec.ts`, `platform-reviews.spec.ts`, `platform-review-changes.spec.ts`). Nothing is left.
+review-a-platform (ADR 0072): eligibility by the statement of use for platforms only, the statement on the Write a review screen, `Review.StatedUseAt`, the line that says the reviews are the members' own word, and editing, removing, replying to, reporting and taking down such a review are done with tests (`PlatformReviewTests`, `PlatformReviewChangesTests`, `write-platform-review.spec.ts`, `platform-reviews.spec.ts`, `platform-review-changes.spec.ts`). Nothing is left.

@@ -233,7 +233,7 @@ listings and takes down one that misrepresents a business.
 
 ### reviews
 
-Decisions in [ADR 0066](../adr/0066-reviews.md); reviews of software platforms in [ADR 0071](../adr/0071-software-platforms.md).
+Decisions in [ADR 0066](../adr/0066-reviews.md); reviews of software platforms in [ADR 0072](../adr/0072-software-platforms.md).
 
 | Feature | L2 requirements cited |
 |---|---|

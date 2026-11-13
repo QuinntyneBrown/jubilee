@@ -1,6 +1,6 @@
 namespace Jubilee.Domain;
 
-/// <summary>The rules a software platform's web address follows (L2-250 AC4, ADR 0071).</summary>
+/// <summary>The rules a software platform's web address follows (L2-250 AC4, ADR 0072).</summary>
 public static class PlatformRules
 {
     public const int MaxWebsiteLength = 200;

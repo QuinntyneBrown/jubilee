@@ -203,7 +203,7 @@ term is live immediately in the space's cards and page. Photos follow
 
 ### Platforms
 
-For a software platform (kind `platform`, ADR 0071), the screen shows Photos,
+For a software platform (kind `platform`, ADR 0072), the screen shows Photos,
 "Platform name", "One line on what it does" with its counter, "Web address",
 "What it does", "Who it is for", "Pricing" and "Highlight" with their stored
 values, and not "About", "Category", "Where", "Hours" or "Website"; the web

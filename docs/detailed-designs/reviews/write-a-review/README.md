@@ -137,7 +137,7 @@ only (ADR 0035).
 ### Software platforms
 
 A software platform takes no requests, so the rule above cannot apply to it
-([ADR 0071](../../../adr/0071-software-platforms.md), `L2-258`). The slice
+([ADR 0072](../../../adr/0072-software-platforms.md), `L2-258`). The slice
 branches by the listing's kind in three places; the detail is in
 [Review a platform](../review-a-platform/README.md).
 

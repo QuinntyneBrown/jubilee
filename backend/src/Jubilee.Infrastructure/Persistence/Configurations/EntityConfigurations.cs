@@ -44,7 +44,7 @@ public sealed class ListingConfiguration : IEntityTypeConfiguration<Listing>
             s.Ignore(x => x.MinimumStayLabel);
         });
 
-        // A software platform's own words are one JSON column too; every other kind has none (ADR 0071).
+        // A software platform's own words are one JSON column too; every other kind has none (ADR 0072).
         builder.OwnsOne(l => l.Platform, p => p.ToJson("Platform"));
     }
 }
@@ -598,7 +598,7 @@ public sealed class ListingDraftConfiguration : IEntityTypeConfiguration<Listing
             s.Ignore(x => x.MinimumStayLabel);
         });
 
-        // A platform draft keeps the founder's words as one JSON column, like its listing (ADR 0071).
+        // A platform draft keeps the founder's words as one JSON column, like its listing (ADR 0072).
         builder.OwnsOne(d => d.Platform, p => p.ToJson("Platform"));
     }
 }

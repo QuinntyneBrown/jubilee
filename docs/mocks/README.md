@@ -60,7 +60,7 @@ Reuse these in every new mock so the story holds across screens. **Today is Tues
   immigration 6, Home & property 10, Real estate & living 4, Health & family 4, Business & tech 5,
   Learning 2, Media 7, Community 3, Software platforms 3); "Rooms & rentals", the twelfth, has its
   own shelf of 5 spaces. Business names, taglines and category counts come from the Magic Patterns
-  design reference, except the three software platforms, which are invented (ADR 0071). People,
+  design reference, except the three software platforms, which are invented (ADR 0072). People,
   prices, hours, addresses, messages and requests are invented for the mocks.
 - **Software platforms (L1-033):** three invented platforms on `.example` addresses; no real
   product is mocked or reviewed. Their tile is gold with the `monitor` icon and the short label
@@ -127,7 +127,7 @@ Magic Patterns design reference. These assumptions shaped it; each one is a deci
    statement-of-faith, terms and privacy wording is draft copy for the owner to replace.
 4. **A listing can hold both products and services.** The form asks for the main one first.
 5. **Ten categories from the design reference, and two the product added** ("Rooms & rentals",
-   ADR 0042, and "Software platforms", ADR 0071). Photographers, speakers, consultants and
+   ADR 0042, and "Software platforms", ADR 0072). Photographers, speakers, consultants and
    furniture makers fit under Media, Learning, Business & tech and Shops; say if they should have
    their own categories.
 6. **Photography is represented by tinted icon tiles** (`.media`) so the mocks open from disk
@@ -138,7 +138,7 @@ Magic Patterns design reference. These assumptions shaped it; each one is a deci
 8. **No map** in this set. Reviews came with ADR 0066 and the e-mails with ADR 0038.
 9. **Buyer screens show Joanna before she owns a listing** ("List your business" in the top bar);
    seller screens show Naomi ("My business").
-10. **A software platform has no frame in the design reference (ADR 0071).** Its screens are drawn
+10. **A software platform has no frame in the design reference (ADR 0072).** Its screens are drawn
     with the components that exist: the business card and the business page's blocks, the reviews
     blocks, the choice cards, the checkbox and the form fields. They add no component block and no
     rule to the shared stylesheet. The four cards of "What do you offer?" use the two-column

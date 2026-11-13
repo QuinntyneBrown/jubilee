@@ -34,7 +34,7 @@ no list, card or count calls a platform verified, approved or vetted.
 The feature extends the three directory slices (`directory/browse-home`,
 `directory/browse-category`, `directory/search-directory`) from the pages in
 `Jubilee Web` to the `Jubilee database`. The model is fixed by
-[ADR 0071](../../../adr/0071-software-platforms.md). Most of the slice is
+[ADR 0072](../../../adr/0072-software-platforms.md). Most of the slice is
 reuse: a platform joins every list of businesses because it is a business card
 and is not a space.
 
@@ -133,11 +133,11 @@ differ or leave a gap.
 
 - **No drawing in the design reference**: the Magic Patterns reference draws
   no platform. The screens are drawn in `docs/mocks/` from the existing
-  business card, category page and search (ADR 0071).
+  business card, category page and search (ADR 0072).
 - **No platform card**: nothing on a card is particular to a platform, so the
-  business card is used. A platform card of its own is deferred (ADR 0071).
+  business card is used. A platform card of its own is deferred (ADR 0072).
 - **No filters**: offers and areas served describe a trade that visits a
-  customer. Filters on "Software platforms" are deferred (ADR 0071).
+  customer. Filters on "Software platforms" are deferred (ADR 0072).
 - **Counted among the businesses**: platforms count in "All {n} businesses" on
   the browse home, and as "{n} platforms" on their own category page.
 - **Search results as rows**: `L2-253` AC2 says "as business cards".

@@ -31,7 +31,7 @@ checked it.
 
 The feature is a read slice from `BusinessPage` in `Jubilee Web` to the
 `Jubilee database`. The model is fixed by
-[ADR 0071](../../../adr/0071-software-platforms.md). There is no new page and
+[ADR 0072](../../../adr/0072-software-platforms.md). There is no new page and
 no new presentation component.
 
 - **`BusinessPage`** (`pages/business/`): the existing page at `/b/:slug`.
@@ -144,14 +144,14 @@ differ or leave a gap.
 
 - **No drawing in the design reference**: the Magic Patterns reference draws
   no platform. The page is drawn in `docs/mocks/pages/platform/` from the
-  parts of the business page (ADR 0071).
+  parts of the business page (ADR 0072).
 - **One page component**: the platform layout lives in `BusinessPage` and is
   chosen by kind, because every kind shares `/b/:slug`, its load states and
   its not-found rule.
 - **A plain link, not a redirect**: a redirect endpoint would let Jubilee
   count clicks, and would carry the member through Jubilee to do it. The link
   goes straight to the website and Jubilee learns nothing of who followed it
-  (ADR 0071).
+  (ADR 0072).
 - **`https` only**: a business's optional website keeps the rule of `L2-087`
   AC3 (`http` or `https`). A platform's address is `https` only, because it is
   the page's main action.
@@ -161,7 +161,7 @@ differ or leave a gap.
 - **Quote options**: `L2-248` AC5 names the quote request. The design refuses
   the read of its options with the same code, so the quote dialog cannot open
   on a platform from a typed address.
-- **Deferred** (ADR 0071): app store links, screenshot galleries, pricing
+- **Deferred** (ADR 0072): app store links, screenshot galleries, pricing
   tables, integrations, an API for platforms, and booking, quotes, product
   requests or payment for platforms.
 

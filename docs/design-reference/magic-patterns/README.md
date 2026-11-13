@@ -125,7 +125,7 @@ Until a file is here the case is compared with its mock only, and its test says 
   space, no incoming request or request detail for a space, and the roommate space's "Meet the
   household" and the short-stay dates are shown only as drawn. The Riverdale Fellowship Hall
   card shows hourly pricing ("$45 / hour"); hourly hall pricing is not built and has no frame.
-- **No software platform (ADR 0071).** The design draws no software platform, no "Software
+- **No software platform (ADR 0072).** The design draws no software platform, no "Software
   platforms" category and no statement of use. The platform screens are drawn in the mocks only,
   from the frames of what they are built with: the platform page (`pages/platform/`) from the
   business frames (`business-services-*.png`: the tile, the head, the sections, "Details") with

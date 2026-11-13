@@ -29,7 +29,7 @@ A statement of use counts for a platform only. It never makes a member
 eligible to review a business, a shop or a space. No review, summary or card
 of a platform carries a "Verified" mark or the words verified, approved or
 vetted. The decisions are recorded in
-[ADR 0071](../../../adr/0071-software-platforms.md), which amends
+[ADR 0072](../../../adr/0072-software-platforms.md), which amends
 [ADR 0066](../../../adr/0066-reviews.md) for this kind only.
 
 ## Description
@@ -156,7 +156,7 @@ adds no page, no endpoint and no presentation component.
 ### Open questions
 
 Every decision below is recorded in
-[ADR 0071](../../../adr/0071-software-platforms.md), except where the row says
+[ADR 0072](../../../adr/0072-software-platforms.md), except where the row says
 otherwise.
 
 | Question | Decision | Why |
@@ -169,8 +169,8 @@ otherwise.
 | Scope of the statement | Platforms only; `usedIt` is ignored for every other kind. | A confirmed request stays the only way to review a business, a shop or a space. |
 | Abuse | The daily limit of 5 new reviews and the report reason "It isn’t about a real dealing with them". | Both exist. If they prove too little, the remedy is a later decision (an account age, or a founder-issued code), not a silent mark. |
 | The item | "Their platform", with no choice. | There is nothing to choose, as for a space. |
-| The stated-use time in the data download | `<TO SUPPLY>` | `L2-261` AC4 and `L2-239` AC3 do not say whether the member's download of their reviews carries it; not decided by ADR 0071. |
-| The design reference | The Magic Patterns reference draws no platform. The "Write a Review" frame is reused and the statement of use is drawn in `docs/mocks/pages/write-review/platform*.html`. | ADR 0071. |
+| The stated-use time in the data download | `<TO SUPPLY>` | `L2-261` AC4 and `L2-239` AC3 do not say whether the member's download of their reviews carries it; not decided by ADR 0072. |
+| The design reference | The Magic Patterns reference draws no platform. The "Write a Review" frame is reused and the statement of use is drawn in `docs/mocks/pages/write-review/platform*.html`. | ADR 0072. |
 
 ## Requirements
 

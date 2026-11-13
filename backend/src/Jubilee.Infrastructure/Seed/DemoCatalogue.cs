@@ -227,7 +227,7 @@ internal static class DemoCatalogue
 
     /// <summary>
     /// A software platform in "Software platforms" (L2-248): its founder, its web address and what the founder
-    /// says of it. Every one is invented, on an <c>.example</c> address; no real product is seeded (ADR 0071).
+    /// says of it. Every one is invented, on an <c>.example</c> address; no real product is seeded (ADR 0072).
     /// </summary>
     internal sealed record DemoPlatform(
         string Slug, string Name, string Tagline, string? Highlight, string Founder, string Website, string Does, string For, string Pricing);

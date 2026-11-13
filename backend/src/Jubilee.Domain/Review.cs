@@ -51,7 +51,7 @@ public sealed class Review
     public DateTimeOffset? EditedAt { get; private set; }
 
     /// <summary>
-    /// When the author stated they have used the software platform (L2-258, ADR 0071). It is their own word:
+    /// When the author stated they have used the software platform (L2-258, ADR 0072). It is their own word:
     /// Jubilee does not check it. Null for a review of a business, a shop or a space.
     /// </summary>
     public DateTimeOffset? StatedUseAt { get; private set; }

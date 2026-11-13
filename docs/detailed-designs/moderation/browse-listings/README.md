@@ -102,7 +102,7 @@ The feature runs from the Angular admin shell to the Jubilee database.
 
 ### Platforms
 
-A published software platform (kind `platform`, ADR 0071) is listed like any
+A published software platform (kind `platform`, ADR 0072) is listed like any
 listing. The list has no column for the kind: the Category column reads
 "Software platforms", because `AdminListingRow.CategoryName` comes from
 `Category.Find` and the category is the twelfth of `Category.All`. The search

@@ -124,7 +124,7 @@ outbox as it sends every other e-mail.
 
 ### Platforms
 
-For a software platform (kind `platform`, ADR 0071), `AdminListingDto` carries
+For a software platform (kind `platform`, ADR 0072), `AdminListingDto` carries
 `Kind` `platform` and `Platform` (`AdminListingPlatform`: `Website`, `Does`,
 `For` and `Pricing`), null for every other kind. `AdminListingPage` shows the
 header as for any listing, "Software platforms · published {when} ·

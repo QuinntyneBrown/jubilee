@@ -16,4 +16,4 @@ Left for the owner, by hand: the visual parity of the new screen states against 
 
 describe-space (ADR 0042): List a space with its terms, fields, checks and live preview, its draft and publishing it straight away are done with tests. Excludes deferred work (see ADR 0042): hourly rent and the sign-up intents.
 
-describe-platform (ADR 0071): listing a software platform with its fields, checks, preview, draft and publishing, the `AddSoftwarePlatforms` migration, and editing a platform on Edit listing (L2-256) are done with tests (`PlatformOnboardingTests`, `PlatformEditTests`, `list-a-platform.spec.ts`, `edit-platform.spec.ts`). Nothing is left.
+describe-platform (ADR 0072): listing a software platform with its fields, checks, preview, draft and publishing, the `AddSoftwarePlatforms` migration, and editing a platform on Edit listing (L2-256) are done with tests (`PlatformOnboardingTests`, `PlatformEditTests`, `list-a-platform.spec.ts`, `edit-platform.spec.ts`). Nothing is left.

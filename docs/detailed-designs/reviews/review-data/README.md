@@ -69,7 +69,7 @@ The decisions are recorded in [ADR 0066](../../../adr/0066-reviews.md).
   `EntityConfigurations.cs`, added in one migration of
   `Jubilee.Infrastructure/Migrations` with the star-count columns; tests run on
   the InMemory provider (ADR 0009).
-- **Statement of use** (`L2-261 AC4`, ADR 0071): `Review.StatedUseAt`
+- **Statement of use** (`L2-261 AC4`, ADR 0072): `Review.StatedUseAt`
   (`DateTimeOffset?`) holds the time a member stated that they had used a
   software platform; it is null for a review of a business, a shop or a
   space. Only the time is kept. No answer of the API carries it, `ReviewDto`
@@ -93,7 +93,7 @@ Every choice below is recorded in [ADR 0066](../../../adr/0066-reviews.md).
 | Taken-down reviews | Kept hidden 12 months, then deleted; the audit stays. | A record for a dispute, then deletion. |
 | Where the counts live | Stored star counts on `Listing` and `Product`. | Cards without a query each (`L2-156`). |
 | Limits | 5 reviews a day, 30 edits and replies an hour, 10 reports a day. | `L2-137`. |
-| What is kept of a statement of use | Its time only, on the review (ADR 0071). | Enough to say when the word was given (`L2-261 AC4`). |
+| What is kept of a statement of use | Its time only, on the review (ADR 0072). | Enough to say when the word was given (`L2-261 AC4`). |
 | The stated-use time in the data download | `<TO SUPPLY>` | `L2-261 AC4` and `L2-239 AC3` do not say whether `reviews` in the download carries it. |
 
 ## Requirements

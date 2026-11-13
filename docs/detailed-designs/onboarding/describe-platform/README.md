@@ -42,7 +42,7 @@ verified, approved or vetted.
 
 The feature extends the onboarding slice from `ListBusinessPage` to the
 `Jubilee database`. The model is fixed by
-[ADR 0071](../../../adr/0071-software-platforms.md) and follows the space
+[ADR 0072](../../../adr/0072-software-platforms.md) and follows the space
 (`onboarding/describe-space`).
 
 - **`ListBusinessPage`**: Angular page at `/list` (`pages/list-business/`).
@@ -192,13 +192,13 @@ differ or leave a gap.
 - **No drawing in the design reference**: the Magic Patterns reference draws
   no platform. The form is drawn in
   `docs/mocks/pages/list-business/platform*.html` from the form of a business
-  (ADR 0071).
-- **Pricing**: free text on purpose. A table of plans is deferred (ADR 0071).
+  (ADR 0072).
+- **Pricing**: free text on purpose. A table of plans is deferred (ADR 0072).
 - **`https` only**: a platform's web address is stricter than a business's
   optional website (`L2-087` AC3), because it is the page's main action.
 - **No check of the website**: Jubilee does not open the address to see that
   it answers. A check would be a claim Jubilee cannot stand behind, and a
-  request to an address an owner typed is a request-forgery risk (ADR 0071).
+  request to an address an owner typed is a request-forgery risk (ADR 0072).
 - **Setting the web address at publishing**: `Listing.Website` is set today
   only by `Listing.Edit`. `Listing.DescribePlatform` therefore takes the web
   address with the details, so that publishing and editing set both in one
@@ -211,7 +211,7 @@ differ or leave a gap.
 - **Photos**: onboarding has no photo upload; photos are added from Edit
   listing after publishing (`L2-088`).
 - **A founder's proof**: verifying that a founder is Christian or in Toronto
-  is deferred (ADR 0071); the agreement is the checkbox of `L2-075`.
+  is deferred (ADR 0072); the agreement is the checkbox of `L2-075`.
 
 ## Requirements
 
