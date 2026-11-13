@@ -44,6 +44,11 @@ export class RequestDetailPage extends ShellPage implements Screen {
     this.backToRequests = this.main.getByRole('link', { name: 'Back to your requests' });
   }
 
+  /** Lets time pass with the page open and nothing done. */
+  async idle(ms: number): Promise<void> {
+    await this.page.waitForTimeout(ms);
+  }
+
   async ready(): Promise<void> {
     await this.main.locator('h1').waitFor();
   }

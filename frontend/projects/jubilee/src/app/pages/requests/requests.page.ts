@@ -33,15 +33,12 @@ import {
   TabListItem,
   TabList,
 } from 'components';
-import { interval } from 'rxjs';
 import { ClockService } from 'api';
 import { LoadState, errorReference } from 'api';
 import { threadTime } from 'api';
 import { STATUS_TONE, statusChangeToast } from '../../services/request-status';
+import { requestUpdates } from '../../services/request-updates';
 import { ToastService } from 'components';
-
-/** How often the page looks again, so a status change shows without a reload (L2-070). */
-const POLL_MS = 5000;
 
 const TABS: { tab: MemberRequestTab; label: string; count: keyof MemberRequests['counts'] }[] = [
   { tab: 'all', label: 'All', count: 'all' },
@@ -96,6 +93,9 @@ export class RequestsPage implements OnInit {
   protected readonly loadingMore = signal(false);
   protected readonly moreFailed = signal(false);
 
+  /** A request notification of the member's, over the event stream, or the fallback timer (L2-070 AC6). */
+  private readonly updates = requestUpdates((target) => target.startsWith('/requests/'));
+
   /** The status each request had when last seen, so a change is announced once. */
   private statuses: Map<string, MemberRequestStatus> | null = null;
 
@@ -108,9 +108,7 @@ export class RequestsPage implements OnInit {
 
   ngOnInit(): void {
     this.load('all');
-    interval(POLL_MS)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => this.refresh());
+    this.updates.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => this.refresh());
   }
 
   protected load(tab: MemberRequestTab): void {
