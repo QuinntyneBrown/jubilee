@@ -97,7 +97,7 @@ The feature is a vertical slice from four confirmations to the `Feedback` table.
   their reference `absent`; `e2e/fixtures/parity.ts` then looks for
   `docs/design-reference/magic-patterns/components/<component>/<case>-<width>.png`
   and, once the owner saves one, compares that case with it at 3 % without the
-  spec being edited (ADR 0059). The specs of this feature are `moment-check` and
+  spec being edited (ADR 0060). The specs of this feature are `moment-check` and
   `score-scale`.
 
 ## Requirements

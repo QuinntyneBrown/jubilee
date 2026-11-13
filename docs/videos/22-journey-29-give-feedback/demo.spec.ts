@@ -7,7 +7,7 @@ import { BookMeetingDialog } from "../../../e2e/pages/messages.page";
 import { MomentCheck } from "../../../e2e/pages/moment-check";
 import { ShellPage } from "../../../e2e/pages/shell.page";
 
-// Video 21: journey 29, give feedback (L2-210 to L2-214, ADR 0043, ADR 0059). Joanna, a member, is
+// Video 22: journey 29, give feedback (L2-210 to L2-214, ADR 0043, ADR 0060). Joanna, a member, is
 // answered from the recorded API and the feedback and booking stubs the behaviour specs use (ADR 0009):
 // the launcher and panel (rate, report a bug, kudos), a check-in after a meeting request, the feedback
 // page and "Your feedback". Cards open it, say what the API tests and the parity seam prove, and close it.
@@ -126,7 +126,7 @@ test("journey 29: give feedback", async ({ demo }) => {
 
   await demo.card("Parity, ready for the reference", [
     "A parity spec whose reference is absent compares with components/<component>/<case>-<width>.png",
-    "as soon as the owner saves it, with no change to the spec (ADR 0059).",
+    "as soon as the owner saves it, with no change to the spec (ADR 0060).",
   ]);
   await demo.scene("parity");
 

@@ -1,5 +1,5 @@
 {
-  "title": "21 · Journey 29: Give feedback",
+  "title": "22 · Journey 29: Give feedback",
   "scenes": [
     {
       "id": "intro",
@@ -43,7 +43,7 @@
     },
     {
       "id": "parity",
-      "say": "The parity specs of the six feedback components will compare with the Magic Patterns design the moment the owner saves its captures, by name, with no change to a spec. ADR 0059 records it."
+      "say": "The parity specs of the six feedback components will compare with the Magic Patterns design the moment the owner saves its captures, by name, with no change to a spec. ADR 0060 records it."
     },
     {
       "id": "close",

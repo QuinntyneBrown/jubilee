@@ -97,7 +97,7 @@ The feature is a vertical slice from the page to `FeedbackController`.
   Jubilee team" ("Something about the app itself.") and "A business" ("Someone
   you hired or bought from.") in `jb-choice-cards`; "What stood out?" with the
   five chips of the panel, each pressed over at least 44 × 44 px on a touch
-  screen (ADR 0059); and "Your note". Choosing "A business" shows "Which one?",
+  screen (ADR 0060); and "Your note". Choosing "A business" shows "Which one?",
   a `select[jb-select]` of the contacted businesses by name, and the
   `jb-checkbox` "Jubilee may show this on their page with my first name", not
   ticked.
@@ -164,7 +164,7 @@ The feature is a vertical slice from the page to `FeedbackController`.
   their reference `absent`; `e2e/fixtures/parity.ts` then looks for
   `docs/design-reference/magic-patterns/components/<component>/<case>-<width>.png`
   and, once the owner saves one, compares that case with it at 3 % without the
-  spec being edited (ADR 0059). The absent specs of this feature are `star-scale`,
+  spec being edited (ADR 0060). The absent specs of this feature are `star-scale`,
   `score-scale` and `score-rows`; `chip` is compared with crops of captured
   frames.
 

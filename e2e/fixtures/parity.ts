@@ -68,7 +68,7 @@ export interface ReferenceCrop {
  * the reference does not show the component, why and which frame is nearest.
  *
  * A component the captured frames do not show is compared with the reference as soon as the owner
- * captures it (ADR 0059): an image of one case of the component alone, at one width, in the light
+ * captures it (ADR 0060): an image of one case of the component alone, at one width, in the light
  * theme, saved as `components/<component>/<case>-<width>.png` under
  * `docs/design-reference/magic-patterns/`. Each such image is compared whole, with no change to
  * the spec.
@@ -115,7 +115,7 @@ function pngSize(file: string): { width: number; height: number } {
   return { width: header.readUInt32BE(0), height: header.readUInt32BE(4) };
 }
 
-/** The captures of the component alone, by the name ADR 0059 gives them, that exist. */
+/** The captures of the component alone, by the name ADR 0060 gives them, that exist. */
 function capturedCrops(component: string, cases: ParityCase[]): ReferenceCrop[] {
   const crops: ReferenceCrop[] = [];
   for (const item of cases) {

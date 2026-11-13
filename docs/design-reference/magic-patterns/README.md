@@ -68,7 +68,7 @@ The published Sign up and home have changed since `sign-up-*.png` and `home-*.pn
 …" and has the rooms shelf); those files are kept until their parity crops are checked against a
 new capture. `sign-up-intents-1280.png` and `browse-rooms-shelf-*.png` show the current frames.
 
-## Captures of one component (ADR 0059)
+## Captures of one component (ADR 0060)
 
 A component the frames above do not show is compared with the reference as soon as its capture is
 here, with no change to its parity spec. Each capture is an image of one case of the component

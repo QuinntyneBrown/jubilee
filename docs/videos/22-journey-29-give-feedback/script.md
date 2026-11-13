@@ -22,6 +22,6 @@ Behind it, the API answers only the member of the session. New tests prove that 
 
 For a member who prefers reduced motion, the launcher and the panel now appear without movement, and a spec holds it. Each new spec was first seen failing against broken code.
 
-The parity specs of the six feedback components will compare with the Magic Patterns design the moment the owner saves its captures, by name, with no change to a spec. ADR 0059 records it.
+The parity specs of the six feedback components will compare with the Magic Patterns design the moment the owner saves its captures, by name, with no change to a spec. ADR 0060 records it.
 
 What is left is the owner's: export the Feedback captures, and run the sweeps by hand. Journey twenty-nine stands at ninety-nine percent.

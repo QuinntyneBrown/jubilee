@@ -26,7 +26,7 @@ parity('feedback-history', {
   ],
   reference: {
     absent:
-      'The Feedback frame is not among the captured Magic Patterns frames yet. Each case is compared with the reference once the owner saves it as components/feedback-history/<case>-<width>.png (ADR 0059, docs/design-reference/magic-patterns/README.md).',
+      'The Feedback frame is not among the captured Magic Patterns frames yet. Each case is compared with the reference once the owner saves it as components/feedback-history/<case>-<width>.png (ADR 0060, docs/design-reference/magic-patterns/README.md).',
     nearestFrame: 'home-1280.png',
   },
 });

@@ -1,4 +1,4 @@
-# 0059. Finish give feedback: a chip's touch target, and parity captures found by name
+# 0060. Finish give feedback: a chip's touch target, and parity captures found by name
 
 ## Status
 

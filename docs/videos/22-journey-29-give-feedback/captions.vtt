@@ -103,7 +103,7 @@ The parity specs of the six feedback components will compare with the
 Magic Patterns design the moment the owner saves its captures, by name,
 
 00:02:36.188 --> 00:02:39.571
-with no change to a spec. ADR 0059 records it.
+with no change to a spec. ADR 0060 records it.
 
 00:02:40.430 --> 00:02:45.606
 What is left is the owner's: export the Feedback captures, and run the

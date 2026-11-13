@@ -99,7 +99,7 @@ presentation is in the `components` library and the app declares containers only
   drawn 32 px tall; on a touch screen (`pointer: coarse`) the chip mixin
   `chip/_chip-base.scss` gives it an invisible `::after` hit area of
   `max(100%, --target-comfortable)` centred on it, so it is pressed over at
-  least 44 × 44 px (`L2-210` AC12, `L2-162`, ADR 0059). The send button reads
+  least 44 × 44 px (`L2-210` AC12, `L2-162`, ADR 0060). The send button reads
   "Send kudos".
 - **Send button** — disabled while nothing can be sent: no star chosen, no bug
   text, or no chip and no kudos note. It is enabled as soon as there is something
@@ -142,13 +142,13 @@ presentation is in the `components` library and the app declares containers only
   `e2e/pages/feedback.dialog.ts` (`FeedbackDialog`) and
   `e2e/pages/feedback.screens.ts`. On a touch screen they measure each target
   by pressing points out from its middle (`targetsSmallerThan`), so the chip's
-  hit area counts (ADR 0059).
+  hit area counts (ADR 0060).
   Each library component has a parity spec in `e2e/tests/parity/` (ADR 0036).
   The Magic Patterns Feedback frame is not captured, so their specs declare
   their reference `absent`; `e2e/fixtures/parity.ts` then looks for
   `docs/design-reference/magic-patterns/components/<component>/<case>-<width>.png`
   and, once the owner saves one, compares that case with it at 3 % without the
-  spec being edited (ADR 0059). The absent specs of this feature are
+  spec being edited (ADR 0060). The absent specs of this feature are
   `feedback-launcher` and `star-scale`; `chip` is compared with crops of
   captured frames.
 
