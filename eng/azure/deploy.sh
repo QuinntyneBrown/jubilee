@@ -60,6 +60,24 @@ ensure_settings() {
   az webapp config appsettings set -g "$GROUP" -n "$app" --settings "${changed[@]}" -o none
 }
 
+echo "== Checking Google sign-in"
+# Without both settings the API reports googleSignIn false and the join and sign-in pages hide
+# "Continue with Google" (L2-003 AC5, ADR 0037). Stop before anything ships rather than let the
+# button vanish unnoticed. The values are read into variables only and never printed.
+# SKIP_GOOGLE_CHECK=1 deploys without Google sign-in on purpose.
+if [[ "${SKIP_GOOGLE_CHECK:-}" != "1" ]]; then
+  missing=()
+  for name in Google__ClientId Google__ClientSecret; do
+    [[ -n "$(setting "$APP_APP" "$name")" ]] || missing+=("$name")
+  done
+  if ((${#missing[@]} > 0)); then
+    echo "$APP_APP is missing ${missing[*]}, so Google sign-in would be off and its button hidden." >&2
+    echo "Set them as \"Google sign-in\" in eng/azure/README.md says, or run with SKIP_GOOGLE_CHECK=1." >&2
+    exit 1
+  fi
+  echo "   $APP_APP: Google__ClientId and Google__ClientSecret are set"
+fi
+
 # The .NET SDK that backend/global.json asks for; Cloud Shell ships an older one.
 dotnet=dotnet
 if ! dotnet --list-sdks 2>/dev/null | grep -q '^10\.'; then
@@ -161,6 +179,15 @@ done
 if [[ -z "$healthy" ]]; then
   echo "The app did not answer $health within 10 minutes." >&2
   exit 1
+fi
+
+if [[ "${SKIP_GOOGLE_CHECK:-}" != "1" ]]; then
+  echo "== Checking the Google button is offered"
+  session=${SESSION_URL:-https://app.jubilee.to/api/session}
+  if ! curl -fsS --max-time 10 "$session" | grep -Eq '"googleSignIn": ?true'; then
+    echo "$session does not report \"googleSignIn\": true; the sign-in page shows no Google button." >&2
+    exit 1
+  fi
 fi
 
 echo "== Checking the marketing host"
