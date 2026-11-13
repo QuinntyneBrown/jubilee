@@ -68,6 +68,30 @@ The published Sign up and home have changed since `sign-up-*.png` and `home-*.pn
 …" and has the rooms shelf); those files are kept until their parity crops are checked against a
 new capture. `sign-up-intents-1280.png` and `browse-rooms-shelf-*.png` show the current frames.
 
+## Captures of one component (ADR 0059)
+
+A component the frames above do not show is compared with the reference as soon as its capture is
+here, with no change to its parity spec. Each capture is an image of one case of the component
+alone, cropped to the component's bounds, captured as the frames are (Chromium, locale `en-CA`,
+light theme, the viewport at the width the file names), and saved as
+`components/<component>/<case>-<width>.png`. `e2e/fixtures/parity.ts` finds it by that name and
+compares the whole image with the same region of the app, from its top left corner, within 3 %.
+
+The Feedback frames are the first expected this way. Export each case below at 360 px and at
+1280 px (for example `components/star-scale/unrated-360.png` and
+`components/star-scale/unrated-1280.png`):
+
+| Component | Cases | What each shows |
+|---|---|---|
+| `feedback-launcher` | `launcher` | the round button above the tab bar (360 px), the "Feedback" pill (1280 px) |
+| `star-scale` | `unrated`, `rated`, `large`, `large-invalid` | the panel's stars before and after a choice; the feedback page's stars, and with "Choose a rating from 1 to 5." |
+| `score-scale` | `part`, `wide`, `wide-chosen` | one part's 1 to 5 score on the feedback page; a check-in's five scores, before and after a choice |
+| `score-rows` | `parts` | the four parts of Jubilee under "And each part of it" |
+| `moment-check` | `asked`, `low`, `thanks` | the check-in after a listing is published: the question, a low score with "What got in the way?", "Thanks, that helps us." |
+| `feedback-history` | `list`, `empty`, `error` | "Your feedback" with items and a reply, with nothing yet, and when it fails to load |
+
+Until a file is here the case is compared with its mock only, and its test says so.
+
 ## What the reference does not hold
 
 - **One theme.** The design is light only; the dark theme is compared with the mocks alone.

@@ -3,7 +3,8 @@
 ## Status
 
 Accepted, 11 November 2026. Amends ADR 0010 (only behaviour tests run) for the component parity
-specs, and applies ADR 0005 (baselines rendered from the mocks) to them.
+specs, and applies ADR 0005 (baselines rendered from the mocks) to them. Amended by ADR 0059: a
+spec whose reference is absent picks up a capture of its component by name.
 
 ## Context
 
