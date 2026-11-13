@@ -211,6 +211,28 @@ public sealed class StaffSignInTests : IClassFixture<JubileeApiFactory>, IAsyncL
         Assert.Equal("/sign-in?error=not-staff", other.Headers.Location!.OriginalString);
     }
 
+    // L2-193 AC6, L2-098 AC5: the staff account whose address is a member's confirmed e-mail acts as that member,
+    // so the staff member cannot take down their own listing
+    [Fact]
+    public async Task L2_193_AC6_a_staff_member_who_signed_in_cannot_take_down_the_listing_of_the_member_with_their_address()
+    {
+        var esther = Member.Join(EmailAddress.TryParse("esther@jubilee.to")!, "Esther", "Mensah", null, "hash", ListingMother.Now.AddMonths(-3));
+        esther.ConfirmEmail();
+        var bakery = ListingMother.Public("esthers-bakery", "shops", "Esther's Bakery", ListingMother.Now.AddDays(-4));
+        bakery.AssignOwner(esther.Id.ToString());
+        await _factory.Arrange(esther, bakery);
+        await Grant("esther@jubilee.to", StaffRoles.Moderator);
+        var (client, _) = await SignIn();
+
+        var listing = await _factory.GetJson($"/api/admin/listings/{bakery.Id}", client);
+        var takeDown = await client.PostAsJsonAsync($"/api/admin/listings/{bakery.Id}/take-down", new { reason = "Testing my own listing." });
+
+        Assert.True(listing.GetProperty("isOwnListing").GetBoolean());
+        Assert.Equal(HttpStatusCode.Forbidden, takeDown.StatusCode);
+        Assert.Contains("OWN_LISTING", await takeDown.Content.ReadAsStringAsync());
+        Assert.Equal(HttpStatusCode.OK, (await _factory.CreateClient().GetAsync("/api/listings/esthers-bakery")).StatusCode);
+    }
+
     // L2-190 AC6: a revoked account's sessions end
     [Fact]
     public async Task L2_190_AC6_a_staff_session_of_an_account_whose_roles_were_revoked_has_ended()
