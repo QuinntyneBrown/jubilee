@@ -329,6 +329,10 @@ Set up on 11 November 2026 (ADR 0037). To repeat it:
    with a `Location` at `accounts.google.com`, and `GET /api/session` reports `"googleSignIn": true`.
 
 Without the two settings Google sign-in is off: the join and sign-in pages show no Google button.
+`deploy.sh` stops before building when either setting is missing on `jubilee-to-app`, and after
+deploying fails unless `GET /api/session` reports `"googleSignIn": true`, so the button cannot
+disappear unnoticed. `SKIP_GOOGLE_CHECK=1 bash eng/azure/deploy.sh` deploys without Google sign-in
+on purpose.
 
 ## DNS (Namecheap, Advanced DNS of `jubilee.to`)
 
