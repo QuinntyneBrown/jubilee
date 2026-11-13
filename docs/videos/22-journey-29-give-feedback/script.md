@@ -1,4 +1,4 @@
-# 21 · Journey 29: Give feedback
+# 22 · Journey 29: Give feedback
 
 The transcript, written from `narration.json` by `tools/video-demo/build.mjs`.
 
