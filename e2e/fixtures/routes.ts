@@ -57,11 +57,15 @@ export type StubName =
   | 'launch-notify-recovering'
   | 'launch-notify-limited'
   | 'launch-notify-challenge'
+  | 'launch-notify-refused-field'
+  | 'launch-notify-unreachable'
   | 'launch-business-pending'
   | 'launch-business-failing'
   | 'launch-business-recovering'
   | 'launch-business-limited'
   | 'launch-business-challenge'
+  | 'launch-business-refused-fields'
+  | 'launch-business-unreachable'
   | 'join-created'
   | 'join-failing'
   | 'join-pending'
@@ -1640,6 +1644,36 @@ export const routes = {
     who: 'visitor',
     site: 'marketing',
     stub: 'launch-notify-challenge',
+  },
+  // The server finds a field the page let through (L2-217 AC2, L2-216 AC3): the invalid state.
+  'marketing-home.notify-server-invalid': {
+    app: '/',
+    mock: 'pages/marketing-home/notify-invalid.html',
+    who: 'visitor',
+    site: 'marketing',
+    stub: 'launch-notify-refused-field',
+  },
+  'marketing-home.business-server-invalid': {
+    app: '/',
+    mock: 'pages/marketing-home/business-invalid.html',
+    who: 'visitor',
+    site: 'marketing',
+    stub: 'launch-business-refused-fields',
+  },
+  // The send cannot be made at all (L2-217 AC6, L2-216 AC6): the still-sending state.
+  'marketing-home.notify-unreachable': {
+    app: '/',
+    mock: 'pages/marketing-home/notify-retrying.html',
+    who: 'visitor',
+    site: 'marketing',
+    stub: 'launch-notify-unreachable',
+  },
+  'marketing-home.business-unreachable': {
+    app: '/',
+    mock: 'pages/marketing-home/business-retrying.html',
+    who: 'visitor',
+    site: 'marketing',
+    stub: 'launch-business-unreachable',
   },
 } as const satisfies Record<string, ScreenRoute>;
 

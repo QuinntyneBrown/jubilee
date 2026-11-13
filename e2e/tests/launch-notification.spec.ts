@@ -249,4 +249,73 @@ test.describe('launch notification sign-up (L2-217)', () => {
       'token-2',
     ]);
   });
+
+  test('AC2: an address the server refuses is shown at its field, with the summary, and everything typed is kept', async ({
+    page,
+    jb,
+  }) => {
+    const home = new MarketingHomePage(page);
+    // Given the server finds the address invalid where the page did not
+    await jb.open('marketing-home.notify-server-invalid');
+    const form = home.notifyForm;
+    await home.fillNotify();
+    // When the visitor sends the form
+    await form.send.click();
+    // Then the summary names the field and takes the focus, and the field says how to fix it
+    await expect(form.summaryLinks).toHaveText(['Enter a valid e-mail address']);
+    await expect.poll(() => form.hasFocus(form.summary)).toBe(true);
+    await expect(form.errorOf('Email')).toHaveText(
+      'Enter a valid e-mail address, like name@example.com.',
+    );
+    await expect(form.field('Email')).toHaveAttribute('aria-invalid', 'true');
+    // And the form can be changed again, with everything typed
+    await expect(form.send).not.toHaveAttribute('aria-busy', 'true');
+    await expect(form.field('Email')).toHaveValue('joanna.adeyemi@example.com');
+    await expect(form.field('First name')).toHaveValue('Joanna');
+    await expect(form.consent).toBeChecked();
+  });
+
+  test('AC6: a send that cannot be made shows no error: the form says it is still sending and sends again', async ({
+    page,
+    jb,
+  }) => {
+    const home = new MarketingHomePage(page);
+    // Given the connection fails before any answer
+    await jb.open('marketing-home.notify-unreachable');
+    const form = home.notifyForm;
+    const sent = form.watch();
+    await home.fillNotify();
+    await form.send.click();
+    // Then the form says it is still sending, stays busy and sends the same sign-up again
+    await expect(form.alert).toContainText('Still sending.');
+    await expect(form.send).toHaveAttribute('aria-busy', 'true');
+    await expect(form.field('Email')).toHaveValue('joanna.adeyemi@example.com');
+    await expect.poll(sent, { timeout: 15_000 }).toBeGreaterThanOrEqual(2);
+  });
+
+  test('AC6: a send not answered within 10 seconds shows no error, says it is still sending and is sent again 5 seconds later', async ({
+    page,
+    jb,
+  }) => {
+    const home = new MarketingHomePage(page);
+    // Given Jubilee does not answer
+    await page.clock.install();
+    await jb.open('marketing-home.notify-busy');
+    const form = home.notifyForm;
+    const sent = form.watch();
+    await home.fillNotify();
+    await form.send.click();
+    // When 9 seconds pass, the form is only busy
+    await page.clock.runFor(9_000);
+    await expect(form.send).toHaveAttribute('aria-busy', 'true');
+    await expect(form.alert).toHaveCount(0);
+    // When the tenth second passes, it says it is still sending, and no error
+    await page.clock.runFor(1_000);
+    await expect(form.alert).toContainText('Still sending.');
+    await expect(form.send).toHaveAttribute('aria-busy', 'true');
+    expect(sent()).toBe(1);
+    // And 5 seconds later the same sign-up is sent again
+    await page.clock.runFor(5_000);
+    await expect.poll(sent).toBe(2);
+  });
 });

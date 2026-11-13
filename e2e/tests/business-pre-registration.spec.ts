@@ -303,4 +303,68 @@ test.describe('business pre-registration (L2-216)', () => {
       'token-2',
     ]);
   });
+
+  test('AC3: a category or a website the server refuses is shown at its field, with the summary, and every value is kept', async ({
+    page,
+    jb,
+  }) => {
+    const home = new MarketingHomePage(page);
+    // Given the server refuses the category and the website with their codes
+    await jb.open('marketing-home.business-server-invalid');
+    const form = home.businessForm;
+    await home.fillBusiness();
+    // When the owner sends the form
+    await form.send.click();
+    // Then the summary names both, in the order of the form, and takes the focus
+    await expect(form.summaryLinks).toHaveText(['Choose a category', 'Enter a web address']);
+    await expect.poll(() => form.hasFocus(form.summary)).toBe(true);
+    // And each field says how to fix it
+    await expect(form.errorOf('Category')).toHaveText('Choose a category.');
+    await expect(form.errorOf('Website or social link')).toHaveText(
+      'Enter a web address, like example.com, or leave this empty.',
+    );
+    // And every value typed is kept, and can be changed again
+    await expect(form.send).not.toHaveAttribute('aria-busy', 'true');
+    await expect(form.field('Business name')).toHaveValue('Luzandre.com');
+    await expect(form.field('Website or social link')).toHaveValue('luzandre.com');
+    await expect(form.field('About your business')).toHaveValue(naomiDetails.description);
+    await expect(form.consent).toBeChecked();
+  });
+
+  test('AC6: a send that cannot be made shows no error: the form says it is still sending and sends again', async ({
+    page,
+    jb,
+  }) => {
+    const home = new MarketingHomePage(page);
+    await jb.open('marketing-home.business-unreachable');
+    const form = home.businessForm;
+    const sent = form.watch();
+    await home.fillBusiness();
+    await form.send.click();
+    await expect(form.alert).toContainText('Still sending.');
+    await expect(form.send).toHaveAttribute('aria-busy', 'true');
+    await expect(form.field('Business name')).toHaveValue('Luzandre.com');
+    await expect.poll(sent, { timeout: 15_000 }).toBeGreaterThanOrEqual(2);
+  });
+
+  test('AC6: details not answered within 10 seconds show no error, say they are still sending and are sent again 5 seconds later', async ({
+    page,
+    jb,
+  }) => {
+    const home = new MarketingHomePage(page);
+    await page.clock.install();
+    await jb.open('marketing-home.business-busy');
+    const form = home.businessForm;
+    const sent = form.watch();
+    await home.fillBusiness();
+    await form.send.click();
+    await page.clock.runFor(9_000);
+    await expect(form.alert).toHaveCount(0);
+    await page.clock.runFor(1_000);
+    await expect(form.alert).toContainText('Still sending.');
+    await expect(form.send).toHaveAttribute('aria-busy', 'true');
+    expect(sent()).toBe(1);
+    await page.clock.runFor(5_000);
+    await expect.poll(sent).toBe(2);
+  });
 });
