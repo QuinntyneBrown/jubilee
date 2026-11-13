@@ -19,7 +19,7 @@
 | [notifications](notifications.md) | 16 days | 100% |
 | [onboarding](onboarding.md) | 17 days | 100% |
 | [admin](admin.md) | 7 days | 90% |
-| [verification](verification.md) | 15 days | 97% |
+| [verification](verification.md) | 15 days | 100% |
 | [owner-workspace](owner-workspace.md) | 20 days | 96% |
 | [privacy](privacy.md) | 12 days | 38% |
 | [accessibility](accessibility.md) | 10 days | 0% |
@@ -33,13 +33,13 @@ Jubilee ships without verification (ADR 0057), and that work is done: owners pub
 at once (publish-listing), the Jubilee team browses published listings and takes one down
 (browse-listings, take-down-listing), the `moderator` role replaces `verifier`, and the "Verified"
 mark and the verification copy are gone from every screen, e-mail and the marketing site. The
-verification subsystem's designs live in `detailed-designs/moderation/`. What keeps those designs
-below 100% is small and named in each file: the access audit on the team's listing page
-(L2-150 AC1) and the audit record of a role change (L2-098 AC4).
+verification subsystem's designs live in `detailed-designs/moderation/`. The access audit on the team's
+listing page (L2-150 AC1) and the audit record of a role change (L2-098 AC4) are done too
+(ADR 0058), so browse-listings and take-down-listing are at 100%.
 
 ## Roadmap
 
-1. Done: ship without verification (ADR 0057): publish-listing, browse-listings and take-down-listing, the `ShipWithoutVerification` migration, the `moderator` role, and removing the "Verified" mark and the verification copy. Left from it: the access audit on the team's listing page, and the audit record of a role change
+1. Done: ship without verification (ADR 0057): publish-listing, browse-listings and take-down-listing, the `ShipWithoutVerification` migration, the `moderator` role, and removing the "Verified" mark and the verification copy., with the access audit on the team's listing page and the audit record of a role change (ADR 0058)
 2. design-system, interaction-states: move the remaining presentation into the components library with a parity spec each (ADR 0035, 0036), then validation, dialog confirmation and date and money formats
 3. security, privacy, accessibility: authorization and rate limits, data visibility and retention, screen-reader and keyboard coverage
 4. operations, performance, admin, marketing: backups, availability, latency and page budgets; set up the admin application in production (`eng/azure/README.md`)

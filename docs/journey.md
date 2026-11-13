@@ -27,7 +27,7 @@ journey that is implemented: the effort-weighted average of its feature designs 
 | 9 | Request a product | Send a shop an order request for a product, without payment. | 3 | 100% |
 | 10 | List a business | Describe a business, agree to the statement of faith and publish it; it is live straight away. | 12 | 100% |
 | 11 | Removed: answer a church reference | Jubilee no longer asks for a church reference (ADR 0041). The number is not reused. | 0 | n/a |
-| 12 | Keep listings honest | The Jubilee team looks through published listings and takes down one that misrepresents a business. | 10 | 93% |
+| 12 | Keep listings honest | The Jubilee team looks through published listings and takes down one that misrepresents a business. | 10 | 100% |
 | 13 | Respond to customer requests | See incoming requests and confirm or decline each one. | 6 | 100% |
 | 14 | Track and cancel requests | Follow each request's progress and cancel an open one. | 6 | 89% |
 | 15 | Run a business listing | Monitor the listing, edit its details, pause or resume it. | 9 | 100% |
