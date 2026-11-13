@@ -67,8 +67,8 @@ public sealed class LaunchRetentionJobTests
 
         await job.StopAsync(timeout.Token);
 
-        var line = Assert.Single(logger.Lines);
-        Assert.Equal("Retention: deleted 1 launch notification sign-ups and 1 business pre-registrations.", line);
+        // The job logs a line of its own for the reviews it deletes (L2-239 AC4); this is the launch one.
+        Assert.Contains("Retention: deleted 1 launch notification sign-ups and 1 business pre-registrations.", logger.Lines);
         await using var after = Db();
         Assert.Equal("new@example.com", Assert.Single(await after.LaunchSubscribers.ToListAsync()).Email);
         Assert.Equal("New Bakery", Assert.Single(await after.BusinessPreRegistrations.ToListAsync()).BusinessName);
