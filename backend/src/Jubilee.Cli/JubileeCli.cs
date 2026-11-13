@@ -22,7 +22,8 @@ public static class JubileeCli
         Usage: jubilee <command> [--Database:Provider=SqlServer|Sqlite] [--ConnectionStrings:Jubilee=...]
 
         Commands:
-          migrate   Apply the EF Core migrations (SQL Server) or create the schema from the model (SQLite).
+          migrate   Apply the EF Core migrations (SQL Server) or create the schema from the model (SQLite),
+                    then give listings whose slug breaks the address rules a new one (the old one redirects).
           seed      Add the demo directory. Safe to run again.
           reset     Delete the database.
           staff grant  --email {address} --role moderator|admin   Give a staff account a role (creates the account).
@@ -64,6 +65,14 @@ public static class JubileeCli
             case "migrate":
                 await PrepareSchemaAsync(db, sqlite);
                 await output.WriteLineAsync("Database is up to date.");
+
+                // Listings from before the address rules receive a slug that keeps them (L2-241 AC5, ADR 0067).
+                var realigned = await scope.ServiceProvider.GetRequiredService<ISender>().Send(new Jubilee.Application.Listings.RealignListingSlugsCommand());
+                if (realigned > 0)
+                {
+                    await output.WriteLineAsync($"{realigned} listing{(realigned == 1 ? string.Empty : "s")} received a new address.");
+                }
+
                 break;
             case "seed":
                 if (sqlite)

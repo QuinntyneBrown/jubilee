@@ -88,3 +88,37 @@ public sealed class FindCurrentSlugQueryHandler(IAppDbContext db) : MediatR.IReq
     public Task<string?> Handle(FindCurrentSlugQuery request, CancellationToken cancellationToken) =>
         ListingSlugs.CurrentOfAsync(db, request.Slug, cancellationToken);
 }
+
+/// <summary>
+/// Gives every listing whose slug breaks the address rules (not a well-formed label, or a reserved word) a slug that
+/// keeps them, and keeps the old one so it redirects (L2-241 AC5, ADR 0067). <c>jubilee migrate</c> sends it; a
+/// second run changes nothing. The answer is the number of listings realigned.
+/// </summary>
+public sealed record RealignListingSlugsCommand : MediatR.IRequest<int>;
+
+public sealed class RealignListingSlugsCommandHandler(IAppDbContext db, AddressSettings settings, TimeProvider clock)
+    : MediatR.IRequestHandler<RealignListingSlugsCommand, int>
+{
+    public async Task<int> Handle(RealignListingSlugsCommand request, CancellationToken cancellationToken)
+    {
+        var broken = (await db.Listings.ToListAsync(cancellationToken))
+            .Where(l => !AddressRules.IsWellFormed(l.Slug) || settings.IsReserved(l.Slug))
+            .OrderBy(l => l.Slug, StringComparer.Ordinal)
+            .ToList();
+        var realigned = 0;
+        foreach (var listing in broken)
+        {
+            var before = listing.Slug;
+            await ListingSlugs.FollowNameAsync(db, settings, listing, clock.GetUtcNow(), cancellationToken);
+            if (listing.Slug != before)
+            {
+                realigned++;
+            }
+
+            // Saved one by one, so the next listing sees the slug this one took.
+            await db.SaveChangesAsync(cancellationToken);
+        }
+
+        return realigned;
+    }
+}
