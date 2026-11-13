@@ -23,6 +23,63 @@
         <div>Your changes to this product have not been saved.</div>
       </div>
     }
+    @if (!data.draft) {
+      <div>
+        <div class="cluster">
+          @if (photo(); as shown) {
+            <div
+              jb-media-tile
+              size="thumb"
+              [tint]="tint"
+              [photoKey]="shown.key"
+              [photoAlt]="name().trim() || 'Product photo'"
+              [photoWidth]="shown.width"
+              [photoHeight]="shown.height"
+              sizes="4rem"
+            ></div>
+          } @else {
+            <div jb-media-tile size="thumb" [tint]="tint" [icon]="icon"></div>
+          }
+          <input
+            #picker
+            class="visually-hidden"
+            type="file"
+            accept="image/jpeg,image/png"
+            aria-label="Choose a photo"
+            tabindex="-1"
+            (change)="choosePhoto(picker)"
+          />
+          <button
+            jb-button
+            size="sm"
+            type="button"
+            [busy]="uploading()"
+            [disabled]="uploading() || busy()"
+            [attr.aria-describedby]="photoError() ? 'd-photo-error' : null"
+            (click)="picker.click()"
+          >
+            <svg jb-icon name="image"></svg
+            >{{ uploading() ? 'Adding photo…' : photo() ? 'Change photo' : 'Add photo' }}
+          </button>
+          @if (photo() && !uploading()) {
+            <button
+              jb-button
+              size="sm"
+              variant="ghost"
+              type="button"
+              [disabled]="busy()"
+              (click)="removePhoto()"
+            >
+              Remove photo
+            </button>
+          }
+          <span class="text-caption">JPG or PNG, 5 MB at most</span>
+        </div>
+        @if (photoError(); as problem) {
+          <span jb-field-error id="d-photo-error" role="alert">{{ problem }}</span>
+        }
+      </div>
+    }
     <div jb-field label="Product name" controlId="d-name" required [error]="errors().name">
       <input
         jb-input
@@ -86,7 +143,14 @@
       <button jb-button variant="danger" type="button" (click)="discard()">Discard</button>
     } @else {
       <button jb-button type="button" [disabled]="busy()" (click)="close()">Cancel</button>
-      <button jb-button variant="primary" type="submit" form="product-editor-form" [busy]="busy()">
+      <button
+        jb-button
+        variant="primary"
+        type="submit"
+        form="product-editor-form"
+        [busy]="busy()"
+        [disabled]="uploading()"
+      >
         {{ editing ? 'Save changes' : 'Add product' }}
       </button>
     }

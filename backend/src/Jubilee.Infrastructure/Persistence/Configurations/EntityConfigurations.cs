@@ -75,6 +75,8 @@ public sealed class ProductConfiguration : IEntityTypeConfiguration<Product>
         });
         builder.OwnsMany(p => p.Attributes, a => a.ToJson());
         builder.HasIndex(p => new { p.ListingId, p.Slug }).IsUnique();
+        // The photo row outlives a product that stops showing it only until the save deletes it (ADR 0062).
+        builder.HasOne(p => p.Photo).WithMany().HasForeignKey(p => p.PhotoId).OnDelete(DeleteBehavior.ClientSetNull);
         builder.HasOne<Listing>().WithMany().HasForeignKey(p => p.ListingId).OnDelete(DeleteBehavior.Cascade);
     }
 }
@@ -698,6 +700,19 @@ public sealed class ListingPhotoConfiguration : IEntityTypeConfiguration<Listing
         builder.Property(p => p.Key).HasMaxLength(64).IsRequired();
         builder.Property(p => p.Alt).HasMaxLength(ListingPhoto.MaxAltLength);
         builder.HasIndex(p => new { p.ListingId, p.Position });
+    }
+}
+
+public sealed class ProductPhotoConfiguration : IEntityTypeConfiguration<ProductPhoto>
+{
+    public void Configure(EntityTypeBuilder<ProductPhoto> builder)
+    {
+        builder.ToTable("ProductPhotos");
+        builder.HasKey(p => p.Id);
+        builder.Property(p => p.Id).ValueGeneratedNever();
+        builder.Property(p => p.Key).HasMaxLength(64).IsRequired();
+        builder.HasIndex(p => new { p.ListingId, p.UploadedAt });
+        builder.HasOne<Listing>().WithMany().HasForeignKey(p => p.ListingId).OnDelete(DeleteBehavior.Cascade);
     }
 }
 

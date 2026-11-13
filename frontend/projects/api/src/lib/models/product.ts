@@ -1,4 +1,5 @@
 import { ProductCard } from './directory';
+import { ListingPagePhoto } from './listing';
 
 /** One option of a product; `maxQuantity` bounds the quantity without revealing the stock. */
 export interface ProductOption {
@@ -30,4 +31,6 @@ export interface ProductPage {
   more: ProductCard[];
   /** The signed-in member already asked to be told when it is back (L2-036 AC2). */
   stockAlertRequested: boolean;
+  /** The product's photo, named by the product; null shows the tile (L2-091 AC10). */
+  photo?: ListingPagePhoto | null;
 }

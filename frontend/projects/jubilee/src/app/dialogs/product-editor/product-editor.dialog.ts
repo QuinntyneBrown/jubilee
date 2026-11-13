@@ -9,13 +9,18 @@ import {
   signal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { CATALOGUE_API, DraftItem, OwnerProduct } from 'api';
+import { CATALOGUE_API, DraftItem, OwnerProduct, ProductPhoto } from 'api';
 import {
   Button,
   Alert,
   Field,
+  FieldError,
+  Icon,
+  IconName,
   Input,
+  MediaTile,
   Textarea,
+  TileTint,
   DialogFrame,
   DialogBody,
   DialogFooter,
@@ -46,6 +51,17 @@ type FieldName = 'name' | 'price' | 'stock' | 'description';
 /** A submission that takes longer than this fails rather than spinning (L2-127 AC2). */
 const SAVE_TIMEOUT_MS = 10_000;
 
+/** The largest photo the server takes (L2-138 AC1); a larger one is refused before it is sent. */
+const MAX_PHOTO_BYTES = 5 * 1024 * 1024;
+
+/** What a refused photo says, by the code of the server's answer (L2-091 AC9). */
+const PHOTO_PROBLEMS: Record<string, string> = {
+  TOO_LARGE: 'Photos can be 5 MB at most.',
+  NOT_AN_IMAGE: 'Add a JPG or PNG photo.',
+  TOO_BIG_IN_PIXELS: 'Photos can be 8,000 by 8,000 pixels at most.',
+  FAILED_SCAN: 'This photo didn’t pass our safety check.',
+};
+
 /**
  * ProductEditorDialog (L2-091): add or change a product; it is live on the listing as soon as it
  * is saved. Opened with `draft`, it adds a product to a listing that is still being written.
@@ -58,7 +74,10 @@ const SAVE_TIMEOUT_MS = 10_000;
     Button,
     Alert,
     Field,
+    FieldError,
+    Icon,
     Input,
+    MediaTile,
     Textarea,
     DialogFrame,
     DialogBody,
@@ -92,21 +111,61 @@ export class ProductEditorDialog {
   protected readonly description = signal(this.product?.description ?? '');
   protected readonly hasOptions = (this.product?.options.length ?? 0) > 0;
 
-  private readonly initial = [this.name(), this.price(), this.stock(), this.description()].join(
-    '\u0000',
-  );
+  /** The tile beside "Add photo" until a photo fills it. */
+  protected readonly tint = (this.product?.tint ?? 'gold') as TileTint;
+  protected readonly icon = (this.product?.icon ?? 'bag') as IconName;
+  /** The photo the product shows when it is saved (L2-091 AC9). */
+  protected readonly photo = signal<ProductPhoto | null>(this.product?.photo ?? null);
+  protected readonly uploading = signal(false);
+  protected readonly photoError = signal<string | null>(null);
 
-  protected readonly dirty = computed(
-    () =>
-      [this.name(), this.price(), this.stock(), this.description()].join('\u0000') !== this.initial,
-  );
+  private readonly values = () =>
+    [this.name(), this.price(), this.stock(), this.description(), this.photo()?.id ?? ''].join(
+      '\u0000',
+    );
+
+  private readonly initial = this.values();
+
+  protected readonly dirty = computed(() => this.values() !== this.initial);
 
   constructor() {
     guardClose(this.ref, inject(DestroyRef), () => this.close());
   }
 
+  /** Uploads the chosen photo at once; a refusal is told beside the button and nothing else changes. */
+  protected choosePhoto(input: HTMLInputElement): void {
+    const file = input.files?.[0];
+    input.value = '';
+    if (!file) return;
+    if (file.size > MAX_PHOTO_BYTES) {
+      this.photoError.set(PHOTO_PROBLEMS['TOO_LARGE']);
+      return;
+    }
+    this.photoError.set(null);
+    this.uploading.set(true);
+    this.api.uploadProductPhoto(file).subscribe({
+      next: (photo) => {
+        this.uploading.set(false);
+        this.photo.set(photo);
+      },
+      error: (error: unknown) => {
+        this.uploading.set(false);
+        const code =
+          error instanceof HttpErrorResponse
+            ? (error.error as { code?: string } | null)?.code
+            : undefined;
+        this.photoError.set(PHOTO_PROBLEMS[code ?? ''] ?? 'We couldn’t add the photo. Try again.');
+      },
+    });
+  }
+
+  protected removePhoto(): void {
+    this.photo.set(null);
+    this.photoError.set(null);
+  }
+
   protected save(): void {
-    if (this.busy()) return;
+    if (this.busy() || this.uploading()) return;
     const problems = this.check();
     this.errors.set(problems);
     if (Object.keys(problems).length > 0) {
@@ -138,6 +197,7 @@ export class ProductEditorDialog {
         stock: stock === '' ? null : Number(stock),
         description: this.description().trim(),
         idempotencyKey: this.key,
+        photoId: this.photo()?.id ?? null,
       })
       .pipe(timeout(SAVE_TIMEOUT_MS))
       .subscribe({

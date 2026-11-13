@@ -1312,6 +1312,48 @@ export const routes = {
     who: 'member',
     stub: 'products-error',
   },
+  'my-products.reorder': {
+    app: '/my-business/products',
+    mock: 'pages/my-products/reorder.html',
+    who: 'member',
+    stub: 'products',
+  },
+  'product-editor.photo-uploading': {
+    app: '/my-business/products',
+    mock: 'dialogs/product-editor/photo-uploading.html',
+    who: 'member',
+    stub: 'products',
+  },
+  'product-editor.photo-added': {
+    app: '/my-business/products',
+    mock: 'dialogs/product-editor/photo-added.html',
+    who: 'member',
+    stub: 'products',
+  },
+  'product-editor.photo-failed': {
+    app: '/my-business/products',
+    mock: 'dialogs/product-editor/photo-failed.html',
+    who: 'member',
+    stub: 'products',
+  },
+  'product-editor.photo-too-large': {
+    app: '/my-business/products',
+    mock: 'dialogs/product-editor/photo-too-large.html',
+    who: 'member',
+    stub: 'products',
+  },
+  'product-editor.options': {
+    app: '/my-business/products',
+    mock: 'dialogs/product-editor/options.html',
+    who: 'member',
+    stub: 'products',
+  },
+  'product-editor.options-invalid': {
+    app: '/my-business/products',
+    mock: 'dialogs/product-editor/options-invalid.html',
+    who: 'member',
+    stub: 'products',
+  },
   'my-services': {
     app: '/my-business/services',
     mock: 'pages/my-services/default.html',
@@ -1329,6 +1371,12 @@ export const routes = {
     mock: 'pages/my-services/error.html',
     who: 'member',
     stub: 'services-error',
+  },
+  'my-services.reorder': {
+    app: '/my-business/services',
+    mock: 'pages/my-services/reorder.html',
+    who: 'member',
+    stub: 'services',
   },
   'meeting-hours': {
     app: '/my-business/services',

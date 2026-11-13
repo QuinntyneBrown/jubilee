@@ -1631,6 +1631,9 @@ namespace Jubilee.Infrastructure.Migrations
                         .HasMaxLength(40)
                         .HasColumnType("nvarchar(40)");
 
+                    b.Property<Guid?>("PhotoId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<int>("Position")
                         .HasColumnType("int");
 
@@ -1661,10 +1664,41 @@ namespace Jubilee.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("PhotoId");
+
                     b.HasIndex("ListingId", "Slug")
                         .IsUnique();
 
                     b.ToTable("Products", (string)null);
+                });
+
+            modelBuilder.Entity("Jubilee.Domain.ProductPhoto", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Height")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Key")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<Guid>("ListingId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("UploadedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("Width")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ListingId", "UploadedAt");
+
+                    b.ToTable("ProductPhotos", (string)null);
                 });
 
             modelBuilder.Entity("Jubilee.Domain.RecentSearch", b =>
@@ -2380,6 +2414,10 @@ namespace Jubilee.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Jubilee.Domain.ProductPhoto", "Photo")
+                        .WithMany()
+                        .HasForeignKey("PhotoId");
+
                     b.OwnsMany("Jubilee.Domain.ProductAttribute", "Attributes", b1 =>
                         {
                             b1.Property<Guid>("ProductId");
@@ -2437,6 +2475,17 @@ namespace Jubilee.Infrastructure.Migrations
                     b.Navigation("Attributes");
 
                     b.Navigation("Options");
+
+                    b.Navigation("Photo");
+                });
+
+            modelBuilder.Entity("Jubilee.Domain.ProductPhoto", b =>
+                {
+                    b.HasOne("Jubilee.Domain.Listing", null)
+                        .WithMany()
+                        .HasForeignKey("ListingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Jubilee.Domain.Request", b =>

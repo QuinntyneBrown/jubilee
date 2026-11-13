@@ -69,12 +69,25 @@
                   <tr>
                     <td jb-table-cell>
                       <div class="cluster" style="flex-wrap: nowrap">
-                        <div
-                          jb-media-tile
-                          size="thumb"
-                          [tint]="tint(product)"
-                          [icon]="icon(product)"
-                        ></div>
+                        @if (product.photo; as photo) {
+                          <div
+                            jb-media-tile
+                            size="thumb"
+                            [tint]="tint(product)"
+                            [photoKey]="photo.key"
+                            [photoAlt]="product.name"
+                            [photoWidth]="photo.width"
+                            [photoHeight]="photo.height"
+                            sizes="4rem"
+                          ></div>
+                        } @else {
+                          <div
+                            jb-media-tile
+                            size="thumb"
+                            [tint]="tint(product)"
+                            [icon]="icon(product)"
+                          ></div>
+                        }
                         <span>{{ title(product) }}</span>
                       </div>
                     </td>

@@ -39,6 +39,8 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
 
     public DbSet<ListingPhoto> ListingPhotos => Set<ListingPhoto>();
 
+    public DbSet<ProductPhoto> ProductPhotos => Set<ProductPhoto>();
+
     public DbSet<RecentSearch> RecentSearches => Set<RecentSearch>();
 
     public DbSet<Notification> Notifications => Set<Notification>();
