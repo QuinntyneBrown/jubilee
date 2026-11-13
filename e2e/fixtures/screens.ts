@@ -20,7 +20,7 @@ import {
   ProductWithSizeScreen,
 } from '../pages/product.page';
 import { EditListingPage } from '../pages/edit-listing.page';
-import { IncomingRequestsPage } from '../pages/incoming-requests.page';
+import { IncomingConfirmedTab, IncomingRequestsPage } from '../pages/incoming-requests.page';
 import { AccountOthersSignedOutScreen, AccountPage } from '../pages/account.page';
 import {
   SignOutOthersBusyScreen,
@@ -148,6 +148,7 @@ export const screens: {
   { key: 'incoming-requests', screen: (page) => new IncomingRequestsPage(page) },
   { key: 'incoming-requests.empty', screen: (page) => new IncomingRequestsPage(page) },
   { key: 'incoming-requests.error', screen: (page) => new IncomingRequestsPage(page) },
+  { key: 'incoming-requests.confirmed', screen: (page) => new IncomingConfirmedTab(page) },
   { key: 'my-business', screen: (page) => new MyBusinessPage(page) },
   { key: 'my-business.away', screen: (page) => new MyBusinessPage(page) },
   { key: 'my-business.empty', screen: (page) => new MyBusinessPage(page) },

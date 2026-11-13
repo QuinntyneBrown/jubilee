@@ -103,6 +103,18 @@
                     Confirm
                   </button>
                 </div>
+              } @else if (canFulfil(row)) {
+                <div slot="trailing" jb-row-actions>
+                  <button
+                    jb-button
+                    size="sm"
+                    type="button"
+                    [attr.aria-label]="'Mark order from ' + row.customerName + ' fulfilled'"
+                    (click)="openFulfil(row)"
+                  >
+                    <svg jb-icon name="check"></svg>Mark fulfilled
+                  </button>
+                </div>
               }
             </li>
           }

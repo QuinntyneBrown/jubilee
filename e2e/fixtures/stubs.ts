@@ -7,7 +7,7 @@ import { stubAccountData } from './account-data';
 import { SPACE_LISTING, stubAdmin } from './admin';
 import { daniel, stubStaff } from './staff';
 import { stubModeration } from './moderation';
-import { stubIncoming } from './incoming-requests';
+import { confirmedRows, stubIncoming } from './incoming-requests';
 import { stubCatalogue } from './catalogue';
 import { stubProfile } from './profile';
 import { BROWSE_SAVED, stubSaved } from './saved';
@@ -467,6 +467,11 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
       return stubIncoming(page, { list: 'empty' });
     case 'incoming-error':
       return stubIncoming(page, { list: 'fails' });
+    case 'incoming-confirmed': {
+      const fake = await stubIncoming(page);
+      fake.rows.push(...confirmedRows());
+      return fake;
+    }
     case 'business':
       return stubMyBusiness(page);
     case 'business-away':
@@ -842,12 +847,7 @@ export function stubConfirmation(page: Page, body: unknown, status = 200): Promi
 
 /** What the change of an unconfirmed address is answered with (L2-004 AC5, AC9, AC10). */
 export type UnconfirmedEmailChange =
-  | 'replaced'
-  | 'in-use'
-  | 'limited'
-  | 'invalid'
-  | 'fail'
-  | 'hang';
+  'replaced' | 'in-use' | 'limited' | 'invalid' | 'fail' | 'hang';
 
 /**
  * Answers "Use another e-mail" and keeps the bodies it was sent. The API answers 204 whether or not
