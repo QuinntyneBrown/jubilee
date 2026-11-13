@@ -17,11 +17,11 @@ public class DemoDirectoryTests(SeededApiFactory factory) : IClassFixture<Seeded
     private const string HomeProperty = "/api/categories/home-property/listings";
 
     [Fact]
-    public async Task The_demo_welcome_counts_47_businesses_and_features_four()
+    public async Task The_demo_welcome_counts_50_businesses_and_features_four()
     {
         var json = await factory.GetJson("/api/directory/welcome");
 
-        Assert.Equal(47, json.GetProperty("liveBusinessCount").GetInt32());
+        Assert.Equal(50, json.GetProperty("liveBusinessCount").GetInt32());
         Assert.Equal(
             ["legacy-financial", "luzandre", "christian-bookstores", "adrianne-sequeira"],
             json.GetProperty("featured").Slugs());
@@ -92,6 +92,7 @@ public class DemoDirectoryTests(SeededApiFactory factory) : IClassFixture<Seeded
                 ("Shops", 3, false), ("Financial & insurance", 3, false), ("Legal & immigration", 6, true),
                 ("Home & property", 10, true), ("Real estate & living", 4, false), ("Health & family", 4, false),
                 ("Business & tech", 5, true), ("Learning", 2, false), ("Media", 7, true), ("Community", 3, false),
+                ("Software platforms", 3, false),
             ],
             groups.EnumerateArray().Select(g => (
                 g.GetProperty("name").GetString()!, g.GetProperty("count").GetInt32(), g.GetProperty("hasMore").GetBoolean())));

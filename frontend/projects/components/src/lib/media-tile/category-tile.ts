@@ -10,7 +10,7 @@ export interface CategoryTile {
   label: string;
 }
 
-/** CategoryTileMap: the tile of each of the ten categories (ADR 0004). */
+/** CategoryTileMap: the tile of each of the twelve categories (ADR 0004, ADR 0071). */
 const TILES: Readonly<Record<string, CategoryTile>> = {
   shops: { tint: 'gold', icon: 'bag', label: 'Shop' },
   'financial-insurance': { tint: 'green', icon: 'chart', label: 'Financial' },
@@ -23,6 +23,7 @@ const TILES: Readonly<Record<string, CategoryTile>> = {
   media: { tint: 'ink', icon: 'image', label: 'Media' },
   community: { tint: 'green', icon: 'user', label: 'Community' },
   'rooms-rentals': { tint: 'blue', icon: 'bed', label: 'Rooms' },
+  'software-platforms': { tint: 'gold', icon: 'monitor', label: 'Software' },
 };
 
 const FALLBACK: CategoryTile = { tint: 'ink', icon: 'store', label: '' };

@@ -74,6 +74,7 @@ export const ICONS = {
   image: [rect(3, 5, 18, 14, 2), circle(9, 10, 1.5), path('m4 18 5-5 4 4 3-3 4 4')],
   info: [circle(12, 12, 9), path('M12 11v5M12 8h.01')],
   key: [circle(8, 15, 4), path('M11 12l9-9M17 6l3 3M14 9l2 2')],
+  monitor: [rect(2, 3, 20, 14, 2), path('M8 21h8M12 17v4')],
   lock: [rect(5, 11, 14, 9, 2), path('M8 11V8a4 4 0 0 1 8 0v3')],
   message: [path('M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z')],
   more: [circle(12, 5, 1.5), circle(12, 12, 1.5), circle(12, 19, 1.5)],

@@ -1349,7 +1349,7 @@
       "title": "We can't find that.",
       "status": 404,
       "detail": "There is no such category.",
-      "correlationId": "02a149c4d33b4896ac10a249bc01d297",
+      "correlationId": "0c9ae11ce15a49cf8b7ba9b4cae437a3",
       "code": "category_not_found"
     }
   },
@@ -1566,6 +1566,116 @@
       "spaces": []
     }
   },
+  "GET /api/categories/software-platforms/listings?sort=name&page=1": {
+    "status": 200,
+    "body": {
+      "category": {
+        "slug": "software-platforms",
+        "name": "Software platforms"
+      },
+      "totalCount": 3,
+      "matchCount": 3,
+      "fact": null,
+      "filters": {
+        "offers": [],
+        "areas": []
+      },
+      "sort": "name",
+      "page": 1,
+      "pageSize": 16,
+      "pageCount": 1,
+      "businesses": [
+        {
+          "slug": "gatherboard",
+          "name": "Gatherboard",
+          "tagline": "Volunteer rosters for small churches",
+          "highlight": null,
+          "categorySlug": "software-platforms",
+          "coverPhoto": null,
+          "repliesFast": false,
+          "rating": null
+        },
+        {
+          "slug": "lanternread",
+          "name": "Lanternread",
+          "tagline": "A reading log families keep together",
+          "highlight": "Free for families",
+          "categorySlug": "software-platforms",
+          "coverPhoto": null,
+          "repliesFast": false,
+          "rating": null
+        },
+        {
+          "slug": "ledgerleaf",
+          "name": "Ledgerleaf",
+          "tagline": "Bookkeeping in plain words for sole traders",
+          "highlight": "30-day free trial",
+          "categorySlug": "software-platforms",
+          "coverPhoto": null,
+          "repliesFast": false,
+          "rating": null
+        }
+      ],
+      "suggestions": [],
+      "term": null,
+      "spaces": []
+    }
+  },
+  "GET /api/categories/software-platforms/listings?sort=recommended&page=1": {
+    "status": 200,
+    "body": {
+      "category": {
+        "slug": "software-platforms",
+        "name": "Software platforms"
+      },
+      "totalCount": 3,
+      "matchCount": 3,
+      "fact": null,
+      "filters": {
+        "offers": [],
+        "areas": []
+      },
+      "sort": "recommended",
+      "page": 1,
+      "pageSize": 16,
+      "pageCount": 1,
+      "businesses": [
+        {
+          "slug": "lanternread",
+          "name": "Lanternread",
+          "tagline": "A reading log families keep together",
+          "highlight": "Free for families",
+          "categorySlug": "software-platforms",
+          "coverPhoto": null,
+          "repliesFast": false,
+          "rating": null
+        },
+        {
+          "slug": "ledgerleaf",
+          "name": "Ledgerleaf",
+          "tagline": "Bookkeeping in plain words for sole traders",
+          "highlight": "30-day free trial",
+          "categorySlug": "software-platforms",
+          "coverPhoto": null,
+          "repliesFast": false,
+          "rating": null
+        },
+        {
+          "slug": "gatherboard",
+          "name": "Gatherboard",
+          "tagline": "Volunteer rosters for small churches",
+          "highlight": null,
+          "categorySlug": "software-platforms",
+          "coverPhoto": null,
+          "repliesFast": false,
+          "rating": null
+        }
+      ],
+      "suggestions": [],
+      "term": null,
+      "spaces": []
+    }
+  },
   "GET /api/content/help": {
     "status": 200,
     "body": {
@@ -1692,7 +1802,7 @@
   "GET /api/directory/home": {
     "status": 200,
     "body": {
-      "liveBusinessCount": 47,
+      "liveBusinessCount": 50,
       "categories": [
         {
           "slug": "shops",
@@ -1737,6 +1847,10 @@
         {
           "slug": "community",
           "name": "Community"
+        },
+        {
+          "slug": "software-platforms",
+          "name": "Software platforms"
         }
       ],
       "featured": [
@@ -2127,6 +2241,29 @@
               "tagline": "Celebrating our love for God and love for people"
             }
           ]
+        },
+        {
+          "slug": "software-platforms",
+          "name": "Software platforms",
+          "count": 3,
+          "hasMore": false,
+          "businesses": [
+            {
+              "slug": "lanternread",
+              "name": "Lanternread",
+              "tagline": "A reading log families keep together"
+            },
+            {
+              "slug": "ledgerleaf",
+              "name": "Ledgerleaf",
+              "tagline": "Bookkeeping in plain words for sole traders"
+            },
+            {
+              "slug": "gatherboard",
+              "name": "Gatherboard",
+              "tagline": "Volunteer rosters for small churches"
+            }
+          ]
         }
       ],
       "rooms": {
@@ -2214,7 +2351,7 @@
   "GET /api/directory/welcome": {
     "status": 200,
     "body": {
-      "liveBusinessCount": 47,
+      "liveBusinessCount": 50,
       "categories": [
         {
           "slug": "shops",
@@ -2259,6 +2396,10 @@
         {
           "slug": "community",
           "name": "Community"
+        },
+        {
+          "slug": "software-platforms",
+          "name": "Software platforms"
         }
       ],
       "featured": [
@@ -2316,7 +2457,7 @@
     "body": {
       "title": "Sign in to continue.",
       "status": 401,
-      "correlationId": "0028879029394277a5a851062dcfe6e0",
+      "correlationId": "fb6915d9c96b489c87f8e445bc68b0e7",
       "code": "sign_in_required"
     }
   },
@@ -2353,7 +2494,7 @@
         "languages": null,
         "delivery": null,
         "madeToOrder": null,
-        "onJubileeSince": "2026-10-30T06:44:02.2595518+00:00",
+        "onJubileeSince": "2026-10-30T05:19:10.1971614+00:00",
         "replies": null
       },
       "services": [],
@@ -2453,7 +2594,6 @@
       ],
       "openRequestId": null,
       "repliesFast": false,
-      "address": null,
       "photos": []
     }
   },
@@ -2482,7 +2622,7 @@
       "title": "We can't find that.",
       "status": 404,
       "detail": "There is no such business.",
-      "correlationId": "67280461304f44a6a6051552483a9f9b",
+      "correlationId": "27d53bd659d8437382d8a746177b9df1",
       "code": "listing_not_found"
     }
   },
@@ -2511,7 +2651,7 @@
         "languages": null,
         "delivery": null,
         "madeToOrder": null,
-        "onJubileeSince": "2026-10-25T09:44:02.2595518+00:00",
+        "onJubileeSince": "2026-10-25T17:49:20.3194136+00:00",
         "replies": null
       },
       "services": [],
@@ -2546,7 +2686,6 @@
       "relatedSpaces": [],
       "openRequestId": null,
       "repliesFast": false,
-      "address": null,
       "photos": []
     }
   },
@@ -2594,7 +2733,7 @@
         "languages": null,
         "delivery": null,
         "madeToOrder": null,
-        "onJubileeSince": "2026-10-30T05:44:02.2595518+00:00",
+        "onJubileeSince": "2026-10-30T04:19:10.1971614+00:00",
         "replies": null
       },
       "services": [],
@@ -2694,7 +2833,6 @@
       ],
       "openRequestId": null,
       "repliesFast": false,
-      "address": null,
       "photos": []
     }
   },
@@ -2749,7 +2887,7 @@
       },
       "services": [
         {
-          "id": "21a21d64-96c7-448d-91ca-aa0b017ef8f2",
+          "id": "6309ef0e-67fa-4982-a1c5-25a358f792bb",
           "name": "Discovery meeting",
           "detail": "30 min · In person or video",
           "priceKind": "free",
@@ -2757,7 +2895,7 @@
           "action": "book"
         },
         {
-          "id": "922cc474-5180-41cd-9181-0e6e5aeec2cc",
+          "id": "38194786-7488-4f78-8267-43db95787dc1",
           "name": "Retirement & RRSP review",
           "detail": "60 min · Bring your statements",
           "priceKind": "ask",
@@ -2765,7 +2903,7 @@
           "action": "book"
         },
         {
-          "id": "fc7b519c-72fe-4d39-8b70-c5af05ee9c23",
+          "id": "d436f8a9-e8c3-4180-89c4-b592b550d01f",
           "name": "Life & disability insurance review",
           "detail": "45 min",
           "priceKind": "free",
@@ -2773,7 +2911,7 @@
           "action": "book"
         },
         {
-          "id": "414014b6-6de9-4509-8c29-5ea4f5325dac",
+          "id": "7062cb46-73bd-4ca4-ac5f-9cdcc2d98d24",
           "name": "Estate & legacy plan",
           "detail": "Two sessions, written plan",
           "priceKind": "ask",
@@ -2809,7 +2947,6 @@
       "relatedSpaces": [],
       "openRequestId": null,
       "repliesFast": false,
-      "address": null,
       "photos": []
     }
   },
@@ -2831,11 +2968,11 @@
       "writing": "sign-in",
       "items": [
         {
-          "id": "5a7aa624-65ed-487f-ae65-22e88008bd74",
+          "id": "19d0229b-9ff9-451c-b249-76a44350e19b",
           "author": "Grace A.",
           "initials": "GA",
           "rating": 5,
-          "itemId": "414014b6-6de9-4509-8c29-5ea4f5325dac",
+          "itemId": "357085ae-2aa9-4a79-93ef-8361f1332a78",
           "itemName": "Estate & legacy plan",
           "text": "Trevor helped my husband and me write wills and a giving plan after our second child. He never pushed a product, prayed with us at the end of the first meeting, and the written plan was clear enough that our parents understood it too.",
           "createdAt": "2026-11-03T17:00:00+00:00",
@@ -2849,11 +2986,11 @@
           }
         },
         {
-          "id": "8dfb763f-85ac-4fa7-92f3-696d095532f7",
+          "id": "d5c28263-fc49-4b6a-b814-c2dd2945b892",
           "author": "Marcus T.",
           "initials": "MT",
           "rating": 5,
-          "itemId": "21a21d64-96c7-448d-91ca-aa0b017ef8f2",
+          "itemId": "97639d6c-059b-4a41-8358-89b968ec5a58",
           "itemName": "Discovery meeting",
           "text": "Booked the free meeting expecting a sales pitch. Got an honest look at our debt and a plan to be clear of it in three years. We went back for the RRSP review.",
           "createdAt": "2026-10-20T17:00:00+00:00",
@@ -2862,11 +2999,11 @@
           "reply": null
         },
         {
-          "id": "d24291e9-4c07-4de2-a859-781e652e715a",
+          "id": "c13e1d67-5a82-4430-8a62-8dba0def540e",
           "author": "Esther L.",
           "initials": "EL",
           "rating": 4,
-          "itemId": "922cc474-5180-41cd-9181-0e6e5aeec2cc",
+          "itemId": "f9a34a0f-410c-4af1-9a64-2a7d6113c029",
           "itemName": "Retirement & RRSP review",
           "text": "Very knowledgeable and patient with my questions. Scheduling took longer than I hoped in tax season, so book early.",
           "createdAt": "2026-09-08T17:00:00+00:00",
@@ -2880,11 +3017,11 @@
           }
         },
         {
-          "id": "fa0e64a3-10e0-4db9-90d5-4d777b381fa1",
+          "id": "982ca750-232c-4939-9a1a-411abc10cc51",
           "author": "Priya S.",
           "initials": "PS",
           "rating": 4,
-          "itemId": "21a21d64-96c7-448d-91ca-aa0b017ef8f2",
+          "itemId": "97639d6c-059b-4a41-8358-89b968ec5a58",
           "itemName": "Discovery meeting",
           "text": "Helpful first meeting and no pressure, but the follow-up notes took two weeks to arrive and I had to ask for them twice.",
           "createdAt": "2026-08-02T17:00:00+00:00",
@@ -2893,11 +3030,11 @@
           "reply": null
         },
         {
-          "id": "b8a9a43f-8843-4a11-aa31-0226bfbeec96",
+          "id": "2e93736a-a7ef-4534-b376-33b97a44f07b",
           "author": "Paul K.",
           "initials": "PK",
           "rating": 5,
-          "itemId": "fc7b519c-72fe-4d39-8b70-c5af05ee9c23",
+          "itemId": "a504cc45-8bb4-4fad-8c6c-daed1ab3e811",
           "itemName": "Life & disability insurance review",
           "text": "Found we were paying for two overlapping policies. Saved us $64 a month.",
           "createdAt": "2026-06-15T17:00:00+00:00",
@@ -2933,7 +3070,7 @@
         "languages": null,
         "delivery": null,
         "madeToOrder": null,
-        "onJubileeSince": "2026-10-30T07:44:02.2595518+00:00",
+        "onJubileeSince": "2026-10-30T06:19:10.1971614+00:00",
         "replies": null
       },
       "services": [],
@@ -3034,7 +3171,6 @@
       ],
       "openRequestId": null,
       "repliesFast": false,
-      "address": null,
       "photos": []
     }
   },
@@ -3087,7 +3223,7 @@
       },
       "services": [
         {
-          "id": "313b9843-bf9a-4103-96f6-0afebb09b30c",
+          "id": "f82c10eb-55de-4dd4-9a74-85c7f84c5dba",
           "name": "Custom design consultation",
           "detail": "30 min · Video",
           "priceKind": "free",
@@ -3095,7 +3231,7 @@
           "action": "ask"
         },
         {
-          "id": "6c7aeae6-9f78-4514-9f6e-3f757baf20ad",
+          "id": "d9b5ce1c-f10c-4517-8801-7fe6938e31b0",
           "name": "Church merch package",
           "detail": "Tees, mugs and totes for your congregation",
           "priceKind": "ask",
@@ -3191,14 +3327,13 @@
       "relatedSpaces": [],
       "openRequestId": null,
       "repliesFast": false,
-      "address": null,
       "photos": []
     }
   },
   "GET /api/listings/luzandre/products/custom-church-team-tee": {
     "status": 200,
     "body": {
-      "id": "48f5779a-4f84-4df1-8847-71e266196da2",
+      "id": "9b06fc15-8870-4533-a96d-617fbfb4b96d",
       "slug": "custom-church-team-tee",
       "name": "Custom church team tee (min. 12)",
       "priceCents": 2200,
@@ -3279,7 +3414,7 @@
   "GET /api/listings/luzandre/products/faith-heavyweight-tee-charcoal": {
     "status": 200,
     "body": {
-      "id": "6dc9540f-bb9f-46aa-8697-464e7f0f0900",
+      "id": "91ecd1d1-ca36-4e35-b4d0-b78e46bbae6b",
       "slug": "faith-heavyweight-tee-charcoal",
       "name": "Faith heavyweight tee, charcoal",
       "priceCents": 3400,
@@ -3393,7 +3528,7 @@
   "GET /api/listings/luzandre/products/gold-cross-stoneware-mug": {
     "status": 200,
     "body": {
-      "id": "0e3e6810-3a6e-427e-9442-620ffa38cbc9",
+      "id": "bc3f5206-3479-4954-9062-119da2b6ab48",
       "slug": "gold-cross-stoneware-mug",
       "name": "Gold cross stoneware mug",
       "priceCents": 2400,
@@ -3478,7 +3613,7 @@
       "title": "We can't find that.",
       "status": 404,
       "detail": "There is no such product.",
-      "correlationId": "5e06043f43c342e898c0e407b2a7129d",
+      "correlationId": "a7a3c7d4f5004d798c9c89e50828e82d",
       "code": "product_not_found"
     }
   },
@@ -3500,11 +3635,11 @@
       "writing": "sign-in",
       "items": [
         {
-          "id": "1701fa7d-771c-4685-b975-f8a7b02d31e2",
+          "id": "f5a29c2f-0680-46de-9528-5894905d4f46",
           "author": "Tamara J.",
           "initials": "TJ",
           "rating": 5,
-          "itemId": "48f5779a-4f84-4df1-8847-71e266196da2",
+          "itemId": "9b06fc15-8870-4533-a96d-617fbfb4b96d",
           "itemName": "Custom church team tee (min. 12)",
           "text": "Ordered 40 tees for our youth retreat. The proof came back the same day, the print is thick and hasn’t cracked after a dozen washes. The kids actually wear them outside church.",
           "createdAt": "2026-11-05T17:00:00+00:00",
@@ -3518,11 +3653,11 @@
           }
         },
         {
-          "id": "f78b1362-1ce5-4651-b876-09a3e883dc5c",
+          "id": "e60635e0-8733-41e6-ae7d-6ad168c5dbc9",
           "author": "Ruth M.",
           "initials": "RM",
           "rating": 5,
-          "itemId": "0e3e6810-3a6e-427e-9442-620ffa38cbc9",
+          "itemId": "bc3f5206-3479-4954-9062-119da2b6ab48",
           "itemName": "Gold cross stoneware mug",
           "text": "Heavier than I expected in a good way. The gold has stayed bright in the dishwasher.",
           "createdAt": "2026-10-12T17:00:00+00:00",
@@ -3531,11 +3666,11 @@
           "reply": null
         },
         {
-          "id": "aa98c135-aca9-44ee-b1fe-a51703221080",
+          "id": "23cea7a8-795d-409f-86da-ee9575cf6834",
           "author": "Samuel P.",
           "initials": "SP",
           "rating": 4,
-          "itemId": "0e3e6810-3a6e-427e-9442-620ffa38cbc9",
+          "itemId": "bc3f5206-3479-4954-9062-119da2b6ab48",
           "itemName": "Gold cross stoneware mug",
           "text": "Good mug, solid glaze. It took nine days to ship to Scarborough, longer than the five I was told.",
           "createdAt": "2026-09-30T17:00:00+00:00",
@@ -3544,11 +3679,11 @@
           "reply": null
         },
         {
-          "id": "1e97fbba-fc3a-4eb9-a92f-4846b517e62b",
+          "id": "9adce508-0778-480e-b6d8-2c1153381944",
           "author": "Kofi B.",
           "initials": "KB",
           "rating": 3,
-          "itemId": "6dc9540f-bb9f-46aa-8697-464e7f0f0900",
+          "itemId": "1e6c7b0d-4639-4975-bbe2-0daa0b63b3c2",
           "itemName": "Faith heavyweight tee, charcoal",
           "text": "Love the design. Runs a full size small, so order up. Exchange was easy but took about two weeks by mail.",
           "createdAt": "2026-08-14T17:00:00+00:00",
@@ -3562,11 +3697,11 @@
           }
         },
         {
-          "id": "823b88ea-2a66-4869-b471-b1d57340a02c",
+          "id": "a6eb38ef-d7e9-43e7-9549-3a2f38c351a3",
           "author": "David C.",
           "initials": "DC",
           "rating": 5,
-          "itemId": "0e3e6810-3a6e-427e-9442-620ffa38cbc9",
+          "itemId": "bc3f5206-3479-4954-9062-119da2b6ab48",
           "itemName": "Gold cross stoneware mug",
           "text": "Bought two as gifts for our small group leaders. Both arrived well packed and they use them every Sunday.",
           "createdAt": "2026-07-22T17:00:00+00:00",
@@ -3595,11 +3730,11 @@
       "writing": "sign-in",
       "items": [
         {
-          "id": "1701fa7d-771c-4685-b975-f8a7b02d31e2",
+          "id": "f5a29c2f-0680-46de-9528-5894905d4f46",
           "author": "Tamara J.",
           "initials": "TJ",
           "rating": 5,
-          "itemId": "48f5779a-4f84-4df1-8847-71e266196da2",
+          "itemId": "9b06fc15-8870-4533-a96d-617fbfb4b96d",
           "itemName": "Custom church team tee (min. 12)",
           "text": "Ordered 40 tees for our youth retreat. The proof came back the same day, the print is thick and hasn’t cracked after a dozen washes. The kids actually wear them outside church.",
           "createdAt": "2026-11-05T17:00:00+00:00",
@@ -3633,11 +3768,11 @@
       "writing": "sign-in",
       "items": [
         {
-          "id": "1e97fbba-fc3a-4eb9-a92f-4846b517e62b",
+          "id": "9c635e51-9511-42b3-ae8f-a2d5d30e0282",
           "author": "Kofi B.",
           "initials": "KB",
           "rating": 3,
-          "itemId": "6dc9540f-bb9f-46aa-8697-464e7f0f0900",
+          "itemId": "91ecd1d1-ca36-4e35-b4d0-b78e46bbae6b",
           "itemName": "Faith heavyweight tee, charcoal",
           "text": "Love the design. Runs a full size small, so order up. Exchange was easy but took about two weeks by mail.",
           "createdAt": "2026-08-14T17:00:00+00:00",
@@ -3671,11 +3806,11 @@
       "writing": "sign-in",
       "items": [
         {
-          "id": "f78b1362-1ce5-4651-b876-09a3e883dc5c",
+          "id": "e60635e0-8733-41e6-ae7d-6ad168c5dbc9",
           "author": "Ruth M.",
           "initials": "RM",
           "rating": 5,
-          "itemId": "0e3e6810-3a6e-427e-9442-620ffa38cbc9",
+          "itemId": "bc3f5206-3479-4954-9062-119da2b6ab48",
           "itemName": "Gold cross stoneware mug",
           "text": "Heavier than I expected in a good way. The gold has stayed bright in the dishwasher.",
           "createdAt": "2026-10-12T17:00:00+00:00",
@@ -3684,11 +3819,11 @@
           "reply": null
         },
         {
-          "id": "aa98c135-aca9-44ee-b1fe-a51703221080",
+          "id": "23cea7a8-795d-409f-86da-ee9575cf6834",
           "author": "Samuel P.",
           "initials": "SP",
           "rating": 4,
-          "itemId": "0e3e6810-3a6e-427e-9442-620ffa38cbc9",
+          "itemId": "bc3f5206-3479-4954-9062-119da2b6ab48",
           "itemName": "Gold cross stoneware mug",
           "text": "Good mug, solid glaze. It took nine days to ship to Scarborough, longer than the five I was told.",
           "createdAt": "2026-09-30T17:00:00+00:00",
@@ -3697,11 +3832,11 @@
           "reply": null
         },
         {
-          "id": "823b88ea-2a66-4869-b471-b1d57340a02c",
+          "id": "a6eb38ef-d7e9-43e7-9549-3a2f38c351a3",
           "author": "David C.",
           "initials": "DC",
           "rating": 5,
-          "itemId": "0e3e6810-3a6e-427e-9442-620ffa38cbc9",
+          "itemId": "bc3f5206-3479-4954-9062-119da2b6ab48",
           "itemName": "Gold cross stoneware mug",
           "text": "Bought two as gifts for our small group leaders. Both arrived well packed and they use them every Sunday.",
           "createdAt": "2026-07-22T17:00:00+00:00",
@@ -3737,7 +3872,7 @@
         "languages": null,
         "delivery": null,
         "madeToOrder": null,
-        "onJubileeSince": "2026-10-30T08:44:02.2595518+00:00",
+        "onJubileeSince": "2026-10-30T16:49:20.3194136+00:00",
         "replies": null
       },
       "services": [],
@@ -3837,7 +3972,6 @@
       ],
       "openRequestId": null,
       "repliesFast": false,
-      "address": null,
       "photos": []
     }
   },
@@ -3859,7 +3993,7 @@
       "writing": "sign-in",
       "items": [
         {
-          "id": "21c608c0-e99b-4e02-ab0b-5e10c578992b",
+          "id": "6222f2db-0385-4f06-acee-c4d057b9de7d",
           "author": "Lydia M.",
           "initials": "LM",
           "rating": 5,
@@ -3877,7 +4011,7 @@
           }
         },
         {
-          "id": "cbf10b0b-98a2-4586-a152-da9b7bb5d581",
+          "id": "618bb74e-b7fd-425f-bc4b-d821430e6207",
           "author": "Chris D.",
           "initials": "CD",
           "rating": 4,
@@ -3897,7 +4031,7 @@
     "body": {
       "title": "Sign in to continue.",
       "status": 401,
-      "correlationId": "1e1b2fb1a879482b99646e7c815d7938",
+      "correlationId": "31abbda99e81482699e0db8eefeab279",
       "code": "sign_in_required"
     }
   },

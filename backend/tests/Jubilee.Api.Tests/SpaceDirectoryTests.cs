@@ -19,11 +19,11 @@ public class SpaceDirectoryTests : IClassFixture<JubileeApiFactory>, IAsyncLifet
     public Task DisposeAsync() => Task.CompletedTask;
 
     [Fact]
-    public async Task L2_197_AC4_rooms_and_rentals_is_the_second_of_eleven_categories()
+    public async Task L2_197_AC4_rooms_and_rentals_is_the_second_of_twelve_categories()
     {
         var categories = (await _factory.GetJson("/api/directory/welcome")).GetProperty("categories");
 
-        Assert.Equal(11, categories.GetArrayLength());
+        Assert.Equal(12, categories.GetArrayLength());
         Assert.Equal("rooms-rentals", categories[1].GetProperty("slug").GetString());
         Assert.Equal("Rooms & rentals", categories[1].GetProperty("name").GetString());
     }

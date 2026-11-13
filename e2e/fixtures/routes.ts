@@ -22,7 +22,12 @@ export type StubName =
   | 'space-loading'
   | 'space-error'
   | 'space-requested'
+  | 'platform-owner'
+  | 'platform-preview'
+  | 'platform-error'
+  | 'platform-no-website'
   | 'rooms-empty'
+  | 'platforms-empty'
   | 'business-loading'
   | 'business-retrying'
   | 'business-empty'
@@ -627,6 +632,30 @@ export const routes = {
     who: 'member',
     stub: 'category-error',
   },
+  // Software platforms (L2-252): business cards, a sort and no filters.
+  'category.software-platforms': {
+    app: '/c/software-platforms',
+    mock: 'pages/category/software-platforms.html',
+    who: 'member',
+  },
+  'category.software-platforms-empty': {
+    app: '/c/software-platforms',
+    mock: 'pages/category/software-platforms-empty.html',
+    who: 'member',
+    stub: 'platforms-empty',
+  },
+  'category.software-platforms-loading': {
+    app: '/c/software-platforms',
+    mock: 'pages/category/software-platforms-loading.html',
+    who: 'member',
+    stub: 'category-loading',
+  },
+  'category.software-platforms-error': {
+    app: '/c/software-platforms',
+    mock: 'pages/category/software-platforms-error.html',
+    who: 'member',
+    stub: 'category-error',
+  },
   'category.loading': {
     app: '/c/home-property',
     mock: 'pages/category/loading.html',
@@ -781,6 +810,40 @@ export const routes = {
     mock: 'pages/business/replies-fast.html',
     who: 'member',
     stub: 'business-replies-fast',
+  },
+  // The page of a software platform (L2-254): Lanternread, from the seeded platforms.
+  platform: { app: '/b/lanternread', mock: 'pages/platform/default.html', who: 'member' },
+  'platform.signed-out': {
+    app: '/b/lanternread',
+    mock: 'pages/platform/signed-out.html',
+    who: 'visitor',
+  },
+  'platform.owner': {
+    app: '/b/lanternread',
+    mock: 'pages/platform/owner.html',
+    who: 'member',
+    stub: 'platform-owner',
+  },
+  'platform.preview': {
+    app: '/b/lanternread',
+    mock: 'pages/platform/preview.html',
+    who: 'member',
+    stub: 'platform-preview',
+  },
+  // Opened from Software platforms, so the page knows it failed to load a platform.
+  'platform.error': {
+    app: '/b/lanternread',
+    mock: 'pages/platform/error.html',
+    who: 'member',
+    stub: 'platform-error',
+    via: '/c/software-platforms',
+  },
+  // A stored address the rules refuse: no link out (L2-255 AC5). The mocks draw no such state.
+  'platform.no-website': {
+    app: '/b/lanternread',
+    mock: 'pages/platform/default.html',
+    who: 'member',
+    stub: 'platform-no-website',
   },
   'space.short-stay': {
     app: '/b/roncesvalles-guest-suite',

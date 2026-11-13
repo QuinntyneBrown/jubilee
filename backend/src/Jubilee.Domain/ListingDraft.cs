@@ -111,6 +111,12 @@ public sealed class ListingDraft
     /// <summary>The rental details of a space draft (L2-199); null for a business.</summary>
     public SpaceDetails? Space { get; private set; }
 
+    /// <summary>What the founder says of a platform draft (L2-250); null for every other kind.</summary>
+    public PlatformDetails? Platform { get; private set; }
+
+    /// <summary>The web address of a platform draft, as typed (L2-250 AC4); null for every other kind.</summary>
+    public string? Website { get; private set; }
+
     public DateTimeOffset CreatedAt { get; private set; }
 
     public DateTimeOffset UpdatedAt { get; private set; }

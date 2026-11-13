@@ -48,12 +48,16 @@ public sealed class GetCategoryListingsQueryHandler(IAppDbContext db, IDirectory
             return await BuildSpacesAsync(category, request, cancellationToken);
         }
 
+        // A software platform has no offers and serves no area: its category has no filters and no fact (L2-252 AC3).
+        var platforms = category.Slug == Category.PlatformsSlug;
+        var filters = platforms ? CategoryFilterSet.Empty : request.Filters;
+
         var inCategory = CategoryQueries.PublicListingsIn(db, category);
-        var matches = request.Filters.Apply(inCategory);
+        var matches = filters.Apply(inCategory);
 
         var totalCount = await inCategory.CountAsync(cancellationToken);
-        var matchCount = request.Filters.IsEmpty ? totalCount : await matches.CountAsync(cancellationToken);
-        var factCount = await inCategory.CountAsync(l => (l.Offers & FactOffer) != 0, cancellationToken);
+        var matchCount = filters.IsEmpty ? totalCount : await matches.CountAsync(cancellationToken);
+        var factCount = platforms ? 0 : await inCategory.CountAsync(l => (l.Offers & FactOffer) != 0, cancellationToken);
 
         var window = PageWindow.Clamp(request.Page, matchCount);
         var listings = await ListingSortPolicy.Apply(matches, request.Sort)
@@ -62,9 +66,9 @@ public sealed class GetCategoryListingsQueryHandler(IAppDbContext db, IDirectory
             .ToListAsync(cancellationToken);
 
         var suggestions = new List<FilterSuggestion>();
-        if (matchCount == 0 && !request.Filters.IsEmpty)
+        if (matchCount == 0 && !filters.IsEmpty)
         {
-            foreach (var (group, value, remaining) in request.Filters.WithoutOneFilter())
+            foreach (var (group, value, remaining) in filters.WithoutOneFilter())
             {
                 var count = await remaining.Apply(inCategory).CountAsync(cancellationToken);
                 suggestions.Add(new FilterSuggestion(new RemovedFilterDto(group, value), count));
@@ -77,7 +81,7 @@ public sealed class GetCategoryListingsQueryHandler(IAppDbContext db, IDirectory
             totalCount,
             matchCount,
             factCount > 0 ? new CategoryFactDto(WireValues.Of(FactOffer), factCount) : null,
-            AppliedFiltersDto.From(request.Filters),
+            AppliedFiltersDto.From(filters),
             WireValues.Of(request.Sort),
             window.Page,
             PageWindow.PageSize,

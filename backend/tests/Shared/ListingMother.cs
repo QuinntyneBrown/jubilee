@@ -64,6 +64,23 @@ public static class ListingMother
         return listing;
     }
 
+    /// <summary>A live software platform in "Software platforms" (L2-248), with the founder's words and its web address.</summary>
+    public static Listing Platform(
+        string slug,
+        string? name = null,
+        string website = "https://lanternread.example",
+        DateTimeOffset? approvedAt = null,
+        string? does = null,
+        string? @for = null,
+        string? tagline = null)
+    {
+        var listing = Public(slug, Category.PlatformsSlug, name, approvedAt, default, default, highlight: null, tagline: tagline);
+        listing.DescribePlatform(
+            PlatformDetails.Create(does ?? "Families log the books their children read.", @for ?? "Families with children aged 4 to 12.", "Free for families."),
+            website);
+        return listing;
+    }
+
     public static Listing NonPublic(NonPublicState state, string? slug = null, string category = "home-property")
     {
         slug ??= $"hidden-{state}".ToLowerInvariant();

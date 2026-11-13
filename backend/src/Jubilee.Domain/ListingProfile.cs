@@ -8,6 +8,9 @@ public enum ListingKind
 
     /// <summary>A room, suite, apartment, house or hall to rent, in "Rooms & rentals" (L2-197).</summary>
     Space = 2,
+
+    /// <summary>A software platform people use online, in "Software platforms" (L2-248).</summary>
+    Platform = 3,
 }
 
 /// <summary>

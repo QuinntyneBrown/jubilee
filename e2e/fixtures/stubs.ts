@@ -40,6 +40,7 @@ const categoryListings = '**/api/categories/*/listings?*';
 const legacyFinancial = '**/api/listings/legacy-financial';
 const luzandre = '**/api/listings/luzandre';
 const roncesvalles = '**/api/listings/roncesvalles-guest-suite';
+const lanternread = '**/api/listings/lanternread';
 const tee = '**/api/listings/luzandre/products/faith-heavyweight-tee-charcoal';
 
 /** The ProblemDetails the API sends when a directory read cannot be served (L2-118). */
@@ -327,6 +328,27 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
           },
         }),
       );
+    case 'platforms-empty':
+      // No platform is live yet (L2-252 AC5).
+      return page.route(categoryListings, (route) =>
+        route.fulfill({
+          json: {
+            category: { slug: 'software-platforms', name: 'Software platforms' },
+            totalCount: 0,
+            matchCount: 0,
+            fact: null,
+            filters: { offers: [], areas: [] },
+            sort: 'recommended',
+            page: 1,
+            pageSize: 16,
+            pageCount: 1,
+            businesses: [],
+            spaces: [],
+            suggestions: [],
+            term: null,
+          },
+        }),
+      );
     case 'category-loading':
       return page.route(categoryListings, pending);
     case 'category-empty':
@@ -363,6 +385,27 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
       return patchListing(page, roncesvalles, (listing) => ({
         ...listing,
         openRequestId: 'r-space',
+      }));
+    case 'platform-owner':
+      // The demo member is not Lanternread's founder; the server decides the relation.
+      return patchListing(page, lanternread, (listing) => ({
+        ...listing,
+        viewerRelation: 'owner',
+      }));
+    case 'platform-preview':
+      // The founder's preview of a paused platform (L2-254 AC7).
+      return patchListing(page, lanternread, (listing) => ({
+        ...listing,
+        viewerRelation: 'owner',
+        status: 'paused',
+      }));
+    case 'platform-error':
+      return page.route(lanternread, (route) => route.fulfill(unavailable('JB-BIZ-503')));
+    case 'platform-no-website':
+      // The stored address no longer passes the rule, so the answer carries none (L2-255 AC5).
+      return patchListing(page, lanternread, (listing) => ({
+        ...listing,
+        platform: { ...(listing['platform'] as object), website: null, host: null },
       }));
     case 'business-loading':
       return page.route(legacyFinancial, pending);

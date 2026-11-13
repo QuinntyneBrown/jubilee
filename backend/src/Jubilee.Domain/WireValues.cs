@@ -51,6 +51,7 @@ public static class WireValues
     {
         ListingKind.Shop => "shop",
         ListingKind.Space => "space",
+        ListingKind.Platform => "platform",
         _ => "services",
     };
 

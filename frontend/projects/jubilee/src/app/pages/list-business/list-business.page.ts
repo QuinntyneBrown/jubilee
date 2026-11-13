@@ -207,7 +207,8 @@ export class ListBusinessPage {
   private readonly route = inject(ActivatedRoute);
   protected readonly session = inject(SessionService);
 
-  protected readonly categories = CATEGORIES;
+  /** A business chooses its category; a platform is always in "Software platforms" (L2-248 AC1). */
+  protected readonly categories = CATEGORIES.filter((c) => c.slug !== 'software-platforms');
   protected readonly format = formatPrice;
   protected readonly taglineMax = TAGLINE_MAX;
   protected readonly highlightMax = HIGHLIGHT_MAX;

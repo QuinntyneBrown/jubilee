@@ -50,6 +50,12 @@ public sealed class Review
 
     public DateTimeOffset? EditedAt { get; private set; }
 
+    /// <summary>
+    /// When the author stated they have used the software platform (L2-258, ADR 0071). It is their own word:
+    /// Jubilee does not check it. Null for a review of a business, a shop or a space.
+    /// </summary>
+    public DateTimeOffset? StatedUseAt { get; private set; }
+
     /// <summary>The client's key for this review; a repeat of it returns the first answer (L2-132).</summary>
     public string IdempotencyKey { get; private set; } = string.Empty;
 
