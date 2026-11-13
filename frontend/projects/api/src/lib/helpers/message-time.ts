@@ -109,6 +109,19 @@ export function awayDay(iso: string, now: Date): string {
   return days <= 6 ? WEEKDAY.format(back) : dayLabel(iso);
 }
 
+/**
+ * When a session was last used (L2-143 AC3): "just now", "5 minutes ago", "2 hours ago", and
+ * from a day on "on Mon 9 Nov".
+ */
+export function lastActive(iso: string, now: Date): string {
+  const minutes = Math.floor((now.getTime() - new Date(iso).getTime()) / 60000);
+  if (minutes < 1) return 'just now';
+  if (minutes < 60) return `${minutes} minute${minutes === 1 ? '' : 's'} ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours} hour${hours === 1 ? '' : 's'} ago`;
+  return `on ${dayLabel(iso)}`;
+}
+
 /** "14 Oct 2026" (L2-015 "Changed"). */
 export function fullDate(iso: string): string {
   const then = parts(new Date(iso));

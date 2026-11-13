@@ -70,6 +70,9 @@
         <section jb-card heading="Owner" headingId="own">
           <dl jb-description-list>
             <div jb-description-item term="Name" [value]="l.owner.name"></div>
+            @if (l.owner.pronouns; as pronouns) {
+              <div jb-description-item term="Pronouns" [value]="pronouns"></div>
+            }
             <div jb-description-item term="E-mail">
               {{ l.owner.email }} · {{ l.owner.emailConfirmed ? 'confirmed' : 'not confirmed' }}
             </div>

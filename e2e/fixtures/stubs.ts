@@ -9,7 +9,7 @@ import { daniel, stubStaff } from './staff';
 import { stubModeration } from './moderation';
 import { confirmedRows, stubIncoming } from './incoming-requests';
 import { stubCatalogue } from './catalogue';
-import { stubProfile } from './profile';
+import { THIS_DEVICE, stubProfile } from './profile';
 import { BROWSE_SAVED, stubSaved } from './saved';
 import { stubFeedback } from './feedback';
 import { stubPasswordReset } from './password-reset';
@@ -552,7 +552,11 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
       return stubMessaging(page);
     case 'profile-this-device-only':
       await stubSignedInSession(page, { signedIn: true, otherSessionCount: 0 });
-      return void (await stubProfile(page));
+      return void (await stubProfile(page, { sessions: [THIS_DEVICE] }));
+    case 'profile-sessions-loading':
+      return void (await stubProfile(page, { sessionsLoad: 'pending' }));
+    case 'profile-sessions-error':
+      return void (await stubProfile(page, { sessionsLoad: 'fails' }));
     case 'profile-other-devices':
       await stubSignedInSession(page, { signedIn: true, otherSessionCount: 1 });
       return void (await stubProfile(page));

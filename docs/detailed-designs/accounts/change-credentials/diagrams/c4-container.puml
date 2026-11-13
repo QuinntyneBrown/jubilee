@@ -4,21 +4,19 @@ LAYOUT_WITH_LEGEND()
 title Containers — Change credentials
 
 
-Person(member, "Member", "Changes e-mail or password")
+Person(member, "Member", "Changes e-mail or password and signs devices out")
 System_Boundary(jubilee, "Jubilee") {
   Container(web, "Jubilee Web", "Angular single-page application", "Account page and credential dialogs")
-  Container(api, "Jubilee API", "ASP.NET Core", "Credential endpoints under /api/account")
+  Container(api, "Jubilee API", "ASP.NET Core", "Credential and session endpoints under /api/account")
   Container(worker, "Jubilee Worker", ".NET worker service", "Outbox dispatch and e-mail sending")
-  ContainerDb(db, "Jubilee database", "SQL Server", "Members and link tokens and outbox")
-  ContainerDb(cache, "Cache", "Redis", "Server-side sessions")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Members, MemberSession rows (ADR 0046), link tokens and outbox")
 }
 System_Ext(email, "E-mail provider", "Transactional e-mail. Vendor <TO SUPPLY>")
 System_Ext(breach, "Breached-password service", "k-anonymity range query")
 
 Rel(member, web, "Uses", "HTTPS")
 Rel(web, api, "Calls", "JSON/HTTPS")
-Rel(api, db, "Reads and writes", "EF Core")
-Rel(api, cache, "Ends other sessions", "Redis protocol")
+Rel(api, db, "Reads and writes, and ends MemberSession rows", "EF Core")
 Rel(api, breach, "Queries hash prefix", "HTTPS")
 Rel(worker, db, "Reads the outbox", "EF Core")
 Rel(worker, email, "Sends e-mail", "HTTPS")

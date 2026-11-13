@@ -1,0 +1,17 @@
+# 27 · Journey 20: Manage profile and settings
+
+The transcript, written from `narration.json` by `tools/video-demo/build.mjs`.
+
+Journey twenty: manage profile and settings. A member edits their profile, changes their e-mail or password, chooses which e-mails arrive, and now sees where they are signed in.
+
+Your account holds the profile. The home church address is shown to no one, and pronouns are used only in what the Jubilee team writes about the member.
+
+New in this run: Where you're signed in. This device comes first. Every other device shows its browser, the network it came from with the last part hidden, and when it was last active.
+
+Sign out ends that one device at once. The row goes, and this device stays signed in.
+
+In the admin application, the Jubilee team sees the owner's pronouns beside their name, so the team words what it writes rightly. No business, member or public page is given them.
+
+Behind the screen, the tests prove that each password and e-mail change is logged with the member, the address and the outcome, a refused one too; that another member's session is not found and the attempt is logged; and that no other reader is given the home church or its address.
+
+Journey twenty is complete. The daily summary and promotional e-mail it once waited for were built with journey seventeen.

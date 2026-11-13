@@ -15,21 +15,48 @@ title Class structure — Change credentials
 
 
 enum LinkTokenPurpose {
-  ConfirmEmail
-  ResetPassword
+  EmailConfirmation
+  PasswordReset
   ChangeEmail
-  DataDownload
+}
+
+enum SessionKind {
+  Member
+  Staff
 }
 
 class Member {
   +Guid Id
   +string Email
-  +bool EmailConfirmed
+  +EmailStatus EmailStatus
   +string? PasswordHash
-  +DateTime? PasswordChangedAt
-  +bool HasPassword
-  +ChangeEmail(newEmail: string, now: DateTime): void
-  +SetPassword(hash: string, now: DateTime): void
+  +DateTimeOffset? PasswordChangedAt
+  +ChangeEmail(email: EmailAddress): void
+  +ChangePassword(passwordHash: string, now: DateTimeOffset): void
+}
+
+class MemberSession {
+  +Guid Id
+  +string KeyHash
+  +SessionKind Kind
+  +Guid? MemberId
+  +DateTimeOffset CreatedAt
+  +DateTimeOffset LastActivityAt
+  +DateTimeOffset? EndedAt
+  +string? Device
+  +string? Network
+  +End(now: DateTimeOffset): void
+}
+
+class SessionOrigin <<static helpers>> {
+  +{static} Device(userAgent: string?): string
+  +{static} Network(address: IPAddress?): string?
+}
+
+class DatabaseTicketStore <<ITicketStore>> {
+  +StoreAsync(ticket: AuthenticationTicket): Task<string>
+  +RetrieveAsync(key: string): Task<AuthenticationTicket?>
+  +RemoveAsync(key: string): Task
 }
 
 class LinkToken {
@@ -38,73 +65,128 @@ class LinkToken {
   +LinkTokenPurpose Purpose
   +string TokenHash
   +string? TargetEmail
-  +DateTime ExpiresAt
-  +DateTime? UsedAt
-  +IsUsable(now: DateTime): bool
-  +MarkUsed(now: DateTime): void
+  +DateTimeOffset ExpiresAt
+  +DateTimeOffset? UsedAt
+  +DateTimeOffset? SupersededAt
+  +IsRedeemable(now: DateTimeOffset): bool
+  +Redeem(now: DateTimeOffset): void
+  +Supersede(now: DateTimeOffset): void
 }
 
 class RequestEmailChangeCommand {
-  +string NewEmail
-  +string CurrentPassword
+  +Guid MemberId
+  +string? Email
+  +string? CurrentPassword
+  +string? Address
 }
 
 class ConfirmEmailChangeCommand {
-  +string Token
+  +string? Token
+  +string? Address
 }
 
 class ChangePasswordCommand {
+  +Guid MemberId
   +string? CurrentPassword
-  +string NewPassword
-  +string RepeatPassword
+  +string? NewPassword
+  +string? RepeatPassword
+  +Guid? KeepSessionId
+  +string? Address
+}
+
+class ListMemberSessionsQuery {
+  +Guid MemberId
+  +Guid? CurrentSessionId
+}
+
+class EndMemberSessionCommand {
+  +Guid MemberId
+  +Guid SessionId
+  +string? Address
+}
+
+class MemberSessionDto {
+  +Guid Id
+  +string Device
+  +string? Network
+  +DateTimeOffset LastActiveAt
+  +bool Current
 }
 
 class RequestEmailChangeCommandHandler {
-  +Handle(command: RequestEmailChangeCommand): Task<Result>
+  +Handle(command: RequestEmailChangeCommand): Task
 }
 
 class ConfirmEmailChangeCommandHandler {
-  +Handle(command: ConfirmEmailChangeCommand): Task<Result>
+  +Handle(command: ConfirmEmailChangeCommand): Task<EmailChangeOutcome>
 }
 
 class ChangePasswordCommandHandler {
-  +Handle(command: ChangePasswordCommand): Task<Result>
+  +Handle(command: ChangePasswordCommand): Task<Member>
+}
+
+class ListMemberSessionsQueryHandler {
+  +Handle(query: ListMemberSessionsQuery): Task<IReadOnlyList<MemberSessionDto>>
+}
+
+class EndMemberSessionCommandHandler {
+  +Handle(command: EndMemberSessionCommand): Task
+}
+
+class SecurityLog <<static helpers>> {
+  +{static} Credential(logger: ILogger, name: string, outcome: string, memberId: Guid, address: string?): void
+}
+
+class ValidationFailedException {
+  +IReadOnlyDictionary<string, string> Errors
 }
 
 interface IPasswordHasher {
   +Hash(password: string): string
-  +Verify(password: string, hash: string): bool
+  +Verify(hash: string, password: string): bool
 }
 
 interface IBreachedPasswordChecker {
-  +IsBreached(password: string): Task<bool>
-}
-
-interface ISessionStore {
-  +EndAllExcept(memberId: Guid, sessionId: string): Task
+  +IsBreachedAsync(password: string): Task<bool>
 }
 
 class OutboxMessage {
   +Guid Id
-  +string Type
-  +string Payload
-  +DateTime CreatedAt
-  +DateTime? DispatchedAt
+  +string ToAddress
+  +string Subject
+  +string TextBody
+  +DateTimeOffset CreatedAt
+  +DateTimeOffset? SentAt
 }
 
 RequestEmailChangeCommandHandler ..> RequestEmailChangeCommand : handles
 ConfirmEmailChangeCommandHandler ..> ConfirmEmailChangeCommand : handles
 ChangePasswordCommandHandler ..> ChangePasswordCommand : handles
-RequestEmailChangeCommandHandler --> LinkToken : creates
+ListMemberSessionsQueryHandler ..> ListMemberSessionsQuery : handles
+EndMemberSessionCommandHandler ..> EndMemberSessionCommand : handles
+RequestEmailChangeCommandHandler --> LinkToken : supersedes / creates
 RequestEmailChangeCommandHandler ..> IPasswordHasher : verifies with
 RequestEmailChangeCommandHandler --> OutboxMessage : writes 2
-ConfirmEmailChangeCommandHandler --> LinkToken : loads / marks used
+RequestEmailChangeCommandHandler ..> ValidationFailedException : throws
+ConfirmEmailChangeCommandHandler --> LinkToken : loads / redeems
 ConfirmEmailChangeCommandHandler --> Member : mutates
 ChangePasswordCommandHandler --> Member : mutates
+ChangePasswordCommandHandler --> MemberSession : ends every other
+ChangePasswordCommandHandler --> LinkToken : supersedes reset tokens
 ChangePasswordCommandHandler ..> IPasswordHasher : uses
 ChangePasswordCommandHandler ..> IBreachedPasswordChecker : uses
-ChangePasswordCommandHandler ..> ISessionStore : uses
+ChangePasswordCommandHandler ..> ValidationFailedException : throws
 ChangePasswordCommandHandler --> OutboxMessage : writes 1
+ListMemberSessionsQueryHandler --> MemberSession : reads live
+ListMemberSessionsQueryHandler ..> MemberSessionDto : returns
+EndMemberSessionCommandHandler --> MemberSession : ends one
+RequestEmailChangeCommandHandler ..> SecurityLog : logs with
+ConfirmEmailChangeCommandHandler ..> SecurityLog : logs with
+ChangePasswordCommandHandler ..> SecurityLog : logs with
+DatabaseTicketStore --> MemberSession : starts / reads / ends
+DatabaseTicketStore ..> SessionOrigin : Device and Network from
 Member "1" *-- "*" LinkToken
+Member "1" *-- "*" MemberSession
 LinkToken --> LinkTokenPurpose : has
+MemberSession --> SessionKind : has
 @enduml

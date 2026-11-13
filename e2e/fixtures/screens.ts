@@ -21,7 +21,12 @@ import {
 } from '../pages/product.page';
 import { EditListingPage } from '../pages/edit-listing.page';
 import { IncomingConfirmedTab, IncomingRequestsPage } from '../pages/incoming-requests.page';
-import { AccountOthersSignedOutScreen, AccountPage } from '../pages/account.page';
+import {
+  AccountOthersSignedOutScreen,
+  AccountPage,
+  AccountSessionEndedScreen,
+  AccountSessionsLoadingScreen,
+} from '../pages/account.page';
 import {
   SignOutOthersBusyScreen,
   SignOutOthersFailedScreen,
@@ -160,6 +165,9 @@ export const screens: {
   { key: 'account.data-requested', screen: (page) => new AccountPage(page) },
   { key: 'account.this-device-only', screen: (page) => new AccountPage(page) },
   { key: 'account.others-signed-out', screen: (page) => new AccountOthersSignedOutScreen(page) },
+  { key: 'account.sessions-loading', screen: (page) => new AccountSessionsLoadingScreen(page) },
+  { key: 'account.sessions-error', screen: (page) => new AccountPage(page) },
+  { key: 'account.session-ended', screen: (page) => new AccountSessionEndedScreen(page) },
   { key: 'sign-out-others', screen: (page) => new SignOutOthersScreen(page) },
   { key: 'sign-out-others.busy', screen: (page) => new SignOutOthersBusyScreen(page) },
   { key: 'sign-out-others.failed', screen: (page) => new SignOutOthersFailedScreen(page) },

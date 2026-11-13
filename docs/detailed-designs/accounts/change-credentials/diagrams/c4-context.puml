@@ -9,7 +9,7 @@ System(jubilee, "Jubilee", "Toronto's Christian marketplace")
 System_Ext(email, "E-mail provider", "Delivers the confirmation link and security e-mails. Vendor <TO SUPPLY>")
 System_Ext(breach, "Breached-password service", "Answers k-anonymity range queries")
 
-Rel(member, jubilee, "Changes e-mail and password at /account")
+Rel(member, jubilee, "Changes e-mail and password and signs devices out at /account")
 Rel(jubilee, email, "Sends confirmation link and notice and security e-mail via")
 Rel(jubilee, breach, "Checks the new password against", "HTTPS")
 Rel(email, member, "Delivers e-mail to")

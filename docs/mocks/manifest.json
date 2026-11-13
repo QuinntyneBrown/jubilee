@@ -505,7 +505,10 @@
         "data-requested",
         "data-failed",
         "this-device-only",
-        "others-signed-out"
+        "others-signed-out",
+        "sessions-loading",
+        "sessions-error",
+        "session-ended"
       ],
       "not_applicable": {
         "empty": "A form page has no collection that could be empty."

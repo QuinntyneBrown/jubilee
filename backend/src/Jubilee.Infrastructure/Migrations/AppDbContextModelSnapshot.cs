@@ -1330,6 +1330,10 @@ namespace Jubilee.Infrastructure.Migrations
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<string>("Device")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
                     b.Property<DateTimeOffset?>("EndedAt")
                         .HasColumnType("datetimeoffset");
 
@@ -1348,6 +1352,10 @@ namespace Jubilee.Infrastructure.Migrations
 
                     b.Property<Guid?>("MemberId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Network")
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
 
                     b.Property<bool>("Persistent")
                         .HasColumnType("bit");

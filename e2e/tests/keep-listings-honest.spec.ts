@@ -173,6 +173,27 @@ test.describe('keep listings honest: access and the listings (L2-098, L2-099)', 
 });
 
 test.describe('keep listings honest: one listing (L2-100)', () => {
+  test('L2-013 AC8: the owner panel gives the owner’s pronouns, so the team words what it writes about them', async ({
+    page,
+    jb,
+  }) => {
+    const listing = new AdminListingPage(page);
+    await stubAdmin(page);
+    await jb.gotoAdmin(LISTING);
+
+    await expect(listing.ownerRow('Name')).toHaveText('Naomi Laurent');
+    await expect(listing.ownerRow('Pronouns')).toHaveText('she/her');
+  });
+
+  test('L2-013 AC8: an owner who set no pronouns has no pronouns row', async ({ page, jb }) => {
+    const listing = new AdminListingPage(page);
+    await stubAdmin(page, { ownerPronouns: null });
+    await jb.gotoAdmin(LISTING);
+
+    await expect(listing.ownerRow('Name')).toHaveText('Naomi Laurent');
+    await expect(listing.ownerRow('Pronouns')).toHaveCount(0);
+  });
+
   test('AC1 to AC3: the listing shows where it stands, its owner, its flags and how members see it, and names no church', async ({
     page,
     jb,

@@ -14,69 +14,52 @@ skinparam class {
 title Class structure — Edit profile
 
 
-enum Pronouns {
-  NotSet
-  SheHer
-  HeHim
-  TheyThem
-}
-
-enum MemberRole {
-  Member
-  Moderator
-  Admin
-}
-
 class Member {
   +Guid Id
   +string FirstName
   +string LastName
   +string Email
-  +PhoneNumber? Phone
-  +PostalCode? PostalCode
+  +string? Phone
+  +string? PostalCode
   +string? HomeChurch
   +string? HomeChurchAddress
-  +Pronouns Pronouns
-  +MemberRole Role
-  +DateTime JoinedAt
-  +DateTime? ProfileSavedAt
-  +UpdateProfile(firstName: string, lastName: string, phone: PhoneNumber?, postalCode: PostalCode?, homeChurch: string?, homeChurchAddress: string?, pronouns: Pronouns, now: DateTime): void
+  +string? Pronouns
+  +DateTimeOffset CreatedAt
+  +DateTimeOffset? ProfileSavedAt
+  +UpdateProfile(firstName: string, lastName: string, phone: string?, postalCode: string?, homeChurch: string?, homeChurchAddress: string?, pronouns: string?, now: DateTimeOffset): void
 }
 
-class PhoneNumber <<value object>> {
-  +string Digits
-  +{static} TryParse(input: string): PhoneNumber?
-  +ToDisplay(): string
-}
-
-class PostalCode <<value object>> {
-  +string Value
-  +{static} TryParse(input: string): PostalCode?
+class Profiles <<static helpers>> {
+  +{static} TryPhone(raw: string?, out phone: string?): bool
+  +{static} TryPostalCode(raw: string?, out postalCode: string?): bool
+  +{static} FormatPhone(digits: string?): string?
+  +{static} ToDto(member: Member): AccountDto
 }
 
 class Request {
   +Guid Id
   +Guid MemberId
-  +string? ContactPhone
-  +DateTime CreatedAt
+  +string? Phone
+  +DateTimeOffset CreatedAt
 }
 
 class UpdateProfileCommand {
-  +string FirstName
-  +string LastName
+  +Guid MemberId
+  +string? FirstName
+  +string? LastName
   +string? Phone
   +string? PostalCode
   +string? HomeChurch
   +string? HomeChurchAddress
-  +Pronouns Pronouns
-}
-
-class UpdateProfileCommandValidator {
-  +Validate(command: UpdateProfileCommand): ValidationResult
+  +string? Pronouns
 }
 
 class UpdateProfileCommandHandler {
-  +Handle(command: UpdateProfileCommand): Task<AccountDto>
+  +Handle(command: UpdateProfileCommand): Task
+}
+
+class ValidationFailedException {
+  +IReadOnlyDictionary<string, string> Errors
 }
 
 class GetAccountQueryHandler {
@@ -87,34 +70,36 @@ class AccountDto {
   +string FirstName
   +string LastName
   +string Email
-  +bool EmailConfirmed
+  +string EmailStatus
   +string? Phone
   +string? PostalCode
   +string? HomeChurch
   +string? HomeChurchAddress
-  +Pronouns Pronouns
-  +DateTime JoinedAt
-  +DateTime? ProfileSavedAt
+  +string? Pronouns
+  +DateTimeOffset MemberSince
+  +DateTimeOffset? ProfileSavedAt
+  +bool HasPassword
+  +DateTimeOffset? PasswordChangedAt
 }
 
-class SessionMember <<TypeScript>> {
+class AdminListingOwner <<admin application>> {
+  +string? Pronouns
+}
+
+class AccountMenuData <<TypeScript>> {
+  +displayName: string
   +initials: string
-  +fullName: string
   +email: string
-  +role: MemberRole
   +ownsListing: boolean
 }
 
 UpdateProfileCommandHandler ..> UpdateProfileCommand : handles
-UpdateProfileCommandValidator ..> UpdateProfileCommand : validates
+UpdateProfileCommandHandler ..> Profiles : normalizes with
+UpdateProfileCommandHandler ..> ValidationFailedException : throws (422, one code per field)
 UpdateProfileCommandHandler --> Member : loads / mutates
-UpdateProfileCommandHandler ..> AccountDto : returns
 GetAccountQueryHandler ..> AccountDto : returns
 GetAccountQueryHandler --> Member : reads
-Member *-- "0..1" PhoneNumber
-Member *-- "0..1" PostalCode
-Member --> Pronouns : has
-Member --> MemberRole : has
+Profiles ..> AccountDto : builds
+AdminListingOwner ..> Member : reads Pronouns (Owner panel only)
 Member "1" <-- "*" Request : sent by
-SessionMember ..> MemberRole : shows links by
 @enduml

@@ -133,6 +133,8 @@ export type StubName =
   | 'reset-password-error'
   | 'profile'
   | 'profile-error'
+  | 'profile-sessions-loading'
+  | 'profile-sessions-error'
   | 'preferences-error'
   | 'confirm-email-change'
   | 'confirm-email-change-expired'
@@ -1075,6 +1077,24 @@ export const routes = {
     mock: 'pages/account/this-device-only.html',
     who: 'member',
     stub: 'profile-this-device-only',
+  },
+  'account.sessions-loading': {
+    app: '/account',
+    mock: 'pages/account/sessions-loading.html',
+    who: 'member',
+    stub: 'profile-sessions-loading',
+  },
+  'account.sessions-error': {
+    app: '/account',
+    mock: 'pages/account/sessions-error.html',
+    who: 'member',
+    stub: 'profile-sessions-error',
+  },
+  'account.session-ended': {
+    app: '/account',
+    mock: 'pages/account/session-ended.html',
+    who: 'member',
+    stub: 'profile',
   },
   'account.others-signed-out': {
     app: '/account',

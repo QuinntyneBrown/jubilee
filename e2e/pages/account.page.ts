@@ -33,6 +33,13 @@ export class AccountPage extends ShellPage implements Screen {
   readonly signedInOn: Locator;
   readonly signOutOthers: Locator;
   readonly signOut: Locator;
+  /** "Where you're signed in": the member's sessions, this device first (L2-143 AC3). */
+  readonly sessionsCard: Locator;
+  readonly sessionRows: Locator;
+  readonly noOtherDevices: Locator;
+  readonly sessionsLoading: Locator;
+  readonly sessionsError: Locator;
+  readonly sessionsTryAgain: Locator;
   readonly errorState: Locator;
   readonly tryAgain: Locator;
   readonly sectionTabs: Locator;
@@ -77,6 +84,12 @@ export class AccountPage extends ShellPage implements Screen {
     this.signedInOn = this.signOutRow.locator('.row__meta');
     this.signOutOthers = this.signOutRow.getByRole('button', { name: 'Sign out of other devices' });
     this.signOut = this.signOutRow.getByRole('button', { name: 'Sign out', exact: true });
+    this.sessionsCard = this.main.locator('section[aria-labelledby="ses"]');
+    this.sessionRows = this.sessionsCard.locator('li.row');
+    this.noOtherDevices = this.sessionsCard.getByText('No other devices are signed in.');
+    this.sessionsLoading = this.sessionsCard.getByRole('status');
+    this.sessionsError = this.sessionsCard.getByRole('alert');
+    this.sessionsTryAgain = this.sessionsCard.getByRole('button', { name: 'Try again' });
     this.errorState = this.main.getByRole('alert').filter({ hasText: 'JB-ACC-503' });
     this.tryAgain = this.main.getByRole('button', { name: 'Try again' });
     this.sectionTabs = this.main.getByRole('navigation', { name: 'Account sections' });
@@ -92,12 +105,42 @@ export class AccountPage extends ShellPage implements Screen {
     return this.main.locator(`#${id}-error`);
   }
 
+  /** The row of one device in "Where you're signed in". */
+  sessionRow(device: string): Locator {
+    return this.sessionRows.filter({
+      has: this.page.locator('.row__title', { hasText: device }),
+    });
+  }
+
+  /** "Sign out" on the row of one device; its accessible name names the device. */
+  signOutDevice(device: string): Locator {
+    return this.sessionsCard.getByRole('button', { name: `Sign out of ${device}` });
+  }
+
   async ready(): Promise<void> {
     await this.firstName.waitFor();
   }
 
   regions(): Region[] {
     return [...this.chromeRegions(), { name: 'main', locator: this.main }];
+  }
+}
+
+/** The account after one other device was signed out on its own (ADR 0065). */
+export class AccountSessionEndedScreen extends AccountPage {
+  override async ready(): Promise<void> {
+    await super.ready();
+    if ((await this.sessionRows.count()) === 1) return;
+    await this.signOutDevice('Chrome on Windows').click();
+    await this.page.locator('.toast').waitFor();
+  }
+}
+
+/** The account while "Where you're signed in" is loading. */
+export class AccountSessionsLoadingScreen extends AccountPage {
+  override async ready(): Promise<void> {
+    await super.ready();
+    await this.sessionsLoading.waitFor({ state: 'attached' });
   }
 }
 

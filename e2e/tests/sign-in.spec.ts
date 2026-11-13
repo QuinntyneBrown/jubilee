@@ -625,8 +625,8 @@ test.describe('several calls refused for one ended session (L2-116 AC2)', () => 
     await jb.signInAs('member');
     await jb.goto('/');
     await expect.poll(() => expired.dataPage()).toBe('browse');
-    // The account page reads the profile and the data download together; both are refused, the
-    // second a moment after the page has already opened.
+    // The account page reads the profile, where the member is signed in and the data download
+    // together; all three are refused, the later ones after the page has already opened.
     const refused = await refuseAsExpired(page, /\/api\/account(\/.*)?$/, 400);
     const opened: string[] = [];
     page.on('framenavigated', (frame) => {
@@ -638,7 +638,7 @@ test.describe('several calls refused for one ended session (L2-116 AC2)', () => 
     await new AccountMenuDialog(page).item('Your account').click();
 
     await expect.poll(() => expired.dataPage()).toBe('session-expired');
-    await expect.poll(() => refused.answered).toBe(2);
+    await expect.poll(() => refused.answered).toBe(3);
     await expect(expired.signIn).toHaveAttribute('href', '/sign-in?returnUrl=%2Faccount');
     expect(opened).toEqual(['?returnUrl=%2Faccount']);
     // Going back leaves the page in one step: it was put in the history once.
