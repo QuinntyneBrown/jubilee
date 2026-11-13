@@ -461,6 +461,11 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
     }
     case 'request-detail-error':
       return stubMemberRequests(page, { detail: 'fails' });
+    case 'request-detail-unanswered': {
+      const fake = await stubMemberRequests(page);
+      fake.requests.find((request) => request.id === DRAIN)!.unanswered = true;
+      return fake;
+    }
     case 'incoming':
       return stubIncoming(page);
     case 'incoming-empty':

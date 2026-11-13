@@ -538,6 +538,32 @@ test.describe('track requests: cancel (L2-049)', () => {
     await expect(detail.cancel).toHaveCount(0);
   });
 
+  test('L2-043 AC8: a request nobody answered for a week offers Cancel or ask again', async ({
+    page,
+    jb,
+  }) => {
+    const detail = new RequestDetailPage(page);
+    const dialog = new CancelRequestDialog(page);
+    await detail.setWidth(1280);
+    const fake = await stubMemberRequests(page);
+    fake.requests.find((r) => r.id === DRAIN)!.unanswered = true;
+    await jb.goto(`/requests/${DRAIN}`);
+
+    await expect(detail.callout).toContainText('WaterWorks Plumbing & Drains has not replied yet');
+    await expect(detail.callout).toContainText(
+      'It has been over a week. You can cancel this request or ask again.',
+    );
+    await expect(detail.subtitle).toContainText('Awaiting reply');
+    await expect(detail.askAgain).toHaveAttribute('href', '/b/waterworks');
+    await expect(detail.cancel).toHaveText(/Cancel request/);
+
+    await detail.cancel.click();
+    await dialog.cancel.click();
+
+    expect(fake.cancels).toEqual([DRAIN]);
+    await expect(detail.callout).toContainText('You cancelled this request');
+  });
+
   test('a closed request offers no cancel', async ({ page, jb }) => {
     const detail = new RequestDetailPage(page);
     await detail.setWidth(1280);

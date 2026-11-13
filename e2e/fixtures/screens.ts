@@ -145,6 +145,7 @@ export const screens: {
   { key: 'request-detail.declined', screen: (page) => new RequestDetailPage(page) },
   { key: 'request-detail.cancelled', screen: (page) => new RequestDetailPage(page) },
   { key: 'request-detail.error', screen: (page) => new RequestDetailPage(page) },
+  { key: 'request-detail.unanswered', screen: (page) => new RequestDetailPage(page) },
   { key: 'incoming-requests', screen: (page) => new IncomingRequestsPage(page) },
   { key: 'incoming-requests.empty', screen: (page) => new IncomingRequestsPage(page) },
   { key: 'incoming-requests.error', screen: (page) => new IncomingRequestsPage(page) },

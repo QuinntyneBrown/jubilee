@@ -96,6 +96,7 @@ export type StubName =
   | 'request-detail-declined'
   | 'request-detail-cancelled'
   | 'request-detail-error'
+  | 'request-detail-unanswered'
   | 'incoming'
   | 'incoming-empty'
   | 'incoming-error'
@@ -869,6 +870,12 @@ export const routes = {
     mock: 'pages/request-detail/error.html',
     who: 'member',
     stub: 'request-detail-error',
+  },
+  'request-detail.unanswered': {
+    app: '/requests/7a1e0000-0000-4000-8000-000000000002',
+    mock: 'pages/request-detail/unanswered.html',
+    who: 'member',
+    stub: 'request-detail-unanswered',
   },
   'incoming-requests': {
     app: '/my-business/requests',

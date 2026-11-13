@@ -468,7 +468,8 @@
         "declined",
         "cancelled",
         "space-awaiting",
-        "space-confirmed"
+        "space-confirmed",
+        "unanswered"
       ],
       "not_applicable": {
         "empty": "A request page shows one request; it has no collection that could be empty."
