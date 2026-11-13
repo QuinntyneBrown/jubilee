@@ -126,6 +126,53 @@ public sealed partial class PasswordResetTests : IClassFixture<JubileeApiFactory
         Assert.Equal(outboxBefore, await Read(db => db.OutboxMessages.CountAsync()));
     }
 
+    // L2-008 AC5, L2-141 AC1
+    // Given an address with an account and one without, when 100 requests are made for each, interleaved and with the
+    // hour moved on between pairs so the limit never answers, then the median times differ by less than 50 ms.
+    [Fact]
+    public async Task L2_008_AC5_the_median_answer_takes_as_long_for_an_address_with_an_account_as_for_one_without()
+    {
+        await Join();
+        var visitor = Visitor();
+        var known = new List<double>();
+        var unknown = new List<double>();
+        async Task Time(string email, List<double> into)
+        {
+            var watch = System.Diagnostics.Stopwatch.StartNew();
+            var response = await visitor.PostAsJsonAsync("/api/account/password-reset-requests", new { email });
+            watch.Stop();
+            Assert.Equal(HttpStatusCode.Accepted, response.StatusCode);
+            into.Add(watch.Elapsed.TotalMilliseconds);
+        }
+
+        // Warm the pipeline so the first request's start-up cost falls on neither side.
+        await Ask("warm.up@example.com");
+        for (var i = 0; i < 100; i++)
+        {
+            // Alternate which side goes first, so neither always follows the other.
+            if (i % 2 == 0)
+            {
+                await Time(Email, known);
+                await Time("nobody@example.com", unknown);
+            }
+            else
+            {
+                await Time("nobody@example.com", unknown);
+                await Time(Email, known);
+            }
+
+            _factory.Clock.Advance(TimeSpan.FromMinutes(61));
+        }
+
+        static double Median(List<double> values)
+        {
+            var sorted = values.Order().ToList();
+            return (sorted[49] + sorted[50]) / 2;
+        }
+
+        Assert.InRange(Math.Abs(Median(known) - Median(unknown)), 0, 49.999);
+    }
+
     // L2-008 AC2, L2-140 AC1
     [Fact]
     public async Task L2_008_AC2_an_account_gets_a_link_stored_only_as_a_hash_and_an_unknown_address_gets_nothing()
