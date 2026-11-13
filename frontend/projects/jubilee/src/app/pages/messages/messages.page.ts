@@ -10,6 +10,7 @@ import { InboxList } from './inbox-list';
   selector: 'jb-messages-page',
   imports: [RouterLink, EmptyState, Icon, InboxList, Button, PageHeader, InboxLayout],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: { class: 'jb-page container page' },
   templateUrl: './messages.page.html',
 })
 export class MessagesPage implements OnInit {
