@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en-CA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Forgot password · rate-limited — Jubilee mocks</title>
+<meta name="mock:kind" content="page">
+<meta name="mock:screen" content="forgot-password">
+<meta name="mock:state" content="rate-limited">
+<meta name="description" content="A fourth reset request for one address within an hour: the server answered 429 and the form says when to try again, the same for any address.">
+<link rel="stylesheet" href="../../../design-system/tokens/tokens.css">
+<link rel="stylesheet" href="../../../design-system/assets/components.css">
+<link rel="stylesheet" href="../../assets/mock.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<main id="main" class="auth-layout"><a class="auth-brand" href="../../pages/welcome/default.html"><svg class="brand-mark" aria-hidden="true" viewBox="0 0 100 100"><path class="brand-mark__j" d="M60 8V60A20 20 0 0 1 20 60V38"/><path class="brand-mark__bar" d="M36 27H84"/></svg>jubilee</a><div class="auth-card card stack"><h1>Reset your password</h1><p class="text-muted">Enter your e-mail and we’ll send a link to choose a new one.</p>
+<div class="alert alert--warning" role="alert"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 4 2.500 20h19zM12 10v4M12 17h.01"/></svg><div class="alert__body">You’re doing that a lot. Try again in 42 minutes.</div></div>
+
+<form class="stack" novalidate>
+<div class="field"><label class="field__label" for="email">E-mail</label><input class="input" id="email" type="email" value="joanna.adeyemi@example.com" placeholder="" autocomplete="email" autofocus></div>
+<button class="btn btn--primary btn--block btn--lg" type="submit">Send reset link</button></form></div><p class="auth-foot">Remembered it? <a href="../../pages/sign-in/default.html">Back to sign in</a></p></main>
+<div class="toast-region" role="status" aria-live="polite"></div>
+
+<nav class="mock-bar" aria-label="Mock navigation">
+  <a class="mock-bar__home" href="../../index.html" aria-label="All mocks">⌂</a>
+  <span class="mock-bar__screen">Forgot password</span>
+  <ul class="mock-bar__states"><li><a href="default.html">default</a></li><li><a href="loading.html">loading</a></li><li><a href="error.html">error</a></li><li><a href="invalid.html">invalid</a></li><li><a href="rate-limited.html" aria-current="page">rate-limited</a></li><li><a href="submitting.html">submitting</a></li><li><a href="success.html">success</a></li></ul>
+  <button type="button" data-theme-toggle aria-pressed="false">☾ Dark</button>
+  <button type="button" data-chrome-toggle aria-label="Hide mock chrome">×</button>
+</nav>
+<script src="../../assets/mock.js"></script>
+</body>
+</html>
