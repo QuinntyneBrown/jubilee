@@ -731,6 +731,9 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
     case 'account-data-requested':
       await stubProfile(page);
       return stubAccountData(page, { exportState: 'requested' });
+    case 'account-data-build-failed':
+      await stubProfile(page);
+      return stubAccountData(page, { exportState: 'failed' });
     case 'data-download-done':
       return stubAccountData(page);
     case 'data-download-unavailable':

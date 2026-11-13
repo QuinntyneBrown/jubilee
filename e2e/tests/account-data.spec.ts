@@ -60,6 +60,28 @@ test.describe('download your data (L2-018)', () => {
     await expect(account.dataWaiting).toBeVisible();
   });
 
+  test('AC7: an archive that could not be built says so, and the member can ask again', async ({
+    page,
+    jb,
+  }) => {
+    const account = new AccountPage(page);
+    await account.setWidth(1280);
+    await jb.signInAs('member');
+    await stubProfile(page);
+    const fake = await stubAccountData(page, { exportState: 'failed' });
+    await jb.goto('/account');
+
+    await expect(account.dataFailed).toContainText('We couldn’t prepare your data');
+    await expect(account.dataFailed).toContainText(
+      'Something went wrong while we put your file together, and the Jubilee team has been told. Ask again, or write to help@jubilee.example.',
+    );
+    await account.downloadData.click();
+
+    await expect(account.dataWaiting).toContainText('We’re preparing your data');
+    await expect(account.dataFailed).toHaveCount(0);
+    expect(fake.exportRequests).toBe(1);
+  });
+
   test('AC2: the e-mailed link downloads the file and takes the token off the address', async ({
     page,
     jb,
