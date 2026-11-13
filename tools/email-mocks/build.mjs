@@ -23,6 +23,7 @@ const labels = [
   ['/forgot-password', 'Reset your password'],
   ['/account/data/', 'Download your data'],
   ['/sign-in', 'Sign in to Jubilee'],
+  ['/purpose-tee/thanks', 'See your order'],
 ];
 
 const encode = (text) =>
@@ -126,6 +127,36 @@ Read the statement and agree, and Luzandre.com is live again at once: ${base}/my
   ['back-in-stock', 'Faith heavyweight tee, charcoal is back in stock', `Hi Joanna,\n\nLuzandre.com has Faith heavyweight tee, charcoal again. You asked us to tell you.\n\nSee it here: ${base}/b/luzandre/p/faith-heavyweight-tee-charcoal\n\nJubilee doesn't take payment. Luzandre.com confirms stock and tells you how to pay.${end}`, unsubscribe],
   ['daily-summary', 'Your Jubilee summary for Wednesday 11 November', `Hi Naomi,\n\nHere is what happened on Jubilee since your last summary.\n\n• New quote request from Joanna Adeyemi\n• New message from Joanna Adeyemi\n• New order request from Samuel Park\n\nSee what happened: ${base}/notifications${end}`, unsubscribe],
   ['new-businesses', 'New on Jubilee this week', `Hi Joanna,\n\nThese businesses joined Jubilee this week in categories you’ve browsed.\n\nCornerstone Bookkeeping (Financial & insurance)\n${base}/b/cornerstone-bookkeeping\n\nHearthstone Renovations (Home & property)\n${base}/b/hearthstone-renovations\n\nBrowse businesses: ${base}/${end}`, unsubscribe, address],
+  ['merch-order-paid', 'Your Jubilee order PT-4F7K2Q', `Hi Joanna,
+
+Thank you. Your order is paid.
+
+Purpose Tee, Black, Men's L × 1: $25.00
+Purpose Tee, Black, Women's M × 1: $25.00
+Shipping: $9.00
+Tax: $7.67
+Total: $66.67 CAD
+
+We ship it to Joanna Adeyemi, 48 Woodmount Ave, East York, ON M4C 3X8, in 3 to 5 business days.
+
+Wrong size? Swap it free within 30 days, unworn. Write to orders@jubilee.to with your order number, PT-4F7K2Q.
+
+Every shirt helps keep Jubilee free for the Christian business people of Toronto. Thank you for wearing it.
+
+${base}/purpose-tee/thanks?order=${token}${end}`],
+  ['merch-new-order', 'New Purpose Tee order PT-4F7K2Q: ship', `A Purpose Tee order was paid.
+
+Order: PT-4F7K2Q
+Paid: 13 Nov 2026, 3:15 p.m. Eastern
+Buyer: Joanna Adeyemi (joanna.adeyemi@example.com)
+Delivery: ship to Joanna Adeyemi, 48 Woodmount Ave, East York, ON M4C 3X8
+
+Men's L × 1
+Women's M × 1
+
+Shirts $50.00 · shipping $9.00 · tax $7.67 · total $66.67 CAD
+
+The stock is already lowered. Refunds and exchanges are made in the Stripe dashboard.${end}`],
   ['owner-tip', 'A tip for your Jubilee listing: show your work with photos', `Hi Naomi,\n\nA member who has never met you sees your listing first. Photos of your work, your shop or your team tell them what you do before they write to you.\n\nAdd photos to Luzandre.com and choose the one that leads.\n\nAdd photos: ${base}/my-business/listing\n\nThis is tip 1 of 4. We send one a month.${end}`, unsubscribe, address],
 ];
 

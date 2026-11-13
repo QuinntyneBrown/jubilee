@@ -1651,6 +1651,75 @@
         "warning": "A review notification is an item in the notification centre (L2-235), not a toast or banner with a tone; its states are its three events.",
         "danger": "A review notification is an item in the notification centre (L2-235), not a toast or banner with a tone; its states are its three events."
       }
+    },
+    {
+      "id": "purpose-tee",
+      "kind": "page",
+      "title": "Purpose Tee",
+      "route": "/purpose-tee",
+      "requirements": [
+        "L2-263",
+        "L2-264",
+        "L2-265",
+        "L2-271"
+      ],
+      "states": [
+        "default",
+        "back",
+        "size-guide",
+        "pick-size",
+        "low-stock",
+        "sold-out-size",
+        "fit-sold-out",
+        "added",
+        "loading",
+        "error"
+      ],
+      "not_applicable": {
+        "empty": "The page sells one product, the Purpose Tee (ADR 0073); a fit whose every size is sold out is the fit-sold-out state."
+      }
+    },
+    {
+      "id": "purpose-tee-thanks",
+      "kind": "page",
+      "title": "Purpose Tee, thanks",
+      "route": "/purpose-tee/thanks",
+      "requirements": [
+        "L2-269",
+        "L2-271"
+      ],
+      "states": [
+        "default",
+        "pending",
+        "cancelled",
+        "not-found",
+        "loading",
+        "error"
+      ],
+      "not_applicable": {
+        "empty": "The page shows one order, named in its link; a link with no order is the not-found state."
+      }
+    },
+    {
+      "id": "bag",
+      "kind": "dialog",
+      "title": "Your bag",
+      "opens_from": "purpose-tee",
+      "requirements": [
+        "L2-266",
+        "L2-267",
+        "L2-271"
+      ],
+      "states": [
+        "default",
+        "pickup",
+        "empty",
+        "busy",
+        "invalid",
+        "unavailable",
+        "failed",
+        "rate-limited"
+      ]
     }
   ]
 }

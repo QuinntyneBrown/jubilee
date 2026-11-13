@@ -1245,3 +1245,181 @@ a.rating-link:hover .rating-link__count, a.rating-link[data-state="hover"] .rati
 .policy-document__text, .policy-document__list { margin: var(--space-3) 0 0; }
 .policy-document__list li { margin-top: var(--space-1); }
 .policy-document__updated { font: var(--text-caption); color: var(--color-fg-muted); margin: var(--space-8) 0 0; }
+
+/* === block: tee === */
+/* The Purpose Tee drawn flat in a 600 x 700 box, front or back, with its print (ADR 0073). Drawn
+   from the Magic Patterns `PrintedTee`; the garment colours are the garment tokens, the same in
+   both themes, because the shirt is black whatever the page is. */
+.tee { display: block; width: 100%; max-width: 28.75rem; height: auto; margin-inline: auto; }
+.tee__fabric { fill: var(--color-garment-fabric); stroke: var(--color-garment-seam); stroke-width: 2; stroke-linejoin: round; }
+.tee__seams { fill: none; stroke: var(--color-garment-seam); stroke-width: 2; }
+.tee__rib { fill: none; stroke: var(--color-garment-rib); stroke-width: 16; stroke-linecap: round; }
+.tee__print { fill: var(--color-garment-print); font-family: var(--font-family-display); font-weight: var(--font-weight-extrabold); font-stretch: var(--font-stretch-wide); letter-spacing: var(--letter-spacing-tighter); font-size: 46px; }
+.tee__highlight { fill: var(--color-garment-highlight); }
+.tee__mark { fill: none; stroke-width: 14.5; }
+.tee__mark-j { stroke: var(--color-garment-print); }
+.tee__mark-bar { stroke: var(--color-garment-highlight); }
+.tee__domain { fill: var(--color-garment-print); font-family: var(--font-family-display); font-weight: var(--font-weight-semibold); font-stretch: var(--font-stretch-wide); letter-spacing: 0.02em; font-size: 12px; }
+/* === end: tee === */
+
+/* === block: tee-gallery === */
+/* The shirt on its stage, with the Front and Back thumbnails under it. A thumbnail is a toggle
+   button (`aria-pressed`); the chosen one has a 2 px ring. */
+.tee-gallery { display: flex; flex-direction: column; gap: var(--space-3); min-width: 0; }
+.tee-gallery__stage { overflow: hidden; padding: var(--space-10) var(--space-6); border-radius: var(--radius-xl); background: var(--color-bg-subtle); }
+.tee-gallery__view { animation: tee-in var(--duration-base) var(--ease-enter); }
+.tee-gallery__thumbs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-3); }
+.tee-gallery__thumb { display: flex; flex-direction: column; gap: var(--space-2); padding: var(--space-3); border: 0; border-radius: var(--radius-lg); background: var(--color-bg-subtle); color: var(--color-fg-default); font: var(--text-label); text-align: left; cursor: pointer; box-shadow: 0 0 0 var(--border-width-hairline) transparent; transition: box-shadow var(--duration-fast) var(--ease-standard); }
+.tee-gallery__thumb .tee { width: 60%; }
+.tee-gallery__thumb:hover { box-shadow: 0 0 0 var(--border-width-hairline) var(--color-border-strong); }
+.tee-gallery__thumb[aria-pressed="true"] { box-shadow: 0 0 0 var(--border-width-thick) var(--color-fg-default); }
+.tee-gallery__thumb:focus-visible { outline: var(--focus-ring-width) solid var(--color-focus-ring); outline-offset: var(--focus-ring-offset); }
+@keyframes tee-in { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: none; } }
+@media (min-width: 40rem) { .tee-gallery__stage { padding: var(--space-12); } .tee-gallery__thumbs { max-width: 24rem; } }
+@media (prefers-reduced-motion: reduce) { .tee-gallery__view { animation: none; } .tee-gallery__thumb { transition: none; } }
+@media (forced-colors: active) { .tee-gallery__thumb[aria-pressed="true"] { outline: var(--border-width-thick) solid Highlight; } }
+/* === end: tee-gallery === */
+
+/* === block: merch-head === */
+/* The head of a piece of Jubilee merchandise: the kicker, the name with its one accent word, the
+   price with its currency, and what it is. */
+.merch-head { display: flex; flex-direction: column; min-width: 0; }
+.merch-head__kicker { margin: 0; font: var(--text-label); color: var(--color-fg-muted); }
+.merch-head__title { margin: var(--space-2) 0 0; font: var(--text-h1); font-size: var(--font-size-4xl); font-weight: var(--font-weight-bold); font-stretch: var(--font-stretch-wide); line-height: 1; letter-spacing: var(--letter-spacing-tight); text-wrap: balance; }
+.merch-head__accent { color: var(--color-fg-accent); }
+.merch-head__price { margin: var(--space-4) 0 0; font: var(--text-h2); font-weight: var(--font-weight-semibold); font-stretch: var(--font-stretch-wide); font-variant-numeric: tabular-nums; }
+.merch-head__currency { font: var(--text-body); font-weight: var(--font-weight-medium); color: var(--color-fg-muted); }
+.merch-head__text { max-width: 28rem; margin: var(--space-5) 0 0; font: var(--text-body); line-height: var(--line-height-relaxed); color: var(--color-fg-muted); }
+@media (min-width: 40rem) { .merch-head__title { font-size: var(--font-size-5xl); } }
+/* === end: merch-head === */
+
+/* === block: segmented-choice === */
+/* One choice of a few, drawn as segments on a sunken track (the fit of the tee). The segments are
+   native radios that share a name, so the arrow keys move within the group; the chosen segment is
+   raised on a pill that slides to it. A note under the track says what the chosen option means.
+   --segmented-count is the number of options (up to 4). */
+.segmented-choice { min-width: 0; margin: 0; padding: 0; border: 0; }
+.segmented-choice__legend { padding: 0; font: var(--text-label); font-weight: var(--font-weight-semibold); }
+.segmented-choice__track { --gap: var(--space-1); position: relative; display: grid; grid-auto-columns: minmax(0, 1fr); grid-auto-flow: column; gap: var(--gap); margin-top: var(--space-3); padding: var(--space-1); border-radius: var(--radius-lg); background: var(--color-bg-surface-sunken); }
+.segmented-choice__pill { position: absolute; top: var(--space-1); bottom: var(--space-1); left: var(--space-1); width: calc((100% - 2 * var(--space-1) - (var(--segmented-count, 3) - 1) * var(--gap)) / var(--segmented-count, 3)); border-radius: var(--radius-md); background: var(--color-bg-surface-raised); box-shadow: var(--shadow-1); transition: translate var(--duration-base) var(--ease-standard); }
+.segmented-choice__track:has(.segmented-choice__option:nth-of-type(2) input:checked) .segmented-choice__pill { translate: calc(100% + var(--gap)); }
+.segmented-choice__track:has(.segmented-choice__option:nth-of-type(3) input:checked) .segmented-choice__pill { translate: calc(200% + 2 * var(--gap)); }
+.segmented-choice__track:has(.segmented-choice__option:nth-of-type(4) input:checked) .segmented-choice__pill { translate: calc(300% + 3 * var(--gap)); }
+.segmented-choice__track:not(:has(input:checked)) .segmented-choice__pill { visibility: hidden; }
+.segmented-choice__option { position: relative; display: grid; place-items: center; min-height: var(--target-comfortable); padding: var(--space-2); border-radius: var(--radius-md); color: var(--color-fg-muted); font: var(--text-body); font-weight: var(--font-weight-semibold); white-space: nowrap; cursor: pointer; transition: color var(--duration-fast) var(--ease-standard); }
+.segmented-choice__option:hover, .segmented-choice__option:has(input:checked) { color: var(--color-fg-default); }
+.segmented-choice__option:has(input:focus-visible) { outline: var(--focus-ring-width) solid var(--color-focus-ring); outline-offset: var(--focus-ring-offset); }
+.segmented-choice__option input { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; border: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.segmented-choice__note { min-height: 1lh; margin: var(--space-2) 0 0; font: var(--text-body-sm); color: var(--color-fg-muted); }
+@media (prefers-reduced-motion: reduce) { .segmented-choice__pill, .segmented-choice__option { transition: none; } }
+@media (forced-colors: active) { .segmented-choice__option:has(input:checked) { outline: var(--border-width-thick) solid Highlight; } }
+/* === end: segmented-choice === */
+
+/* === block: size-picker === */
+/* The size of a piece of merchandise: the legend with what is missing, the "Size guide" toggle, the
+   sizes as chips around native radios (with the ages of a youth size), the stock line, and the guide.
+   The legend is the fieldset's first child and floats left; the toggle floats right on its line.
+   A sold-out size is disabled, struck through and named "sold out"; the chosen size is filled ink. */
+.size-picker { min-width: 0; margin: 0; padding: 0; border: 0; }
+.size-picker__legend { float: left; padding: 0; font: var(--text-label); font-weight: var(--font-weight-semibold); }
+.size-picker__nudge { display: inline-flex; align-items: center; gap: var(--space-1); margin-left: var(--space-2); font-weight: var(--font-weight-medium); color: var(--color-danger-fg); }
+.size-picker__nudge .icon { width: var(--icon-size-sm); height: var(--icon-size-sm); }
+.size-picker__guide-toggle { float: right; display: inline-flex; align-items: center; gap: var(--space-1); min-height: var(--target-min); padding: 0; border: 0; background: none; color: var(--color-fg-default); font: var(--text-label); text-decoration: underline; text-underline-offset: 0.25em; white-space: nowrap; cursor: pointer; }
+.size-picker__guide-toggle .icon { width: var(--icon-size-sm); height: var(--icon-size-sm); transition: rotate var(--duration-base) var(--ease-standard); }
+.size-picker__guide-toggle[aria-expanded="true"] .icon { rotate: 180deg; }
+.size-picker__guide-toggle:focus-visible { outline: var(--focus-ring-width) solid var(--color-focus-ring); outline-offset: var(--focus-ring-offset); border-radius: var(--radius-xs); }
+.size-picker__sizes { clear: both; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-2); margin-top: var(--space-3); }
+.size-picker__size { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: calc(var(--control-height-lg) + var(--space-2)); border: var(--border-width-hairline) solid var(--color-border-strong); border-radius: var(--radius-md); background: var(--color-bg-surface); color: var(--color-fg-default); font: var(--text-body); font-weight: var(--font-weight-semibold); line-height: var(--line-height-tight); cursor: pointer; transition: background-color var(--duration-fast) var(--ease-standard), border-color var(--duration-fast) var(--ease-standard); }
+.size-picker__size:hover { border-color: var(--color-fg-default); }
+.size-picker__size input { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; border: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.size-picker__ages { font: var(--text-caption); font-weight: var(--font-weight-medium); color: var(--color-fg-muted); }
+.size-picker__size:has(input:checked) { border-color: var(--color-bg-inverse); background: var(--color-bg-inverse); color: var(--color-fg-inverse); }
+.size-picker__size:has(input:checked) .size-picker__ages { color: inherit; }
+.size-picker__size:has(input:disabled) { border-color: var(--color-border-default); background: transparent; color: var(--color-fg-disabled); text-decoration: line-through; cursor: not-allowed; }
+.size-picker__size:has(input:focus-visible) { outline: var(--focus-ring-width) solid var(--color-focus-ring); outline-offset: var(--focus-ring-offset); }
+.size-picker__status { min-height: 1lh; margin: var(--space-2) 0 0; font: var(--text-body-sm); color: var(--color-fg-muted); }
+.size-picker__guide { margin-top: var(--space-4); overflow-x: auto; border-radius: var(--radius-md); background: var(--color-bg-surface); animation: size-guide-in var(--duration-base) var(--ease-enter); }
+.size-picker__table { width: 100%; min-width: 20rem; border-collapse: collapse; font: var(--text-body-sm); font-variant-numeric: tabular-nums; text-align: left; }
+.size-picker__caption { padding: var(--space-3) var(--space-4) 0; font: var(--text-caption); color: var(--color-fg-muted); text-align: left; caption-side: top; }
+.size-picker__table th, .size-picker__table td { padding: var(--space-2) var(--space-4); border-bottom: var(--border-width-hairline) solid var(--color-border-default); }
+.size-picker__table thead th { font-weight: var(--font-weight-medium); color: var(--color-fg-muted); }
+.size-picker__table tbody th { font-weight: var(--font-weight-semibold); }
+.size-picker__table tbody tr:last-child > * { border-bottom: 0; }
+.size-picker__table-ages { margin-left: var(--space-1); font-weight: var(--font-weight-regular); color: var(--color-fg-muted); }
+@keyframes size-guide-in { from { opacity: 0; } to { opacity: 1; } }
+@media (min-width: 40rem) { .size-picker__sizes { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
+@media (prefers-reduced-motion: reduce) { .size-picker__guide { animation: none; } .size-picker__guide-toggle .icon, .size-picker__size { transition: none; } }
+@media (forced-colors: active) { .size-picker__size:has(input:checked) { outline: var(--border-width-thick) solid Highlight; } }
+/* === end: size-picker === */
+
+/* === block: quantity-stepper === */
+/* A whole number from a minimum to a maximum, with "One fewer" and "One more" around it. The number
+   is an <output> that is announced as it changes. --sm is the bag's size (44 px). */
+.quantity-stepper { display: inline-flex; flex: none; align-items: stretch; height: calc(var(--control-height-lg) + var(--space-2)); border: var(--border-width-hairline) solid var(--color-border-strong); border-radius: var(--radius-md); background: var(--color-bg-surface); }
+.quantity-stepper__button { display: grid; place-items: center; width: var(--target-comfortable); padding: 0; border: 0; border-radius: var(--radius-md); background: none; color: var(--color-fg-muted); cursor: pointer; }
+.quantity-stepper__button .icon { width: var(--icon-size-sm); height: var(--icon-size-sm); }
+.quantity-stepper__button:hover { color: var(--color-fg-default); }
+.quantity-stepper__button:disabled { color: var(--color-fg-disabled); cursor: not-allowed; }
+.quantity-stepper__button:focus-visible { outline: var(--focus-ring-width) solid var(--color-focus-ring); outline-offset: calc(-1 * var(--focus-ring-width)); }
+.quantity-stepper__value { display: grid; place-items: center; min-width: var(--space-6); font: var(--text-body); font-weight: var(--font-weight-semibold); font-variant-numeric: tabular-nums; }
+.quantity-stepper--sm { height: var(--control-height-md); }
+/* === end: quantity-stepper === */
+
+/* === block: add-to-bag === */
+/* The quantity and "Add to bag · $25", then, once added, "Added to bag" and the line that was added
+   with "Check out". The button is ink in light and cream in dark, the frame's colour; once added it
+   is the success colour, and its words and icon say so too. */
+.add-to-bag { display: flex; flex-direction: column; gap: var(--space-3); min-width: 0; }
+.add-to-bag__row { display: flex; gap: var(--space-3); }
+.add-to-bag__button { display: inline-flex; flex: 1; align-items: center; justify-content: center; gap: var(--space-2); min-width: 0; min-height: calc(var(--control-height-lg) + var(--space-2)); padding-inline: var(--space-5); border: 0; border-radius: var(--radius-md); background: var(--color-bg-inverse); color: var(--color-fg-inverse); font: var(--text-body-lg); font-weight: var(--font-weight-semibold); white-space: nowrap; cursor: pointer; transition: background-color var(--duration-fast) var(--ease-standard), transform var(--duration-fast) var(--ease-standard); }
+.add-to-bag__button:active { transform: scale(0.98); }
+.add-to-bag__button:focus-visible { outline: var(--focus-ring-width) solid var(--color-focus-ring); outline-offset: var(--focus-ring-offset); }
+.add-to-bag__button .icon { width: var(--icon-size-md); height: var(--icon-size-md); stroke-width: 2.5; }
+.add-to-bag__button--added { background: var(--color-success-solid); color: var(--color-fg-inverse); }
+.add-to-bag__added { display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); padding: var(--space-3) var(--space-4); border-radius: var(--radius-md); background: var(--color-bg-surface); font: var(--text-body-sm); animation: added-in var(--duration-base) var(--ease-enter); }
+.add-to-bag__line { min-width: 0; }
+.add-to-bag__checkout { flex: none; min-height: var(--target-min); padding: 0; border: 0; background: none; color: var(--color-fg-default); font: var(--text-body-sm); font-weight: var(--font-weight-semibold); text-decoration: underline; text-underline-offset: 0.25em; white-space: nowrap; cursor: pointer; }
+.add-to-bag__checkout:focus-visible { outline: var(--focus-ring-width) solid var(--color-focus-ring); outline-offset: var(--focus-ring-offset); border-radius: var(--radius-xs); }
+@keyframes added-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .add-to-bag__button { transition: none; } .add-to-bag__button:active { transform: none; } .add-to-bag__added { animation: none; } }
+/* === end: add-to-bag === */
+
+/* === block: bag-button === */
+/* The bag, with the number of shirts in it. The count is filled ink when the bag holds something;
+   the button's name says the number in words ("Bag, 2 items"). */
+.bag-button { display: inline-flex; flex: none; text-decoration: none; align-items: center; gap: var(--space-2); min-height: var(--control-height-md); padding-inline: var(--space-4); border: var(--border-width-hairline) solid var(--color-border-strong); border-radius: var(--radius-full); background: transparent; color: var(--color-fg-default); font: var(--text-label); font-weight: var(--font-weight-semibold); white-space: nowrap; cursor: pointer; transition: background-color var(--duration-fast) var(--ease-standard); }
+.bag-button:hover { background: var(--color-bg-subtle); }
+.bag-button:focus-visible { outline: var(--focus-ring-width) solid var(--color-focus-ring); outline-offset: var(--focus-ring-offset); }
+.bag-button .icon { width: var(--icon-size-sm); height: var(--icon-size-sm); }
+.bag-button__count { display: grid; place-items: center; min-width: var(--space-5); height: var(--space-5); padding-inline: var(--space-1); border-radius: var(--radius-full); background: var(--color-bg-subtle); color: var(--color-fg-muted); font: var(--text-caption); font-weight: var(--font-weight-semibold); font-variant-numeric: tabular-nums; }
+.bag-button__count--filled { background: var(--color-bg-inverse); color: var(--color-fg-inverse); }
+@media (prefers-reduced-motion: reduce) { .bag-button { transition: none; } }
+/* === end: bag-button === */
+
+/* === block: bag-line === */
+/* One line of the bag: the shirt small, its name and fit and size, the line's amount, the quantity
+   and "Remove". What is wrong with the line (too few left) is said under it in words. */
+.bag-line { display: grid; grid-template-columns: var(--avatar-size-lg) minmax(0, 1fr) auto; gap: var(--space-1) var(--space-3); align-items: start; padding-block: var(--space-4); border-bottom: var(--border-width-hairline) solid var(--color-border-default); }
+.bag-line__media { grid-row: span 2; display: grid; place-items: center; width: var(--avatar-size-lg); height: var(--avatar-size-lg); padding: var(--space-1); border-radius: var(--radius-md); background: var(--color-bg-subtle); }
+.bag-line__media .tee { width: 100%; }
+.bag-line__text { min-width: 0; }
+.bag-line__name { margin: 0; font: var(--text-label); font-size: var(--font-size-md); font-weight: var(--font-weight-semibold); overflow-wrap: anywhere; }
+.bag-line__meta { margin: 0; font: var(--text-body-sm); color: var(--color-fg-muted); }
+.bag-line__amount { margin: 0; font: var(--text-label); font-size: var(--font-size-md); font-weight: var(--font-weight-semibold); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.bag-line__controls { grid-column: 2 / -1; display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); margin-top: var(--space-2); }
+.bag-line__remove { min-height: var(--target-comfortable); padding: 0 var(--space-2); border: 0; border-radius: var(--radius-sm); background: none; color: var(--color-fg-link); font: var(--text-body-sm); text-decoration: underline; text-underline-offset: 0.2em; cursor: pointer; }
+.bag-line__remove:focus-visible { outline: var(--focus-ring-width) solid var(--color-focus-ring); outline-offset: var(--focus-ring-offset); }
+.bag-line__problem { grid-column: 2 / -1; display: flex; align-items: center; gap: var(--space-1); margin: 0; font: var(--text-body-sm); font-weight: var(--font-weight-medium); color: var(--color-danger-fg); }
+.bag-line__problem .icon { flex: none; width: var(--icon-size-sm); height: var(--icon-size-sm); }
+/* === end: bag-line === */
+
+/* === block: merch-story === */
+/* Why the print says what it says: a heading with its accent word, and the passage it rests on. */
+.merch-story { display: grid; gap: var(--space-8); margin-top: var(--space-20); padding-top: var(--space-12); border-top: var(--border-width-hairline) solid var(--color-border-default); }
+.merch-story__title { margin: 0; font: var(--text-h1); font-size: var(--font-size-3xl); font-weight: var(--font-weight-bold); font-stretch: var(--font-stretch-wide); line-height: 1.05; letter-spacing: var(--letter-spacing-tight); text-wrap: balance; }
+.merch-story__accent { color: var(--color-fg-accent); }
+.merch-story__body { display: flex; flex-direction: column; gap: var(--space-4); max-width: 42rem; font: var(--text-body-lg); line-height: var(--line-height-relaxed); color: var(--color-fg-muted); }
+.merch-story__body > p { margin: 0; }
+@media (min-width: 40rem) { .merch-story__title { font-size: var(--font-size-4xl); } }
+@media (min-width: 64rem) { .merch-story { grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: var(--space-12); } }
+/* === end: merch-story === */
