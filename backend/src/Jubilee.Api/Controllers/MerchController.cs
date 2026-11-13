@@ -48,6 +48,13 @@ public sealed class MerchController(ISender sender) : ControllerBase
         return StatusCode(StatusCodes.Status201Created, new CheckoutStartedDto(url));
     }
 
+    /// <summary>The return page's read: open, keyed by the 128-bit reference, nothing of the buyer (L2-269 AC7).</summary>
+    [HttpGet("orders/{reference}")]
+    [EnableRateLimiting(MerchRateLimit.OrderReads)]
+    [ErrorReference("JB-MERCH-503")]
+    public Task<MerchOrderDto> Order(string reference, CancellationToken cancellationToken) =>
+        sender.Send(new GetMerchOrderQuery(reference), cancellationToken);
+
     /// <summary>
     /// Stripe's signed events (L2-268). The signature over the raw body is the proof: no session and no
     /// anti-CSRF token. Neither the body nor the signature is logged (AC7).

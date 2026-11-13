@@ -96,7 +96,8 @@ namespace Jubilee.Infrastructure.Migrations
                     Fit = table.Column<string>(type: "nvarchar(16)", maxLength: 16, nullable: false),
                     Size = table.Column<string>(type: "nvarchar(8)", maxLength: 8, nullable: false),
                     Quantity = table.Column<int>(type: "int", nullable: false),
-                    UnitPriceCents = table.Column<int>(type: "int", nullable: false)
+                    UnitPriceCents = table.Column<int>(type: "int", nullable: false),
+                    Position = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {

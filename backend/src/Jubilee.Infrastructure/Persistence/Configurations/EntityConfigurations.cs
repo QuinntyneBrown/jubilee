@@ -925,6 +925,7 @@ public sealed class MerchOrderConfiguration : IEntityTypeConfiguration<MerchOrde
         builder.Property(o => o.ShippingAddress).HasMaxLength(600);
         builder.HasMany(o => o.Lines).WithOne().HasForeignKey(l => l.OrderId).OnDelete(DeleteBehavior.Cascade);
         builder.Navigation(o => o.Lines).UsePropertyAccessMode(PropertyAccessMode.Field);
+        builder.Ignore(o => o.OrderedLines);
     }
 }
 

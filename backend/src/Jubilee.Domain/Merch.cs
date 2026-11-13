@@ -217,6 +217,9 @@ public sealed class MerchOrder
 
     public IReadOnlyList<MerchOrderLine> Lines => _lines;
 
+    /// <summary>The lines in the order the buyer put them in the bag.</summary>
+    public IEnumerable<MerchOrderLine> OrderedLines => _lines.OrderBy(l => l.Position);
+
     /// <summary>Starts an order priced from the product's rows, never from the browser (L2-270 AC2).</summary>
     public static MerchOrder Start(
         MerchProduct product, IEnumerable<(MerchVariant Variant, int Quantity)> lines, MerchDelivery delivery, DateTimeOffset now)
@@ -234,7 +237,7 @@ public sealed class MerchOrder
         };
         foreach (var (variant, quantity) in lines)
         {
-            order._lines.Add(MerchOrderLine.Create(order.Id, variant, quantity, product.UnitPriceCents));
+            order._lines.Add(MerchOrderLine.Create(order.Id, variant, quantity, product.UnitPriceCents, order._lines.Count));
         }
 
         order.SubtotalCents = order._lines.Sum(l => l.UnitPriceCents * l.Quantity);
@@ -314,8 +317,12 @@ public sealed class MerchOrderLine
 
     public int UnitPriceCents { get; private set; }
 
-    internal static MerchOrderLine Create(Guid orderId, MerchVariant variant, int quantity, int unitPriceCents) => new()
+    /// <summary>Where the line stood in the bag.</summary>
+    public int Position { get; private set; }
+
+    internal static MerchOrderLine Create(Guid orderId, MerchVariant variant, int quantity, int unitPriceCents, int position) => new()
     {
+        Position = position,
         Id = Guid.NewGuid(),
         OrderId = orderId,
         VariantId = variant.Id,

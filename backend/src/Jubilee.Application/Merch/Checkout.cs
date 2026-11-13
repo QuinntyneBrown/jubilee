@@ -106,7 +106,7 @@ public sealed class StartCheckoutCommandHandler(IAppDbContext db, IPaymentGatewa
                 new CheckoutSessionRequest(
                     order.Reference,
                     order.Number,
-                    [.. order.Lines.Select(l => new CheckoutSessionLine(
+                    [.. order.OrderedLines.Select(l => new CheckoutSessionLine(
                         $"{product.Name} · {product.Colour} — {MerchFits.Of(l.Fit).Name} {l.Size}", l.UnitPriceCents, l.Quantity))],
                     order.Delivery == MerchDelivery.Ship ? order.ShippingCents : null,
                     settings.AutomaticTax,

@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Jubilee.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20261113224546_AddMerchandise")]
+    [Migration("20261113225315_AddMerchandise")]
     partial class AddMerchandise
     {
         /// <inheritdoc />
@@ -1507,6 +1507,9 @@ namespace Jubilee.Infrastructure.Migrations
 
                     b.Property<Guid>("OrderId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Position")
+                        .HasColumnType("int");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int");

@@ -120,7 +120,7 @@ public sealed class CompleteCheckoutCommandHandler(IAppDbContext db, MerchSettin
             return;
         }
 
-        var variantIds = order.Lines.Select(l => l.VariantId).ToList();
+        var variantIds = order.OrderedLines.Select(l => l.VariantId).ToList();
         var variants = await db.MerchVariants.Where(v => variantIds.Contains(v.Id)).ToDictionaryAsync(v => v.Id, cancellationToken);
         var short_ = order.Lines.Where(l => variants[l.VariantId].TakeStock(l.Quantity)).ToList();
 
@@ -209,7 +209,7 @@ public static class MerchEmails
         var text = new StringBuilder();
         text.Append(order.BuyerName is { Length: > 0 } name ? $"Hi {name.Split(' ')[0]},\n\n" : "Hello,\n\n");
         text.Append("Thank you. Your order is paid.\n\n");
-        foreach (var line in order.Lines)
+        foreach (var line in order.OrderedLines)
         {
             text.Append($"Purpose Tee, Black, {Size(line)} × {line.Quantity}: {Money(line.UnitPriceCents * line.Quantity)}\n");
         }
@@ -237,7 +237,7 @@ public static class MerchEmails
         text.Append(order.Delivery == MerchDelivery.Ship
             ? $"Delivery: ship to {order.ShippingAddress}\n\n"
             : "Delivery: pick up at the Jubilee gathering in Toronto\n\n");
-        foreach (var line in order.Lines)
+        foreach (var line in order.OrderedLines)
         {
             text.Append($"{Size(line)} × {line.Quantity}\n");
         }
