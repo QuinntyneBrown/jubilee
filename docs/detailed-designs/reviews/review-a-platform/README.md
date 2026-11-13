@@ -53,8 +53,9 @@ adds no page, no endpoint and no presentation component.
   review removed by its author or taken down frees the place, as for any
   listing.
 - **Entry**: in `jb-reviews` on the platform page, "Write a review" is offered
-  to an eligible member with "Used {name}? Say so, and tell others how it
-  went." and links to `/b/{slug}/review`. A visitor who presses it gets the
+  to an eligible member and links to `/b/{slug}/review`; with no reviews the
+  section invites the first with "Used {name}? Your review helps the next
+  family decide." (`L2-260` AC2). A visitor who presses it gets the
   sign-in prompt of `L2-012`, "Join to review {name}". The founder is not
   offered it. A member with a review sees "Your review" in its place. `GET
   /api/listings/{slug}/reviews` answers `writing` `eligible` for a member

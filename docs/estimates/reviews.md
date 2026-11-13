@@ -3,7 +3,7 @@
 | Design | Effort | Complete |
 |---|---|---|
 | review-data | 2 days | 100% |
-| review-a-platform | 5 days | 0% |
+| review-a-platform | 5 days | 100% |
 | write-a-review | 3 days | 95% |
 | read-reviews | 4 days | 95% |
 | edit-and-remove-a-review | 2 days | 90% |
@@ -17,4 +17,4 @@ id, so the review keeps its product); the parity crops of the rating under the n
 review subject are not measured yet; and the owner runs the sweeps. Photos on reviews and
 "Helpful" are deferred by ADR 0066.
 
-review-a-platform (ADR 0071): designed, not built. Eligibility by the statement of use for platforms only, the statement on the Write a review screen, `Review.StatedUseAt`, and the line that says the reviews are the members' own word; the effort includes the changes to write-a-review and review-data. The percent is set when journey 33 is implemented.
+review-a-platform (ADR 0071): eligibility by the statement of use for platforms only, the statement on the Write a review screen, `Review.StatedUseAt`, the line that says the reviews are the members' own word, and editing, removing, replying to, reporting and taking down such a review are done with tests (`PlatformReviewTests`, `PlatformReviewChangesTests`, `write-platform-review.spec.ts`, `platform-reviews.spec.ts`, `platform-review-changes.spec.ts`). Nothing is left.

@@ -57,7 +57,7 @@ else May be seen
   client --> page : ListingReviews
   page --> actor : "Reviews" with "Reviews here are from members who say they have used Lanternread. That is their own word. Jubilee does not check it." (L2-258 AC6)
   alt writing is eligible
-    page --> actor : "Used Lanternread? Say so, and tell others how it went." and "Write a review"
+    page --> actor : the line that says whose word the reviews are, and "Write a review"
   else writing is sign-in
     page --> actor : "Write a review" opens "Join to review Lanternread" (L2-226 AC3)
   else writing is written

@@ -48,9 +48,9 @@ journey that is implemented: the effort-weighted average of its feature designs 
 | 30 | Work in the admin application | Staff sign in to the admin application through single sign-on from an allowed network, work in its shell and sign out; old admin links in the app point there. | 20 | 96% |
 | 31 | Get ready for launch | Before Jubilee opens: see that it is launching soon, leave an e-mail address for the launch notice, or send a business's details to be listed on launch day; the team reads them with the CLI. | 7 | 100% |
 | 32 | Write and read reviews | After a request the owner confirmed, write a review of the business, shop or space; read every listing's rating and reviews, sorted and filtered, and its average on the cards; edit or remove your review; the owner replies in public; anyone signed in reports a review and the Jubilee team takes it down. Requirements L2-226 to L2-240. | 14 | 95% |
-| 33 | Discover and review software platforms | A founder lists a software platform (name, one line, web address, what it does, who it is for, pricing); it is found in its own category "Software platforms", in search and on a platform page whose main action is a link out to its website, with Message, save, share and report; a member who states they have used it writes a review, and the rest of reviews applies. Requirements L2-248 to L2-262. | 16 | 0% |
+| 33 | Discover and review software platforms | A founder lists a software platform (name, one line, web address, what it does, who it is for, pricing); it is found in its own category "Software platforms", in search and on a platform page whose main action is a link out to its website, with Message, save, share and report; a member who states they have used it writes a review, and the rest of reviews applies. Requirements L2-248 to L2-262. | 16 | 100% |
 
-**Total: 249 days** for the 32 journeys, **93% complete** weighted by effort.
+**Total: 249 days** for the 32 journeys, **99% complete** weighted by effort.
 
 ## Notes
 

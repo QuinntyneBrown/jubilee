@@ -3,7 +3,7 @@
 | Design | Effort | Complete |
 |---|---|---|
 | describe-listing | 3 days | 100% |
-| describe-platform | 4 days | 0% |
+| describe-platform | 4 days | 100% |
 | describe-space | 5 days | 100% |
 | save-draft | 5 days | 100% |
 | publish-listing | 4 days | 100% |
@@ -16,4 +16,4 @@ Left for the owner, by hand: the visual parity of the new screen states against 
 
 describe-space (ADR 0042): List a space with its terms, fields, checks and live preview, its draft and publishing it straight away are done with tests. Excludes deferred work (see ADR 0042): hourly rent and the sign-up intents.
 
-describe-platform (ADR 0071): designed, not built. List a software platform with its fields, checks, preview, draft and publishing, and the `AddSoftwarePlatforms` migration; the effort includes editing a platform on Edit listing (L2-256). The percent is set when journey 33 is implemented.
+describe-platform (ADR 0071): listing a software platform with its fields, checks, preview, draft and publishing, the `AddSoftwarePlatforms` migration, and editing a platform on Edit listing (L2-256) are done with tests (`PlatformOnboardingTests`, `PlatformEditTests`, `list-a-platform.spec.ts`, `edit-platform.spec.ts`). Nothing is left.
