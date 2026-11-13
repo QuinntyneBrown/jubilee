@@ -55,6 +55,7 @@ something else: a new record supersedes it and both say so.
 | [0058](0058-finish-moderate-reports-and-feature-businesses.md) | Finish moderate reports and feature businesses: a report of a conversation e-mails the Jubilee team through `JubileeTeam.Tell`; no `report.created` event; the admin bar counts the unresolved reports, read with the staff session after each navigation and each action on a report; holds, removals and featured weeks reach the public pages through the save (ADR 0003, ADR 0011) | Accepted |
 | [0059](0059-finish-keep-listings-honest.md) | Finish keeping listings honest: the CLI audits each role change with its operator, and opening a listing in the admin application records the access to the owner's data | Accepted |
 | [0060](0060-finish-give-feedback.md) | Finish give feedback: on a touch screen a chip is pressed over 44 px through an invisible hit area and is still drawn 32 px tall; a parity spec whose reference is absent compares with `components/<component>/<case>-<width>.png` as soon as the owner saves it | Accepted |
+| [0060](0060-finish-track-and-cancel-requests.md) | Finish track and cancel requests: the member's request pages listen to the event stream and ask on a timer only while it cannot connect, the owner marks a confirmed order fulfilled from Incoming requests and the customer is told, and the booking-completion and unanswered-request jobs run once per schedule through `JobRun` | Accepted |
 
 ## Format
 

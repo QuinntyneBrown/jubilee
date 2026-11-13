@@ -18,11 +18,11 @@ actor "Member" as actor
 box "Frontend — Jubilee Web" #E0F2FE
   participant "RequestDetailPage" as page
   participant "RequestsApi" as client
-  participant "RealtimeClient" as rt
+  participant "RealtimeService" as rt
 end box
 box "Backend — Jubilee API" #D1FADF
   participant "RequestsController" as controller
-  participant "EventsHub" as hub
+  participant "EventsController" as hub
 end box
 box "Backend — Jubilee Application and Domain" #ECFDF3
   participant "GetRequestQueryHandler" as handler
@@ -51,10 +51,15 @@ else request found
   controller --> client : 200 OK
   client --> page : Request detail
   page --> actor : Show status callout, details, actions for the status and the Progress timeline (L2-048)
-  opt owner confirms or declines while the page is open
-    hub -> rt : Request event for this member (L2-070)
-    rt -> page : Apply new status and transition
-    page --> actor : Update callout, badge and timeline without reload
+  opt owner confirms, declines or marks fulfilled while the page is open
+    hub -> rt : Notification of kind request, target /requests/{id} (L2-070)
+    rt -> page : received
+    page -> client : get(id), without a loading state
+    client --> page : Request detail
+    page --> actor : Update callout, badge and timeline with one toast (L2-070 AC6)
+  end
+  opt the stream cannot connect
+    page -> client : get(id) every 5 seconds until it connects, then once
   end
 end
 @enduml
