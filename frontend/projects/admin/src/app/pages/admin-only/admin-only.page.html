@@ -1,6 +1,11 @@
 <jb-status-page icon="lock" heading="Nothing here for your role">
-  These screens are for the Jubilee team. Ask a Jubilee administrator to add the moderator role to
-  your staff account.
+  @if (role() === 'admin') {
+    Policies are for Jubilee administrators. Ask a Jubilee administrator to add the admin role to
+    your staff account.
+  } @else {
+    These screens are for the Jubilee team. Ask a Jubilee administrator to add the moderator role to
+    your staff account.
+  }
   <button slot="actions" jb-button variant="primary" type="button" (click)="signOut.emit()">
     Sign out
   </button>

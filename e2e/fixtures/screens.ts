@@ -8,6 +8,14 @@ import { AdminShellPage } from '../pages/admin-shell.page';
 import { AdminSignInPage } from '../pages/admin-sign-in.page';
 import { AdminListingPage } from '../pages/admin-listing.page';
 import { AdminListingsPage } from '../pages/admin-listings.page';
+import { AdminPoliciesPage } from '../pages/admin-policies.page';
+import { AdminPolicyPage } from '../pages/admin-policy.page';
+import {
+  AdminPolicyInvalidScreen,
+  AdminPolicyPublishedScreen,
+  PublishPolicyScreen,
+  PublishPolicySentScreen,
+} from '../pages/publish-policy.dialog';
 import { BrowsePage } from '../pages/browse.page';
 import { BusinessLoadingScreen, BusinessPage } from '../pages/business.page';
 import { CategoryFiltersScreen, CategoryPage } from '../pages/category.page';
@@ -267,6 +275,21 @@ export const screens: {
   { key: 'report-action.take-down', screen: (page) => new TakeDownScreen(page) },
   { key: 'admin-featured', screen: (page) => new AdminFeaturedPage(page) },
   { key: 'admin-featured.error', screen: (page) => new AdminFeaturedPage(page) },
+  { key: 'admin-policies', screen: (page) => new AdminPoliciesPage(page) },
+  { key: 'admin-policies.loading', screen: (page) => new AdminPoliciesPage(page) },
+  { key: 'admin-policies.error', screen: (page) => new AdminPoliciesPage(page) },
+  { key: 'admin-policies.forbidden', screen: (page) => new AdminShellPage(page) },
+  { key: 'admin-policy', screen: (page) => new AdminPolicyPage(page) },
+  { key: 'admin-policy.loading', screen: (page) => new AdminPolicyPage(page) },
+  { key: 'admin-policy.empty', screen: (page) => new AdminPolicyPage(page) },
+  { key: 'admin-policy.invalid', screen: (page) => new AdminPolicyInvalidScreen(page) },
+  { key: 'admin-policy.published', screen: (page) => new AdminPolicyPublishedScreen(page) },
+  { key: 'admin-policy.error', screen: (page) => new AdminPolicyPage(page) },
+  { key: 'admin-policy.forbidden', screen: (page) => new AdminShellPage(page) },
+  { key: 'publish-policy', screen: (page) => new PublishPolicyScreen(page) },
+  { key: 'publish-policy.busy', screen: (page) => new PublishPolicySentScreen(page) },
+  { key: 'publish-policy.error', screen: (page) => new PublishPolicySentScreen(page) },
+  { key: 'publish-policy.conflict', screen: (page) => new PublishPolicySentScreen(page) },
   { key: 'forbidden', screen: (page) => new ForbiddenPage(page) },
   { key: 'browse', screen: (page) => new BrowsePage(page) },
   { key: 'browse.signed-out', screen: (page) => new BrowsePage(page) },

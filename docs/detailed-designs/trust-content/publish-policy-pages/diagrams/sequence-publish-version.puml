@@ -5,52 +5,52 @@ skinparam shadowing false
 skinparam roundcorner 12
 skinparam defaultFontName Arial
 skinparam ArrowColor #344054
-skinparam rectangle {
-  BorderColor #344054
-  FontColor #101828
-}
-skinparam package {
-  BorderColor #667085
-  FontColor #101828
-  BackgroundColor #F9FAFB
-}
 actor "Jubilee administrator" as actor
-box "Frontend — Jubilee Web" #E0F2FE
-  participant "Content editing screen <TO SUPPLY>" as page
-  participant "ContentApi" as client
+box "Frontend — Admin application" #E0F2FE
+  participant "AdminPolicyPage" as page
+  participant "PublishPolicyDialog" as dialog
+  participant "HttpAdminContentApi" as client
 end box
 box "Backend — Jubilee API" #D1FADF
-  participant "ContentController" as controller
+  participant "AdminContentController" as controller
 end box
-box "Backend — Jubilee Application and Domain" #ECFDF3
+box "Backend — Jubilee Application" #ECFDF3
   participant "PublishContentVersionCommandHandler" as handler
-  participant "ContentDocument" as entity
+  participant "ContentReader" as reader
 end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
   database "Jubilee database" as db
   database "Cache" as cache
 end box
-actor -> page : Submit new text for the statement of faith
-page -> client : Build typed request
-client -> controller : POST /api/admin/content/statement-of-faith/versions
-controller -> controller : Authenticate and apply Admin role policy (L2-133)
-alt Caller is not an admin
-  controller --> client : 403 ProblemDetails
-  client --> page : Forbidden
-  page --> actor : Show the forbidden page
-else Caller is an admin
-  controller -> handler : Send PublishContentVersionCommand
-  handler -> db : Load ContentDocument with its versions
-  db --> handler : Document
-  handler -> entity : Publish assigns the next version number (L2-107)
-  entity --> handler : New ContentVersion - previous versions unchanged
-  handler -> db : Insert version and update PublishedVersionNumber in one unit of work
-  db --> handler : Commit result
-  handler -> cache : Remove the cached published content
-  cache --> handler : Removed
-  handler --> controller : New version number
-  controller --> client : 201 version
-  client --> page : Published
-  page --> actor : Show the new version and "Last updated {date}"
+actor -> page : Open /policies/privacy
+page -> client : GET /api/admin/content/privacy
+client --> page : Published text (version 2) and kept versions
+actor -> page : Edit the fields, choose Preview
+page --> actor : The draft rendered by jb-policy-document, dated today
+actor -> page : Publish version 3
+page -> page : Check title, headings and texts (L2-247 AC4)
+page -> dialog : Open "Publish version 3 of Privacy?"
+actor -> dialog : Publish version 3
+dialog -> client : POST /api/admin/content/privacy/versions with basedOn 2
+client -> controller : RequiresAdmin (L2-133)
+alt Not an administrator
+  controller --> client : 403
+else Administrator
+  controller -> handler : PublishContentVersionCommand
+  handler -> reader : Published("privacy")
+  reader --> handler : Version 2
+  alt basedOn is older than the published version
+    handler --> controller : 409 VERSION_CHANGED
+    controller --> dialog : "Version 3 was published while you were editing" with Reload
+  else Current
+    handler -> handler : Validate (422 with codes)
+    handler -> db : Add ContentVersion 3 and AuditRecord content.published in one save
+    db --> handler : Saved; versions 1 and 2 unchanged
+    handler -> cache : Remove the privacy entry
+    handler --> controller : ContentDto version 3
+    controller --> dialog : 201
+    dialog --> page : Published
+    page --> actor : Toast "Version 3 published"; version 3 above the kept versions
+  end
 end
 @enduml

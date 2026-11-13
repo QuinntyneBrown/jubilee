@@ -37,7 +37,7 @@ journey that is implemented: the effort-weighted average of its feature designs 
 | 19 | Save listings for later | Save businesses and products to a private list. | 3 | 100% |
 | 20 | Manage profile and settings | Edit profile, change e-mail or password, choose which e-mails arrive. | 6 | 100% |
 | 21 | Share or report a listing | Share a listing's link or report a problem with it. | 3 | 100% |
-| 22 | Read policies and get help | Read the statement of faith, terms, privacy notice and help. | 2 | 85% |
+| 22 | Read policies and get help | Read the statement of faith, terms, privacy notice and help; an administrator publishes a new version of each from the admin application. | 4 | 98% |
 | 23 | Recover from errors | See clear pages for missing, forbidden, failed or maintenance states. | 3 | 100% |
 | 24 | Use Jubilee offline | Browse cached pages and queue messages on poor connections. | 7 | 83% |
 | 25 | Moderate reports and feature businesses | Staff handle reports and choose the featured businesses. | 5 | 100% |
@@ -49,7 +49,7 @@ journey that is implemented: the effort-weighted average of its feature designs 
 | 31 | Get ready for launch | Before Jubilee opens: see that it is launching soon, leave an e-mail address for the launch notice, or send a business's details to be listed on launch day; the team reads them with the CLI. | 7 | 100% |
 | 32 | Write and read reviews | After a request the owner confirmed, write a review of the business, shop or space; read every listing's rating and reviews, sorted and filtered, and its average on the cards; edit or remove your review; the owner replies in public; anyone signed in reports a review and the Jubilee team takes it down. Requirements L2-226 to L2-240. | 14 | 95% |
 
-**Total: 231 days** for the 31 journeys, **98% complete** weighted by effort.
+**Total: 233 days** for the 31 journeys, **98% complete** weighted by effort.
 
 ## Notes
 

@@ -1,0 +1,162 @@
+@let current = state();
+@let draftText = draft();
+<nav
+  jb-breadcrumb
+  [items]="[
+    { label: 'Policies', link: '/policies' },
+    { label: published()?.published?.title ?? 'Policy' },
+  ]"
+></nav>
+@switch (current.status) {
+  @case ('error') {
+    <jb-page-header heading="Edit a policy" subtitle="Edit the text members read."></jb-page-header>
+    <div jb-empty-state [error]="true" icon="alert" heading="We couldn’t load this policy">
+      Nothing is lost. Check your connection and try again. If it keeps happening, tell us and quote
+      <code>{{ current.reference }}</code
+      >.
+      <button slot="actions" jb-button variant="primary" type="button" (click)="load()">
+        <svg jb-icon name="refresh"></svg>Try again
+      </button>
+    </div>
+  }
+  @case ('loading') {
+    <jb-page-header heading="Edit a policy" subtitle="Loading the policy…"></jb-page-header>
+    <p class="visually-hidden" role="status">Loading the policy…</p>
+    <div class="stack" aria-hidden="true">
+      <span jb-skeleton shape="text" width="50"></span>
+      <span jb-skeleton shape="text"></span>
+      <span jb-skeleton shape="text" width="70"></span>
+    </div>
+  }
+  @case ('loaded') {
+    <jb-page-header
+      [heading]="current.value.published.title"
+      [subtitle]="subtitle(current.value)"
+    ></jb-page-header>
+    <div class="split split--even">
+      <div class="stack">
+        <form
+          jb-card
+          heading="Edit"
+          headingId="ed"
+          class="stack"
+          novalidate
+          (submit)="$event.preventDefault(); publish()"
+        >
+          @if (checked() && invalid()) {
+            <div jb-alert tone="danger" role="alert" heading="Fix the marked fields to publish">
+              Nothing was published.
+            </div>
+          }
+          <div jb-field label="Title" controlId="p-title" [error]="titleError()">
+            <input
+              jb-input
+              type="text"
+              name="title"
+              [ngModel]="draftText.title"
+              (ngModelChange)="setTitle($event)"
+            />
+          </div>
+          <div
+            jb-field
+            label="Lead"
+            controlId="p-lead"
+            optional
+            hint="The sentence under the title."
+            hintAfter
+          >
+            <textarea
+              jb-textarea
+              rows="2"
+              name="lead"
+              [ngModel]="draftText.lead"
+              (ngModelChange)="setLead($event)"
+            ></textarea>
+          </div>
+          @for (section of draftText.sections; track section.key; let i = $index) {
+            <section
+              jb-card
+              variant="well"
+              class="stack"
+              [heading]="'Section ' + (i + 1)"
+              [headingId]="'s' + section.key"
+            >
+              <div
+                jb-field
+                label="Heading"
+                [controlId]="'s' + section.key + '-heading'"
+                [error]="headingError(section)"
+              >
+                <input
+                  jb-input
+                  type="text"
+                  [name]="'heading-' + section.key"
+                  [ngModel]="section.heading"
+                  (ngModelChange)="setSection(section.key, { heading: $event })"
+                />
+              </div>
+              <div
+                jb-field
+                label="Text"
+                [controlId]="'s' + section.key + '-text'"
+                [error]="textError(section)"
+                hint="A blank line starts a new paragraph. Start a line with “- ” for a bullet. Link with [text](/path) or [text](mailto:address)."
+                hintAfter
+              >
+                <textarea
+                  jb-textarea
+                  rows="5"
+                  [name]="'text-' + section.key"
+                  [ngModel]="section.body"
+                  (ngModelChange)="setSection(section.key, { body: $event })"
+                ></textarea>
+              </div>
+              <div class="cluster">
+                <button jb-button size="sm" type="button" (click)="removeSection(section.key)">
+                  Remove<span class="visually-hidden"> section {{ i + 1 }}</span>
+                </button>
+              </div>
+            </section>
+          }
+          <div class="cluster">
+            <button jb-button type="button" (click)="addSection()">
+              <svg jb-icon name="plus"></svg>Add a section
+            </button>
+          </div>
+          <div class="cluster">
+            <button jb-button variant="primary" type="submit">
+              Publish version {{ nextVersion() }}
+            </button>
+          </div>
+        </form>
+        <section jb-card heading="Kept versions" headingId="kv" class="stack">
+          @if (current.value.versions.length === 1 && current.value.publishedBy === 'built-in') {
+            <p class="text-muted">
+              Only the built-in first version so far. Each version you publish is kept here.
+            </p>
+          } @else {
+            <ol jb-rows aria-label="Kept versions">
+              @for (version of current.value.versions; track version.number) {
+                <li jb-row>
+                  <p jb-row-title>{{ versionTitle(version) }}</p>
+                  <p jb-row-meta>{{ versionMeta(version) }}</p>
+                </li>
+              }
+            </ol>
+          }
+        </section>
+      </div>
+      <section jb-card heading="Preview" headingId="pv" class="stack">
+        <div jb-alert>Preview of version {{ nextVersion() }}. Not published yet.</div>
+        <article
+          jb-policy-document
+          [level]="2"
+          [heading]="draftText.title"
+          [lead]="draftText.lead"
+          [sections]="preview()"
+          [updated]="today"
+        ></article>
+      </section>
+    </div>
+  }
+}

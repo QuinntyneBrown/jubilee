@@ -1,12 +1,12 @@
 # Estimates
 
-- Overall effort: 413 days
+- Overall effort: 415 days
 - Complete: 76%
 
 | Subsystem | Effort | Complete |
 |---|---|---|
 | [directory](directory.md) | 22 days | 100% |
-| [trust-content](trust-content.md) | 8 days | 83% |
+| [trust-content](trust-content.md) | 10 days | 91% |
 | [responsive-design](responsive-design.md) | 6 days | 40% |
 | [design-system](design-system.md) | 6 days | 30% |
 | [interaction-states](interaction-states.md) | 17 days | 5% |
@@ -44,5 +44,5 @@ listing page (L2-150 AC1) and the audit record of a role change (L2-098 AC4) are
 2. design-system, interaction-states: move the remaining presentation into the components library with a parity spec each (ADR 0035, 0036), then validation, dialog confirmation and date and money formats
 3. security, privacy, accessibility: authorization and rate limits, data visibility and retention, screen-reader and keyboard coverage
 4. operations, performance, admin, marketing: backups, availability, latency and page budgets; set up the admin application in production (`eng/azure/README.md`)
-5. Polish the remaining 60–90% designs: offline details, the choice of product when a shop's review is edited, and set `Email__MailingAddress` so that promotional e-mail can go out (ADR 0053)
+5. Polish the remaining 60–90% designs: offline details, the choice of product when a shop's review is edited, and set `Email__MailingAddress` so that promotional e-mail can go out (ADR 0053); the owner publishes the real privacy contact and the final legal wording from `/policies` in the admin application (ADR 0067)
 6. Deferred: the launch-day e-mail, pre-registrations as listing drafts and a staff screen for them (ADR 0044); hourly rent, the sign-up intents, and payment, leases, calendars and double booking for spaces (ADR 0042)

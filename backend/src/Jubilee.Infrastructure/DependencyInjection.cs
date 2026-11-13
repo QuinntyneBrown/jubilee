@@ -1,4 +1,5 @@
 using Jubilee.Application.Abstractions;
+using Jubilee.Application.Content;
 using Jubilee.Application.Directory;
 using Jubilee.Infrastructure.Caching;
 using Jubilee.Infrastructure.Persistence;
@@ -136,6 +137,7 @@ public static class DependencyInjection
 
         services.AddScoped<DemoDataSeeder>();
         services.AddSingleton<IDirectoryReadCache, DistributedDirectoryReadCache>();
+        services.AddSingleton<IContentReadCache, DistributedContentReadCache>();
         services.AddSingleton<DirectoryCacheInvalidationInterceptor>();
 
         return services;

@@ -1,0 +1,64 @@
+WEBVTT
+
+00:00:00.650 --> 00:00:04.063
+Journey twenty-two: read policies and get help.
+
+00:00:04.063 --> 00:00:09.146
+Members read the statement of faith, the terms, the privacy notice and
+
+00:00:09.146 --> 00:00:14.301
+help. New in this run: an administrator publishes a new version of each
+
+00:00:14.301 --> 00:00:17.714
+from the admin application, with no deployment.
+
+00:00:18.579 --> 00:00:23.472
+Policies lists the four pages, each with its published version, and when
+
+00:00:23.472 --> 00:00:25.443
+and by whom it was published.
+
+00:00:26.153 --> 00:00:28.979
+Edit opens the published text in fields.
+
+00:00:28.979 --> 00:00:33.923
+The preview beside them shows the draft as members will read it, dated
+
+00:00:33.923 --> 00:00:36.113
+today, and follows each change.
+
+00:00:38.905 --> 00:00:44.264
+Publish asks first. Members read it at once, version two is kept, and
+
+00:00:44.264 --> 00:00:47.449
+the publish is recorded in the audit log.
+
+00:00:48.151 --> 00:00:53.547
+Version three is published. The editor now starts from it, and every
+
+00:00:53.547 --> 00:00:55.927
+earlier version is kept below.
+
+00:00:57.233 --> 00:01:01.961
+A member opening the privacy notice reads the new version straight away.
+
+00:01:03.020 --> 00:01:06.961
+Behind the screen, the tests prove that a publish started from an older
+
+00:01:06.961 --> 00:01:10.958
+version is refused and nothing is published; that each publish is stored
+
+00:01:10.958 --> 00:01:14.789
+with the administrator's name and audited; that only an administrator
+
+00:01:14.789 --> 00:01:18.730
+reaches these screens; and that members read the pages from a cache the
+
+00:01:18.730 --> 00:01:22.172
+publish clears, which still answers when the database is down.
+
+00:01:23.036 --> 00:01:27.554
+What is left is the owner's: the real privacy contact and the final
+
+00:01:27.554 --> 00:01:31.532
+legal wording, published from Policies, with no deployment.

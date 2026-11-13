@@ -5,8 +5,9 @@ import { fulfil, recordedAnswer } from './mock-api';
 import { legacyMessages, ownerRows, photoMessages, requestCards, stubMessaging } from './messaging';
 import { stubAccountData } from './account-data';
 import { SPACE_LISTING, stubAdmin } from './admin';
-import { daniel, stubStaff } from './staff';
+import { daniel, miriam, stubStaff } from './staff';
 import { stubModeration } from './moderation';
+import { defaultVersions, stubPolicies } from './policies';
 import { confirmedRows, stubIncoming } from './incoming-requests';
 import { stubCatalogue } from './catalogue';
 import { THIS_DEVICE, stubProfile } from './profile';
@@ -740,6 +741,29 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
       return stubStaff(page, 'network-refused');
     case 'staff-admin-only':
       return stubAdmin(page, {}, daniel);
+    case 'admin-policies':
+    case 'admin-policy':
+      return stubPolicies(page);
+    case 'admin-policies-loading':
+      return stubPolicies(page, { list: 'hangs' });
+    case 'admin-policies-error':
+      return stubPolicies(page, { list: 'fails' });
+    case 'admin-policies-moderator':
+      return stubPolicies(page, {}, miriam);
+    case 'admin-policy-loading':
+      return stubPolicies(page, { page: 'hangs' });
+    case 'admin-policy-empty':
+      return stubPolicies(page, {
+        versions: { ...defaultVersions(), privacy: [defaultVersions().privacy[1]] },
+      });
+    case 'admin-policy-error':
+      return stubPolicies(page, { page: 'fails' });
+    case 'admin-policy-publishing':
+      return stubPolicies(page, { publish: 'hangs' });
+    case 'admin-policy-publish-failing':
+      return stubPolicies(page, { publish: 'fails' });
+    case 'admin-policy-conflict':
+      return stubPolicies(page, { publish: 'conflict' });
     case 'google-sign-in-off':
       return stubSession(page, visitorWithoutGoogle);
     case 'sign-in-failing':

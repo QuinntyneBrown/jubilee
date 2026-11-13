@@ -3,6 +3,7 @@ using System.Text.RegularExpressions;
 using Jubilee.Application.Abstractions;
 using Jubilee.Application.Accounts;
 using Jubilee.Application.Errors;
+using Jubilee.Application.Moderation;
 using Jubilee.Domain;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -78,8 +79,9 @@ public static class ContentDefaults
 }
 
 /// <summary>Reads the published version of a page: the highest stored number, or the built-in first version.</summary>
-public sealed class ContentReader(IAppDbContext db)
+public sealed class ContentReader(IAppDbContext db, IContentReadCache cache)
 {
+    /// <summary>The published version of a page, through the read cache (L2-247 AC11).</summary>
     public async Task<ContentDto?> Published(string slug, CancellationToken cancellationToken)
     {
         if (!ContentVersion.Slugs.Contains(slug))
@@ -87,9 +89,15 @@ public sealed class ContentReader(IAppDbContext db)
             return null;
         }
 
+        return await cache.GetOrCreateAsync(slug, ct => FromDatabase(slug, ct), cancellationToken);
+    }
+
+    /// <summary>The published version as stored, past the cache: what a publish numbers its version from.</summary>
+    public async Task<ContentDto> FromDatabase(string slug, CancellationToken cancellationToken)
+    {
         var stored = await db.ContentVersions.AsNoTracking()
             .Where(v => v.Slug == slug).OrderByDescending(v => v.Number).FirstOrDefaultAsync(cancellationToken);
-        return stored is null ? ContentDefaults.For(slug) : ToDto(stored);
+        return stored is null ? ContentDefaults.For(slug)! : ToDto(stored);
     }
 
     /// <summary>The number of the published terms, recorded with each agreement (L2-108 AC2).</summary>
@@ -132,19 +140,71 @@ public sealed class ListContentVersionsQueryHandler(IAppDbContext db) : IRequest
     }
 }
 
-/// <summary>An admin publishes new text as the next version; no earlier version changes (L2-107 AC2, L2-133).</summary>
-public sealed record PublishContentVersionCommand(
-    string Admin, string Slug, string? Title, string? Lead, IReadOnlyList<ContentSectionDto>? Sections) : IRequest<ContentDto>;
+/// <summary>One policy page in the admin application's list: its published version, when and by whom (L2-247 AC1).</summary>
+public sealed record AdminContentRow(string Slug, string Title, int Version, DateTimeOffset PublishedAt, string PublishedBy, int KeptVersions);
 
-public sealed partial class PublishContentVersionCommandHandler(IAppDbContext db, ContentReader reader, TimeProvider clock)
+/// <summary>The four policy pages in the order the app links them (L2-247 AC1).</summary>
+public sealed record ListAdminContentQuery : IRequest<IReadOnlyList<AdminContentRow>>;
+
+public sealed class ListAdminContentQueryHandler(ISender sender) : IRequestHandler<ListAdminContentQuery, IReadOnlyList<AdminContentRow>>
+{
+    public async Task<IReadOnlyList<AdminContentRow>> Handle(ListAdminContentQuery request, CancellationToken cancellationToken)
+    {
+        var rows = new List<AdminContentRow>();
+        foreach (var slug in ContentVersion.Slugs)
+        {
+            var versions = await sender.Send(new ListContentVersionsQuery(slug), cancellationToken);
+            var published = versions[0];
+            rows.Add(new AdminContentRow(slug, published.Title, published.Number, published.PublishedAt, published.PublishedBy, versions.Count));
+        }
+
+        return rows;
+    }
+}
+
+/// <summary>The published text of one page with its kept versions, for the editor (L2-247 AC2).</summary>
+public sealed record AdminContentDto(ContentDto Published, string PublishedBy, IReadOnlyList<ContentVersionDto> Versions);
+
+public sealed record GetAdminContentQuery(string Slug) : IRequest<AdminContentDto>;
+
+public sealed class GetAdminContentQueryHandler(ContentReader reader, ISender sender) : IRequestHandler<GetAdminContentQuery, AdminContentDto>
+{
+    public async Task<AdminContentDto> Handle(GetAdminContentQuery request, CancellationToken cancellationToken)
+    {
+        var published = await reader.Published(request.Slug, cancellationToken)
+            ?? throw new NotFoundException("CONTENT_NOT_FOUND", "There is no such page.");
+        var versions = await sender.Send(new ListContentVersionsQuery(request.Slug), cancellationToken);
+        return new AdminContentDto(published, versions[0].PublishedBy, versions);
+    }
+}
+
+/// <summary>An admin publishes new text as the next version; no earlier version changes (L2-107 AC2, L2-133).</summary>
+/// <remarks><c>BasedOn</c> is the version the editor started from (ADR 0067).</remarks>
+public sealed record PublishContentVersionCommand(
+    Reviewer Admin, string Slug, string? Title, string? Lead, IReadOnlyList<ContentSectionDto>? Sections, int? BasedOn = null)
+    : IRequest<ContentDto>;
+
+public sealed partial class PublishContentVersionCommandHandler(
+    IAppDbContext db, ContentReader reader, IContentReadCache cache, TimeProvider clock)
     : IRequestHandler<PublishContentVersionCommand, ContentDto>
 {
     public const int MaxBodyLength = 20_000;
 
     public async Task<ContentDto> Handle(PublishContentVersionCommand request, CancellationToken cancellationToken)
     {
-        var current = await reader.Published(request.Slug, cancellationToken)
-            ?? throw new NotFoundException("CONTENT_NOT_FOUND", "There is no such page.");
+        if (!ContentVersion.Slugs.Contains(request.Slug))
+        {
+            throw new NotFoundException("CONTENT_NOT_FOUND", "There is no such page.");
+        }
+
+        var current = await reader.FromDatabase(request.Slug, cancellationToken);
+
+        // A draft started from an older version would overwrite one published since (ADR 0067).
+        if (request.BasedOn is { } basedOn && basedOn != current.Version)
+        {
+            throw new ConflictException(
+                "VERSION_CHANGED", $"Version {current.Version} was published while you were editing. Nothing was published.");
+        }
 
         var errors = new Dictionary<string, string>();
         if (string.IsNullOrWhiteSpace(request.Title))
@@ -185,9 +245,15 @@ public sealed partial class PublishContentVersionCommandHandler(IAppDbContext db
 
         var version = ContentVersion.Publish(
             request.Slug, current.Version + 1, request.Title!.Trim(), request.Lead?.Trim() ?? string.Empty,
-            JsonSerializer.Serialize(sections), clock.GetUtcNow(), request.Admin);
+            JsonSerializer.Serialize(sections), clock.GetUtcNow(), request.Admin.Name);
         db.ContentVersions.Add(version);
+        AuditLog.Record(
+            db, request.Admin, "content.published", "content", request.Slug,
+            $"version {current.Version}", $"version {version.Number}", null, version.PublishedAt);
         await db.SaveChangesAsync(cancellationToken);
+
+        // Every instance reads the new version on its next request (L2-247 AC11).
+        await cache.RemoveAsync(request.Slug, cancellationToken);
         return ContentReader.ToDto(version);
     }
 

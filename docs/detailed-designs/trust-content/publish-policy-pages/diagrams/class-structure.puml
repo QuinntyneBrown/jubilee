@@ -13,83 +13,103 @@ skinparam class {
 ' --------------------------
 title Class structure — Publish policy pages
 
-enum ContentSlug {
-  StatementOfFaith
-  Terms
-  Privacy
-  Help
-}
-
-class ContentDocument {
-  +Guid Id
-  +ContentSlug Slug
-  +int PublishedVersionNumber
-  +Publish(sections: IReadOnlyList<ContentSection>, publishedBy: Guid, now: DateTimeOffset): ContentVersion
-  +Published(): ContentVersion
-}
-
 class ContentVersion {
+  +{static} string[] Slugs
   +Guid Id
+  +string Slug
   +int Number
-  +string Introduction
+  +string Title
+  +string Lead
+  +string SectionsJson
   +DateTimeOffset PublishedAt
-  +Guid PublishedBy
+  +string PublishedBy
+  +{static} Publish(slug, number, title, lead, sectionsJson, now, publishedBy): ContentVersion
 }
 
-class ContentSection {
-  +int SortOrder
-  +string Anchor
+class ContentSectionDto {
   +string Heading
+  +string Anchor
   +string Body
 }
 
-class PolicyDocumentDto {
+class ContentDto {
   +string Slug
-  +int VersionNumber
+  +string Title
+  +string Lead
+  +int Version
   +DateTimeOffset PublishedAt
-  +string Introduction
-  +IReadOnlyList<ContentSection> Sections
+  +IReadOnlyList<ContentSectionDto> Sections
 }
 
-class GetPublishedContentQueryHandler {
-  +Handle(query: GetPublishedContentQuery): Task<PolicyDocumentDto>
+class AdminContentRow {
+  +string Slug
+  +string Title
+  +int Version
+  +DateTimeOffset PublishedAt
+  +string PublishedBy
+  +int KeptVersions
 }
+
+class AdminContentDto {
+  +ContentDto Published
+  +string PublishedBy
+  +IReadOnlyList<ContentVersionDto> Versions
+}
+
+class ContentVersionDto {
+  +int Number
+  +string Title
+  +DateTimeOffset PublishedAt
+  +string PublishedBy
+  +bool Published
+}
+
+class ContentDefaults {
+  +{static} For(slug): ContentDto
+}
+
+class ContentReader {
+  +Published(slug): Task<ContentDto?>
+  +TermsVersion(): Task<int>
+}
+
+interface IContentReadCache {
+  +GetOrCreateAsync(slug, build): Task<ContentDto?>
+  +RemoveAsync(slug): Task
+}
+
+class DistributedContentReadCache
 
 class PublishContentVersionCommand {
-  +ContentSlug Slug
-  +string Introduction
-  +IReadOnlyList<ContentSection> Sections
+  +Reviewer Admin
+  +string Slug
+  +string? Title
+  +string? Lead
+  +IReadOnlyList<ContentSectionDto>? Sections
+  +int? BasedOn
 }
 
 class PublishContentVersionCommandHandler {
-  +Handle(command: PublishContentVersionCommand): Task<Result<int>>
+  +Handle(command): Task<ContentDto>
 }
 
-class TermsAcceptance {
-  +Guid Id
-  +Guid MemberId
-  +int TermsVersionNumber
-  +bool ConfirmedAdult
-  +DateTimeOffset AcceptedAt
-}
-
-interface ITermsVersionProvider {
-  +CurrentAsync(): Task<int>
-}
+class AuditRecord
 
 class Member {
-  +Guid Id
-  +string Email
+  +int? TermsVersionNumber
 }
 
-ContentDocument --> ContentSlug : identified by
-ContentDocument "1" *-- "1..*" ContentVersion : keeps all
-ContentVersion "1" *-- "1..*" ContentSection
-GetPublishedContentQueryHandler ..> ContentDocument : reads
-GetPublishedContentQueryHandler ..> PolicyDocumentDto : returns
+ContentVersion ..> ContentSectionDto : sections as JSON
+ContentDto *-- ContentSectionDto
+AdminContentDto *-- ContentDto
+AdminContentDto *-- ContentVersionDto
+ContentReader --> IContentReadCache
+ContentReader ..> ContentVersion : reads highest number
+ContentReader ..> ContentDefaults : before the first publish
+DistributedContentReadCache ..|> IContentReadCache
 PublishContentVersionCommandHandler ..> PublishContentVersionCommand : handles
-PublishContentVersionCommandHandler --> ContentDocument : publishes
-Member "1" --> "1..*" TermsAcceptance : agreed
-TermsAcceptance ..> ContentVersion : references terms version
-ITermsVersionProvider ..> ContentDocument : reads published number
+PublishContentVersionCommandHandler ..> ContentVersion : appends
+PublishContentVersionCommandHandler ..> AuditRecord : content.published
+PublishContentVersionCommandHandler --> IContentReadCache : removes slug
+Member ..> ContentVersion : terms version agreed to
 @enduml

@@ -1,50 +1,19 @@
 @let current = state();
 @switch (current.status) {
   @case ('loaded') {
-    <nav
-      jb-breadcrumb
-      [items]="[{ label: 'Browse', link: '/' }, { label: current.value.title }]"
-    ></nav>
-    <article class="prose" style="margin-top: var(--space-4)">
-      <h1>{{ current.value.title }}</h1>
-      @if (current.value.lead) {
-        <p class="lead">{{ current.value.lead }}</p>
-      }
-      @for (section of current.value.sections; track section.anchor) {
-        <h2 [id]="section.anchor">{{ section.heading }}</h2>
-        @for (block of body(section.body); track $index) {
-          @if (block.kind === 'list') {
-            <ul>
-              @for (item of block.items; track $index) {
-                <li>
-                  @for (part of item; track $index) {
-                    @if (part.href; as href) {
-                      <a [href]="href">{{ part.text }}</a>
-                    } @else {
-                      {{ part.text }}
-                    }
-                  }
-                </li>
-              }
-            </ul>
-          } @else {
-            <p>
-              @for (part of block.parts; track $index) {
-                @if (part.href; as href) {
-                  <a [href]="href">{{ part.text }}</a>
-                } @else {
-                  {{ part.text }}
-                }
-              }
-            </p>
-          }
-        }
-      }
-      <p class="text-caption" style="margin-top: var(--space-8)">
-        Last updated
-        {{ current.value.publishedAt | date: 'd MMMM y' : 'America/Toronto' : 'en-CA' }}
-      </p>
-    </article>
+    <div class="stack">
+      <nav
+        jb-breadcrumb
+        [items]="[{ label: 'Browse', link: '/' }, { label: current.value.title }]"
+      ></nav>
+      <article
+        jb-policy-document
+        [heading]="current.value.title"
+        [lead]="current.value.lead"
+        [sections]="sections(current.value)"
+        [updated]="current.value.publishedAt"
+      ></article>
+    </div>
   }
   @case ('error') {
     <div jb-empty-state [error]="true" icon="alert" heading="We couldn’t load this page">

@@ -1,0 +1,42 @@
+@let current = state();
+<jb-page-header
+  heading="Policies"
+  subtitle="What members read on the statement of faith, terms, privacy and help pages. Every version you publish is kept."
+>
+</jb-page-header>
+@switch (current.status) {
+  @case ('error') {
+    <div jb-empty-state [error]="true" icon="alert" heading="We couldn’t load the policies">
+      Nothing is lost. Check your connection and try again. If it keeps happening, tell us and quote
+      <code>{{ current.reference }}</code
+      >.
+      <button slot="actions" jb-button variant="primary" type="button" (click)="load()">
+        <svg jb-icon name="refresh"></svg>Try again
+      </button>
+    </div>
+  }
+  @case ('loading') {
+    <p class="visually-hidden" role="status">Loading the policies…</p>
+    <ul jb-rows aria-hidden="true">
+      @for (i of [1, 2, 3, 4]; track i) {
+        <li jb-row>
+          <span jb-skeleton shape="text" width="50"></span>
+          <span jb-skeleton shape="text" width="70"></span>
+        </li>
+      }
+    </ul>
+  }
+  @case ('loaded') {
+    <ul jb-rows aria-label="Policies">
+      @for (row of current.value; track row.slug) {
+        <li jb-row>
+          <p jb-row-title>{{ row.title }}</p>
+          <p jb-row-meta>{{ line(row) }}</p>
+          <a slot="trailing" jb-button size="sm" [routerLink]="['/policies', row.slug]"
+            >Edit<span class="visually-hidden"> {{ row.title }}</span></a
+          >
+        </li>
+      }
+    </ul>
+  }
+}

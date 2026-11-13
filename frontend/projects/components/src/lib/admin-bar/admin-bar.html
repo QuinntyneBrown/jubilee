@@ -2,33 +2,43 @@
   ><span class="admin-bar__tag" aria-hidden="true">admin</span></a
 >
 @if (staff(); as staff) {
-  @if (moderator()) {
+  @if (moderator() || admin()) {
     <nav class="admin-bar__nav" aria-label="Staff">
-      <a
-        class="nav-link"
-        routerLink="/listings"
-        [attr.aria-current]="current() === 'listings' ? 'page' : null"
-        >Listings</a
-      >
-      <a
-        class="nav-link"
-        routerLink="/reports"
-        [attr.aria-current]="current() === 'reports' ? 'page' : null"
-        >Reports
-        @if (staff.reportCount > 0) {
-          <span
-            jb-badge
-            [count]="staff.reportCount"
-            [label]="staff.reportCount + ' unresolved'"
-          ></span>
-        }
-      </a>
-      <a
-        class="nav-link"
-        routerLink="/featured"
-        [attr.aria-current]="current() === 'featured' ? 'page' : null"
-        >Featured</a
-      >
+      @if (moderator()) {
+        <a
+          class="nav-link"
+          routerLink="/listings"
+          [attr.aria-current]="current() === 'listings' ? 'page' : null"
+          >Listings</a
+        >
+        <a
+          class="nav-link"
+          routerLink="/reports"
+          [attr.aria-current]="current() === 'reports' ? 'page' : null"
+          >Reports
+          @if (staff.reportCount > 0) {
+            <span
+              jb-badge
+              [count]="staff.reportCount"
+              [label]="staff.reportCount + ' unresolved'"
+            ></span>
+          }
+        </a>
+        <a
+          class="nav-link"
+          routerLink="/featured"
+          [attr.aria-current]="current() === 'featured' ? 'page' : null"
+          >Featured</a
+        >
+      }
+      @if (admin()) {
+        <a
+          class="nav-link"
+          routerLink="/policies"
+          [attr.aria-current]="current() === 'policies' ? 'page' : null"
+          >Policies</a
+        >
+      }
     </nav>
   }
   <span class="topbar__spacer"></span>

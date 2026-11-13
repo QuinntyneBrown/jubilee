@@ -1209,6 +1209,21 @@
       ]
     },
     {
+      "id": "publish-policy",
+      "kind": "dialog",
+      "title": "Publish a policy version",
+      "opens_from": "admin-policy",
+      "states": [
+        "default",
+        "busy",
+        "error",
+        "conflict"
+      ],
+      "not_applicable": {
+        "invalid": "The editor checks the draft before the dialog opens (pages/admin-policy/invalid); the dialog has no field."
+      }
+    },
+    {
       "id": "sign-out",
       "kind": "dialog",
       "title": "Sign out",
@@ -1411,6 +1426,36 @@
         "error",
         "full",
         "saved"
+      ]
+    },
+    {
+      "id": "admin-policies",
+      "kind": "page",
+      "title": "Policies",
+      "route": "/policies (admin application)",
+      "states": [
+        "default",
+        "loading",
+        "error",
+        "forbidden"
+      ],
+      "not_applicable": {
+        "empty": "There are always four policy pages: each has its built-in first version until one is published."
+      }
+    },
+    {
+      "id": "admin-policy",
+      "kind": "page",
+      "title": "Edit a policy",
+      "route": "/policies/:slug (admin application)",
+      "states": [
+        "default",
+        "loading",
+        "empty",
+        "invalid",
+        "published",
+        "error",
+        "forbidden"
       ]
     },
     {

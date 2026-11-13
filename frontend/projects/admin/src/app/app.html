@@ -8,8 +8,8 @@
   ></header>
 }
 <main id="main" tabindex="-1">
-  @if (notForRole()) {
-    <jb-admin-only-page (signOut)="signOut()" />
+  @if (notForRole(); as role) {
+    <jb-admin-only-page [role]="role" (signOut)="signOut()" />
   } @else {
     <router-outlet />
   }

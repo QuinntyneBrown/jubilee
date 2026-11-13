@@ -193,7 +193,18 @@ export type StubName =
   | 'data-download-unavailable'
   | 'staff-signed-out'
   | 'staff-network-refused'
-  | 'staff-admin-only';
+  | 'staff-admin-only'
+  | 'admin-policies'
+  | 'admin-policies-loading'
+  | 'admin-policies-error'
+  | 'admin-policies-moderator'
+  | 'admin-policy'
+  | 'admin-policy-loading'
+  | 'admin-policy-empty'
+  | 'admin-policy-error'
+  | 'admin-policy-publishing'
+  | 'admin-policy-publish-failing'
+  | 'admin-policy-conflict';
 
 export interface ScreenRoute {
   app: string;
@@ -1690,6 +1701,111 @@ export const routes = {
     who: 'visitor',
     site: 'admin',
     stub: 'staff-admin-only',
+  },
+  'admin-policies': {
+    app: '/policies',
+    mock: 'pages/admin-policies/default.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'admin-policies',
+  },
+  'admin-policies.loading': {
+    app: '/policies',
+    mock: 'pages/admin-policies/loading.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'admin-policies-loading',
+  },
+  'admin-policies.error': {
+    app: '/policies',
+    mock: 'pages/admin-policies/error.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'admin-policies-error',
+  },
+  'admin-policies.forbidden': {
+    app: '/policies',
+    mock: 'pages/admin-policies/forbidden.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'admin-policies-moderator',
+  },
+  'admin-policy': {
+    app: '/policies/privacy',
+    mock: 'pages/admin-policy/default.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'admin-policy',
+  },
+  'admin-policy.loading': {
+    app: '/policies/privacy',
+    mock: 'pages/admin-policy/loading.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'admin-policy-loading',
+  },
+  'admin-policy.empty': {
+    app: '/policies/privacy',
+    mock: 'pages/admin-policy/empty.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'admin-policy-empty',
+  },
+  'admin-policy.invalid': {
+    app: '/policies/privacy',
+    mock: 'pages/admin-policy/invalid.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'admin-policy',
+  },
+  'admin-policy.published': {
+    app: '/policies/privacy',
+    mock: 'pages/admin-policy/published.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'admin-policy',
+  },
+  'admin-policy.error': {
+    app: '/policies/privacy',
+    mock: 'pages/admin-policy/error.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'admin-policy-error',
+  },
+  'admin-policy.forbidden': {
+    app: '/policies/privacy',
+    mock: 'pages/admin-policy/forbidden.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'admin-policies-moderator',
+  },
+  'publish-policy': {
+    app: '/policies/privacy',
+    mock: 'dialogs/publish-policy/default.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'admin-policy',
+  },
+  'publish-policy.busy': {
+    app: '/policies/privacy',
+    mock: 'dialogs/publish-policy/busy.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'admin-policy-publishing',
+  },
+  'publish-policy.error': {
+    app: '/policies/privacy',
+    mock: 'dialogs/publish-policy/error.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'admin-policy-publish-failing',
+  },
+  'publish-policy.conflict': {
+    app: '/policies/privacy',
+    mock: 'dialogs/publish-policy/conflict.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'admin-policy-conflict',
   },
   'admin-shell.not-found': {
     app: '/no-such-page',
