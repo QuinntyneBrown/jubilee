@@ -14,8 +14,15 @@
         class="nav-link"
         routerLink="/reports"
         [attr.aria-current]="current() === 'reports' ? 'page' : null"
-        >Reports</a
-      >
+        >Reports
+        @if (staff.reportCount > 0) {
+          <span
+            jb-badge
+            [count]="staff.reportCount"
+            [label]="staff.reportCount + ' unresolved'"
+          ></span>
+        }
+      </a>
       <a
         class="nav-link"
         routerLink="/featured"

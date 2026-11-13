@@ -100,6 +100,35 @@ public sealed class ModerationTests : IClassFixture<JubileeApiFactory>, IAsyncLi
         Assert.Equal("Joanna Adeyemi", item.GetProperty("reporterName").GetString());
     }
 
+    // L2-105 AC1, L2-188 AC3, L2-190 AC7 (ADR 0058): the staff session counts the unresolved reports for the admin bar
+    [Fact]
+    public async Task L2_190_AC7_the_staff_session_counts_the_unresolved_listing_and_conversation_reports()
+    {
+        await ReportedConversation();
+        var listed = await AsJoanna().PostAsJsonAsync(
+            "/api/listings/legacy-financial/reports", new { reason = "misleading", description = "The office address is closed." });
+        var listingReport = (await Json(listed)).GetProperty("id").GetGuid();
+        var miriam = AsMiriam();
+        Assert.Equal(2, (await _factory.GetJson("/api/staff/session", miriam)).GetProperty("reportCount").GetInt32());
+
+        await Open(miriam, listingReport);
+        Assert.Equal(2, (await _factory.GetJson("/api/staff/session", miriam)).GetProperty("reportCount").GetInt32());
+
+        await Act(miriam, listingReport, "dismiss");
+        Assert.Equal(1, (await _factory.GetJson("/api/staff/session", miriam)).GetProperty("reportCount").GetInt32());
+    }
+
+    // L2-190 AC7: only the Jubilee team's moderators see how many reports wait
+    [Fact]
+    public async Task L2_190_AC7_a_staff_member_without_the_moderator_role_is_told_no_report_count()
+    {
+        await ReportedListing();
+
+        var session = await _factory.GetJson("/api/staff/session", _factory.CreateStaffClient("Ada Admin", "staff|ada", "admin"));
+
+        Assert.Equal(0, session.GetProperty("reportCount").GetInt32());
+    }
+
     // L2-105 AC1: statuses
     [Fact]
     public async Task L2_105_AC1_opening_a_report_moves_it_to_in_review_and_a_resolved_report_leaves_the_default_list()

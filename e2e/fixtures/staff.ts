@@ -10,6 +10,8 @@ export interface StaffMember {
   initials: string;
   email: string;
   roles: StaffRole[];
+  /** The unresolved reports, for the admin bar (L2-188 AC3, ADR 0058). */
+  reportCount: number;
 }
 
 /** Miriam Castillo of the Jubilee team, as the mocks show her. */
@@ -18,6 +20,7 @@ export const miriam: StaffMember = {
   initials: 'MC',
   email: 'miriam@jubilee.to',
   roles: ['moderator'],
+  reportCount: 3,
 };
 
 /** Daniel Osei, an administrator without the moderator role (L2-188 AC4). */
@@ -26,6 +29,7 @@ export const daniel: StaffMember = {
   initials: 'DO',
   email: 'daniel@jubilee.to',
   roles: ['admin'],
+  reportCount: 0,
 };
 
 /** What `GET /api/staff/session` answers: a staff member, no session, or a refused network (L2-192). */
@@ -37,6 +41,8 @@ export interface FakeStaff {
   signInStarts: string[];
   /** How many times "Sign out" ended the session. */
   signOuts: number;
+  /** How many times the admin application read the session. */
+  reads: number;
 }
 
 const problem = (status: number, code: string) => ({
@@ -46,7 +52,7 @@ const problem = (status: number, code: string) => ({
 });
 
 export async function stubStaff(page: Page, answer: StaffAnswer = miriam): Promise<FakeStaff> {
-  const fake: FakeStaff = { answer, signInStarts: [], signOuts: 0 };
+  const fake: FakeStaff = { answer, signInStarts: [], signOuts: 0, reads: 0 };
 
   await page.route('**/api/staff/session', async (route: Route) => {
     if (route.request().method() === 'DELETE') {
@@ -54,6 +60,7 @@ export async function stubStaff(page: Page, answer: StaffAnswer = miriam): Promi
       fake.answer = 'signed-out';
       return route.fulfill({ status: 204 });
     }
+    fake.reads++;
     const current = fake.answer;
     if (current === 'signed-out') return route.fulfill(problem(401, 'sign_in_required'));
     if (current === 'network-refused') return route.fulfill(problem(403, 'NETWORK_NOT_ALLOWED'));

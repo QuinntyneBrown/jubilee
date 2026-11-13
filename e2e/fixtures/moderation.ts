@@ -1,6 +1,6 @@
 import type { Page, Route } from '@playwright/test';
 import { stubAdmin } from './admin';
-import { miriam, type StaffMember } from './staff';
+import { miriam, type FakeStaff, type StaffMember } from './staff';
 
 // A stand-in for the Jubilee team's reports and featured businesses (L2-105, L2-106). The
 // requests the app makes are kept so a test can prove what it sent (ADR 0009).
@@ -18,6 +18,8 @@ export interface FakeModeration {
   opened: string[];
   actions: { id: string; kind: string; resolutionNote: string; messageText: string | null }[];
   saved: { startDate: string; ids: string[] }[];
+  /** The staff session the admin bar reads its count from (L2-190 AC7). */
+  staff: FakeStaff;
 }
 
 const problem = (status: number, body: object) => ({
@@ -70,9 +72,10 @@ export async function stubModeration(
     opened: [],
     actions: [],
     saved: [],
+    staff: undefined as unknown as FakeStaff,
     ...initial,
   };
-  await stubAdmin(page, {}, staff);
+  fake.staff = (await stubAdmin(page, {}, staff)).staff;
 
   const detail = (id: string) => {
     const conversation = id === CONVERSATION_REPORT_ID;

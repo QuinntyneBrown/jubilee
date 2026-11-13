@@ -1,9 +1,9 @@
 import { DOCUMENT } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, effect, inject } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { AdminBar, SkipLink, StaffChromeMember, ToastRegion } from 'components';
-import { filter, map, startWith } from 'rxjs';
+import { filter, map, skip, startWith } from 'rxjs';
 import { AdminRouteData } from './app.routes';
 import { AdminOnlyPage } from './pages/admin-only/admin-only.page';
 import { StaffSessionService } from './services/staff-session.service';
@@ -55,6 +55,15 @@ export class App {
     effect(() => {
       this.document.body.dataset['page'] = this.notForRole() ? 'admin-only' : this.routeData().page;
     });
+    // Moving between screens reads the staff session again, so the count of the admin bar is
+    // current; the first screen uses the session read at start-up (L2-190 AC7, ADR 0058).
+    this.router.events
+      .pipe(
+        filter((event) => event instanceof NavigationEnd),
+        skip(1),
+        takeUntilDestroyed(),
+      )
+      .subscribe(() => this.session.refresh());
   }
 
   protected signOut(): void {

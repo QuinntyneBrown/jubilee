@@ -3,16 +3,18 @@
 LAYOUT_WITH_LEGEND()
 title Containers — Feature businesses
 Person(moderator, "Jubilee team member", "Selects featured businesses")
-Person(member, "Member", "Views featured businesses")
+Person(member, "Member or visitor", "Views featured businesses")
 System_Boundary(jubilee, "Jubilee") {
-  Container(web, "Jubilee Web", "Angular single-page application", "Featured admin page and the featured strip on welcome and browse")
-  Container(api, "Jubilee API", "ASP.NET Core", "Admin featured endpoints and the public featured query")
-  ContainerDb(db, "Jubilee database", "SQL Server", "Featured weeks and slots and listings and audit entries")
-  ContainerDb(cache, "Cache", "Redis", "Short-lived cache of the current featured list")
+  Container(admin, "Admin application", "Angular single-page application", "The featured weeks page")
+  Container(web, "Jubilee app", "Angular single-page application", "Featured this week on welcome and Browse")
+  Container(api, "Jubilee API", "ASP.NET Core", "Admin featured endpoints and the public directory reads")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Featured slots, listings and audit entries")
+  ContainerDb(cache, "Cache", "Redis", "Directory read cache, at most 60 seconds")
 }
-Rel(moderator, web, "Uses", "HTTPS")
+Rel(moderator, admin, "Uses", "HTTPS")
 Rel(member, web, "Uses", "HTTPS")
+Rel(admin, api, "Calls", "JSON/HTTPS")
 Rel(web, api, "Calls", "JSON/HTTPS")
 Rel(api, db, "Reads and writes", "EF Core")
-Rel(api, cache, "Reads and invalidates", "Redis protocol")
+Rel(api, cache, "Reads, fills and drops on a save", "Redis protocol")
 @enduml

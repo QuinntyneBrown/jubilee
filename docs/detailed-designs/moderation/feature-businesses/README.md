@@ -21,37 +21,44 @@ actions and are written to the audit log (`L2-180`).
 
 The slice has an admin write path and a public read path.
 
-- **`FeaturedBusinessesPage`** — Angular page of the admin application (`admin/run-admin-application`). It lets a moderator search
-  live listings, order up to five of them, and pick the start date. It stops the
-  selection at five. No mock exists; its route is `/featured` in the admin application; the mock
-  is `pages/admin-featured` and the copy is in it (ADR 0033).
-- **`FeaturedStrip`** — Angular component used by `WelcomePage` and
-  `BrowsePage`. It renders "Featured this week" with one `BusinessCard` per
-  returned business, in slot order, and renders nothing when the list is empty.
-- **`AdminApi`** and **`DirectoryApi`** — typed HTTP clients for the admin
-  write and the public read.
-- **`AdminFeaturedController`** — exposes
-  `PUT /api/admin/featured-weeks/{startDate}` under `RequiresModerator`, the staff policy (`security/authorize-staff-requests`). The PUT
-  replaces the whole selection for that start date, so a repeated request has
-  no further effect.
-- **`SetFeaturedWeekCommand`** and **`SetFeaturedWeekCommandValidator`** — carry
-  `StartDate` and `ListingIds`. The validator returns HTTP 422 when the list
-  holds more than five entries, holds a duplicate, or names a listing whose
-  stage is not `Live`. A start date before today (Toronto) is refused (`START_IN_PAST`), and a week that starts within six days of
-  another week is refused (`WEEK_OVERLAPS`); saving the same start date replaces that week (ADR 0033).
-- **`SetFeaturedWeekCommandHandler`** — creates or replaces the `FeaturedWeek`,
-  appends an `AuditEntry` with the before and after selection, saves both in
-  one unit of work, and removes the cached featured list from the `Cache`.
-- **`FeaturedWeek`** — domain entity. `EndDate` is `StartDate` plus 7 days;
-  `SetSlots` enforces `MaxSlots = 5` and assigns positions; `IsActiveOn(date)`
-  is true from the start date for 7 days. The day boundary is midnight in Toronto (ADR 0033).
-- **`FeaturedSlot`** — value object with `ListingId` and `Position`.
-- **`DirectoryController`** — exposes the public `GET /api/featured`.
-- **`GetFeaturedListingsQueryHandler`** — reads the week active on the current
-  date, joins its slots to listings, and returns only listings whose stage is
-  `Live`. It caches the result in the `Cache`; the cache lifetime is not needed yet: the list is read on each request (ADR 0033). Pausing or removing a listing invalidates the cached list.
-- **`FeaturedBusinessDto`** — public read model with the fields `BusinessCard`
-  renders: name, slug, tagline, photo URL and position.
+- **`AdminFeaturedPage`** — page of the admin application
+  (`admin/run-admin-application`) at `/featured`. It shows the current and coming
+  weeks, lets a moderator search live listings, order up to five of them and pick
+  the start date, and stops the selection at five. The mock is
+  `pages/admin-featured` and the copy is in it (ADR 0033).
+- **`WelcomePage`** and **`BrowsePage`** — pages of the app that render
+  "Featured this week" with one business card per business returned, in slot
+  order, and nothing when the list is empty.
+- **`AdminApi`** (`ADMIN_API`) — `featuredWeeks`, `featuredCandidates` and
+  `setFeaturedWeek`; the app reads the businesses with the welcome and browse
+  reads of `DirectoryApi`.
+- **`AdminFeaturedController`** — exposes `GET /api/admin/featured`,
+  `GET /api/admin/featured/candidates?q=` and
+  `PUT /api/admin/featured-weeks/{startDate}` under `RequiresModerator`, the staff
+  policy (`security/authorize-staff-requests`). The PUT replaces the whole
+  selection for that start date, so a repeated request has no further effect.
+- **`SetFeaturedWeekCommandHandler`** — returns HTTP 422 when the list holds more
+  than five entries (`TOO_MANY`), a duplicate (`DUPLICATE`) or a listing that is
+  not public (`NOT_LIVE`), when the start date is before today in Toronto
+  (`START_IN_PAST`), or when another week starts within six days of it
+  (`WEEK_OVERLAPS`). It replaces the week's `FeaturedSlot` rows and appends the
+  `featured.set` audit entry with the before and after selection, in one save.
+- **`FeaturedSlot`** — domain entity with `ListingId`, `Position` and `StartsOn`;
+  a slot is shown from `StartsOn` for `DurationDays` (7) days, counted in
+  America/Toronto (ADR 0033). A week is the slots that share a start date.
+- **`FeaturedSelector`** — used by `GetWelcomeQueryHandler` (four businesses) and
+  `GetBrowseHomeQueryHandler` (five). It joins the current slots to public
+  listings only (`WherePublic`), so a paused, held or removed listing is skipped
+  and returns when it is public again within the week. With no current slot it
+  returns the most recently published businesses.
+- **`DirectoryController`** — exposes the public `GET /api/directory/welcome` and
+  `GET /api/directory/home`, whose answers carry `featured`.
+- **Cache** — the welcome and browse reads are kept in the directory read cache
+  (`IDirectoryReadCache`) for at most 60 seconds. A save that changes a
+  `FeaturedSlot` or a `Listing` drops it in
+  `DirectoryCacheInvalidationInterceptor` (ADR 0003), so a week saved or saved
+  again, and a featured listing paused, held or removed, shows on the next
+  request (ADR 0058).
 
 ## Requirements
 
@@ -60,7 +67,7 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 
 | L2 ID | Refines (L1) | Requirement |
 |-------|--------------|-------------|
-| `L2-106` | `L1-014` | The system shall let a moderator choose up to five live listings as "Featured this week" with a start date, and shall show those listings on the welcome and browse pages from that date for 7 days. The pages shall skip a featured listing that is paused or removed. |
+| `L2-106` | `L1-014` | The system shall let a moderator choose up to five live listings as "Featured this week" with a start date, and shall show those listings on the welcome and browse pages from that date for 7 days. The pages shall skip a featured listing that is paused, held or removed, and a week saved shall show on the next request. |
 | `L2-133` | `L1-019` | The system shall check the caller's role and ownership of the specific object on every API endpoint before doing anything. |
 | `L2-180` | `L1-025` | The system shall store an append-only audit record with actor, action, target, time, before and after values, and reason for each featured selection. |
 
@@ -75,37 +82,37 @@ and members see them on the welcome and browse pages.
 
 ### Containers
 
-`Jubilee Web` writes the selection and reads the featured list through
-`Jubilee API`, which stores weeks in the `Jubilee database` and caches the
-current list in the `Cache`.
+The admin application writes the selection and the app reads the featured list
+through `Jubilee API`, which stores slots in the `Jubilee database` and keeps the
+welcome and browse reads in the `Cache`.
 
 ![C4 container view for featuring businesses](diagrams/c4-container.png)
 
 ### Components
 
-`FeaturedBusinessesPage` saves through `AdminFeaturedController`;
-`FeaturedStrip` reads through `DirectoryController`. The write handler replaces
-the `FeaturedWeek` and invalidates the cache that the read handler fills.
+`AdminFeaturedPage` saves through `AdminFeaturedController`; `WelcomePage` and
+`BrowsePage` read through `DirectoryController`. The interceptor drops the cache
+that the read handlers fill when the slots are saved.
 
 ![C4 component view for featuring businesses](diagrams/c4-component.png)
 
 ### Class structure
 
-`FeaturedWeek` composes up to five `FeaturedSlot` values, each referring to one
-`Listing`. The read handler returns `FeaturedBusinessDto` items.
+Up to five `FeaturedSlot` rows share a start date, each referring to one
+`Listing`. `FeaturedSelector` returns the public listings of the current slots.
 
 ![Class diagram for featuring businesses](diagrams/class-structure.png)
 
 ### Behaviour — choose the featured businesses
 
-The validator rejects more than five listings or a listing that is not live. The
-handler stores the week with an audit entry and invalidates the cache.
+The handler rejects more than five listings or a listing that is not live,
+stores the slots with an audit entry, and the save drops the cache.
 
 ![Sequence diagram for choosing the featured businesses](diagrams/sequence-set-featured-week.png)
 
 ### Behaviour — show featured businesses
 
-The read handler returns the week active on the current date and skips listings
-that are paused or removed.
+The read handlers return the week active on the current date and skip listings
+that are paused, held or removed.
 
 ![Sequence diagram for showing featured businesses](diagrams/sequence-show-featured.png)

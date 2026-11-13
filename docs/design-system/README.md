@@ -254,3 +254,5 @@ Run again on 11 November 2026, after rooms and rentals (ADR 0042):
 | Tokens in the app | `npm run design:check` in `frontend/` | passed (exit 0): tokens.css and both fonts match the components library |
 
 - **1.5 — 12 Nov 2026.** Hearts on cards (L2-041 AC7 to AC10, ADR 0054). New page: [Saveable card](components/saveable.html), the block `saveable` with `saveable__heart`, a toggle button beside the card's link over the top right of its picture: outlined and named "Save {name}" when unsaved, filled in the danger colour and named "Saved. Remove {name} from saved" when saved, faded with `aria-busy="true"` while its request is on its way. Every mock with a business, product or space card on Browse, a category, search, a shop or a listing or product page now draws the heart; the new state [pages/browse/saved-hearts](../mocks/pages/browse/saved-hearts.html) shows them all. No token was added.
+
+- **1.6 — 12 Nov 2026.** Moderate reports (L2-105 AC1, L2-188 AC3, ADR 0058). [Top bar](components/top-bar.html): the admin bar's "Reports" carries the unresolved reports as a `badge--count` named "{n} unresolved", hidden at 0. No block, modifier or token was added.

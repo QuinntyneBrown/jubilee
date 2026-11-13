@@ -7,4 +7,6 @@ export interface StaffSessionDto {
   initials: string;
   email: string;
   roles: StaffRole[];
+  /** The unresolved reports, for the admin bar (L2-105 AC1, L2-188 AC3). */
+  reportCount: number;
 }

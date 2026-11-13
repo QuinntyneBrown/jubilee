@@ -681,7 +681,9 @@
         "not-found"
       ],
       "requirements": [
-        "L2-188"
+        "L2-188",
+        "L2-105",
+        "L2-190"
       ],
       "not_applicable": {
         "loading": "The shell renders with the staff session it was opened with; each screen inside it has its own loading state.",

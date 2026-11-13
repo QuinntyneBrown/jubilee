@@ -2,6 +2,7 @@ using Jubilee.Application.Abstractions;
 using Jubilee.Application.Accounts;
 using Jubilee.Application.Errors;
 using Jubilee.Application.Listings;
+using Jubilee.Application.Moderation;
 using Jubilee.Application.Requests;
 using Jubilee.Domain;
 using MediatR;
@@ -507,7 +508,8 @@ public sealed class SetConversationMutedCommandHandler(IAppDbContext db) : IRequ
 /// <summary>Reports a conversation to the Jubilee team; a member may also block the business (L2-063).</summary>
 public sealed record ReportConversationCommand(string Subject, Guid ConversationId, string? Reason, bool Block) : IRequest;
 
-public sealed class ReportConversationCommandHandler(IAppDbContext db, TimeProvider clock) : IRequestHandler<ReportConversationCommand>
+public sealed class ReportConversationCommandHandler(IAppDbContext db, TimeProvider clock, TeamSettings team)
+    : IRequestHandler<ReportConversationCommand>
 {
     public async Task Handle(ReportConversationCommand request, CancellationToken cancellationToken)
     {
@@ -539,8 +541,11 @@ public sealed class ReportConversationCommandHandler(IAppDbContext db, TimeProvi
                     "rate_limited", filed[filed.Count - ConversationRules.ReportsPerDay] + ConversationRules.ReportWindow - now);
             }
 
-            db.ConversationReports.Add(ConversationReport.File(
-                row.Conversation.Id, request.Subject, reason.Length > 1000 ? reason[..1000] : reason, now));
+            var report = ConversationReport.File(row.Conversation.Id, request.Subject, reason.Length > 1000 ? reason[..1000] : reason, now);
+            db.ConversationReports.Add(report);
+            var business = await db.Listings.AsNoTracking()
+                .Where(l => l.Id == row.Conversation.ListingId).Select(l => l.Name).SingleAsync(cancellationToken);
+            ConversationReportSubmitted.Tell(db, team, business, report, now);
         }
 
         if (request.Block && !row.AsOwner)
@@ -549,6 +554,24 @@ public sealed class ReportConversationCommandHandler(IAppDbContext db, TimeProvi
         }
 
         await db.SaveChangesAsync(cancellationToken);
+    }
+}
+
+/// <summary>
+/// The Jubilee team's notice of a report of a conversation (L2-105 AC1, ADR 0058): "New report: a conversation with
+/// {business}", with what the reporter wrote and the report in the admin application. It names neither the reporter
+/// nor which side reported, and carries no message: staff read those only through the open report (L2-063 AC3).
+/// </summary>
+public static class ConversationReportSubmitted
+{
+    public static void Tell(IAppDbContext db, TeamSettings team, string business, ConversationReport report, DateTimeOffset now)
+    {
+        var body =
+            $"A conversation was reported. Look at it within one business day.\n\nBusiness: {business}\nWhat happened: {report.Reason}\n\n" +
+            $"Open the report: {JubileeTeam.AdminLink(team, $"/reports/{report.Id}")}\n\n" +
+            "The conversation and the reporter's name are shown to the Jubilee team in the admin application only, while the report is open.\n\n" +
+            "Jubilee · Toronto's Christian marketplace\n";
+        JubileeTeam.Tell(db, team, $"New report: a conversation with {business}", body, now, report.Id);
     }
 }
 
