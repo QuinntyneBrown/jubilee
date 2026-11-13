@@ -36,7 +36,7 @@ public sealed class GetDeletionSummaryQueryHandler(IAppDbContext db) : IRequestH
 /// the saved list and searches go, a confirmation is mailed and the audit log records it. The rest of the personal data
 /// is erased 30 days later by <see cref="AccountErasure"/>.
 /// </summary>
-public sealed record DeleteAccountCommand(Guid MemberId, string? Confirmation) : IRequest;
+public sealed record DeleteAccountCommand(Guid MemberId, string? Confirmation, string? Address = null) : IRequest;
 
 public sealed class DeleteAccountCommandHandler(
     IAppDbContext db, TimeProvider clock, AccountSettings settings, IDirectoryReadCache directory, IDeletionLedger ledger,
@@ -50,6 +50,7 @@ public sealed class DeleteAccountCommandHandler(
         // Exactly the word, in capitals: "delete" or "DELETE " are not it (L2-017 AC2).
         if (!string.Equals(command.Confirmation, Phrase, StringComparison.Ordinal))
         {
+            SecurityLog.Credential(logger, "AccountDeletion", "refused", command.MemberId, command.Address);
             throw new ValidationFailedException(new Dictionary<string, string> { ["confirmation"] = "CONFIRMATION_MISMATCH" });
         }
 
@@ -82,6 +83,7 @@ public sealed class DeleteAccountCommandHandler(
             now));
         await db.SaveChangesAsync(cancellationToken);
         directory.Invalidate();
+        SecurityLog.Credential(logger, "AccountDeletion", "succeeded", member.Id, command.Address);
 
         // Outside the database, so a restore deletes the account again (L2-017 AC7). A write that fails is made by the
         // worker's next pass, from the database.
