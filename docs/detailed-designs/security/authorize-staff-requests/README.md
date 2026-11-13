@@ -27,7 +27,8 @@ the endpoints are those of `L2-098` to `L2-106`.
   `AdminReportsController`, `AdminFeaturedController` and
   `AdminContentController`; because each carries authorization data, the
   fallback policy of the default scheme does not apply to them.
-- **`StaffChallenge`** — the `Staff` scheme's challenge and forbid handlers.
+- **`StaffSession.Configure`** — sets the `Staff` scheme's challenge and forbid
+  events (`OnRedirectToLogin`, `OnRedirectToAccessDenied`).
   A challenge first authenticates the default scheme: a member session answers
   403 with `code` `STAFF_SESSION_REQUIRED` and the title "This is for the
   Jubilee staff." A request with an ended staff cookie answers 401

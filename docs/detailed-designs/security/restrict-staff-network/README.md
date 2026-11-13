@@ -88,7 +88,8 @@ the caller's address and refuse it before authentication.
 ### Class structure
 
 `StaffNetworkMiddleware` asks `StaffNetworks` whether the address is allowed;
-`StaffAccessOptions` holds the list and the proxy key.
+`StaffNetworks.From` reads the list from `StaffAccess:AllowedNetworks`, and
+`StaffProxyMiddleware` reads the proxy key from `StaffAccess:ProxyKey`.
 
 ![Class diagram for restricting staff access by network](diagrams/class-structure.png)
 

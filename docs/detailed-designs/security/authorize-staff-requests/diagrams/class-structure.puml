@@ -18,7 +18,10 @@ class StaffPolicies <<static>> {
 }
 class StaffSession <<static>> {
   +Scheme = "Staff"
-  +Cookie = "__Host-jubilee.staff"
+  +CookieName = "__Host-jubilee.staff"
+  +Configure(options: CookieAuthenticationOptions): void
+  -ChallengeAsync(context): Task
+  -ForbidAsync(context): Task
 }
 class RequiresModeratorAttribute {
   +Policy = StaffPolicies.Moderator
@@ -27,10 +30,6 @@ class RequiresAdminAttribute {
   +Policy = StaffPolicies.Admin
 }
 class AuthorizeAttribute
-class StaffChallenge {
-  +OnRedirectToLogin(context): Task
-  +OnRedirectToAccessDenied(context): Task
-}
 class AdminListingsController
 class AdminReportsController
 class AdminFeaturedController
@@ -41,7 +40,6 @@ AuthorizeAttribute <|-- RequiresAdminAttribute
 RequiresModeratorAttribute ..> StaffPolicies
 RequiresAdminAttribute ..> StaffPolicies
 StaffPolicies ..> StaffSession : authenticates with
-StaffSession --> StaffChallenge : events
 AdminListingsController ..> RequiresModeratorAttribute
 AdminReportsController ..> RequiresModeratorAttribute
 AdminFeaturedController ..> RequiresModeratorAttribute
