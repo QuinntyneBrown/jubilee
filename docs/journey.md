@@ -45,7 +45,7 @@ journey that is implemented: the effort-weighted average of its feature designs 
 | 27 | Meet Jubilee on the marketing site | Read the marketing page and watch the pitch film, by pointer or keyboard, with its captions in the picture. Its links to the app and to listing (L2-185) are suspended while Jubilee is launching soon and wait on the owner's decision to open it; journey 31 takes their place until launch. | 4 | 95% |
 | 28 | Rent a room or space | List a room, suite or hall; find spaces by term on Browse, the category and search; request one and let the owner confirm. | 19 | 100% |
 | 29 | Give feedback | Rate Jubilee, report a bug or send kudos from any screen, answer a check-in, and follow past feedback. | 9 | 99% |
-| 30 | Work in the admin application | Staff sign in to the admin application through single sign-on from an allowed network, work in its shell and sign out; old admin links in the app point there. | 20 | 92% |
+| 30 | Work in the admin application | Staff sign in to the admin application through single sign-on from an allowed network, work in its shell and sign out; old admin links in the app point there. | 20 | 96% |
 | 31 | Get ready for launch | Before Jubilee opens: see that it is launching soon, leave an e-mail address for the launch notice, or send a business's details to be listed on launch day; the team reads them with the CLI. | 7 | 100% |
 | 32 | Write and read reviews | After a request the owner confirmed, write a review of the business, shop or space; read every listing's rating and reviews, sorted and filtered, and its average on the cards; edit or remove your review; the owner replies in public; anyone signed in reports a review and the Jubilee team takes it down. Requirements L2-226 to L2-240. | 14 | 95% |
 
@@ -77,3 +77,6 @@ journey that is implemented: the effort-weighted average of its feature designs 
   is complete and has none. The prompt for journey 27 is for launch day: it restores the links to the app. Its part that did not wait on
   launch (a behaviour spec for every criterion of L2-183, L2-184 and L2-186) was run on 12 November 2026; the
   row stays at 95% because L2-185 waits on the owner's launch decision.
+- The prompt for journey 30 was run on 13 November 2026 (ADR 0070): every criterion of L2-188 to L2-195
+  that code can meet has a test, and the row stays at 96% until the owner works through the checklist under
+  "The admin application" in [`eng/azure/README.md`](../eng/azure/README.md).

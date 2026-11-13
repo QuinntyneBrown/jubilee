@@ -13,7 +13,7 @@
 | manage-session | 5 days | 100% |
 | reset-password | 4 days | 100% |
 | sign-in | 4 days | 100% |
-| sign-in-as-staff | 5 days | 90% |
+| sign-in-as-staff | 5 days | 95% |
 
 ## Left in journey 4 (ADR 0049)
 
@@ -35,4 +35,4 @@ edit-profile and change-credentials (ADR 0028, ADR 0041, ADR 0065, journey 20): 
 
 choose-notification-settings (ADR 0028, ADR 0053): the five switches and "How often" save one at a time with their saving, saved and failed states, and "One daily summary" now holds the e-mail of "New messages" and "Request updates" for one e-mail at 7:00 a.m. in Toronto, with tests (`AccountSettingsTests.Preferences`, `EmailNotificationTests.DailySummary`, `account.spec.ts`). Nothing is left.
 
-ADR 0057 is done in sign-in-as-staff: the staff role is `moderator` ("Moderator") on the wire, in the admin bar and in `jubilee staff grant --role moderator|admin`, and the stored flag keeps the value of the former `verifier` role. Left, as before ADR 0057: the owner's Entra ID registration and Conditional Access (`eng/azure/README.md`).
+sign-in-as-staff (ADR 0040, ADR 0057, ADR 0070): staff sign-in through single sign-on with a proved second factor, the staff session in its own cookie, the CLI's staff accounts with their audited role changes, and the staff account acting as the member with its confirmed address (L2-193 AC6) are done with tests (`StaffSignInTests`, `StaffAccessTests`, `StaffCommandTests`); the role is `moderator` ("Moderator") and the stored flag keeps the value of the former `verifier` role. Left for the owner: the Entra ID registration, its Conditional Access and the staff sign-in settings (steps 1, 2 and 4 of the owner's checklist in `eng/azure/README.md`); no automated test reaches the real identity provider.
