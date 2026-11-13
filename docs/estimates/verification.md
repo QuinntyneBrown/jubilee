@@ -9,8 +9,8 @@ its name so that the journey prompts that link it still resolve.
 | Design | Effort | Complete |
 |---|---|---|
 | browse-listings | 4 days | 95% |
-| feature-businesses | 3 days | 85% |
-| handle-reports | 4 days | 80% |
+| feature-businesses | 3 days | 100% |
+| handle-reports | 4 days | 100% |
 | take-down-listing | 4 days | 95% |
 
 browse-listings and take-down-listing (ADR 0057) are done with tests (`AdminListingsTests`,
@@ -25,4 +25,4 @@ record of a role change made with `jubilee staff grant|revoke` (L2-098 AC4). The
 the owner's other listings and drafts with their stages (L2-079 AC3, `AdminOtherListing`). Left in
 take-down-listing: opening a listing writes no audit record of the access (L2-150 AC1).
 
-handle-reports and feature-businesses (ADR 0033): the reports list (unresolved, open, in review, resolved; oldest first; overdue after 2 business days), one report that opens into review and shows a reported conversation (and records the access), the six actions with a required resolution note and the message dialogs, the audit log, the owner and reporter notifications, and the featured weeks page (live search, order, at most five, start date rules, Toronto day boundary) are done with tests (`ModerationTests`, `moderation.spec.ts`). The notices and e-mails speak for "the Jubilee team" and the role is `moderator` (ADR 0057). The team is e-mailed when a report of a listing arrives (`JubileeTeam.Tell`, report-listing, ADR 0055). Deferred: the realtime `report.created` event, the report count in the top bar, and the outbox handling of holds and removals the design describes (today the handler tells the owner directly and the directory cache is dropped on save). The second factor (L2-098 AC2) and granting and revoking the role with `jubilee staff` (L2-098 AC4) landed with the admin application.
+handle-reports and feature-businesses (ADR 0033, ADR 0058) are complete: the reports list, one report and its six actions, the audit log, the owner and reporter notifications, the team's e-mail of a report of a listing or a conversation (`ReportNoticeTests`, `ConversationReportNoticeTests`), the count of unresolved reports in the admin bar (`moderation.spec.ts`, `ModerationTests`), holds, removals and featured weeks on every public page on the next request (`ModerationBoundTests`), and the featured weeks page. The notices and e-mails speak for "the Jubilee team" and the role is `moderator` (ADR 0057).
