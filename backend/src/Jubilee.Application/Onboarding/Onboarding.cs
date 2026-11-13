@@ -420,8 +420,9 @@ public sealed partial class PublishListingCommandHandler(IAppDbContext db, TimeP
             // A platform always sits in Software platforms, so it has no category to choose (L2-249 AC2).
             Drafts.ValidatePlatform(input.Platform, errors);
         }
-        else if (input.CategorySlug is null || Category.Find(input.CategorySlug) is null)
+        else if (input.CategorySlug is null || Category.Find(input.CategorySlug) is null || input.CategorySlug == Category.PlatformsSlug)
         {
+            // Only a platform sits in Software platforms (L2-248 AC1), so a business has still to choose.
             errors["categorySlug"] = "REQUIRED";
         }
 

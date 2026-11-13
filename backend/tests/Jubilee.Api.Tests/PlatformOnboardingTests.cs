@@ -163,6 +163,21 @@ public sealed class PlatformOnboardingTests : IClassFixture<JubileeApiFactory>, 
         await _factory.WithDb(async db => Assert.Equal(0, await db.Listings.CountAsync()));
     }
 
+    [Fact]
+    public async Task L2_248_AC1_a_business_is_never_published_into_software_platforms()
+    {
+        var body = Body();
+        body["kind"] = "services";
+        body["categorySlug"] = "software-platforms";
+        body["platform"] = null;
+
+        var response = await Publish(body);
+
+        Assert.Equal(HttpStatusCode.UnprocessableEntity, response.StatusCode);
+        Assert.Equal("REQUIRED", (await Json(response)).GetProperty("errors").GetProperty("categorySlug").GetString());
+        await _factory.WithDb(async db => Assert.Equal(0, await db.Listings.CountAsync()));
+    }
+
     [Theory]
     [InlineData("http://lanternread.example")]
     [InlineData("lanternread.example")]
