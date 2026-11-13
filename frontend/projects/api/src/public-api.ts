@@ -31,6 +31,7 @@ export * from './lib/models/requests';
 export * from './lib/api/listing-drafts-api';
 export * from './lib/models/listing-drafts';
 export * from './lib/api/admin-api';
+export * from './lib/api/admin-content-api';
 export * from './lib/models/moderation';
 export * from './lib/models/account-data';
 export * from './lib/api/account-data-api';

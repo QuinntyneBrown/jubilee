@@ -12,8 +12,9 @@ const BARE: AdminRouteData = { shell: 'bare', page: '' };
 
 /**
  * The root of the admin application (L2-188): the skip link, the admin bar and the routed screen
- * in `main`. A screen of the Jubilee team shows "Nothing here for your role" in its place to
- * a staff member without the moderator role, and is never loaded for them (L2-188 AC4).
+ * in `main`. A screen shows "Nothing here for your role" in its place to a staff member without
+ * the role it needs, and is never loaded for them: the moderator role for the Jubilee team's
+ * screens (L2-188 AC4), the admin role for the policies (L2-226 AC10).
  */
 @Component({
   selector: 'jb-root',
@@ -44,12 +45,11 @@ export class App {
 
   protected readonly staff = computed<StaffChromeMember | null>(() => this.session.staff());
 
-  /** A screen of the Jubilee team, opened by a staff member without the moderator role. */
-  protected readonly notForRole = computed(
-    () =>
-      this.routeData().moderator === true &&
-      !(this.session.staff()?.roles.includes('moderator') ?? false),
-  );
+  /** The role the screen needs, when the staff member does not hold it. */
+  protected readonly notForRole = computed(() => {
+    const role = this.routeData().role;
+    return role && !(this.session.staff()?.roles.includes(role) ?? false) ? role : null;
+  });
 
   constructor() {
     effect(() => {

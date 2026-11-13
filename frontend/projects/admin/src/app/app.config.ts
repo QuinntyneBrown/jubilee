@@ -6,7 +6,14 @@ import {
   provideBrowserGlobalErrorListeners,
 } from '@angular/core';
 import { provideRouter } from '@angular/router';
-import { ADMIN_API, HttpAdminApi, HttpStaffSessionApi, STAFF_SESSION_API } from 'api';
+import {
+  ADMIN_API,
+  ADMIN_CONTENT_API,
+  HttpAdminApi,
+  HttpAdminContentApi,
+  HttpStaffSessionApi,
+  STAFF_SESSION_API,
+} from 'api';
 import { routes } from './app.routes';
 import { sessionExpiredInterceptor } from './services/session-expired.interceptor';
 import { StaffSessionService } from './services/staff-session.service';
@@ -19,6 +26,7 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     { provide: STAFF_SESSION_API, useClass: HttpStaffSessionApi },
     { provide: ADMIN_API, useClass: HttpAdminApi },
+    { provide: ADMIN_CONTENT_API, useClass: HttpAdminContentApi },
     provideAppInitializer(() => inject(StaffSessionService).resolve()),
   ],
 };
