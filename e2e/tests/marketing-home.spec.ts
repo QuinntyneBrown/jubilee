@@ -242,6 +242,23 @@ test.describe('pitch film player (L2-184)', () => {
     await expect.poll(async () => Math.floor(await home.filmTime())).toBeGreaterThanOrEqual(43);
   });
 
+  test('AC5: without sound the narration is readable, because the captions are in the picture', async ({
+    page,
+    jb,
+  }) => {
+    const home = new MarketingHomePage(page);
+    await jb.open('marketing-home');
+    await home.play.click();
+    // Given the film without sound, when it stands at a line of narration in each chapter
+    // ("On Sunday, we’re sent out…", "God gives us the power to get wealth.", and 0:44)
+    for (const seconds of [2, 23.6, 44.3]) {
+      const band = await home.captionBand(seconds);
+      // Then the line stands under the picture: light type on the dark caption box
+      expect(band.light, `light type at ${seconds} s`).toBeGreaterThan(0.05);
+      expect(band.dark, `the caption box at ${seconds} s`).toBeGreaterThan(0.3);
+    }
+  });
+
   test('AC4: "Watch the film" moves the page to the film section', async ({ page, jb }) => {
     const home = new MarketingHomePage(page);
     await jb.open('marketing-home');
