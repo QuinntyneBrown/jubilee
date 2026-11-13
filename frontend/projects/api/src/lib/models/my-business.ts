@@ -54,6 +54,8 @@ export interface MyBusiness {
   listingId: string | null;
   name: string | null;
   slug: string | null;
+  /** The listing's address, `https://{slug}.jubilee.to`; null where no address domain is set (L2-244). */
+  address?: string | null;
   tagline: string | null;
   categorySlug: string | null;
   /** The category as members read it, for example "Shops" (L2-086 AC4). */
@@ -88,6 +90,8 @@ export interface ListingEditor {
   id: string;
   version: number;
   slug: string;
+  /** The listing's address, `https://{slug}.jubilee.to`; null where no address domain is set (L2-244). */
+  address?: string | null;
   /** Where the listing stands, for the workspace header: "Live since June 2026" (L2-097 AC3). */
   subtitle: string;
   stage: string;

@@ -539,7 +539,7 @@ export class BusinessPage {
   /** "Share" (L2-038): anyone, signed in or not, gets the listing's link. */
   private openShare(listing: ListingPage): void {
     const ref = this.dialog.open<void, ShareListingData>(ShareListingDialog, {
-      data: { slug: listing.slug, businessName: listing.name },
+      data: { slug: listing.slug, address: listing.address, businessName: listing.name },
       ariaLabelledBy: 'dlg-title',
       ariaDescribedBy: 'dlg-desc',
       ariaModal: true,

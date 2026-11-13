@@ -1,5 +1,6 @@
 import { expect, test } from '../fixtures/jb-test';
 import { stubReports } from '../fixtures/reports';
+import { patchListing } from '../fixtures/stubs';
 import { BusinessPage } from '../pages/business.page';
 import { ReportListingDialog } from '../pages/report-listing.dialog';
 import { ShareListingDialog } from '../pages/share-listing.dialog';
@@ -84,6 +85,48 @@ test.describe('share a listing (L2-038)', () => {
     expect(shared).toHaveLength(1);
     expect(shared[0].title).toMatch(/ on Jubilee$/);
     expect(shared[0].url).toMatch(/\/b\/luzandre$/);
+  });
+
+  test('L2-244 AC1: with an address, the dialog shows, copies, e-mails, sends and shares the address', async ({
+    page,
+    jb,
+    context,
+  }) => {
+    await context.grantPermissions(['clipboard-read', 'clipboard-write']);
+    await page.addInitScript(() => {
+      const shared: ShareData[] = [];
+      Object.assign(window, { jbShared: shared });
+      Object.defineProperty(Navigator.prototype, 'share', {
+        configurable: true,
+        value: async (data: ShareData) => {
+          shared.push(data);
+        },
+      });
+    });
+    const address = 'https://luzandre.jubilee.to';
+    await patchListing(page, '**/api/listings/luzandre', (listing) => ({ ...listing, address }));
+    const business = new BusinessPage(page);
+    const share = new ShareListingDialog(page);
+    await business.setWidth(1280);
+    await jb.goto('/b/luzandre');
+    await business.shareLink.first().click();
+
+    await expect(share.link).toHaveValue(address);
+    await expect(share.email).toHaveAttribute(
+      'href',
+      new RegExp(`&body=${encodeURIComponent(address)}$`),
+    );
+    await expect(share.whatsapp).toHaveAttribute(
+      'href',
+      new RegExp(`${encodeURIComponent(' on Jubilee ' + address)}$`),
+    );
+    await share.copy.click();
+    expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(address);
+    await share.more.click();
+    const shared = await page.evaluate(
+      () => (window as unknown as { jbShared: ShareData[] }).jbShared,
+    );
+    expect(shared[0].url).toBe(address);
   });
 
   test('AC3: without the Web Share API, "More…" is hidden', async ({ page, jb }) => {

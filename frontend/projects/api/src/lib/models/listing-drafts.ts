@@ -83,6 +83,8 @@ export interface ListingDraftBody {
 export interface PublishedListing {
   listingId: string;
   slug: string;
+  /** The listing's address, `https://{slug}.jubilee.to`; null where no address domain is set (L2-244). */
+  address?: string | null;
   name: string;
   kind: OfferKind;
   stage: 'live';

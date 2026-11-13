@@ -73,6 +73,8 @@ export interface ListingPagePhoto {
 /** `GET /api/listings/{slug}`: the listing page of one business (L2-033, L2-034). */
 export interface ListingPage {
   slug: string;
+  /** The listing's address, `https://{slug}.jubilee.to`; null where no address domain is set (L2-244). */
+  address?: string | null;
   kind: ListingKind;
   name: string;
   category: CategoryLink;
