@@ -1349,7 +1349,7 @@
       "title": "We can't find that.",
       "status": 404,
       "detail": "There is no such category.",
-      "correlationId": "0c9ae11ce15a49cf8b7ba9b4cae437a3",
+      "correlationId": "f1bdcfb23beb4df48af8b1951b78c2bd",
       "code": "category_not_found"
     }
   },
@@ -2463,7 +2463,7 @@
     "body": {
       "title": "Sign in to continue.",
       "status": 401,
-      "correlationId": "7d31f5ccac9d4012a89a96b554ce8ad0",
+      "correlationId": "eb553e04c3df4debbbe12bdb9c3644e4",
       "code": "sign_in_required"
     }
   },
@@ -2500,7 +2500,7 @@
         "languages": null,
         "delivery": null,
         "madeToOrder": null,
-        "onJubileeSince": "2026-10-30T05:19:10.1971614+00:00",
+        "onJubileeSince": "2026-10-30T17:10:34.659047+00:00",
         "replies": null
       },
       "services": [],
@@ -2600,7 +2600,9 @@
       ],
       "openRequestId": null,
       "repliesFast": false,
-      "photos": []
+      "address": null,
+      "photos": [],
+      "platform": null
     }
   },
   "GET /api/listings/annex-basement-apartment/reviews": {
@@ -2628,7 +2630,7 @@
       "title": "We can't find that.",
       "status": 404,
       "detail": "There is no such business.",
-      "correlationId": "27d53bd659d8437382d8a746177b9df1",
+      "correlationId": "a7ab721a3b4c4bfb941d54e97420a5ee",
       "code": "listing_not_found"
     }
   },
@@ -2657,7 +2659,7 @@
         "languages": null,
         "delivery": null,
         "madeToOrder": null,
-        "onJubileeSince": "2026-10-25T17:49:20.3194136+00:00",
+        "onJubileeSince": "2026-10-25T20:10:34.659047+00:00",
         "replies": null
       },
       "services": [],
@@ -2692,7 +2694,9 @@
       "relatedSpaces": [],
       "openRequestId": null,
       "repliesFast": false,
-      "photos": []
+      "address": null,
+      "photos": [],
+      "platform": null
     }
   },
   "GET /api/listings/deeks-insurance/reviews": {
@@ -2739,7 +2743,7 @@
         "languages": null,
         "delivery": null,
         "madeToOrder": null,
-        "onJubileeSince": "2026-10-30T04:19:10.1971614+00:00",
+        "onJubileeSince": "2026-10-30T16:10:34.659047+00:00",
         "replies": null
       },
       "services": [],
@@ -2839,7 +2843,9 @@
       ],
       "openRequestId": null,
       "repliesFast": false,
-      "photos": []
+      "address": null,
+      "photos": [],
+      "platform": null
     }
   },
   "GET /api/listings/east-york-roommate/reviews": {
@@ -2886,7 +2892,7 @@
         "languages": null,
         "delivery": null,
         "madeToOrder": null,
-        "onJubileeSince": "2026-09-12T19:21:59.0647701+00:00",
+        "onJubileeSince": "2026-09-12T20:10:34.659047+00:00",
         "replies": null
       },
       "services": [],
@@ -2918,6 +2924,7 @@
       "relatedSpaces": [],
       "openRequestId": null,
       "repliesFast": false,
+      "address": null,
       "photos": [],
       "platform": {
         "website": "https://lanternread.example",
@@ -2946,7 +2953,7 @@
       "writing": "sign-in",
       "items": [
         {
-          "id": "502f5972-e8b7-4d6b-95cd-af3354a6d010",
+          "id": "4803760d-aa46-4ba8-89b6-13249cd7d09d",
           "author": "Grace A.",
           "initials": "GA",
           "rating": 5,
@@ -2959,7 +2966,7 @@
           "reply": null
         },
         {
-          "id": "b7a0b543-1f5d-4e5b-a8ed-3c929ff3be46",
+          "id": "aebf22d6-5df1-434e-9fb5-569b2d8184f0",
           "author": "Samuel P.",
           "initials": "SP",
           "rating": 5,
@@ -2972,7 +2979,7 @@
           "reply": null
         },
         {
-          "id": "26f20b79-56f8-4401-ae30-7b31427b2090",
+          "id": "0c3c791d-a739-45cd-9519-9912d5c67933",
           "author": "Ruth M.",
           "initials": "RM",
           "rating": 4,
@@ -2990,7 +2997,7 @@
           }
         },
         {
-          "id": "3047d9b4-0465-4c2e-9c4f-eaa19556f768",
+          "id": "4b86f34c-b25b-4938-99d3-f00cbd5dc017",
           "author": "David C.",
           "initials": "DC",
           "rating": 3,
@@ -3037,7 +3044,7 @@
       },
       "services": [
         {
-          "id": "6309ef0e-67fa-4982-a1c5-25a358f792bb",
+          "id": "82033d02-4672-47fc-ba5d-372e684853f2",
           "name": "Discovery meeting",
           "detail": "30 min · In person or video",
           "priceKind": "free",
@@ -3045,7 +3052,7 @@
           "action": "book"
         },
         {
-          "id": "38194786-7488-4f78-8267-43db95787dc1",
+          "id": "6d467cd9-8359-49c1-9475-fbe0bb361191",
           "name": "Retirement & RRSP review",
           "detail": "60 min · Bring your statements",
           "priceKind": "ask",
@@ -3053,7 +3060,7 @@
           "action": "book"
         },
         {
-          "id": "d436f8a9-e8c3-4180-89c4-b592b550d01f",
+          "id": "73a15eae-ec12-44ac-a45f-81671e64d41a",
           "name": "Life & disability insurance review",
           "detail": "45 min",
           "priceKind": "free",
@@ -3061,7 +3068,7 @@
           "action": "book"
         },
         {
-          "id": "7062cb46-73bd-4ca4-ac5f-9cdcc2d98d24",
+          "id": "ed45ab2d-0a24-46c3-bb0d-be53d718cc08",
           "name": "Estate & legacy plan",
           "detail": "Two sessions, written plan",
           "priceKind": "ask",
@@ -3097,7 +3104,9 @@
       "relatedSpaces": [],
       "openRequestId": null,
       "repliesFast": false,
-      "photos": []
+      "address": null,
+      "photos": [],
+      "platform": null
     }
   },
   "GET /api/listings/legacy-financial/reviews": {
@@ -3118,11 +3127,11 @@
       "writing": "sign-in",
       "items": [
         {
-          "id": "19d0229b-9ff9-451c-b249-76a44350e19b",
+          "id": "36f15fa4-d11f-4f96-ac91-ee98cd041aa0",
           "author": "Grace A.",
           "initials": "GA",
           "rating": 5,
-          "itemId": "357085ae-2aa9-4a79-93ef-8361f1332a78",
+          "itemId": "ed45ab2d-0a24-46c3-bb0d-be53d718cc08",
           "itemName": "Estate & legacy plan",
           "text": "Trevor helped my husband and me write wills and a giving plan after our second child. He never pushed a product, prayed with us at the end of the first meeting, and the written plan was clear enough that our parents understood it too.",
           "createdAt": "2026-11-03T17:00:00+00:00",
@@ -3136,11 +3145,11 @@
           }
         },
         {
-          "id": "d5c28263-fc49-4b6a-b814-c2dd2945b892",
+          "id": "4d503c6b-7c17-4ed7-a2bc-12c6690e9ac2",
           "author": "Marcus T.",
           "initials": "MT",
           "rating": 5,
-          "itemId": "97639d6c-059b-4a41-8358-89b968ec5a58",
+          "itemId": "82033d02-4672-47fc-ba5d-372e684853f2",
           "itemName": "Discovery meeting",
           "text": "Booked the free meeting expecting a sales pitch. Got an honest look at our debt and a plan to be clear of it in three years. We went back for the RRSP review.",
           "createdAt": "2026-10-20T17:00:00+00:00",
@@ -3149,11 +3158,11 @@
           "reply": null
         },
         {
-          "id": "c13e1d67-5a82-4430-8a62-8dba0def540e",
+          "id": "3dacb559-8428-473c-b387-7147c17eb7ad",
           "author": "Esther L.",
           "initials": "EL",
           "rating": 4,
-          "itemId": "f9a34a0f-410c-4af1-9a64-2a7d6113c029",
+          "itemId": "6d467cd9-8359-49c1-9475-fbe0bb361191",
           "itemName": "Retirement & RRSP review",
           "text": "Very knowledgeable and patient with my questions. Scheduling took longer than I hoped in tax season, so book early.",
           "createdAt": "2026-09-08T17:00:00+00:00",
@@ -3167,11 +3176,11 @@
           }
         },
         {
-          "id": "982ca750-232c-4939-9a1a-411abc10cc51",
+          "id": "69360bda-6714-42ac-9406-e79fcd972d76",
           "author": "Priya S.",
           "initials": "PS",
           "rating": 4,
-          "itemId": "97639d6c-059b-4a41-8358-89b968ec5a58",
+          "itemId": "82033d02-4672-47fc-ba5d-372e684853f2",
           "itemName": "Discovery meeting",
           "text": "Helpful first meeting and no pressure, but the follow-up notes took two weeks to arrive and I had to ask for them twice.",
           "createdAt": "2026-08-02T17:00:00+00:00",
@@ -3180,11 +3189,11 @@
           "reply": null
         },
         {
-          "id": "2e93736a-a7ef-4534-b376-33b97a44f07b",
+          "id": "2639f1c3-777f-4f6a-a462-ed9f83318f49",
           "author": "Paul K.",
           "initials": "PK",
           "rating": 5,
-          "itemId": "a504cc45-8bb4-4fad-8c6c-daed1ab3e811",
+          "itemId": "73a15eae-ec12-44ac-a45f-81671e64d41a",
           "itemName": "Life & disability insurance review",
           "text": "Found we were paying for two overlapping policies. Saved us $64 a month.",
           "createdAt": "2026-06-15T17:00:00+00:00",
@@ -3220,7 +3229,7 @@
         "languages": null,
         "delivery": null,
         "madeToOrder": null,
-        "onJubileeSince": "2026-10-30T06:19:10.1971614+00:00",
+        "onJubileeSince": "2026-10-30T18:10:34.659047+00:00",
         "replies": null
       },
       "services": [],
@@ -3321,7 +3330,9 @@
       ],
       "openRequestId": null,
       "repliesFast": false,
-      "photos": []
+      "address": null,
+      "photos": [],
+      "platform": null
     }
   },
   "GET /api/listings/leslieville-family-room/reviews": {
@@ -3373,7 +3384,7 @@
       },
       "services": [
         {
-          "id": "f82c10eb-55de-4dd4-9a74-85c7f84c5dba",
+          "id": "21421e6d-c8af-416a-9a2e-f2619f7eb70c",
           "name": "Custom design consultation",
           "detail": "30 min · Video",
           "priceKind": "free",
@@ -3381,7 +3392,7 @@
           "action": "ask"
         },
         {
-          "id": "d9b5ce1c-f10c-4517-8801-7fe6938e31b0",
+          "id": "b83cda20-36e3-4629-99c6-252730014308",
           "name": "Church merch package",
           "detail": "Tees, mugs and totes for your congregation",
           "priceKind": "ask",
@@ -3477,13 +3488,15 @@
       "relatedSpaces": [],
       "openRequestId": null,
       "repliesFast": false,
-      "photos": []
+      "address": null,
+      "photos": [],
+      "platform": null
     }
   },
   "GET /api/listings/luzandre/products/custom-church-team-tee": {
     "status": 200,
     "body": {
-      "id": "9b06fc15-8870-4533-a96d-617fbfb4b96d",
+      "id": "85866949-6540-4d0a-aa5c-8f3135b9d75b",
       "slug": "custom-church-team-tee",
       "name": "Custom church team tee (min. 12)",
       "priceCents": 2200,
@@ -3564,7 +3577,7 @@
   "GET /api/listings/luzandre/products/faith-heavyweight-tee-charcoal": {
     "status": 200,
     "body": {
-      "id": "91ecd1d1-ca36-4e35-b4d0-b78e46bbae6b",
+      "id": "732d09b9-7aa3-461d-993a-d5875b848c69",
       "slug": "faith-heavyweight-tee-charcoal",
       "name": "Faith heavyweight tee, charcoal",
       "priceCents": 3400,
@@ -3678,7 +3691,7 @@
   "GET /api/listings/luzandre/products/gold-cross-stoneware-mug": {
     "status": 200,
     "body": {
-      "id": "bc3f5206-3479-4954-9062-119da2b6ab48",
+      "id": "01e08338-4823-4d4a-acb4-5ed1026079b2",
       "slug": "gold-cross-stoneware-mug",
       "name": "Gold cross stoneware mug",
       "priceCents": 2400,
@@ -3763,7 +3776,7 @@
       "title": "We can't find that.",
       "status": 404,
       "detail": "There is no such product.",
-      "correlationId": "a7a3c7d4f5004d798c9c89e50828e82d",
+      "correlationId": "d31ea07a7c194c20992f000ee9755d67",
       "code": "product_not_found"
     }
   },
@@ -3785,11 +3798,11 @@
       "writing": "sign-in",
       "items": [
         {
-          "id": "f5a29c2f-0680-46de-9528-5894905d4f46",
+          "id": "079f760d-d9aa-42c0-8191-f39b95a08bf2",
           "author": "Tamara J.",
           "initials": "TJ",
           "rating": 5,
-          "itemId": "9b06fc15-8870-4533-a96d-617fbfb4b96d",
+          "itemId": "85866949-6540-4d0a-aa5c-8f3135b9d75b",
           "itemName": "Custom church team tee (min. 12)",
           "text": "Ordered 40 tees for our youth retreat. The proof came back the same day, the print is thick and hasn’t cracked after a dozen washes. The kids actually wear them outside church.",
           "createdAt": "2026-11-05T17:00:00+00:00",
@@ -3803,11 +3816,11 @@
           }
         },
         {
-          "id": "e60635e0-8733-41e6-ae7d-6ad168c5dbc9",
+          "id": "a126ade1-ed0a-4c09-88f9-0414c6223400",
           "author": "Ruth M.",
           "initials": "RM",
           "rating": 5,
-          "itemId": "bc3f5206-3479-4954-9062-119da2b6ab48",
+          "itemId": "01e08338-4823-4d4a-acb4-5ed1026079b2",
           "itemName": "Gold cross stoneware mug",
           "text": "Heavier than I expected in a good way. The gold has stayed bright in the dishwasher.",
           "createdAt": "2026-10-12T17:00:00+00:00",
@@ -3816,11 +3829,11 @@
           "reply": null
         },
         {
-          "id": "23cea7a8-795d-409f-86da-ee9575cf6834",
+          "id": "68ca4775-0c45-4ee8-82a9-c83b59150d8b",
           "author": "Samuel P.",
           "initials": "SP",
           "rating": 4,
-          "itemId": "bc3f5206-3479-4954-9062-119da2b6ab48",
+          "itemId": "01e08338-4823-4d4a-acb4-5ed1026079b2",
           "itemName": "Gold cross stoneware mug",
           "text": "Good mug, solid glaze. It took nine days to ship to Scarborough, longer than the five I was told.",
           "createdAt": "2026-09-30T17:00:00+00:00",
@@ -3829,11 +3842,11 @@
           "reply": null
         },
         {
-          "id": "9adce508-0778-480e-b6d8-2c1153381944",
+          "id": "461f6093-a0ab-465b-ab72-33caf741882f",
           "author": "Kofi B.",
           "initials": "KB",
           "rating": 3,
-          "itemId": "1e6c7b0d-4639-4975-bbe2-0daa0b63b3c2",
+          "itemId": "732d09b9-7aa3-461d-993a-d5875b848c69",
           "itemName": "Faith heavyweight tee, charcoal",
           "text": "Love the design. Runs a full size small, so order up. Exchange was easy but took about two weeks by mail.",
           "createdAt": "2026-08-14T17:00:00+00:00",
@@ -3847,11 +3860,11 @@
           }
         },
         {
-          "id": "a6eb38ef-d7e9-43e7-9549-3a2f38c351a3",
+          "id": "8dcac0e7-3557-4f0d-9b3e-81c36b96d120",
           "author": "David C.",
           "initials": "DC",
           "rating": 5,
-          "itemId": "bc3f5206-3479-4954-9062-119da2b6ab48",
+          "itemId": "01e08338-4823-4d4a-acb4-5ed1026079b2",
           "itemName": "Gold cross stoneware mug",
           "text": "Bought two as gifts for our small group leaders. Both arrived well packed and they use them every Sunday.",
           "createdAt": "2026-07-22T17:00:00+00:00",
@@ -3880,11 +3893,11 @@
       "writing": "sign-in",
       "items": [
         {
-          "id": "f5a29c2f-0680-46de-9528-5894905d4f46",
+          "id": "079f760d-d9aa-42c0-8191-f39b95a08bf2",
           "author": "Tamara J.",
           "initials": "TJ",
           "rating": 5,
-          "itemId": "9b06fc15-8870-4533-a96d-617fbfb4b96d",
+          "itemId": "85866949-6540-4d0a-aa5c-8f3135b9d75b",
           "itemName": "Custom church team tee (min. 12)",
           "text": "Ordered 40 tees for our youth retreat. The proof came back the same day, the print is thick and hasn’t cracked after a dozen washes. The kids actually wear them outside church.",
           "createdAt": "2026-11-05T17:00:00+00:00",
@@ -3918,11 +3931,11 @@
       "writing": "sign-in",
       "items": [
         {
-          "id": "9c635e51-9511-42b3-ae8f-a2d5d30e0282",
+          "id": "461f6093-a0ab-465b-ab72-33caf741882f",
           "author": "Kofi B.",
           "initials": "KB",
           "rating": 3,
-          "itemId": "91ecd1d1-ca36-4e35-b4d0-b78e46bbae6b",
+          "itemId": "732d09b9-7aa3-461d-993a-d5875b848c69",
           "itemName": "Faith heavyweight tee, charcoal",
           "text": "Love the design. Runs a full size small, so order up. Exchange was easy but took about two weeks by mail.",
           "createdAt": "2026-08-14T17:00:00+00:00",
@@ -3956,11 +3969,11 @@
       "writing": "sign-in",
       "items": [
         {
-          "id": "e60635e0-8733-41e6-ae7d-6ad168c5dbc9",
+          "id": "a126ade1-ed0a-4c09-88f9-0414c6223400",
           "author": "Ruth M.",
           "initials": "RM",
           "rating": 5,
-          "itemId": "bc3f5206-3479-4954-9062-119da2b6ab48",
+          "itemId": "01e08338-4823-4d4a-acb4-5ed1026079b2",
           "itemName": "Gold cross stoneware mug",
           "text": "Heavier than I expected in a good way. The gold has stayed bright in the dishwasher.",
           "createdAt": "2026-10-12T17:00:00+00:00",
@@ -3969,11 +3982,11 @@
           "reply": null
         },
         {
-          "id": "23cea7a8-795d-409f-86da-ee9575cf6834",
+          "id": "68ca4775-0c45-4ee8-82a9-c83b59150d8b",
           "author": "Samuel P.",
           "initials": "SP",
           "rating": 4,
-          "itemId": "bc3f5206-3479-4954-9062-119da2b6ab48",
+          "itemId": "01e08338-4823-4d4a-acb4-5ed1026079b2",
           "itemName": "Gold cross stoneware mug",
           "text": "Good mug, solid glaze. It took nine days to ship to Scarborough, longer than the five I was told.",
           "createdAt": "2026-09-30T17:00:00+00:00",
@@ -3982,11 +3995,11 @@
           "reply": null
         },
         {
-          "id": "a6eb38ef-d7e9-43e7-9549-3a2f38c351a3",
+          "id": "8dcac0e7-3557-4f0d-9b3e-81c36b96d120",
           "author": "David C.",
           "initials": "DC",
           "rating": 5,
-          "itemId": "bc3f5206-3479-4954-9062-119da2b6ab48",
+          "itemId": "01e08338-4823-4d4a-acb4-5ed1026079b2",
           "itemName": "Gold cross stoneware mug",
           "text": "Bought two as gifts for our small group leaders. Both arrived well packed and they use them every Sunday.",
           "createdAt": "2026-07-22T17:00:00+00:00",
@@ -4022,7 +4035,7 @@
         "languages": null,
         "delivery": null,
         "madeToOrder": null,
-        "onJubileeSince": "2026-10-30T16:49:20.3194136+00:00",
+        "onJubileeSince": "2026-10-30T19:10:34.659047+00:00",
         "replies": null
       },
       "services": [],
@@ -4122,7 +4135,9 @@
       ],
       "openRequestId": null,
       "repliesFast": false,
-      "photos": []
+      "address": null,
+      "photos": [],
+      "platform": null
     }
   },
   "GET /api/listings/roncesvalles-guest-suite/reviews": {
@@ -4143,7 +4158,7 @@
       "writing": "sign-in",
       "items": [
         {
-          "id": "6222f2db-0385-4f06-acee-c4d057b9de7d",
+          "id": "4451b92d-12d1-4cc0-b0aa-51d44a475a3b",
           "author": "Lydia M.",
           "initials": "LM",
           "rating": 5,
@@ -4161,7 +4176,7 @@
           }
         },
         {
-          "id": "618bb74e-b7fd-425f-bc4b-d821430e6207",
+          "id": "936779c5-df2f-4cd4-9fe5-82d3d28df3c4",
           "author": "Chris D.",
           "initials": "CD",
           "rating": 4,
@@ -4181,7 +4196,7 @@
     "body": {
       "title": "Sign in to continue.",
       "status": 401,
-      "correlationId": "dd3e9476d90e4e089c602a23abacedf1",
+      "correlationId": "fba25da0086448de87acb90a15d8192d",
       "code": "sign_in_required"
     }
   },
