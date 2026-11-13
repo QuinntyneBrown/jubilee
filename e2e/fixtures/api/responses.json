@@ -38,7 +38,9 @@
       },
       "filters": {
         "offers": [],
-        "areas": ["scarborough"]
+        "areas": [
+          "scarborough"
+        ]
       },
       "sort": "recommended",
       "page": 1,
@@ -52,7 +54,8 @@
           "highlight": "Free quote",
           "categorySlug": "home-property",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         },
         {
           "slug": "good-ground-landscaping",
@@ -61,7 +64,8 @@
           "highlight": "Free quote",
           "categorySlug": "home-property",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         },
         {
           "slug": "mustard-seed-painting",
@@ -70,7 +74,8 @@
           "highlight": "Free quote",
           "categorySlug": "home-property",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         },
         {
           "slug": "olive-branch-roofing",
@@ -79,7 +84,8 @@
           "highlight": "Free quote",
           "categorySlug": "home-property",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         }
       ],
       "suggestions": [],
@@ -101,7 +107,9 @@
         "count": 3
       },
       "filters": {
-        "offers": ["emergency-calls"],
+        "offers": [
+          "emergency-calls"
+        ],
         "areas": []
       },
       "sort": "name",
@@ -116,7 +124,8 @@
           "highlight": "Emergency calls",
           "categorySlug": "home-property",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         },
         {
           "slug": "shepherds-heating-cooling",
@@ -125,7 +134,8 @@
           "highlight": "Emergency calls",
           "categorySlug": "home-property",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         },
         {
           "slug": "waterworks-plumbing-drains",
@@ -134,7 +144,8 @@
           "highlight": "Emergency calls",
           "categorySlug": "home-property",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         }
       ],
       "suggestions": [],
@@ -156,7 +167,9 @@
         "count": 3
       },
       "filters": {
-        "offers": ["emergency-calls"],
+        "offers": [
+          "emergency-calls"
+        ],
         "areas": []
       },
       "sort": "newest",
@@ -171,7 +184,8 @@
           "highlight": "Emergency calls",
           "categorySlug": "home-property",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         },
         {
           "slug": "cornerstone-electric",
@@ -180,7 +194,8 @@
           "highlight": "Emergency calls",
           "categorySlug": "home-property",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         },
         {
           "slug": "shepherds-heating-cooling",
@@ -189,7 +204,8 @@
           "highlight": "Emergency calls",
           "categorySlug": "home-property",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         }
       ],
       "suggestions": [],
@@ -211,7 +227,9 @@
         "count": 3
       },
       "filters": {
-        "offers": ["emergency-calls"],
+        "offers": [
+          "emergency-calls"
+        ],
         "areas": []
       },
       "sort": "recommended",
@@ -226,7 +244,8 @@
           "highlight": "Emergency calls",
           "categorySlug": "home-property",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         },
         {
           "slug": "cornerstone-electric",
@@ -235,7 +254,8 @@
           "highlight": "Emergency calls",
           "categorySlug": "home-property",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         },
         {
           "slug": "shepherds-heating-cooling",
@@ -244,7 +264,8 @@
           "highlight": "Emergency calls",
           "categorySlug": "home-property",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         }
       ],
       "suggestions": [],
@@ -266,8 +287,13 @@
         "count": 3
       },
       "filters": {
-        "offers": ["emergency-calls", "open-saturdays"],
-        "areas": ["etobicoke"]
+        "offers": [
+          "emergency-calls",
+          "open-saturdays"
+        ],
+        "areas": [
+          "etobicoke"
+        ]
       },
       "sort": "recommended",
       "page": 1,
@@ -281,7 +307,8 @@
           "highlight": "Emergency calls",
           "categorySlug": "home-property",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         },
         {
           "slug": "shepherds-heating-cooling",
@@ -290,7 +317,8 @@
           "highlight": "Emergency calls",
           "categorySlug": "home-property",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         }
       ],
       "suggestions": [],
@@ -312,8 +340,13 @@
         "count": 3
       },
       "filters": {
-        "offers": ["emergency-calls", "open-saturdays"],
-        "areas": ["scarborough"]
+        "offers": [
+          "emergency-calls",
+          "open-saturdays"
+        ],
+        "areas": [
+          "scarborough"
+        ]
       },
       "sort": "recommended",
       "page": 1,
@@ -361,7 +394,10 @@
         "count": 3
       },
       "filters": {
-        "offers": ["emergency-calls", "open-saturdays"],
+        "offers": [
+          "emergency-calls",
+          "open-saturdays"
+        ],
         "areas": []
       },
       "sort": "recommended",
@@ -376,7 +412,8 @@
           "highlight": "Emergency calls",
           "categorySlug": "home-property",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         },
         {
           "slug": "cornerstone-electric",
@@ -385,7 +422,8 @@
           "highlight": "Emergency calls",
           "categorySlug": "home-property",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         },
         {
           "slug": "shepherds-heating-cooling",
@@ -394,7 +432,8 @@
           "highlight": "Emergency calls",
           "categorySlug": "home-property",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         }
       ],
       "suggestions": [],
@@ -416,8 +455,12 @@
         "count": 3
       },
       "filters": {
-        "offers": ["free-quote"],
-        "areas": ["east-york"]
+        "offers": [
+          "free-quote"
+        ],
+        "areas": [
+          "east-york"
+        ]
       },
       "sort": "name",
       "page": 1,
@@ -431,7 +474,8 @@
           "highlight": "Free quote",
           "categorySlug": "home-property",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         },
         {
           "slug": "atera-construction-and-renovation",
@@ -440,7 +484,8 @@
           "highlight": "Free quote",
           "categorySlug": "home-property",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         },
         {
           "slug": "good-ground-landscaping",
@@ -449,7 +494,8 @@
           "highlight": "Free quote",
           "categorySlug": "home-property",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         },
         {
           "slug": "moores-cleaning-service",
@@ -458,7 +504,8 @@
           "highlight": "Weekly or one-time",
           "categorySlug": "home-property",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         }
       ],
       "suggestions": [],
@@ -480,8 +527,12 @@
         "count": 3
       },
       "filters": {
-        "offers": ["free-quote"],
-        "areas": ["east-york"]
+        "offers": [
+          "free-quote"
+        ],
+        "areas": [
+          "east-york"
+        ]
       },
       "sort": "recommended",
       "page": 1,
@@ -495,7 +546,8 @@
           "highlight": "Free quote",
           "categorySlug": "home-property",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         },
         {
           "slug": "atera-construction-and-renovation",
@@ -504,7 +556,8 @@
           "highlight": "Free quote",
           "categorySlug": "home-property",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         },
         {
           "slug": "moores-cleaning-service",
@@ -513,7 +566,8 @@
           "highlight": "Weekly or one-time",
           "categorySlug": "home-property",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         },
         {
           "slug": "good-ground-landscaping",
@@ -522,7 +576,8 @@
           "highlight": "Free quote",
           "categorySlug": "home-property",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         }
       ],
       "suggestions": [],
@@ -544,7 +599,9 @@
         "count": 3
       },
       "filters": {
-        "offers": ["free-quote"],
+        "offers": [
+          "free-quote"
+        ],
         "areas": []
       },
       "sort": "newest",
@@ -559,7 +616,8 @@
           "highlight": "Free quote",
           "categorySlug": "home-property",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         },
         {
           "slug": "atera-construction-and-renovation",
@@ -568,7 +626,8 @@
           "highlight": "Free quote",
           "categorySlug": "home-property",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         },
         {
           "slug": "moores-cleaning-service",
@@ -577,7 +636,8 @@
           "highlight": "Weekly or one-time",
           "categorySlug": "home-property",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         },
         {
           "slug": "shepherds-heating-cooling",
@@ -586,7 +646,8 @@
           "highlight": "Emergency calls",
           "categorySlug": "home-property",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         },
         {
           "slug": "good-ground-landscaping",
@@ -595,7 +656,8 @@
           "highlight": "Free quote",
           "categorySlug": "home-property",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         },
         {
           "slug": "mustard-seed-painting",
@@ -604,7 +666,8 @@
           "highlight": "Free quote",
           "categorySlug": "home-property",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         },
         {
           "slug": "olive-branch-roofing",
@@ -613,7 +676,8 @@
           "highlight": "Free quote",
           "categorySlug": "home-property",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         },
         {
           "slug": "plumb-line-handyman",
@@ -622,7 +686,8 @@
           "highlight": "Free quote",
           "categorySlug": "home-property",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         }
       ],
       "suggestions": [],
@@ -644,8 +709,12 @@
         "count": 3
       },
       "filters": {
-        "offers": ["open-saturdays"],
-        "areas": ["scarborough"]
+        "offers": [
+          "open-saturdays"
+        ],
+        "areas": [
+          "scarborough"
+        ]
       },
       "sort": "recommended",
       "page": 1,
@@ -701,7 +770,8 @@
           "highlight": "Free quote",
           "categorySlug": "home-property",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         },
         {
           "slug": "atera-construction-and-renovation",
@@ -710,7 +780,8 @@
           "highlight": "Free quote",
           "categorySlug": "home-property",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         },
         {
           "slug": "cornerstone-electric",
@@ -719,7 +790,8 @@
           "highlight": "Emergency calls",
           "categorySlug": "home-property",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         },
         {
           "slug": "good-ground-landscaping",
@@ -728,7 +800,8 @@
           "highlight": "Free quote",
           "categorySlug": "home-property",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         },
         {
           "slug": "moores-cleaning-service",
@@ -737,7 +810,8 @@
           "highlight": "Weekly or one-time",
           "categorySlug": "home-property",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         },
         {
           "slug": "mustard-seed-painting",
@@ -746,7 +820,8 @@
           "highlight": "Free quote",
           "categorySlug": "home-property",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         },
         {
           "slug": "olive-branch-roofing",
@@ -755,7 +830,8 @@
           "highlight": "Free quote",
           "categorySlug": "home-property",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         },
         {
           "slug": "plumb-line-handyman",
@@ -764,7 +840,8 @@
           "highlight": "Free quote",
           "categorySlug": "home-property",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         },
         {
           "slug": "shepherds-heating-cooling",
@@ -773,7 +850,8 @@
           "highlight": "Emergency calls",
           "categorySlug": "home-property",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         },
         {
           "slug": "waterworks-plumbing-drains",
@@ -782,7 +860,8 @@
           "highlight": "Emergency calls",
           "categorySlug": "home-property",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         }
       ],
       "suggestions": [],
@@ -819,7 +898,8 @@
           "highlight": "Emergency calls",
           "categorySlug": "home-property",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         },
         {
           "slug": "ace-waterproofing",
@@ -828,7 +908,8 @@
           "highlight": "Free quote",
           "categorySlug": "home-property",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         },
         {
           "slug": "atera-construction-and-renovation",
@@ -837,7 +918,8 @@
           "highlight": "Free quote",
           "categorySlug": "home-property",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         },
         {
           "slug": "moores-cleaning-service",
@@ -846,7 +928,8 @@
           "highlight": "Weekly or one-time",
           "categorySlug": "home-property",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         },
         {
           "slug": "cornerstone-electric",
@@ -855,7 +938,8 @@
           "highlight": "Emergency calls",
           "categorySlug": "home-property",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         },
         {
           "slug": "shepherds-heating-cooling",
@@ -864,7 +948,8 @@
           "highlight": "Emergency calls",
           "categorySlug": "home-property",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         },
         {
           "slug": "good-ground-landscaping",
@@ -873,7 +958,8 @@
           "highlight": "Free quote",
           "categorySlug": "home-property",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         },
         {
           "slug": "mustard-seed-painting",
@@ -882,7 +968,8 @@
           "highlight": "Free quote",
           "categorySlug": "home-property",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         },
         {
           "slug": "olive-branch-roofing",
@@ -891,7 +978,8 @@
           "highlight": "Free quote",
           "categorySlug": "home-property",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         },
         {
           "slug": "plumb-line-handyman",
@@ -900,7 +988,8 @@
           "highlight": "Free quote",
           "categorySlug": "home-property",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         }
       ],
       "suggestions": [],
@@ -937,7 +1026,8 @@
           "highlight": "Emergency calls",
           "categorySlug": "home-property",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         },
         {
           "slug": "ace-waterproofing",
@@ -946,7 +1036,8 @@
           "highlight": "Free quote",
           "categorySlug": "home-property",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         },
         {
           "slug": "atera-construction-and-renovation",
@@ -955,7 +1046,8 @@
           "highlight": "Free quote",
           "categorySlug": "home-property",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         },
         {
           "slug": "moores-cleaning-service",
@@ -964,7 +1056,8 @@
           "highlight": "Weekly or one-time",
           "categorySlug": "home-property",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         },
         {
           "slug": "cornerstone-electric",
@@ -973,7 +1066,8 @@
           "highlight": "Emergency calls",
           "categorySlug": "home-property",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         },
         {
           "slug": "shepherds-heating-cooling",
@@ -982,7 +1076,8 @@
           "highlight": "Emergency calls",
           "categorySlug": "home-property",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         },
         {
           "slug": "good-ground-landscaping",
@@ -991,7 +1086,8 @@
           "highlight": "Free quote",
           "categorySlug": "home-property",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         },
         {
           "slug": "mustard-seed-painting",
@@ -1000,7 +1096,8 @@
           "highlight": "Free quote",
           "categorySlug": "home-property",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         },
         {
           "slug": "olive-branch-roofing",
@@ -1009,7 +1106,8 @@
           "highlight": "Free quote",
           "categorySlug": "home-property",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         },
         {
           "slug": "plumb-line-handyman",
@@ -1018,7 +1116,8 @@
           "highlight": "Free quote",
           "categorySlug": "home-property",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         }
       ],
       "suggestions": [],
@@ -1055,7 +1154,8 @@
           "highlight": "Emergency calls",
           "categorySlug": "home-property",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         },
         {
           "slug": "ace-waterproofing",
@@ -1064,7 +1164,8 @@
           "highlight": "Free quote",
           "categorySlug": "home-property",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         },
         {
           "slug": "atera-construction-and-renovation",
@@ -1073,7 +1174,8 @@
           "highlight": "Free quote",
           "categorySlug": "home-property",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         },
         {
           "slug": "moores-cleaning-service",
@@ -1082,7 +1184,8 @@
           "highlight": "Weekly or one-time",
           "categorySlug": "home-property",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         },
         {
           "slug": "cornerstone-electric",
@@ -1091,7 +1194,8 @@
           "highlight": "Emergency calls",
           "categorySlug": "home-property",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         },
         {
           "slug": "shepherds-heating-cooling",
@@ -1100,7 +1204,8 @@
           "highlight": "Emergency calls",
           "categorySlug": "home-property",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         },
         {
           "slug": "good-ground-landscaping",
@@ -1109,7 +1214,8 @@
           "highlight": "Free quote",
           "categorySlug": "home-property",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         },
         {
           "slug": "mustard-seed-painting",
@@ -1118,7 +1224,8 @@
           "highlight": "Free quote",
           "categorySlug": "home-property",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         },
         {
           "slug": "olive-branch-roofing",
@@ -1127,7 +1234,8 @@
           "highlight": "Free quote",
           "categorySlug": "home-property",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         },
         {
           "slug": "plumb-line-handyman",
@@ -1136,7 +1244,8 @@
           "highlight": "Free quote",
           "categorySlug": "home-property",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         }
       ],
       "suggestions": [],
@@ -1170,7 +1279,8 @@
           "highlight": "Evening classes",
           "categorySlug": "learning",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         },
         {
           "slug": "talent-can-be-taught",
@@ -1179,7 +1289,8 @@
           "highlight": "First lesson free",
           "categorySlug": "learning",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         }
       ],
       "suggestions": [],
@@ -1213,7 +1324,8 @@
           "highlight": "First lesson free",
           "categorySlug": "learning",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         },
         {
           "slug": "the-revelation-centre",
@@ -1222,7 +1334,8 @@
           "highlight": "Evening classes",
           "categorySlug": "learning",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         }
       ],
       "suggestions": [],
@@ -1236,7 +1349,7 @@
       "title": "We can't find that.",
       "status": 404,
       "detail": "There is no such category.",
-      "correlationId": "12b24540eb4741bea1543da3362c951f",
+      "correlationId": "0c9ae11ce15a49cf8b7ba9b4cae437a3",
       "code": "category_not_found"
     }
   },
@@ -1268,10 +1381,14 @@
           "term": "short-stay",
           "rent": 120,
           "per": "night",
-          "facts": ["Queen bed", "Private bath"],
+          "facts": [
+            "Queen bed",
+            "Private bath"
+          ],
           "neighbourhood": "Roncesvalles",
           "available": "Most weekends",
-          "coverPhoto": null
+          "coverPhoto": null,
+          "rating": null
         },
         {
           "slug": "leslieville-family-room",
@@ -1279,10 +1396,14 @@
           "term": "room",
           "rent": 950,
           "per": "month",
-          "facts": ["Double bed", "Shared bath"],
+          "facts": [
+            "Double bed",
+            "Shared bath"
+          ],
           "neighbourhood": "Leslieville",
           "available": "Now",
-          "coverPhoto": null
+          "coverPhoto": null,
+          "rating": null
         },
         {
           "slug": "annex-basement-apartment",
@@ -1290,10 +1411,14 @@
           "term": "long-term",
           "rent": 1850,
           "per": "month",
-          "facts": ["1 bedroom", "1 bath"],
+          "facts": [
+            "1 bedroom",
+            "1 bath"
+          ],
           "neighbourhood": "The Annex",
           "available": "Dec 1",
-          "coverPhoto": null
+          "coverPhoto": null,
+          "rating": null
         },
         {
           "slug": "east-york-roommate",
@@ -1301,10 +1426,14 @@
           "term": "roommate",
           "rent": 1100,
           "per": "month",
-          "facts": ["Unfurnished room", "Shared bath (2)"],
+          "facts": [
+            "Unfurnished room",
+            "Shared bath (2)"
+          ],
           "neighbourhood": "East York",
           "available": "Jan 1",
-          "coverPhoto": null
+          "coverPhoto": null,
+          "rating": null
         },
         {
           "slug": "scarborough-furnished-condo",
@@ -1312,10 +1441,14 @@
           "term": "long-term",
           "rent": 2400,
           "per": "month",
-          "facts": ["2 bedrooms", "2 baths"],
+          "facts": [
+            "2 bedrooms",
+            "2 baths"
+          ],
           "neighbourhood": "Scarborough",
           "available": "Feb 1",
-          "coverPhoto": null
+          "coverPhoto": null,
+          "rating": null
         }
       ]
     }
@@ -1348,10 +1481,14 @@
           "term": "long-term",
           "rent": 1850,
           "per": "month",
-          "facts": ["1 bedroom", "1 bath"],
+          "facts": [
+            "1 bedroom",
+            "1 bath"
+          ],
           "neighbourhood": "The Annex",
           "available": "Dec 1",
-          "coverPhoto": null
+          "coverPhoto": null,
+          "rating": null
         },
         {
           "slug": "scarborough-furnished-condo",
@@ -1359,10 +1496,14 @@
           "term": "long-term",
           "rent": 2400,
           "per": "month",
-          "facts": ["2 bedrooms", "2 baths"],
+          "facts": [
+            "2 bedrooms",
+            "2 baths"
+          ],
           "neighbourhood": "Scarborough",
           "available": "Feb 1",
-          "coverPhoto": null
+          "coverPhoto": null,
+          "rating": null
         }
       ]
     }
@@ -1393,7 +1534,11 @@
           "highlight": "Ships across Canada",
           "categorySlug": "shops",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": {
+            "average": 4.4,
+            "count": 5
+          }
         },
         {
           "slug": "christian-bookstores",
@@ -1402,7 +1547,8 @@
           "highlight": "Pickup in store",
           "categorySlug": "shops",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         },
         {
           "slug": "flower-creations",
@@ -1411,7 +1557,8 @@
           "highlight": "Same-day delivery",
           "categorySlug": "shops",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         }
       ],
       "suggestions": [],
@@ -1600,7 +1747,11 @@
           "highlight": "Free first meeting",
           "categorySlug": "financial-insurance",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": {
+            "average": 4.6,
+            "count": 5
+          }
         },
         {
           "slug": "luzandre",
@@ -1609,7 +1760,11 @@
           "highlight": "Ships across Canada",
           "categorySlug": "shops",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": {
+            "average": 4.4,
+            "count": 5
+          }
         },
         {
           "slug": "christian-bookstores",
@@ -1618,7 +1773,8 @@
           "highlight": "Pickup in store",
           "categorySlug": "shops",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         },
         {
           "slug": "adrianne-sequeira",
@@ -1627,7 +1783,8 @@
           "highlight": "Accepting new clients",
           "categorySlug": "health-family",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         },
         {
           "slug": "waterworks-plumbing-drains",
@@ -1636,7 +1793,8 @@
           "highlight": "Emergency calls",
           "categorySlug": "home-property",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         }
       ],
       "products": [
@@ -1651,7 +1809,8 @@
             "tint": "ink",
             "icon": "shirt"
           },
-          "soldOut": false
+          "soldOut": false,
+          "rating": null
         },
         {
           "slug": "gold-cross-stoneware-mug",
@@ -1664,7 +1823,11 @@
             "tint": "gold",
             "icon": "mug"
           },
-          "soldOut": false
+          "soldOut": false,
+          "rating": {
+            "average": 4.7,
+            "count": 3
+          }
         },
         {
           "slug": "custom-church-team-tee",
@@ -1677,7 +1840,8 @@
             "tint": "blue",
             "icon": "shirt"
           },
-          "soldOut": false
+          "soldOut": false,
+          "rating": null
         },
         {
           "slug": "morning-mug-set-of-two",
@@ -1690,7 +1854,8 @@
             "tint": "green",
             "icon": "mug"
           },
-          "soldOut": false
+          "soldOut": false,
+          "rating": null
         },
         {
           "slug": "leather-journaling-bible-esv",
@@ -1703,7 +1868,8 @@
             "tint": "gold",
             "icon": "book"
           },
-          "soldOut": false
+          "soldOut": false,
+          "rating": null
         }
       ],
       "groups": [
@@ -1972,10 +2138,14 @@
             "term": "short-stay",
             "rent": 120,
             "per": "night",
-            "facts": ["Queen bed", "Private bath"],
+            "facts": [
+              "Queen bed",
+              "Private bath"
+            ],
             "neighbourhood": "Roncesvalles",
             "available": "Most weekends",
-            "coverPhoto": null
+            "coverPhoto": null,
+            "rating": null
           },
           {
             "slug": "leslieville-family-room",
@@ -1983,10 +2153,14 @@
             "term": "room",
             "rent": 950,
             "per": "month",
-            "facts": ["Double bed", "Shared bath"],
+            "facts": [
+              "Double bed",
+              "Shared bath"
+            ],
             "neighbourhood": "Leslieville",
             "available": "Now",
-            "coverPhoto": null
+            "coverPhoto": null,
+            "rating": null
           },
           {
             "slug": "annex-basement-apartment",
@@ -1994,10 +2168,14 @@
             "term": "long-term",
             "rent": 1850,
             "per": "month",
-            "facts": ["1 bedroom", "1 bath"],
+            "facts": [
+              "1 bedroom",
+              "1 bath"
+            ],
             "neighbourhood": "The Annex",
             "available": "Dec 1",
-            "coverPhoto": null
+            "coverPhoto": null,
+            "rating": null
           },
           {
             "slug": "east-york-roommate",
@@ -2005,10 +2183,14 @@
             "term": "roommate",
             "rent": 1100,
             "per": "month",
-            "facts": ["Unfurnished room", "Shared bath (2)"],
+            "facts": [
+              "Unfurnished room",
+              "Shared bath (2)"
+            ],
             "neighbourhood": "East York",
             "available": "Jan 1",
-            "coverPhoto": null
+            "coverPhoto": null,
+            "rating": null
           },
           {
             "slug": "scarborough-furnished-condo",
@@ -2016,10 +2198,14 @@
             "term": "long-term",
             "rent": 2400,
             "per": "month",
-            "facts": ["2 bedrooms", "2 baths"],
+            "facts": [
+              "2 bedrooms",
+              "2 baths"
+            ],
             "neighbourhood": "Scarborough",
             "available": "Feb 1",
-            "coverPhoto": null
+            "coverPhoto": null,
+            "rating": null
           }
         ]
       }
@@ -2083,7 +2269,11 @@
           "highlight": "Free first meeting",
           "categorySlug": "financial-insurance",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": {
+            "average": 4.6,
+            "count": 5
+          }
         },
         {
           "slug": "luzandre",
@@ -2092,7 +2282,11 @@
           "highlight": "Ships across Canada",
           "categorySlug": "shops",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": {
+            "average": 4.4,
+            "count": 5
+          }
         },
         {
           "slug": "christian-bookstores",
@@ -2101,7 +2295,8 @@
           "highlight": "Pickup in store",
           "categorySlug": "shops",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         },
         {
           "slug": "adrianne-sequeira",
@@ -2110,7 +2305,8 @@
           "highlight": "Accepting new clients",
           "categorySlug": "health-family",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         }
       ]
     }
@@ -2120,7 +2316,7 @@
     "body": {
       "title": "Sign in to continue.",
       "status": 401,
-      "correlationId": "d2f6b29567784c618a89ddbee4bb3668",
+      "correlationId": "84497533ebb048e5af2af95fe0a08519",
       "code": "sign_in_required"
     }
   },
@@ -2157,7 +2353,7 @@
         "languages": null,
         "delivery": null,
         "madeToOrder": null,
-        "onJubileeSince": "2026-10-30T01:06:37.2646738+00:00",
+        "onJubileeSince": "2026-10-30T05:19:10.1971614+00:00",
         "replies": null
       },
       "services": [],
@@ -2173,10 +2369,24 @@
         "minimumStayLabel": "12-month lease",
         "neighbourhood": "The Annex",
         "place": "Basement apartment",
-        "facts": ["1 bedroom", "1 bath", "650 sq ft", "Separate entrance"],
-        "included": ["Utilities", "Wi-Fi", "Laundry", "Private bath"],
+        "facts": [
+          "1 bedroom",
+          "1 bath",
+          "650 sq ft",
+          "Separate entrance"
+        ],
+        "included": [
+          "Utilities",
+          "Wi-Fi",
+          "Laundry",
+          "Private bath"
+        ],
         "household": null,
-        "rules": ["No smoking", "Quiet after 10 pm", "One small pet considered"],
+        "rules": [
+          "No smoking",
+          "Quiet after 10 pm",
+          "One small pet considered"
+        ],
         "callToAction": "Request a viewing"
       },
       "relatedSpaces": [
@@ -2186,10 +2396,14 @@
           "term": "short-stay",
           "rent": 120,
           "per": "night",
-          "facts": ["Queen bed", "Private bath"],
+          "facts": [
+            "Queen bed",
+            "Private bath"
+          ],
           "neighbourhood": "Roncesvalles",
           "available": "Most weekends",
-          "coverPhoto": null
+          "coverPhoto": null,
+          "rating": null
         },
         {
           "slug": "leslieville-family-room",
@@ -2197,10 +2411,14 @@
           "term": "room",
           "rent": 950,
           "per": "month",
-          "facts": ["Double bed", "Shared bath"],
+          "facts": [
+            "Double bed",
+            "Shared bath"
+          ],
           "neighbourhood": "Leslieville",
           "available": "Now",
-          "coverPhoto": null
+          "coverPhoto": null,
+          "rating": null
         },
         {
           "slug": "east-york-roommate",
@@ -2208,10 +2426,14 @@
           "term": "roommate",
           "rent": 1100,
           "per": "month",
-          "facts": ["Unfurnished room", "Shared bath (2)"],
+          "facts": [
+            "Unfurnished room",
+            "Shared bath (2)"
+          ],
           "neighbourhood": "East York",
           "available": "Jan 1",
-          "coverPhoto": null
+          "coverPhoto": null,
+          "rating": null
         },
         {
           "slug": "scarborough-furnished-condo",
@@ -2219,15 +2441,38 @@
           "term": "long-term",
           "rent": 2400,
           "per": "month",
-          "facts": ["2 bedrooms", "2 baths"],
+          "facts": [
+            "2 bedrooms",
+            "2 baths"
+          ],
           "neighbourhood": "Scarborough",
           "available": "Feb 1",
-          "coverPhoto": null
+          "coverPhoto": null,
+          "rating": null
         }
       ],
       "openRequestId": null,
       "repliesFast": false,
       "photos": []
+    }
+  },
+  "GET /api/listings/annex-basement-apartment/reviews": {
+    "status": 200,
+    "body": {
+      "summary": {
+        "average": 0,
+        "count": 0,
+        "breakdown": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "viewer": "visitor",
+      "writing": "sign-in",
+      "items": []
     }
   },
   "GET /api/listings/bethel-gift-baskets": {
@@ -2236,7 +2481,7 @@
       "title": "We can't find that.",
       "status": 404,
       "detail": "There is no such business.",
-      "correlationId": "65829ce343584a94b69bc5b4ef3048d5",
+      "correlationId": "27d53bd659d8437382d8a746177b9df1",
       "code": "listing_not_found"
     }
   },
@@ -2265,7 +2510,7 @@
         "languages": null,
         "delivery": null,
         "madeToOrder": null,
-        "onJubileeSince": "2026-10-25T04:06:37.2646738+00:00",
+        "onJubileeSince": "2026-10-25T08:19:10.1971614+00:00",
         "replies": null
       },
       "services": [],
@@ -2279,7 +2524,11 @@
           "highlight": "Free first meeting",
           "categorySlug": "financial-insurance",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": {
+            "average": 4.6,
+            "count": 5
+          }
         },
         {
           "slug": "jd-smith-insurance-brokers",
@@ -2288,7 +2537,8 @@
           "highlight": "Get a quote",
           "categorySlug": "financial-insurance",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         }
       ],
       "space": null,
@@ -2296,6 +2546,25 @@
       "openRequestId": null,
       "repliesFast": false,
       "photos": []
+    }
+  },
+  "GET /api/listings/deeks-insurance/reviews": {
+    "status": 200,
+    "body": {
+      "summary": {
+        "average": 0,
+        "count": 0,
+        "breakdown": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "viewer": "visitor",
+      "writing": "sign-in",
+      "items": []
     }
   },
   "GET /api/listings/east-york-roommate": {
@@ -2323,7 +2592,7 @@
         "languages": null,
         "delivery": null,
         "madeToOrder": null,
-        "onJubileeSince": "2026-10-30T00:06:37.2646738+00:00",
+        "onJubileeSince": "2026-10-30T04:19:10.1971614+00:00",
         "replies": null
       },
       "services": [],
@@ -2339,10 +2608,24 @@
         "minimumStayLabel": "6 months",
         "neighbourhood": "East York",
         "place": "Private room",
-        "facts": ["Unfurnished room", "Shared bath (2)", "Backyard", "Parking spot"],
-        "included": ["Wi-Fi", "Laundry", "Parking", "Kitchen use"],
+        "facts": [
+          "Unfurnished room",
+          "Shared bath (2)",
+          "Backyard",
+          "Parking spot"
+        ],
+        "included": [
+          "Wi-Fi",
+          "Laundry",
+          "Parking",
+          "Kitchen use"
+        ],
         "household": "Two women in our late 20s, a nurse and a grad student. Looking for a third who’s tidy, friendly and up for a weekly house dinner.",
-        "rules": ["Weekly house dinner", "Clean as you go", "No smoking"],
+        "rules": [
+          "Weekly house dinner",
+          "Clean as you go",
+          "No smoking"
+        ],
         "callToAction": "Meet the household"
       },
       "relatedSpaces": [
@@ -2352,10 +2635,14 @@
           "term": "short-stay",
           "rent": 120,
           "per": "night",
-          "facts": ["Queen bed", "Private bath"],
+          "facts": [
+            "Queen bed",
+            "Private bath"
+          ],
           "neighbourhood": "Roncesvalles",
           "available": "Most weekends",
-          "coverPhoto": null
+          "coverPhoto": null,
+          "rating": null
         },
         {
           "slug": "leslieville-family-room",
@@ -2363,10 +2650,14 @@
           "term": "room",
           "rent": 950,
           "per": "month",
-          "facts": ["Double bed", "Shared bath"],
+          "facts": [
+            "Double bed",
+            "Shared bath"
+          ],
           "neighbourhood": "Leslieville",
           "available": "Now",
-          "coverPhoto": null
+          "coverPhoto": null,
+          "rating": null
         },
         {
           "slug": "annex-basement-apartment",
@@ -2374,10 +2665,14 @@
           "term": "long-term",
           "rent": 1850,
           "per": "month",
-          "facts": ["1 bedroom", "1 bath"],
+          "facts": [
+            "1 bedroom",
+            "1 bath"
+          ],
           "neighbourhood": "The Annex",
           "available": "Dec 1",
-          "coverPhoto": null
+          "coverPhoto": null,
+          "rating": null
         },
         {
           "slug": "scarborough-furnished-condo",
@@ -2385,15 +2680,38 @@
           "term": "long-term",
           "rent": 2400,
           "per": "month",
-          "facts": ["2 bedrooms", "2 baths"],
+          "facts": [
+            "2 bedrooms",
+            "2 baths"
+          ],
           "neighbourhood": "Scarborough",
           "available": "Feb 1",
-          "coverPhoto": null
+          "coverPhoto": null,
+          "rating": null
         }
       ],
       "openRequestId": null,
       "repliesFast": false,
       "photos": []
+    }
+  },
+  "GET /api/listings/east-york-roommate/reviews": {
+    "status": 200,
+    "body": {
+      "summary": {
+        "average": 0,
+        "count": 0,
+        "breakdown": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "viewer": "visitor",
+      "writing": "sign-in",
+      "items": []
     }
   },
   "GET /api/listings/legacy-financial": {
@@ -2411,7 +2729,9 @@
       "viewerRelation": "visitor",
       "ownerName": "Trevor Chew, CKA®, CFP®, CLU®",
       "tagline": "Build a Legacy. Protect a Legacy. Leave a Legacy.",
-      "credentials": ["CKA® · CFP® · CLU®"],
+      "credentials": [
+        "CKA® · CFP® · CLU®"
+      ],
       "highlight": "Free first meeting",
       "about": "Financial planning grounded in biblical stewardship: budgeting and debt, retirement, insurance and estate planning, and a generosity plan your family can keep for generations.",
       "coverPhoto": null,
@@ -2426,7 +2746,7 @@
       },
       "services": [
         {
-          "id": "47b4c16f-a6e0-4098-bd79-3db90f9b59db",
+          "id": "97639d6c-059b-4a41-8358-89b968ec5a58",
           "name": "Discovery meeting",
           "detail": "30 min · In person or video",
           "priceKind": "free",
@@ -2434,7 +2754,7 @@
           "action": "book"
         },
         {
-          "id": "dedad871-29a3-49e1-ab06-22ffed8e2510",
+          "id": "f9a34a0f-410c-4af1-9a64-2a7d6113c029",
           "name": "Retirement & RRSP review",
           "detail": "60 min · Bring your statements",
           "priceKind": "ask",
@@ -2442,7 +2762,7 @@
           "action": "book"
         },
         {
-          "id": "7edc2bb1-3717-47ab-8600-f60a11c96597",
+          "id": "a504cc45-8bb4-4fad-8c6c-daed1ab3e811",
           "name": "Life & disability insurance review",
           "detail": "45 min",
           "priceKind": "free",
@@ -2450,7 +2770,7 @@
           "action": "book"
         },
         {
-          "id": "03972f8e-c629-4404-8e30-a1563019803f",
+          "id": "357085ae-2aa9-4a79-93ef-8361f1332a78",
           "name": "Estate & legacy plan",
           "detail": "Two sessions, written plan",
           "priceKind": "ask",
@@ -2468,7 +2788,8 @@
           "highlight": "Get a quote",
           "categorySlug": "financial-insurance",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         },
         {
           "slug": "jd-smith-insurance-brokers",
@@ -2477,7 +2798,8 @@
           "highlight": "Get a quote",
           "categorySlug": "financial-insurance",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         }
       ],
       "space": null,
@@ -2485,6 +2807,101 @@
       "openRequestId": null,
       "repliesFast": false,
       "photos": []
+    }
+  },
+  "GET /api/listings/legacy-financial/reviews": {
+    "status": 200,
+    "body": {
+      "summary": {
+        "average": 4.6,
+        "count": 5,
+        "breakdown": [
+          3,
+          2,
+          0,
+          0,
+          0
+        ]
+      },
+      "viewer": "visitor",
+      "writing": "sign-in",
+      "items": [
+        {
+          "id": "19d0229b-9ff9-451c-b249-76a44350e19b",
+          "author": "Grace A.",
+          "initials": "GA",
+          "rating": 5,
+          "itemId": "357085ae-2aa9-4a79-93ef-8361f1332a78",
+          "itemName": "Estate & legacy plan",
+          "text": "Trevor helped my husband and me write wills and a giving plan after our second child. He never pushed a product, prayed with us at the end of the first meeting, and the written plan was clear enough that our parents understood it too.",
+          "createdAt": "2026-11-03T17:00:00+00:00",
+          "editedAt": null,
+          "mine": false,
+          "reply": {
+            "from": "Trevor Chew",
+            "text": "Thank you, Grace. It was a joy to work with you both. See you at the six-month check-in.",
+            "at": "2026-11-04T17:00:00+00:00",
+            "editedAt": null
+          }
+        },
+        {
+          "id": "d5c28263-fc49-4b6a-b814-c2dd2945b892",
+          "author": "Marcus T.",
+          "initials": "MT",
+          "rating": 5,
+          "itemId": "97639d6c-059b-4a41-8358-89b968ec5a58",
+          "itemName": "Discovery meeting",
+          "text": "Booked the free meeting expecting a sales pitch. Got an honest look at our debt and a plan to be clear of it in three years. We went back for the RRSP review.",
+          "createdAt": "2026-10-20T17:00:00+00:00",
+          "editedAt": null,
+          "mine": false,
+          "reply": null
+        },
+        {
+          "id": "c13e1d67-5a82-4430-8a62-8dba0def540e",
+          "author": "Esther L.",
+          "initials": "EL",
+          "rating": 4,
+          "itemId": "f9a34a0f-410c-4af1-9a64-2a7d6113c029",
+          "itemName": "Retirement & RRSP review",
+          "text": "Very knowledgeable and patient with my questions. Scheduling took longer than I hoped in tax season, so book early.",
+          "createdAt": "2026-09-08T17:00:00+00:00",
+          "editedAt": null,
+          "mine": false,
+          "reply": {
+            "from": "Trevor Chew",
+            "text": "Fair point, Esther. We’ve added evening slots from February to April this year.",
+            "at": "2026-09-09T17:00:00+00:00",
+            "editedAt": null
+          }
+        },
+        {
+          "id": "982ca750-232c-4939-9a1a-411abc10cc51",
+          "author": "Priya S.",
+          "initials": "PS",
+          "rating": 4,
+          "itemId": "97639d6c-059b-4a41-8358-89b968ec5a58",
+          "itemName": "Discovery meeting",
+          "text": "Helpful first meeting and no pressure, but the follow-up notes took two weeks to arrive and I had to ask for them twice.",
+          "createdAt": "2026-08-02T17:00:00+00:00",
+          "editedAt": null,
+          "mine": false,
+          "reply": null
+        },
+        {
+          "id": "2e93736a-a7ef-4534-b376-33b97a44f07b",
+          "author": "Paul K.",
+          "initials": "PK",
+          "rating": 5,
+          "itemId": "a504cc45-8bb4-4fad-8c6c-daed1ab3e811",
+          "itemName": "Life & disability insurance review",
+          "text": "Found we were paying for two overlapping policies. Saved us $64 a month.",
+          "createdAt": "2026-06-15T17:00:00+00:00",
+          "editedAt": null,
+          "mine": false,
+          "reply": null
+        }
+      ]
     }
   },
   "GET /api/listings/leslieville-family-room": {
@@ -2512,7 +2929,7 @@
         "languages": null,
         "delivery": null,
         "madeToOrder": null,
-        "onJubileeSince": "2026-10-30T02:06:37.2646738+00:00",
+        "onJubileeSince": "2026-10-30T06:19:10.1971614+00:00",
         "replies": null
       },
       "services": [],
@@ -2528,10 +2945,25 @@
         "minimumStayLabel": "4 months",
         "neighbourhood": "Leslieville",
         "place": "Private room",
-        "facts": ["Double bed", "Shared bath", "Furnished", "Desk"],
-        "included": ["Utilities", "Wi-Fi", "Laundry", "Furnished", "Kitchen use"],
+        "facts": [
+          "Double bed",
+          "Shared bath",
+          "Furnished",
+          "Desk"
+        ],
+        "included": [
+          "Utilities",
+          "Wi-Fi",
+          "Laundry",
+          "Furnished",
+          "Kitchen use"
+        ],
         "household": "Ruth and Kwame with our daughter Abena (14) and a very calm cat. We eat together on Sundays and you’re always welcome.",
-        "rules": ["No overnight guests", "No smoking or alcohol", "Share the chore rota"],
+        "rules": [
+          "No overnight guests",
+          "No smoking or alcohol",
+          "Share the chore rota"
+        ],
         "callToAction": "Request a viewing"
       },
       "relatedSpaces": [
@@ -2541,10 +2973,14 @@
           "term": "short-stay",
           "rent": 120,
           "per": "night",
-          "facts": ["Queen bed", "Private bath"],
+          "facts": [
+            "Queen bed",
+            "Private bath"
+          ],
           "neighbourhood": "Roncesvalles",
           "available": "Most weekends",
-          "coverPhoto": null
+          "coverPhoto": null,
+          "rating": null
         },
         {
           "slug": "annex-basement-apartment",
@@ -2552,10 +2988,14 @@
           "term": "long-term",
           "rent": 1850,
           "per": "month",
-          "facts": ["1 bedroom", "1 bath"],
+          "facts": [
+            "1 bedroom",
+            "1 bath"
+          ],
           "neighbourhood": "The Annex",
           "available": "Dec 1",
-          "coverPhoto": null
+          "coverPhoto": null,
+          "rating": null
         },
         {
           "slug": "east-york-roommate",
@@ -2563,10 +3003,14 @@
           "term": "roommate",
           "rent": 1100,
           "per": "month",
-          "facts": ["Unfurnished room", "Shared bath (2)"],
+          "facts": [
+            "Unfurnished room",
+            "Shared bath (2)"
+          ],
           "neighbourhood": "East York",
           "available": "Jan 1",
-          "coverPhoto": null
+          "coverPhoto": null,
+          "rating": null
         },
         {
           "slug": "scarborough-furnished-condo",
@@ -2574,15 +3018,38 @@
           "term": "long-term",
           "rent": 2400,
           "per": "month",
-          "facts": ["2 bedrooms", "2 baths"],
+          "facts": [
+            "2 bedrooms",
+            "2 baths"
+          ],
           "neighbourhood": "Scarborough",
           "available": "Feb 1",
-          "coverPhoto": null
+          "coverPhoto": null,
+          "rating": null
         }
       ],
       "openRequestId": null,
       "repliesFast": false,
       "photos": []
+    }
+  },
+  "GET /api/listings/leslieville-family-room/reviews": {
+    "status": 200,
+    "body": {
+      "summary": {
+        "average": 0,
+        "count": 0,
+        "breakdown": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "viewer": "visitor",
+      "writing": "sign-in",
+      "items": []
     }
   },
   "GET /api/listings/luzandre": {
@@ -2615,7 +3082,7 @@
       },
       "services": [
         {
-          "id": "09e3621a-be89-4357-b8dd-fc6e3d9eaf1b",
+          "id": "f82c10eb-55de-4dd4-9a74-85c7f84c5dba",
           "name": "Custom design consultation",
           "detail": "30 min · Video",
           "priceKind": "free",
@@ -2623,7 +3090,7 @@
           "action": "ask"
         },
         {
-          "id": "9ef3a94d-3a15-4123-b612-9a98ab9f0854",
+          "id": "d9b5ce1c-f10c-4517-8801-7fe6938e31b0",
           "name": "Church merch package",
           "detail": "Tees, mugs and totes for your congregation",
           "priceKind": "ask",
@@ -2644,7 +3111,8 @@
             "tint": "ink",
             "icon": "shirt"
           },
-          "soldOut": false
+          "soldOut": false,
+          "rating": null
         },
         {
           "slug": "gold-cross-stoneware-mug",
@@ -2657,7 +3125,11 @@
             "tint": "gold",
             "icon": "mug"
           },
-          "soldOut": false
+          "soldOut": false,
+          "rating": {
+            "average": 4.7,
+            "count": 3
+          }
         },
         {
           "slug": "custom-church-team-tee",
@@ -2670,7 +3142,8 @@
             "tint": "blue",
             "icon": "shirt"
           },
-          "soldOut": false
+          "soldOut": false,
+          "rating": null
         },
         {
           "slug": "morning-mug-set-of-two",
@@ -2683,7 +3156,8 @@
             "tint": "green",
             "icon": "mug"
           },
-          "soldOut": false
+          "soldOut": false,
+          "rating": null
         }
       ],
       "related": [
@@ -2694,7 +3168,8 @@
           "highlight": "Pickup in store",
           "categorySlug": "shops",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         },
         {
           "slug": "flower-creations",
@@ -2703,7 +3178,8 @@
           "highlight": "Same-day delivery",
           "categorySlug": "shops",
           "coverPhoto": null,
-          "repliesFast": false
+          "repliesFast": false,
+          "rating": null
         }
       ],
       "space": null,
@@ -2716,7 +3192,7 @@
   "GET /api/listings/luzandre/products/custom-church-team-tee": {
     "status": 200,
     "body": {
-      "id": "9bf7f3a5-699d-48aa-8991-5d2621989a15",
+      "id": "9b06fc15-8870-4533-a96d-617fbfb4b96d",
       "slug": "custom-church-team-tee",
       "name": "Custom church team tee (min. 12)",
       "priceCents": 2200,
@@ -2755,7 +3231,8 @@
             "tint": "ink",
             "icon": "shirt"
           },
-          "soldOut": false
+          "soldOut": false,
+          "rating": null
         },
         {
           "slug": "gold-cross-stoneware-mug",
@@ -2768,7 +3245,11 @@
             "tint": "gold",
             "icon": "mug"
           },
-          "soldOut": false
+          "soldOut": false,
+          "rating": {
+            "average": 4.7,
+            "count": 3
+          }
         },
         {
           "slug": "morning-mug-set-of-two",
@@ -2781,7 +3262,8 @@
             "tint": "green",
             "icon": "mug"
           },
-          "soldOut": false
+          "soldOut": false,
+          "rating": null
         }
       ],
       "stockAlertRequested": false,
@@ -2791,7 +3273,7 @@
   "GET /api/listings/luzandre/products/faith-heavyweight-tee-charcoal": {
     "status": 200,
     "body": {
-      "id": "cab10da2-3224-4501-b771-3b4d4bb5c109",
+      "id": "1e6c7b0d-4639-4975-bbe2-0daa0b63b3c2",
       "slug": "faith-heavyweight-tee-charcoal",
       "name": "Faith heavyweight tee, charcoal",
       "priceCents": 3400,
@@ -2863,7 +3345,11 @@
             "tint": "gold",
             "icon": "mug"
           },
-          "soldOut": false
+          "soldOut": false,
+          "rating": {
+            "average": 4.7,
+            "count": 3
+          }
         },
         {
           "slug": "custom-church-team-tee",
@@ -2876,7 +3362,8 @@
             "tint": "blue",
             "icon": "shirt"
           },
-          "soldOut": false
+          "soldOut": false,
+          "rating": null
         },
         {
           "slug": "morning-mug-set-of-two",
@@ -2889,7 +3376,8 @@
             "tint": "green",
             "icon": "mug"
           },
-          "soldOut": false
+          "soldOut": false,
+          "rating": null
         }
       ],
       "stockAlertRequested": false,
@@ -2899,7 +3387,7 @@
   "GET /api/listings/luzandre/products/gold-cross-stoneware-mug": {
     "status": 200,
     "body": {
-      "id": "1cb8ab26-11b4-45b2-9323-bc40215e4887",
+      "id": "bc3f5206-3479-4954-9062-119da2b6ab48",
       "slug": "gold-cross-stoneware-mug",
       "name": "Gold cross stoneware mug",
       "priceCents": 2400,
@@ -2942,7 +3430,8 @@
             "tint": "ink",
             "icon": "shirt"
           },
-          "soldOut": false
+          "soldOut": false,
+          "rating": null
         },
         {
           "slug": "custom-church-team-tee",
@@ -2955,7 +3444,8 @@
             "tint": "blue",
             "icon": "shirt"
           },
-          "soldOut": false
+          "soldOut": false,
+          "rating": null
         },
         {
           "slug": "morning-mug-set-of-two",
@@ -2968,7 +3458,8 @@
             "tint": "green",
             "icon": "mug"
           },
-          "soldOut": false
+          "soldOut": false,
+          "rating": null
         }
       ],
       "stockAlertRequested": false,
@@ -2981,8 +3472,238 @@
       "title": "We can't find that.",
       "status": 404,
       "detail": "There is no such product.",
-      "correlationId": "ca91477b8ef74b16bf4b0f6fed9a3d6a",
+      "correlationId": "a7a3c7d4f5004d798c9c89e50828e82d",
       "code": "product_not_found"
+    }
+  },
+  "GET /api/listings/luzandre/reviews": {
+    "status": 200,
+    "body": {
+      "summary": {
+        "average": 4.4,
+        "count": 5,
+        "breakdown": [
+          3,
+          1,
+          1,
+          0,
+          0
+        ]
+      },
+      "viewer": "visitor",
+      "writing": "sign-in",
+      "items": [
+        {
+          "id": "f5a29c2f-0680-46de-9528-5894905d4f46",
+          "author": "Tamara J.",
+          "initials": "TJ",
+          "rating": 5,
+          "itemId": "9b06fc15-8870-4533-a96d-617fbfb4b96d",
+          "itemName": "Custom church team tee (min. 12)",
+          "text": "Ordered 40 tees for our youth retreat. The proof came back the same day, the print is thick and hasn’t cracked after a dozen washes. The kids actually wear them outside church.",
+          "createdAt": "2026-11-05T17:00:00+00:00",
+          "editedAt": null,
+          "mine": false,
+          "reply": {
+            "from": "Luzandre.com",
+            "text": "Thank you Tamara! Send us a photo from the retreat, we’d love to share it.",
+            "at": "2026-11-06T17:00:00+00:00",
+            "editedAt": null
+          }
+        },
+        {
+          "id": "e60635e0-8733-41e6-ae7d-6ad168c5dbc9",
+          "author": "Ruth M.",
+          "initials": "RM",
+          "rating": 5,
+          "itemId": "bc3f5206-3479-4954-9062-119da2b6ab48",
+          "itemName": "Gold cross stoneware mug",
+          "text": "Heavier than I expected in a good way. The gold has stayed bright in the dishwasher.",
+          "createdAt": "2026-10-12T17:00:00+00:00",
+          "editedAt": null,
+          "mine": false,
+          "reply": null
+        },
+        {
+          "id": "23cea7a8-795d-409f-86da-ee9575cf6834",
+          "author": "Samuel P.",
+          "initials": "SP",
+          "rating": 4,
+          "itemId": "bc3f5206-3479-4954-9062-119da2b6ab48",
+          "itemName": "Gold cross stoneware mug",
+          "text": "Good mug, solid glaze. It took nine days to ship to Scarborough, longer than the five I was told.",
+          "createdAt": "2026-09-30T17:00:00+00:00",
+          "editedAt": null,
+          "mine": false,
+          "reply": null
+        },
+        {
+          "id": "9adce508-0778-480e-b6d8-2c1153381944",
+          "author": "Kofi B.",
+          "initials": "KB",
+          "rating": 3,
+          "itemId": "1e6c7b0d-4639-4975-bbe2-0daa0b63b3c2",
+          "itemName": "Faith heavyweight tee, charcoal",
+          "text": "Love the design. Runs a full size small, so order up. Exchange was easy but took about two weeks by mail.",
+          "createdAt": "2026-08-14T17:00:00+00:00",
+          "editedAt": null,
+          "mine": false,
+          "reply": {
+            "from": "Luzandre.com",
+            "text": "Thanks Kofi. We’ve added a fit note and a size chart to every tee.",
+            "at": "2026-08-15T17:00:00+00:00",
+            "editedAt": null
+          }
+        },
+        {
+          "id": "a6eb38ef-d7e9-43e7-9549-3a2f38c351a3",
+          "author": "David C.",
+          "initials": "DC",
+          "rating": 5,
+          "itemId": "bc3f5206-3479-4954-9062-119da2b6ab48",
+          "itemName": "Gold cross stoneware mug",
+          "text": "Bought two as gifts for our small group leaders. Both arrived well packed and they use them every Sunday.",
+          "createdAt": "2026-07-22T17:00:00+00:00",
+          "editedAt": null,
+          "mine": false,
+          "reply": null
+        }
+      ]
+    }
+  },
+  "GET /api/listings/luzandre/reviews?product=custom-church-team-tee": {
+    "status": 200,
+    "body": {
+      "summary": {
+        "average": 5,
+        "count": 1,
+        "breakdown": [
+          1,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "viewer": "visitor",
+      "writing": "sign-in",
+      "items": [
+        {
+          "id": "f5a29c2f-0680-46de-9528-5894905d4f46",
+          "author": "Tamara J.",
+          "initials": "TJ",
+          "rating": 5,
+          "itemId": "9b06fc15-8870-4533-a96d-617fbfb4b96d",
+          "itemName": "Custom church team tee (min. 12)",
+          "text": "Ordered 40 tees for our youth retreat. The proof came back the same day, the print is thick and hasn’t cracked after a dozen washes. The kids actually wear them outside church.",
+          "createdAt": "2026-11-05T17:00:00+00:00",
+          "editedAt": null,
+          "mine": false,
+          "reply": {
+            "from": "Luzandre.com",
+            "text": "Thank you Tamara! Send us a photo from the retreat, we’d love to share it.",
+            "at": "2026-11-06T17:00:00+00:00",
+            "editedAt": null
+          }
+        }
+      ]
+    }
+  },
+  "GET /api/listings/luzandre/reviews?product=faith-heavyweight-tee-charcoal": {
+    "status": 200,
+    "body": {
+      "summary": {
+        "average": 3,
+        "count": 1,
+        "breakdown": [
+          0,
+          0,
+          1,
+          0,
+          0
+        ]
+      },
+      "viewer": "visitor",
+      "writing": "sign-in",
+      "items": [
+        {
+          "id": "9adce508-0778-480e-b6d8-2c1153381944",
+          "author": "Kofi B.",
+          "initials": "KB",
+          "rating": 3,
+          "itemId": "1e6c7b0d-4639-4975-bbe2-0daa0b63b3c2",
+          "itemName": "Faith heavyweight tee, charcoal",
+          "text": "Love the design. Runs a full size small, so order up. Exchange was easy but took about two weeks by mail.",
+          "createdAt": "2026-08-14T17:00:00+00:00",
+          "editedAt": null,
+          "mine": false,
+          "reply": {
+            "from": "Luzandre.com",
+            "text": "Thanks Kofi. We’ve added a fit note and a size chart to every tee.",
+            "at": "2026-08-15T17:00:00+00:00",
+            "editedAt": null
+          }
+        }
+      ]
+    }
+  },
+  "GET /api/listings/luzandre/reviews?product=gold-cross-stoneware-mug": {
+    "status": 200,
+    "body": {
+      "summary": {
+        "average": 4.7,
+        "count": 3,
+        "breakdown": [
+          2,
+          1,
+          0,
+          0,
+          0
+        ]
+      },
+      "viewer": "visitor",
+      "writing": "sign-in",
+      "items": [
+        {
+          "id": "e60635e0-8733-41e6-ae7d-6ad168c5dbc9",
+          "author": "Ruth M.",
+          "initials": "RM",
+          "rating": 5,
+          "itemId": "bc3f5206-3479-4954-9062-119da2b6ab48",
+          "itemName": "Gold cross stoneware mug",
+          "text": "Heavier than I expected in a good way. The gold has stayed bright in the dishwasher.",
+          "createdAt": "2026-10-12T17:00:00+00:00",
+          "editedAt": null,
+          "mine": false,
+          "reply": null
+        },
+        {
+          "id": "23cea7a8-795d-409f-86da-ee9575cf6834",
+          "author": "Samuel P.",
+          "initials": "SP",
+          "rating": 4,
+          "itemId": "bc3f5206-3479-4954-9062-119da2b6ab48",
+          "itemName": "Gold cross stoneware mug",
+          "text": "Good mug, solid glaze. It took nine days to ship to Scarborough, longer than the five I was told.",
+          "createdAt": "2026-09-30T17:00:00+00:00",
+          "editedAt": null,
+          "mine": false,
+          "reply": null
+        },
+        {
+          "id": "a6eb38ef-d7e9-43e7-9549-3a2f38c351a3",
+          "author": "David C.",
+          "initials": "DC",
+          "rating": 5,
+          "itemId": "bc3f5206-3479-4954-9062-119da2b6ab48",
+          "itemName": "Gold cross stoneware mug",
+          "text": "Bought two as gifts for our small group leaders. Both arrived well packed and they use them every Sunday.",
+          "createdAt": "2026-07-22T17:00:00+00:00",
+          "editedAt": null,
+          "mine": false,
+          "reply": null
+        }
+      ]
     }
   },
   "GET /api/listings/roncesvalles-guest-suite": {
@@ -3010,7 +3731,7 @@
         "languages": null,
         "delivery": null,
         "madeToOrder": null,
-        "onJubileeSince": "2026-10-30T03:06:37.2646738+00:00",
+        "onJubileeSince": "2026-10-30T07:19:10.1971614+00:00",
         "replies": null
       },
       "services": [],
@@ -3026,10 +3747,24 @@
         "minimumStayLabel": "2 nights",
         "neighbourhood": "Roncesvalles",
         "place": "Guest suite",
-        "facts": ["Queen bed", "Private bath", "Sleeps 2", "Self check-in"],
-        "included": ["Wi-Fi", "Furnished", "Parking", "Private bath"],
+        "facts": [
+          "Queen bed",
+          "Private bath",
+          "Sleeps 2",
+          "Self check-in"
+        ],
+        "included": [
+          "Wi-Fi",
+          "Furnished",
+          "Parking",
+          "Private bath"
+        ],
         "household": null,
-        "rules": ["Check-in after 3 pm", "No parties", "No smoking"],
+        "rules": [
+          "Check-in after 3 pm",
+          "No parties",
+          "No smoking"
+        ],
         "callToAction": "Request to book"
       },
       "relatedSpaces": [
@@ -3039,10 +3774,14 @@
           "term": "room",
           "rent": 950,
           "per": "month",
-          "facts": ["Double bed", "Shared bath"],
+          "facts": [
+            "Double bed",
+            "Shared bath"
+          ],
           "neighbourhood": "Leslieville",
           "available": "Now",
-          "coverPhoto": null
+          "coverPhoto": null,
+          "rating": null
         },
         {
           "slug": "annex-basement-apartment",
@@ -3050,10 +3789,14 @@
           "term": "long-term",
           "rent": 1850,
           "per": "month",
-          "facts": ["1 bedroom", "1 bath"],
+          "facts": [
+            "1 bedroom",
+            "1 bath"
+          ],
           "neighbourhood": "The Annex",
           "available": "Dec 1",
-          "coverPhoto": null
+          "coverPhoto": null,
+          "rating": null
         },
         {
           "slug": "east-york-roommate",
@@ -3061,10 +3804,14 @@
           "term": "roommate",
           "rent": 1100,
           "per": "month",
-          "facts": ["Unfurnished room", "Shared bath (2)"],
+          "facts": [
+            "Unfurnished room",
+            "Shared bath (2)"
+          ],
           "neighbourhood": "East York",
           "available": "Jan 1",
-          "coverPhoto": null
+          "coverPhoto": null,
+          "rating": null
         },
         {
           "slug": "scarborough-furnished-condo",
@@ -3072,10 +3819,14 @@
           "term": "long-term",
           "rent": 2400,
           "per": "month",
-          "facts": ["2 bedrooms", "2 baths"],
+          "facts": [
+            "2 bedrooms",
+            "2 baths"
+          ],
           "neighbourhood": "Scarborough",
           "available": "Feb 1",
-          "coverPhoto": null
+          "coverPhoto": null,
+          "rating": null
         }
       ],
       "openRequestId": null,
@@ -3083,12 +3834,63 @@
       "photos": []
     }
   },
+  "GET /api/listings/roncesvalles-guest-suite/reviews": {
+    "status": 200,
+    "body": {
+      "summary": {
+        "average": 4.5,
+        "count": 2,
+        "breakdown": [
+          1,
+          1,
+          0,
+          0,
+          0
+        ]
+      },
+      "viewer": "visitor",
+      "writing": "sign-in",
+      "items": [
+        {
+          "id": "9ced347a-28b3-4b04-8975-b256f6d2fb1c",
+          "author": "Lydia M.",
+          "initials": "LM",
+          "rating": 5,
+          "itemId": null,
+          "itemName": "My stay",
+          "text": "Spotless, quiet, and the breakfast basket had fresh bread from the Polish bakery down the street. Paul and Marta checked in once and otherwise left us to rest.",
+          "createdAt": "2026-10-27T17:00:00+00:00",
+          "editedAt": null,
+          "mine": false,
+          "reply": {
+            "from": "Paul & Marta Kowalski",
+            "text": "You’re welcome back any time, Lydia!",
+            "at": "2026-10-28T17:00:00+00:00",
+            "editedAt": null
+          }
+        },
+        {
+          "id": "7c47dce9-064e-4f8e-a6e0-52058a4cf8e0",
+          "author": "Chris D.",
+          "initials": "CD",
+          "rating": 4,
+          "itemId": null,
+          "itemName": "My stay",
+          "text": "Lovely suite and hosts. Street parking was tight on a Saturday, plan for a short walk.",
+          "createdAt": "2026-09-05T17:00:00+00:00",
+          "editedAt": null,
+          "mine": false,
+          "reply": null
+        }
+      ]
+    }
+  },
   "GET /api/saved": {
     "status": 401,
     "body": {
       "title": "Sign in to continue.",
       "status": 401,
-      "correlationId": "3f510453c34a43f2930f9123b6eeee38",
+      "correlationId": "1966309c77c045e387e48e7cc6d278ba",
       "code": "sign_in_required"
     }
   },
