@@ -44,6 +44,13 @@ export class Toasts {
     return this.all.locator('.toast__title').allTextContents();
   }
 
+  /** Waits until the toast has finished rising, so its place can be measured. */
+  async settled(toast: Locator): Promise<void> {
+    await toast.evaluate((element) =>
+      Promise.all(element.getAnimations().map((animation) => animation.finished)),
+    );
+  }
+
   action(toast: Locator, label: string): Locator {
     return toast.getByRole('button', { name: label, exact: true });
   }
