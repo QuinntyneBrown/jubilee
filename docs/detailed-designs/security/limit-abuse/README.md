@@ -46,10 +46,10 @@ and the outbox in the `Jubilee database`.
   `RedisRateLimitStore`. It counts hits per key in the `Cache` with an atomic
   increment and an expiry equal to the window, and returns a
   `RateLimitDecision` with the seconds until the window frees a slot.
-- **`RateLimitDecision`** — `Allowed`, `Rejected` or `Suppressed`. `Rejected`
-  becomes `429` with `Retry-After` in seconds. `Suppressed` applies to
-  `PasswordReset`: the endpoint returns its normal success response and sends no
-  e-mail (L2-008), so the limit does not reveal anything about the address.
+- **`RateLimitDecision`** — `Allowed` or `Rejected`. `Rejected` becomes `429`
+  with `Retry-After` in seconds. `PasswordReset` is rejected like every other
+  limit (ADR 0064): it counts requests for the address whether or not it has an
+  account, so the `429` reveals nothing about the address.
 - **`RateLimitInterceptor`** — Angular HTTP interceptor. On `429` it reads
   `Retry-After`, rounds up to whole minutes and asks `ToastService` to show
   "You're doing that a lot. Try again in {n} minutes."
@@ -81,9 +81,26 @@ and the outbox in the `Jubilee database`.
   confirms the restriction.
 - **`ISecurityEventLog`** — records each rate-limit trip with time, actor, IP
   address and outcome (L2-143).
+- **Burst alert** — more than 100 password reset requests across all
+  addresses in 5 minutes alert the on-call security contact by e-mail, at most
+  once in any 5 minutes (L2-143 AC4).
 - **`EnumerationTimingTest`** — automated test that sends 100 requests each for
   an existing and a non-existing address to each of the three endpoints and
   fails when the median times differ by 50 ms or more.
+
+As built for password reset (ADR 0026, ADR 0064): there is no shared
+`RateLimitMiddleware` or `IRateLimitStore`. `RequestPasswordResetCommandHandler`
+counts the `PasswordResetRequest` rows of the address in the hour before and
+throws `RateLimitedException`, which `ExceptionHandlingMiddleware` writes as
+`429` with `Retry-After` and the code `rate_limited`; the trip is logged as
+`Security event: RateLimitTrip PasswordReset` with the IP address. The page
+shows the `429` in place on the form rather than through an interceptor and a
+toast. `PasswordResetLinks` in the worker raises the burst alert as a
+`SecurityAlert` row and an outbox e-mail to `Security:OnCallEmail`, else the
+Jubilee team's address. `UniformResponder` and `EnumerationTimingTest` were
+not built as named: the reset request does the same work for any address by
+construction, and `PasswordResetTests` measures the medians of 100 requests
+each.
 
 ## Requirements
 
@@ -96,7 +113,7 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 | `L2-141` | `L1-019` | Sign-in, forgot-password and e-mail-change endpoints shall return the same status, body shape and timing for existing and non-existing e-mails. Join with an existing e-mail shall show the inline message of L2-002 only after the bot challenge passes and within the join rate limit, and shall e-mail the existing account holder that someone tried to join with their address. |
 | `L2-007` | `L1-001` | Repeated failed sign-ins shall be slowed and then temporarily blocked to stop password guessing. |
 | `L2-008` | `L1-001` | A visitor shall be able to ask for a password reset link at `/forgot-password`, and the response shall be the same whether or not an account exists. |
-| `L2-143` | `L1-019` | The system shall log security events, including rate-limit trips, with time, actor, IP and outcome. |
+| `L2-143` | `L1-019` | The system shall log security events, including rate-limit trips, with time, actor, IP and outcome, and shall alert the on-call security contact on a burst of password reset requests. |
 
 ## Diagrams
 

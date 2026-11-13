@@ -4,22 +4,21 @@ LAYOUT_WITH_LEGEND()
 title Containers — Reset password
 
 Person(visitor, "Visitor", "Resets a forgotten password")
+Person(oncall, "On-call security contact", "Hears of a burst of reset requests")
 System_Boundary(jubilee, "Jubilee") {
   Container(web, "Jubilee Web", "Angular single-page application", "ForgotPasswordPage and ResetPasswordPage")
-  Container(api, "Jubilee API", "ASP.NET Core", "Accepts reset requests and changes the password")
-  Container(worker, "Jubilee Worker", ".NET worker service", "Looks up the account - issues the link - sends e-mail")
-  ContainerDb(db, "Jubilee database", "SQL Server", "Members - link tokens - outbox")
-  ContainerDb(cache, "Cache", "Redis", "Reset counters and sessions")
+  Container(api, "Jubilee API", "ASP.NET Core", "Records reset requests within 3 an hour - changes the password")
+  Container(worker, "Jubilee Worker", ".NET worker service", "Looks up the account - issues the link - alerts on a burst - sends e-mail")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Members - reset requests - link tokens - sessions - security alerts - outbox")
 }
 System_Ext(email, "E-mail provider", "Delivers e-mail")
 System_Ext(breach, "Breached-password service", "k-anonymity range query")
 
 Rel(visitor, web, "Uses", "HTTPS")
 Rel(web, api, "Requests a link and submits the new password", "JSON/HTTPS")
-Rel(api, db, "Reads and writes", "EF Core")
-Rel(api, cache, "Ends sessions", "Redis protocol")
+Rel(api, db, "Counts and records requests - changes the password - ends sessions", "EF Core")
 Rel(api, breach, "Range query", "HTTPS")
-Rel(worker, db, "Reads outbox and writes token hashes", "EF Core")
-Rel(worker, cache, "Counts reset requests per e-mail", "Redis protocol")
-Rel(worker, email, "Sends reset link and security e-mail", "HTTPS")
+Rel(worker, db, "Reads requests - writes token hashes, alerts and outbox messages", "EF Core")
+Rel(worker, email, "Sends reset link, security e-mail and alert", "HTTPS")
+Rel(email, oncall, "Delivers the alert")
 @enduml

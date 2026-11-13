@@ -27,34 +27,72 @@ enum ResetLinkState {
 
 class Member {
   +Guid Id
-  +EmailAddress Email
+  +string Email
+  +string EmailKey
   +string PasswordHash
-  +DateTimeOffset PasswordChangedAt
+  +DateTimeOffset? PasswordChangedAt
   +ChangePassword(passwordHash: string, now: DateTimeOffset): void
+}
+
+class PasswordResetRequest {
+  +Guid Id
+  +string EmailKey
+  +DateTimeOffset RequestedAt
+  +DateTimeOffset? ProcessedAt
+  +{static} Record(email: EmailAddress, now: DateTimeOffset): PasswordResetRequest
+  +MarkProcessed(now: DateTimeOffset): void
+}
+
+class SecurityAlert {
+  +Guid Id
+  +string Kind
+  +int Count
+  +DateTimeOffset RaisedAt
+  +{static} Raise(kind: string, count: int, now: DateTimeOffset): SecurityAlert
 }
 
 class LinkToken {
   +Guid Id
   +Guid MemberId
   +LinkTokenPurpose Purpose
-  +byte[] TokenHash
+  +string TokenHash
   +DateTimeOffset ExpiresAt
   +DateTimeOffset? UsedAt
   +DateTimeOffset? SupersededAt
   +IsRedeemable(now: DateTimeOffset): bool
   +Redeem(now: DateTimeOffset): void
+  +Supersede(now: DateTimeOffset): void
+}
+
+class Session {
+  +Guid Id
+  +Guid MemberId
+  +DateTimeOffset? EndedAt
+  +End(now: DateTimeOffset): void
 }
 
 class RequestPasswordResetCommand {
   +string Email
+  +string Address
 }
 
 class RequestPasswordResetCommandHandler {
-  +Handle(command: RequestPasswordResetCommand): Task<Result>
+  +Handle(command: RequestPasswordResetCommand): Task
 }
 
-class SendPasswordResetLinkHandler {
-  +Handle(message: PasswordResetRequested): Task
+class RateLimitedException {
+  +string Code
+  +TimeSpan RetryAfter
+}
+
+class PasswordResetLinks {
+  +LimitPerHour = 3
+  +BurstThreshold = 100
+  +IssueAsync(): Task<int>
+}
+
+class SecuritySettings {
+  +string OnCallEmail
 }
 
 class InspectResetLinkQueryHandler {
@@ -72,35 +110,33 @@ class ResetPasswordCommand {
   +string RepeatPassword
 }
 
-class ResetPasswordCommandValidator {
-  +Validate(command: ResetPasswordCommand): ValidationResult
-}
-
 class ResetPasswordCommandHandler {
-  +Handle(command: ResetPasswordCommand): Task<Result>
+  +Handle(command: ResetPasswordCommand): Task
 }
 
-interface ILinkTokenService {
-  +Issue(memberId: Guid, purpose: LinkTokenPurpose, lifetime: TimeSpan): IssuedToken
-  +Find(rawToken: string, purpose: LinkTokenPurpose): Task<LinkToken>
-  +SupersedeOutstanding(memberId: Guid, purpose: LinkTokenPurpose): void
+interface IBreachedPasswordChecker {
+  +IsBreachedAsync(password: string): Task<bool>
 }
 
-interface ISessionStore {
-  +EndAllForMember(memberId: Guid): Task
+class LinkTokens {
+  +{static} NewValue(): string
+  +{static} Hash(value: string): string
 }
 
 Member "1" --> "*" LinkToken : receives
+Member "1" --> "*" Session : signs in with
 LinkToken --> LinkTokenPurpose : has
 RequestPasswordResetCommandHandler ..> RequestPasswordResetCommand : handles
-SendPasswordResetLinkHandler ..> ILinkTokenService : uses
-InspectResetLinkQueryHandler ..> ILinkTokenService : uses
+RequestPasswordResetCommandHandler ..> PasswordResetRequest : counts and records
+RequestPasswordResetCommandHandler ..> RateLimitedException : throws at the fourth in an hour
+PasswordResetLinks ..> PasswordResetRequest : processes
+PasswordResetLinks ..> LinkTokens : issues with
+PasswordResetLinks ..> SecurityAlert : raises on a burst
+PasswordResetLinks ..> SecuritySettings : alerts
 InspectResetLinkQueryHandler ..> ResetLinkView : returns
 ResetLinkView --> ResetLinkState : has
-ResetPasswordCommandValidator ..> ResetPasswordCommand : validates
 ResetPasswordCommandHandler ..> ResetPasswordCommand : handles
-ResetPasswordCommandHandler ..> ILinkTokenService : uses
-ResetPasswordCommandHandler ..> ISessionStore : uses
+ResetPasswordCommandHandler ..> IBreachedPasswordChecker : uses
 ResetPasswordCommandHandler --> Member : changes password
-ILinkTokenService --> LinkToken : issues and finds
+ResetPasswordCommandHandler --> Session : ends
 @enduml

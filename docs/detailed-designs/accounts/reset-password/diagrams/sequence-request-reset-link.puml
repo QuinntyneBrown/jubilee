@@ -17,48 +17,57 @@ skinparam package {
 actor "Visitor" as actor
 box "Frontend — Jubilee Web" #E0F2FE
   participant "ForgotPasswordPage" as page
-  participant "AccountApi" as client
+  participant "PasswordResetApi" as client
 end box
 box "Backend — Jubilee API" #D1FADF
-  participant "PasswordResetController" as controller
-end box
-box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "AccountController" as controller
   participant "RequestPasswordResetCommandHandler" as handler
 end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
   database "Jubilee database" as db
-  database "Cache" as cache
 end box
 box "Backend — Jubilee Worker" #D1FADF
-  participant "SendPasswordResetLinkHandler" as send
+  participant "PasswordResetLinks" as links
 end box
 participant "E-mail provider" as email
+actor "On-call security contact" as oncall
 
 actor -> page : Enter an e-mail and press "Send reset link"
 alt e-mail empty or malformed
   page --> actor : Show "Fix 1 thing to continue" and "Enter an e-mail address like name@example.com" (L2-008)
 else e-mail well formed
-  page -> client : requestPasswordReset(email)
+  page -> client : requestLink(email)
   client -> controller : POST /api/account/password-reset-requests
   controller -> handler : Send RequestPasswordResetCommand
-  handler -> db : Save PasswordResetRequested outbox message - no account lookup (L2-141)
-  db --> handler : Commit result
-  handler --> controller : Result
-  controller --> client : 202 Accepted - same body for every e-mail
-  client --> page : Accepted
-  page --> actor : Show "Check your e-mail. If {address} has an account, a reset link is on its way. It works for 60 minutes."
-  send -> db : Read outbox message
-  db --> send : PasswordResetRequested
-  send -> cache : Increment reset counter for the e-mail (L2-008)
-  cache --> send : Count in the last hour
-  send -> db : Find member by normalised e-mail
-  db --> send : Member or nothing
-  opt account exists and count is at most 3
-    send -> send : Supersede earlier reset tokens and issue a 60-minute token (L2-140)
-    send -> db : Save token hash
-    db --> send : Commit result
-    send -> email : Send reset link e-mail
-    email --> send : Accepted
+  handler -> db : Count PasswordResetRequest rows of the address in the last hour - no account lookup (L2-141)
+  db --> handler : Count
+  alt 3 or more in the hour (L2-137, L2-008 AC4)
+    handler -> handler : Log "Security event: RateLimitTrip PasswordReset" with the IP address (L2-143)
+    handler --> controller : RateLimitedException
+    controller --> client : 429 rate_limited with Retry-After - same for every address
+    client --> page : Refused
+    page --> actor : Show "You're doing that a lot. Try again in {n} minutes."
+  else fewer than 3
+    handler -> db : Save PasswordResetRequest
+    db --> handler : Commit result
+    handler --> controller : Done
+    controller --> client : 202 Accepted - same body for every e-mail
+    client --> page : Accepted
+    page --> actor : Show "Check your e-mail. If {address} has an account, a reset link is on its way. It works for 60 minutes."
   end
 end
+links -> db : Read unprocessed requests (every 5 seconds, PasswordResetJob)
+db --> links : Requests
+links -> db : Find member by e-mail key
+db --> links : Member or nothing
+opt account exists and fewer than 3 processed in the hour before
+  links -> links : Supersede earlier reset tokens and issue a 60-minute token (L2-140)
+  links -> db : Save token hash and reset e-mail outbox message
+end
+links -> db : Count requests in the last 5 minutes and alerts raised in them
+opt more than 100 requests and no alert in 5 minutes (L2-143 AC4)
+  links -> db : Save SecurityAlert and alert outbox message - count only, no address
+end
+email <- links : Outbox sends the reset link and the alert
+email -> oncall : "Security alert: a burst of password reset requests"
 @enduml
