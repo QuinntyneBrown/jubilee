@@ -1,11 +1,16 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpContext } from '@angular/common/http';
 import { Injectable, InjectionToken, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { SavedList } from '../models/saved';
+import { OWN_OFFLINE_FALLBACK } from './http-context';
 
 /** Contract of the member's private saved list (L2-041, L2-042). */
 export interface SavedApi {
-  list(): Observable<SavedList>;
+  /**
+   * The saved list. `forHearts` marks the read the hearts of any page make: offline, the page they
+   * are on stays, and they simply do not know what is saved (L2-119).
+   */
+  list(forHearts?: boolean): Observable<SavedList>;
   saveBusiness(slug: string): Observable<void>;
   unsaveBusiness(slug: string): Observable<void>;
   saveProduct(shopSlug: string, productSlug: string): Observable<void>;
@@ -20,8 +25,10 @@ export const SAVED_API = new InjectionToken<SavedApi>('SAVED_API');
 export class HttpSavedApi implements SavedApi {
   private readonly http = inject(HttpClient);
 
-  list(): Observable<SavedList> {
-    return this.http.get<SavedList>('/api/saved');
+  list(forHearts = false): Observable<SavedList> {
+    return this.http.get<SavedList>('/api/saved', {
+      context: new HttpContext().set(OWN_OFFLINE_FALLBACK, forHearts),
+    });
   }
 
   saveBusiness(slug: string): Observable<void> {

@@ -42,7 +42,7 @@ export class SavedStore {
     this.loading = true;
     this.sinceLoad.clear();
     const generation = this.generation;
-    this.api.list().subscribe({
+    this.api.list(true).subscribe({
       next: (list) => {
         if (generation !== this.generation) return;
         this.loading = false;

@@ -23,24 +23,32 @@ test.describe('the installed app (L2-119 AC3)', () => {
   // The worker installs the app shell in the background before the device can go offline.
   test.describe.configure({ timeout: 120_000 });
 
-  test('Jubilee opens with no connection and shows the directory saved last', async ({
-    page,
-    jb,
-  }) => {
-    const browse = new BrowsePage(page);
-    const banner = new ConnectionBannerRegion(page);
-    await browse.setWidth(1280);
-    await jb.goto(`${INSTALLED_APP_URL}/`);
-    await expect(browse.featuredCards.first()).toBeVisible();
-    await waitForSnapshot(page, 'browse-home');
-    await waitForAppShell(page);
+  for (const who of ['visitor', 'member'] as const) {
+    test(`Jubilee opens with no connection and shows the directory saved last, for a ${who}`, async ({
+      page,
+      jb,
+    }) => {
+      const browse = new BrowsePage(page);
+      const banner = new ConnectionBannerRegion(page);
+      await browse.setWidth(1280);
+      await jb.signInAs(who);
+      await jb.goto(`${INSTALLED_APP_URL}/`);
+      await expect(browse.featuredCards.first()).toBeVisible();
+      await waitForSnapshot(page, 'browse-home');
+      await waitForAppShell(page);
 
-    await deviceOffline(page);
-    await page.reload();
+      await deviceOffline(page);
+      await page.reload();
 
-    await expect(browse.featuredCards.first()).toBeVisible();
-    await expect(banner.root).toContainText(/Showing the directory saved at \d+:\d\d [ap]\.m\./);
-  });
+      await expect(browse.featuredCards.first()).toBeVisible();
+      await expect(banner.root).toContainText(
+        /Showing the directory saved at \d+:\d\d [ap]\.m\./,
+      );
+      // Nothing else the page reads replaces it with the offline page.
+      await page.waitForTimeout(1_000);
+      await expect(page.locator('body')).toHaveAttribute('data-page', 'browse');
+    });
+  }
 
   test('a member who opens Jubilee with no connection is still signed in and reads the conversations saved', async ({
     page,

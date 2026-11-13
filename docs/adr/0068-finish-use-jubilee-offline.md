@@ -28,7 +28,8 @@ is built again.
   platform's practice. It runs in production builds only (`provideServiceWorker` with
   `enabled: !isDevMode()`, registered once the app is stable or after 30 seconds), so
   `ng serve` and the behaviour specs that run against it are unchanged. `ngsw-config.json`
-  prefetches the group `app` (`index.html`, the scripts, the styles and the icon) and keeps the
+  prefetches the group `app` (`index.html`, the scripts, the styles, the fonts they name under
+  `/media/` and the icon) and keeps the
   group `assets` (`/static/**`, the images) as they are used. It has no data groups.
 - **The service worker never caches an `/api` answer.** The registered script is
   `jubilee-sw.js`: its first `fetch` listener leaves every `/api/` request to the network
@@ -67,6 +68,8 @@ is built again.
   session read gets no answer at all, uses it until Jubilee answers. Any other failure still makes
   the user a visitor. The server decides every request; this only lets the saved pages open. The
   saved session goes on sign-out, on expiry and when Jubilee says no one is signed in.
+  The hearts' read of the saved list has its own fallback (`OWN_OFFLINE_FALLBACK`): offline, a
+  page with hearts stays on screen instead of giving way to the offline page.
 - **The status page's address is set at build time** (`environment.statusUrl`). It stays the
   placeholder `https://status.jubilee.example` until the repository owner hosts a status page
   apart from the API and supplies its address (an owner step, in `eng/azure/README.md`).

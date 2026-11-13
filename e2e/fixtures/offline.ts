@@ -178,3 +178,9 @@ export async function fireOutboxSync(context: BrowserContext, page: Page, origin
     lastChance: false,
   });
 }
+
+/** The device finds its network again, after `deviceOffline`. */
+export async function deviceOnline(page: Page): Promise<void> {
+  await page.unroute('**/api/**', cut);
+  await page.context().setOffline(false);
+}
