@@ -67,7 +67,8 @@ change.
   the e-mail "Security alert: a burst of password reset requests" through the outbox.
 - The contact is `Security:OnCallEmail`, else the Jubilee team's address (`TeamSettings`, ADR
   0055). With neither set the alert is logged and recorded only. Setting `Security__OnCallEmail`
-  on `jubilee-to-app` is an owner step (`eng/azure/README.md`).
+  on `jubilee-to-app` was an owner step (`eng/azure/README.md`); the owner set it on 13 November
+  2026.
 - The alerts for failed sign-ins and role changes (`L2-143` AC2) are not part of this journey.
 
 ## Consequences

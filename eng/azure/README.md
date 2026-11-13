@@ -65,7 +65,7 @@ certificates for the four host names.
 | `StaffSignIn__TenantId`, `StaffSignIn__ClientId`, `StaffSignIn__ClientSecret`, `StaffSignIn__PublicBaseUrl` | staff sign-in (see "The admin application" below) |
 | `StaffAccess__AllowedNetworks`, `StaffAccess__ProxyKey` | the networks the staff endpoints answer, and the key of the admin host's and the marketing host's proxy; without the first, every staff endpoint is refused |
 | `Launch__TeamEmail` | where each pre-registration and each new launch sign-up is e-mailed; set by `deploy.sh` (see "The launching-soon forms" below) |
-| `Security__OnCallEmail` | the on-call security contact, e-mailed "Security alert: a burst of password reset requests" when more than 100 reset requests arrive in 5 minutes (L2-143 AC4, ADR 0064); without it the Jubilee team's address (`Moderation__TeamEmail`, else `Launch__TeamEmail`) is e-mailed. **Not set yet: an owner step.** Set it with `az webapp config appsettings set -g "$G" -n "$APP" -o none --settings Security__OnCallEmail=<address>` |
+| `Security__OnCallEmail` | the on-call security contact, e-mailed "Security alert: a burst of password reset requests" when more than 100 reset requests arrive in 5 minutes (L2-143 AC4, ADR 0064); without it the Jubilee team's address (`Moderation__TeamEmail`, else `Launch__TeamEmail`) is e-mailed. **Set** on `jubilee-to-app` by the owner on 13 November 2026. Change it with `az webapp config appsettings set -g "$G" -n "$APP" -o none --settings Security__OnCallEmail=<address>` |
 
 Not configured yet, so this feature is off: the bot challenge of the join form (Cloudflare
 Turnstile). It needs a Turnstile widget for `app.jubilee.to` and two settings: `BotChallenge__SiteKey`
