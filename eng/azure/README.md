@@ -238,64 +238,121 @@ At launch, revert the marketing site's commits of ADR 0044 and remove the four s
 
 ## The admin application
 
-The Jubilee team's screens (Listings, Reports, Featured) are a separate application at
-`https://admin.jubilee.to` (ADR 0040, ADR 0057). Staff sign in through Microsoft Entra ID with a second factor, and the staff endpoints of
-the API (`/api/admin/*`, `/api/staff/*`) answer only an allowed network. The App Service, its
-proxy key, the DNS records and the certificate were set up on 11 November 2026 (steps 4 and 6, and
-the key of step 5), and every deployment publishes the application. Until the remaining steps are
-done, nobody can use the staff endpoints in production: the allow-list is empty, so the API
-refuses them all. The access restrictions of step 4 are not set yet either, so the application's
-own files answer any network.
+The Jubilee team's screens (Listings, Reports, Featured) and the administrators' Policies are a
+separate application at `https://admin.jubilee.to` (ADR 0040, ADR 0057). Staff sign in through
+Microsoft Entra ID with a second factor, and the staff endpoints of the API (`/api/admin/*`,
+`/api/staff/*`) answer only an allowed network. Every deployment publishes the application.
 
-None of these steps is run by the workflows. `bash eng/azure/create-admin.sh`, in Cloud Shell,
-does step 4 (without the access restrictions), the proxy key of step 5 and the Azure half of
-step 6; it prints the two DNS records and is run again once they are published. In order:
+Where it stands: the App Service, its proxy key, the DNS records and the certificate were set up
+on 11 November 2026 (step 3). Steps 1, 2 and 4 to 8 are open. Until step 5 is done the allow-list
+is empty, so the API refuses every staff request in production, and the application's own files
+answer any network. Write the date beside each step in the table at the end as you finish it.
 
-1. **Entra ID app registration.** In the Jubilee tenant: App registrations, New registration,
-   `Jubilee admin`, single tenant, platform Web, redirect URI
+### The owner's checklist
+
+Run these in order, in Azure Cloud Shell (bash) from a clone of this repository. Each step says
+how to check it and, if the check fails, how to put it right. Nothing here prints a secret.
+
+```bash
+G=rg-jubilee-prod; ADMIN=jubilee-to-admin; APP=jubilee-to-app
+setting() { az webapp config appsettings list -g "$G" -n "$1" --query "[?name=='$2'].value | [0]" -o tsv; }
+```
+
+1. **Register the application with Entra ID.** In the Jubilee tenant: App registrations, New
+   registration, `Jubilee admin`, single tenant, platform Web, redirect URI
    `https://admin.jubilee.to/api/staff/sign-in/callback`. Under Authentication, tick "ID tokens".
-   Under Certificates and secrets, add a client secret. Note the tenant ID and the client ID. The
-   API uses the v1.0 endpoints, whose ID token carries `amr`.
-2. **Second factor.** A Conditional Access policy for the `Jubilee admin` application that grants
-   access only with multifactor authentication, for every staff member. The API refuses a sign-in
-   whose `amr` does not name `mfa` (L2-189 AC3), so a staff member without a second factor is told
-   to set one up.
-3. **The allowed networks.** The address ranges of the Jubilee staff networks, as CIDR, separated
-   by commas (`203.0.113.0/24, 2001:db8:5::/48`).
-4. **The App Service.** `jubilee-to-admin` on `jubilee-plan`, Node 22, start-up command
-   `node server.js`, HTTPS only, TLS 1.2, Always On, FTP off. Settings:
+   Under Certificates and secrets, add a client secret and keep it for step 4. The API uses the
+   v1.0 endpoints, whose ID token carries `amr`.
+   Check:
+   `az ad app list --display-name "Jubilee admin" --query "[0].{client:appId, redirect:web.redirectUris[0], idTokens:web.implicitGrantSettings.enableIdTokenIssuance}"`
+   prints the client ID, the callback address above and `true`.
+2. **Require a second factor.** A Conditional Access policy for the `Jubilee admin` application
+   that grants access only with multifactor authentication, for every staff member. The API also
+   refuses a sign-in whose `amr` does not name `mfa` (L2-189 AC3), so a staff member without a
+   second factor is told to set one up rather than let in.
+   Check: Entra ID, Conditional Access, Policies lists the policy as On, with the `Jubilee admin`
+   application under Target resources and "Require multifactor authentication" under Grant. After
+   step 8, the sign-in logs show the staff sign-in with "Multifactor authentication" as its
+   authentication requirement.
+3. **The App Service, its proxy key and its host name** (done 11 November 2026):
+   `bash eng/azure/create-admin.sh`. It creates `jubilee-to-admin` on `jubilee-plan` (Node 22,
+   `node server.js`, HTTPS only, TLS 1.2, Always On, FTP off, `API_ORIGIN=https://app.jubilee.to`),
+   sets one proxy key as `PROXY_KEY` on it and `StaffAccess__ProxyKey` on `jubilee-to-app`, and
+   binds `admin.jubilee.to` with a managed certificate. When it stops with exit code 2 it prints
+   the `CNAME admin` and `TXT asuid.admin` records (see "DNS" below); publish them, wait a few
+   minutes and run it again.
+   Check: `az webapp config hostname list -g "$G" --webapp-name "$ADMIN" --query "[?name=='admin.jubilee.to'].sslState" -o tsv`
+   prints `SniEnabled`, and
+   `[ "$(setting $ADMIN PROXY_KEY | sha256sum)" = "$(setting $APP StaffAccess__ProxyKey | sha256sum)" ] && echo "same key"`
+   prints `same key`.
+   Fix: run the script again; to make a new key, delete `PROXY_KEY` from `jubilee-to-admin` first.
+4. **The staff sign-in settings of `jubilee-to-app`**, from step 1:
 
-   | Setting | Value |
-   |---|---|
-   | `API_ORIGIN` | `https://app.jubilee.to` |
-   | `PROXY_KEY` | a new random key (`openssl rand -base64 32`), the same as `StaffAccess__ProxyKey` |
-   | `SCM_DO_BUILD_DURING_DEPLOYMENT` | `false` |
+   ```bash
+   read -rp 'Tenant ID: ' TENANT; read -rp 'Client ID: ' CLIENT; read -rsp 'Client secret: ' SECRET; echo
+   az webapp config appsettings set -g "$G" -n "$APP" -o none --settings \
+     "StaffSignIn__TenantId=$TENANT" "StaffSignIn__ClientId=$CLIENT" "StaffSignIn__ClientSecret=$SECRET" \
+     StaffSignIn__PublicBaseUrl=https://admin.jubilee.to; unset SECRET
+   ```
 
-   Under Networking, Access restrictions, allow the staff networks of step 3 and deny the rest, so
-   that the application itself only answers there.
-5. **The settings of `jubilee-to-app`** (in Cloud Shell, with `read -rs` for the secrets, as for
-   Google sign-in): `StaffSignIn__TenantId`, `StaffSignIn__ClientId`, `StaffSignIn__ClientSecret`,
-   `StaffSignIn__PublicBaseUrl=https://admin.jubilee.to`, `StaffAccess__AllowedNetworks` (step 3)
-   and `StaffAccess__ProxyKey` (the key of step 4). Never set `StaffSignIn__Provider`: its only
-   other value, `Development`, signs anyone in and the API refuses to start with it outside the
-   Development environment.
-6. **DNS.** `CNAME admin → jubilee-to-admin.azurewebsites.net.` and `TXT asuid.admin` with the
-   domain verification ID; then add the host name to `jubilee-to-admin` with a managed certificate.
-7. **Deploy.** Run the Deploy workflow (or `bash eng/azure/deploy.sh --migrate`, which applies the
-   staff migrations). It now deploys `jubilee-to-admin` too.
-8. **The first administrator.** In Cloud Shell, with the connection string as in `deploy.sh`:
-   `dotnet run --project backend/src/Jubilee.Cli -- staff grant --email {address} --role admin`,
-   and `--role moderator` for each member of the Jubilee team (ADR 0057 renamed the role
-   from `verifier`; existing grants carry over). The address is the staff
-   member's Entra ID address; the first sign-in binds the account to that identity.
-9. **Check.** From a staff network, open `https://admin.jubilee.to`, sign in with a second factor
-   and see Listings. From any other network the screen says "You're not on an allowed network."
-   `az webapp log tail -n jubilee-to-app` shows a refused staff request as `Failed authorization`
-   or `NETWORK_NOT_ALLOWED`.
+   Never set `StaffSignIn__Provider`: its only other value, `Development`, signs anyone in, and the
+   API refuses to start with it outside the Development environment (L2-195 AC2).
+   Check:
+   `for n in StaffSignIn__TenantId StaffSignIn__ClientId StaffSignIn__PublicBaseUrl; do echo "$n=$(setting $APP $n)"; done; [ -n "$(setting $APP StaffSignIn__ClientSecret)" ] && echo "secret set"; [ -z "$(setting $APP StaffSignIn__Provider)" ] && echo "no provider"`
+   prints the two IDs, `https://admin.jubilee.to`, `secret set` and `no provider`.
+5. **The allowed networks.** The address ranges of the Jubilee staff networks, as CIDR, separated
+   by commas:
+   `STAFF_NETWORKS='203.0.113.0/24, 2001:db8:5::/48' bash eng/azure/create-admin.sh`. It allows
+   them on `jubilee-to-admin` and denies every other network there (L2-192 AC5), and sets the same
+   list as `StaffAccess__AllowedNetworks` on `jubilee-to-app` (AC1). Rules already in place are
+   kept; remove a network under Networking, Access restrictions, and from the setting.
+   Check:
+   `az webapp config access-restriction show -g "$G" -n "$ADMIN" --query "{unmatched:ipSecurityRestrictionsDefaultAction, allowed:ipSecurityRestrictions[?action=='Allow'].ipAddress}"`
+   shows `Deny` and your ranges, and `setting $APP StaffAccess__AllowedNetworks` prints them. From
+   a network that is not on the list (Cloud Shell is not),
+   `curl -s -o /dev/null -w '%{http_code}\n' https://admin.jubilee.to` prints `403` and
+   `curl -s https://app.jubilee.to/api/staff/session` names `NETWORK_NOT_ALLOWED`.
+6. **Deploy.** `gh workflow run deploy.yml` (or `bash eng/azure/deploy.sh --migrate`, which
+   applies the staff migrations).
+   Check: `gh run list --workflow deploy.yml -L 1` shows `completed success`.
+7. **The first administrator and the Jubilee team.**
+   `bash eng/azure/staff.sh grant --email {address} --role admin` for the first administrator, and
+   `--role moderator` for each member of the Jubilee team. The address is the staff member's Entra
+   ID address; their first sign-in binds the account to that identity (L2-193 AC5). ADR 0057
+   renamed the role from `verifier`; existing grants carry over. Each grant is written to the
+   audit log as `staff.role-granted`, with the account that ran the command as the actor.
+   Check: `bash eng/azure/staff.sh list` prints each address with its roles
+   (`{address}: moderator, admin`).
+8. **Sign in once against production, and record it.** From a staff network, open
+   `https://admin.jubilee.to`, choose "Sign in with your staff account", sign in with the second
+   factor and see Listings (a moderator) or Policies (an administrator only); then "Sign out" says
+   "You've signed out of the admin application." From any other network, the address does not
+   open (step 5).
+   Check: the sign-in works as above, and `az webapp log tail -g "$G" -n "$APP"` shows no
+   `Failed authorization` for your address. Write the date and your initials beside step 8 below.
+   If the screen says "Sign-in needs a second factor", step 2 is not in force; if it says "This
+   account isn't on the Jubilee staff list", step 7 used another address; "We couldn't sign you
+   in" with `JB-STAFF-503` points at the settings of step 4.
+9. **Run the sweeps by hand** (ADR 0010, for the repository owner only): in `e2e/`, `npm run
+   sweeps`, which covers the admin screens at every width and in both themes (L2-188 AC6).
+   Check: it ends with every test passed.
+
+| Step | Done on |
+|---|---|
+| 1. Entra ID registration | |
+| 2. Second factor | |
+| 3. App Service, proxy key, host name | 11 November 2026 |
+| 4. Staff sign-in settings | |
+| 5. Allowed networks | |
+| 6. Deploy | |
+| 7. First administrator and the Jubilee team | |
+| 8. Signed in against production | |
+| 9. Sweeps run | |
 
 Rotating the proxy key means setting the new value on the three App Services at once; removing
-`StaffAccess__ProxyKey` from `jubilee-to-app` and deploying does that. Revoking a staff
-member's roles (`jubilee staff revoke`) ends their staff sessions.
+`StaffAccess__ProxyKey` from `jubilee-to-app` and deploying does that. Revoking a staff member's
+roles (`bash eng/azure/staff.sh revoke --email {address} --role moderator`) ends their staff
+sessions and is written to the audit log as `staff.role-revoked`.
 
 ## Google sign-in
 
