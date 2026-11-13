@@ -1,0 +1,40 @@
+@startuml
+title UML sequence behaviour — Classify the host of a request
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Caller" as caller
+box "Platform" #F2F4F7
+  participant "App Service front end" as edge
+end box
+box "App host" #E0F2FE
+  participant "server.js" as host
+end box
+caller -> edge : http:// or https:// request for a host
+alt Over HTTP (L2-246 AC2)
+  edge --> caller : 301 to https:// at the same host
+else Over HTTPS, wildcard certificate (L2-246 AC1)
+  edge -> host : Request with Host and X-Forwarded-For
+  host -> host : hostKind(req)
+  alt Own host: app.jubilee.to, the default name, a probe (L2-242 AC6)
+    host --> caller : The app, its files and /api, as before
+  else One label under the address domain
+    host --> caller : openAddress: 301 to the app or the static not-found page;\nno Set-Cookie, no file, /api/** 404 (L2-246 AC3, AC4)
+  else Under the domain but deep or not well formed
+    host --> caller : 404 static not-found page
+  else Foreign host (L2-246 AC5)
+    host --> caller : 400 "Bad request." with nothing of the host
+  end
+end
+@enduml

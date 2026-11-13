@@ -1,0 +1,17 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Keep addresses safe
+
+Person(person, "Visitor or Member", "Opens an address")
+System_Boundary(jubilee, "Jubilee") {
+  Container(edge, "App Service front end", "Azure App Service", "Terminates HTTPS with the wildcard certificate; redirects HTTP to HTTPS")
+  Container(host, "App host", "Node.js (eng/azure/server.js)", "Classifies the host; an address gets a redirect or the not-found page, no cookie and no file")
+  Container(api, "Jubilee API", "ASP.NET Core", "Limits address requests per caller and builds the redirect location")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Kept slugs")
+}
+Rel(person, edge, "Requests {slug}.jubilee.to", "HTTPS")
+Rel(edge, host, "Forwards with Host and X-Forwarded-For", "HTTP")
+Rel(host, api, "Asks /api/addresses/{label} without a cookie", "HTTP")
+Rel(api, db, "Reads a kept slug from", "EF Core")
+@enduml

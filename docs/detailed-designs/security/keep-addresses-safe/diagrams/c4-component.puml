@@ -1,0 +1,28 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Keep addresses safe
+
+Person(person, "Visitor or Member", "Opens an address")
+Container_Boundary(host, "App host") {
+  Component(kind, "hostKind", "server.js function", "Own host, address, malformed address or foreign host")
+  Component(open, "openAddress", "server.js function", "Redirect or static not-found page; no cookie in or out")
+  Component(secure, "secure", "server.js function", "Security headers on every response")
+  Component(own, "Own-host routing", "server.js", "Files of the app, the /api proxy and page loads")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(limiter, "Rate limiter", "ASP.NET Core middleware", "Policy addresses: 120 a minute per caller")
+  Component(controller, "AddressesController", "ASP.NET Core controller", "GET /api/addresses/{label}")
+  Component(handler, "ResolveAddressQueryHandler", "MediatR handler", "Validates the label and the path; encodes the location")
+  Component(log, "Request logging", "ASP.NET Core middleware", "Path, status and correlation ID")
+}
+
+Rel(person, kind, "Requests", "HTTPS")
+Rel(kind, own, "Hands an own host to")
+Rel(kind, open, "Hands an address to")
+Rel(open, secure, "Sets headers through")
+Rel(open, limiter, "Asks the API through", "HTTP")
+Rel(limiter, controller, "Lets within the limit reach")
+Rel(controller, handler, "Sends ResolveAddressQuery")
+Rel(log, controller, "Records each request of")
+@enduml

@@ -1,0 +1,19 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Give a listing an address
+
+Person(owner, "Owner", "Publishes or renames a listing")
+Person(team, "Jubilee team", "Runs the command line at deployment")
+System_Boundary(jubilee, "Jubilee") {
+  Container(web, "Jubilee Web", "Angular single-page application", "Listing form and listing editor")
+  Container(api, "Jubilee API", "ASP.NET Core", "Generates the slug on publish and on a change of name")
+  Container(cli, "Jubilee CLI", ".NET console application", "jubilee migrate realigns the slugs of existing listings")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Listings and kept slugs")
+}
+Rel(owner, web, "Uses", "HTTPS")
+Rel(web, api, "Publishes and saves listings through", "JSON/HTTPS")
+Rel(team, cli, "Runs")
+Rel(api, db, "Reads and writes slugs in", "EF Core")
+Rel(cli, db, "Realigns slugs in", "EF Core")
+@enduml

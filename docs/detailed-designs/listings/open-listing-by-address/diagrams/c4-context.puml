@@ -1,0 +1,16 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Open a listing by its address
+
+Person(visitor, "Visitor", "Opens an address from a card, a sign or a link")
+Person(member, "Member", "Opens an address while signed in to the app")
+Person(owner, "Owner", "Opens the address of their own listing")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace")
+System_Ext(crawler, "Search engine or link-preview fetcher", "Follows an address to the listing page")
+
+Rel(visitor, jubilee, "Opens https://{slug}.jubilee.to in", "HTTPS")
+Rel(member, jubilee, "Opens https://{slug}.jubilee.to in", "HTTPS")
+Rel(owner, jubilee, "Opens the address of a listing in", "HTTPS")
+Rel(crawler, jubilee, "Follows an address in", "HTTPS")
+@enduml

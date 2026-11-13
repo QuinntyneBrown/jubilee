@@ -1,0 +1,66 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Open a listing by its address
+
+class "server.js" as Server {
+  +addressDomain: string
+  +appOrigin: string
+  +ownHosts: Set<string>
+  +hostKind(req): own | address | malformed | foreign
+  +askAddress(req, label, path): Promise<answer>
+  +openAddress(req, res, label)
+  +staticPage(req, res, status, name, fills)
+}
+
+class AddressesController {
+  +Get(label: string, path: string?): Task<AddressDto>
+}
+
+class ResolveAddressQuery {
+  +string Label
+  +string? Path
+}
+
+class ResolveAddressQueryHandler {
+  +Handle(query: ResolveAddressQuery): Task<AddressDto>
+}
+
+class AddressDto {
+  +string Location
+}
+
+class AddressRules <<static>> {
+  +IsWellFormed(label: string): bool
+}
+
+class AddressSettings {
+  +IsReserved(label: string): bool
+}
+
+class ListingSlugs <<static>> {
+  +CurrentPublicOfAsync(db, slug): Task<string?>
+}
+
+class BusinessPage {
+  -canonical: HTMLLinkElement
+  +setCanonical(slug: string)
+}
+
+Server ..> AddressesController : GET /api/addresses/{label}
+AddressesController ..> ResolveAddressQuery : sends
+ResolveAddressQueryHandler ..> ResolveAddressQuery : handles
+ResolveAddressQueryHandler ..> AddressRules : checks the label
+ResolveAddressQueryHandler ..> AddressSettings : checks reserved words
+ResolveAddressQueryHandler ..> ListingSlugs : reads a kept slug
+ResolveAddressQueryHandler --> AddressDto : answers
+Server ..> BusinessPage : redirects the browser to
+@enduml

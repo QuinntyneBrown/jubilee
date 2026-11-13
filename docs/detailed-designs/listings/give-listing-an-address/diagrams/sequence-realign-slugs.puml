@@ -1,0 +1,39 @@
+@startuml
+title UML sequence behaviour — Realign the slugs of existing listings
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Jubilee team" as team
+box "Backend — Jubilee CLI" #D1FADF
+  participant "JubileeCli" as cli
+  participant "RealignListingSlugsCommandHandler" as handler
+  participant "ListingSlugs" as slugs
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+team -> cli : jubilee migrate
+cli -> db : Apply the migrations
+cli -> handler : Send RealignListingSlugsCommand
+handler -> db : Load the slug of every listing
+db --> handler : listings
+loop each listing whose slug is not well formed or is reserved (L2-241 AC5)
+  handler -> slugs : UniqueAsync(name, kind, listing id)
+  slugs --> handler : slug by the rules
+  handler -> db : Keep the old slug as a ListingSlug; move the listing to the new one
+end
+handler -> db : SaveChanges
+handler --> cli : number of listings realigned
+cli --> team : "Database is up to date." and the number realigned
+@enduml

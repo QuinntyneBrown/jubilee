@@ -1,0 +1,40 @@
+@startuml
+title UML sequence behaviour — Copy the address after publishing
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Owner" as owner
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "ListBusinessPage" as page
+  participant "listingAddress" as helper
+  participant "CopyLink" as copy
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "SubmitListingCommandHandler" as handler
+  participant "AddressSettings" as settings
+end box
+owner -> page : Press "Publish listing"
+page -> handler : POST /api/listing-drafts/{id}/submit
+handler -> settings : AddressOf(slug)
+settings --> handler : https://{slug}.jubilee.to, or null with no address domain
+handler --> page : PublishedListingDto with slug and address
+page -> helper : listingAddress(address, slug, origin)
+helper --> page : url and text (the app's /b/{slug} where address is null, L2-244 AC6)
+page --> owner : "{name} is live", "Your address", the address text and "Copy" (L2-244 AC2)
+owner -> page : Press "Copy"
+page -> copy : copy(url)
+copy -> copy : navigator.clipboard.writeText(url)
+copy --> page : copied is true for 2 seconds
+page --> owner : "Copied ✓"; a polite status says "Address copied"
+@enduml

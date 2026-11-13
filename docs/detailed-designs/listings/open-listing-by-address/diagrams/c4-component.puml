@@ -1,0 +1,34 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Open a listing by its address
+
+Person(person, "Visitor, Member or Owner", "Opens an address")
+Container_Boundary(host, "App host") {
+  Component(kind, "hostKind", "server.js function", "Own host, address, malformed address or foreign host")
+  Component(open, "openAddress", "server.js function", "301 to the app, static not-found page, 429 or 503")
+  Component(page, "pageLoad", "server.js function", "Status of /b/{slug} from the API (ADR 0056)")
+  Component(static, "not-found.html", "Static page", "The not-found page with no script")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(controller, "AddressesController", "ASP.NET Core controller", "GET /api/addresses/{label}, policy addresses")
+  Component(handler, "ResolveAddressQueryHandler", "MediatR handler", "Label and path to a location of the app")
+  Component(rules, "AddressRules and AddressSettings", "Rules and settings", "Well-formed label, reserved words")
+  Component(status, "GetDocumentStatusQueryHandler", "MediatR handler", "200, 301 or 404 for /b/{slug}")
+}
+Container_Boundary(web, "Jubilee Web") {
+  Component(business, "BusinessPage", "Angular page", "Listing page; sets the canonical link")
+}
+ContainerDb(db, "Jubilee database", "SQL Server", "Listings and ListingSlugs")
+
+Rel(person, kind, "Requests an address", "HTTPS")
+Rel(kind, open, "Hands an address to")
+Rel(open, controller, "Asks where the label leads", "HTTP")
+Rel(open, static, "Answers 404 with")
+Rel(controller, handler, "Sends ResolveAddressQuery")
+Rel(handler, rules, "Checks the label against")
+Rel(handler, db, "Reads a kept slug of a public listing from", "EF Core")
+Rel(kind, page, "Hands an own host's page load to")
+Rel(page, status, "Asks the status of /b/{slug}", "HTTP")
+Rel(page, business, "Serves the app that shows")
+@enduml

@@ -1,0 +1,18 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Open a listing by its address
+
+Person(person, "Visitor, Member or Owner", "Opens an address")
+System_Boundary(jubilee, "Jubilee") {
+  Container(host, "App host", "Node.js (eng/azure/server.js)", "Answers {slug}.jubilee.to with a redirect or the static not-found page; serves the app at app.jubilee.to")
+  Container(web, "Jubilee Web", "Angular single-page application", "Listing page with its canonical link; not-found page")
+  Container(api, "Jubilee API", "ASP.NET Core", "Decides where an address leads and what a page load answers")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Listings and kept slugs")
+}
+Rel(person, host, "Opens {slug}.jubilee.to and then app.jubilee.to/b/{slug} at", "HTTPS")
+Rel(host, api, "Asks /api/addresses/{label} and /api/documents/status of", "HTTP")
+Rel(host, web, "Serves", "HTTPS")
+Rel(web, api, "Reads the listing from", "JSON/HTTPS")
+Rel(api, db, "Reads slugs and listings from", "EF Core")
+@enduml

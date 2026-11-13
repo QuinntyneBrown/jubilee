@@ -8,14 +8,15 @@ page: a dialog that offers the listing's link and four ways to send it, and the
 link preview that social and chat apps show when the link arrives.
 
 The share action is available to visitors and members alike. Pressing it opens
-the dialog "Share {business}", which shows the canonical link with "Copy",
+the dialog "Share {business}", which shows the listing's address with "Copy",
 "E-mail", "WhatsApp", "More…" and "Done". Sharing happens on the person's own
 device; Jubilee sends nothing on the person's behalf and stores no record of
 who shared a listing.
 
 The feature uses the following local terms.
 
-- **canonical link** — one public address of a listing, of the form `https://{host}/b/{slug}`
+- **canonical link** — the listing's page in the app, of the form `https://{host}/b/{slug}`; the link previews and search engines name
+- **address** — the link the dialog gives out, `https://{slug}.jubilee.to`, or the canonical link where no address domain is set (`L2-244`, [Share the address of a listing](../share-listing-address/README.md))
 - **Web Share API** — browser interface that opens the share sheet of the device
 - **link preview** — card with title, description and image that a social or chat app builds from a shared link
 - **link-preview fetcher** — the program of a social or chat app that requests a shared link to build its preview, named in its `User-Agent`
@@ -30,10 +31,10 @@ tags (ADR 0029, ADR 0055).
 
 - **`ShareListingDialog`** — Angular dialog that `BusinessPage` opens at
   `/b/{slug}/share`. It is titled "Share {business}", carries the line "Send this
-  listing to a friend or your small group.", shows the canonical link in a
+  listing to a friend or your small group.", shows the listing's address in a
   read-only "Link" field, and offers "Copy", "E-mail", "WhatsApp", "More…" and
-  "Done". The canonical link is `{origin}/b/{slug}` of the current origin, with
-  no query string. "E-mail" is a `mailto:` link with the subject "{business} on
+  "Done". The link is `listingAddress(address, slug, origin)`: the address the
+  listing page carries, or `{origin}/b/{slug}` where it carries none. "E-mail" is a `mailto:` link with the subject "{business} on
   Jubilee" and the link as the body; "WhatsApp" is `https://wa.me/?text=` with
   "{business} on Jubilee {link}" encoded. The dialog is a CDK dialog: focus
   moves into it, and on close focus returns to "Share", the control focused when
@@ -78,7 +79,7 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 
 | L2 ID | Refines (L1) | Requirement |
 |-------|--------------|-------------|
-| `L2-038` | `L1-005` | The share action shall open a dialog "Share {business}" with the listing's canonical link, "Copy", "E-mail", "WhatsApp", "More…" and "Done". "Copy" shall confirm for 2 seconds with the polite announcement "Link copied", "More…" shall appear only where the Web Share API exists and open the native share sheet, and a link-preview fetcher of `/b/{slug}` shall receive the Open Graph title, description and image of the listing. |
+| `L2-038` | `L1-005` | The share action shall open a dialog "Share {business}" with the listing's address, "Copy", "E-mail", "WhatsApp", "More…" and "Done". "Copy" shall confirm for 2 seconds with the polite announcement "Link copied", "More…" shall appear only where the Web Share API exists and open the native share sheet, and a link-preview fetcher of `/b/{slug}` shall receive the Open Graph title, description and image of the listing. |
 | `L2-028` | `L1-003` | A non-public listing opened by its URL shall produce the not-found page with HTTP 404, except for the owner and the Jubilee team. |
 | `L2-130` | `L1-018` | A dialog shall take focus when it opens, keep Tab within it, close on Escape or the close button, and return focus to the control that opened it. |
 
