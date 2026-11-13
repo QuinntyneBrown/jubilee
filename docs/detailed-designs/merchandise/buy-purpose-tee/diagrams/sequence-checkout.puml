@@ -1,0 +1,42 @@
+@startuml
+title UML sequence behaviour — Check out
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Buyer" as buyer
+participant "BagDialog" as bag
+participant "HttpMerchApi" as client
+participant "MerchController" as api
+participant "StartCheckoutCommandHandler" as handler
+participant "IPaymentGateway" as gateway
+database "Jubilee database" as db
+participant "Stripe hosted page" as stripe
+buyer -> bag : Press "Check out · $59.00"
+bag -> client : checkout({ lines, delivery })
+client -> api : POST /api/merch/checkout
+alt More than 10 from the IP in the hour
+  api --> bag : 429 rate_limited with Retry-After (L2-267 AC7)
+else Under the limit
+  api -> handler : StartCheckoutCommand
+  alt Gateway not configured
+    handler --> bag : 503 checkout_unavailable (L2-267 AC5)
+  else Configured
+    handler -> db : Read the variants, the product and the holds
+    alt A line is unknown, out of range, duplicated, short or re-priced
+      handler --> bag : 422 validation_failed with a code per line (L2-267 AC3)
+    else Valid
+      handler -> gateway : CreateCheckoutSessionAsync with the amounts of the rows
+      alt Provider fails
+        handler --> bag : 503 checkout_failed; nothing stored (L2-267 AC6)
+      else Session created
+        handler -> db : Save MerchOrder, Pending, ExpiresAt in 30 minutes, with the session id
+        api --> client : 201 with url
+        client --> bag : url
+        bag -> stripe : CHECKOUT_REDIRECT(url)
+      end
+    end
+  end
+end
+@enduml

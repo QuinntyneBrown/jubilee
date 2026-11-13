@@ -1,0 +1,31 @@
+@startuml
+title UML sequence behaviour — The return page
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Buyer" as buyer
+participant "PurposeTeeThanks" as page
+participant "HttpMerchApi" as client
+participant "MerchController" as api
+participant "BagStore" as bag
+buyer -> page : /purpose-tee/thanks?order={reference}, perhaps with cancelled=1
+page -> client : order(reference)
+client -> api : GET /api/merch/orders/{reference}
+alt No reference, or 404 order_not_found
+  page --> buyer : "We can’t find that order" (L2-269 AC5)
+else Paid
+  page -> bag : clear()
+  page --> buyer : "Thank you. Your order is paid." (L2-269 AC2)
+else Pending and not cancelled
+  loop every 3 seconds for a minute
+    page -> client : order(reference)
+  end
+  page --> buyer : "We’re confirming your payment", then "This is taking longer than usual." (AC3)
+else Cancelled or expired
+  page --> buyer : "Nothing was paid"; the bag is kept (AC4)
+else The read fails
+  page --> buyer : "We couldn’t check your order" with JB-MERCH-503 (AC6)
+end
+@enduml

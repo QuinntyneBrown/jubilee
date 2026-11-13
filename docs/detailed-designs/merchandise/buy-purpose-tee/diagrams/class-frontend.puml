@@ -1,0 +1,63 @@
+@startuml
+title UML class structure — Buy the Purpose Tee, frontend
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+package "api" {
+  interface MerchApi {
+    product()
+    checkout(request)
+    order(reference)
+  }
+  class HttpMerchApi
+  class BagStore {
+    lines
+    count
+    subtotalCents
+    add()
+    setQuantity()
+    remove()
+    clear()
+  }
+  class "merch.ts" as helpers {
+    shippingCents()
+    money()
+    summary()
+  }
+  HttpMerchApi ..|> MerchApi
+}
+package "components" {
+  class TeeGallery
+  class MerchHead
+  class SegmentedChoice
+  class SizePicker
+  class QuantityStepper
+  class AddToBag
+  class BagButton
+  class BagLine
+  class MerchStory
+}
+package "jubilee" {
+  class PurposeTee <<page>>
+  class BagDialog <<dialog>>
+  class PurposeTeeThanks <<page>>
+  PurposeTee --> MerchApi : MERCH_API
+  PurposeTee --> BagStore
+  PurposeTee --> BagDialog : Dialog.open
+  BagDialog --> MerchApi : MERCH_API
+  BagDialog --> BagStore
+  PurposeTeeThanks --> MerchApi : MERCH_API
+  PurposeTeeThanks --> BagStore
+  PurposeTee ..> TeeGallery
+  PurposeTee ..> MerchHead
+  PurposeTee ..> SegmentedChoice
+  PurposeTee ..> SizePicker
+  PurposeTee ..> QuantityStepper
+  PurposeTee ..> AddToBag
+  PurposeTee ..> BagButton
+  PurposeTee ..> MerchStory
+  BagDialog ..> BagLine
+}
+@enduml

@@ -116,6 +116,12 @@ and observability are marked `<TO SUPPLY>` in the feature designs.
 | [View a product](listings/view-product/README.md) | `L2-035`, `L2-036`, `L2-028`, `L2-118` |
 | [View a space](listings/view-space/README.md) | `L2-205`, `L2-206`, `L2-208`, `L2-012`, `L2-028`, `L2-037`, `L2-118` |
 
+### merchandise
+
+| Feature | L2 requirements cited |
+|---|---|
+| [Buy the Purpose Tee](merchandise/buy-purpose-tee/README.md) | `L2-263`, `L2-264`, `L2-265`, `L2-266`, `L2-267`, `L2-268`, `L2-269`, `L2-270`, `L2-271`, `L2-137`, `L2-148`, `L2-149` |
+
 ### messaging
 
 | Feature | L2 requirements cited |

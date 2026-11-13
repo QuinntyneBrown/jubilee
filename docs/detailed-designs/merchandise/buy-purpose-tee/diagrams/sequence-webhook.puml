@@ -1,0 +1,32 @@
+@startuml
+title UML sequence behaviour — The order is paid
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+participant "Stripe" as stripe
+participant "MerchController" as api
+participant "CompleteCheckoutCommandHandler" as handler
+participant "StripeSignature" as sig
+database "Jubilee database" as db
+stripe -> api : POST /api/merch/webhooks/stripe with the raw body and Stripe-Signature
+api -> handler : CompleteCheckoutCommand(body, header)
+handler -> sig : Verify with Stripe:WebhookSecret within 5 minutes
+alt Invalid, or no secret configured
+  handler --> api : 400 signature_invalid; nothing changes (L2-268 AC3)
+else Valid
+  handler -> db : Find MerchOrder by the session id
+  alt Unknown session or another event type
+    handler --> api : 200; nothing changes (L2-268 AC5)
+  else Paid event on an order already paid
+    handler --> api : 200; nothing changes (L2-268 AC2)
+  else Paid event
+    handler -> db : MarkPaid, TakeStock per line, queue both e-mails, in one save (L2-268 AC1)
+    handler --> api : 200
+  else checkout.session.expired
+    handler -> db : Expire a pending order (L2-268 AC4)
+    handler --> api : 200
+  end
+end
+@enduml

@@ -1,0 +1,29 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Buy the Purpose Tee
+
+Person(buyer, "Buyer", "Anyone, with or without an account, who buys the Purpose Tee")
+Person(team, "Jubilee team", "Ships or hands over the shirts")
+System_Boundary(jubilee, "Jubilee") {
+  Container(web, "Jubilee Web", "Angular application", "The Purpose Tee page, the bag (localStorage) and the return page")
+  Container(api, "Jubilee API", "ASP.NET Core", "MerchController under /api/merch")
+  Container(worker, "Jubilee Worker", ".NET background service", "MerchOrderJob and the outbox dispatcher")
+  Container(cli, "Jubilee CLI", ".NET console application", "jubilee migrate and jubilee seed")
+  ContainerDb(db, "Jubilee database", "SQL Server", "MerchProducts, MerchVariants, MerchOrders, MerchOrderLines, OutboxMessages")
+}
+System_Ext(stripe, "Stripe", "Hosted Checkout page, Stripe Tax and the signed webhook")
+System_Ext(mail, "Transactional e-mail provider", "Delivers the receipt and the team's notice")
+
+Rel(buyer, web, "Chooses a fit, a size and a quantity in", "HTTPS")
+Rel(web, api, "GET /api/merch/purpose-tee, POST /api/merch/checkout, GET /api/merch/orders/{reference}", "JSON/HTTPS")
+Rel(api, stripe, "Creates a Checkout session on", "Form/HTTPS, secret key")
+Rel(buyer, stripe, "Enters the card on the hosted page of", "HTTPS")
+Rel(stripe, api, "POST /api/merch/webhooks/stripe, signed", "JSON/HTTPS")
+Rel(api, db, "Stores orders, holds and stock, queues the e-mails in", "EF Core")
+Rel(worker, db, "Expires and erases orders and reads the outbox in", "EF Core")
+Rel(cli, db, "Applies the migration and seeds the Purpose Tee in", "EF Core")
+Rel(worker, mail, "Sends the e-mails through", "HTTPS")
+Rel(mail, team, "Delivers New Purpose Tee order to", "E-mail")
+Rel(mail, buyer, "Delivers Your Jubilee order to", "E-mail")
+@enduml
