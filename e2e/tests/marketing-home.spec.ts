@@ -206,6 +206,42 @@ test.describe('pitch film player (L2-184)', () => {
     await expect.poll(async () => Math.floor(await home.filmTime())).toBeGreaterThanOrEqual(43);
   });
 
+  test('AC6: by keyboard, Enter plays the film, its own controls answer and come before the chapters', async ({
+    page,
+    jb,
+  }) => {
+    const home = new MarketingHomePage(page);
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await jb.open('marketing-home');
+    // Given the visitor reaches the play button by Tab
+    await home.tabTo(home.play);
+    // When they press Enter
+    await page.keyboard.press('Enter');
+    // Then the still gives way to the film, from the start, and the film takes the focus
+    await expect(home.play).toHaveCount(0);
+    await expect(home.video).toHaveAttribute('controls');
+    await expect(home.currentChapter).toHaveText('0:00Why we built Jubilee');
+    expect(await home.filmTime()).toBeLessThan(5);
+    await expect.poll(() => home.filmFocused()).toBe(true);
+    // And the browser's own controls answer the keyboard: Space pauses the film
+    await expect.poll(() => home.filmPaused()).toBe(false);
+    await page.keyboard.press('Space');
+    await expect.poll(() => home.filmPaused()).toBe(true);
+    // And Tab goes through the film's controls before it reaches the chapters
+    await home.tabTo(home.chapter('Finding someone you can trust'));
+    // When the visitor presses Enter on a chapter
+    await page.keyboard.press('Enter');
+    // Then the film plays from that chapter, which is the current one
+    await expect(home.currentChapter).toHaveText('0:21Finding someone you can trust');
+    await expect.poll(async () => Math.floor(await home.filmTime())).toBeGreaterThanOrEqual(21);
+    expect(await home.filmTime()).toBeLessThan(43);
+    // And Space on a chapter does the same
+    await home.tabTo(home.chapter('Growing your business'));
+    await page.keyboard.press('Space');
+    await expect(home.currentChapter).toHaveText('0:43Growing your business');
+    await expect.poll(async () => Math.floor(await home.filmTime())).toBeGreaterThanOrEqual(43);
+  });
+
   test('AC4: "Watch the film" moves the page to the film section', async ({ page, jb }) => {
     const home = new MarketingHomePage(page);
     await jb.open('marketing-home');

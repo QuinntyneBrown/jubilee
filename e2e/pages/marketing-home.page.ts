@@ -310,6 +310,100 @@ export class MarketingHomePage implements Screen {
     return this.video.evaluate((video: HTMLVideoElement) => video.currentTime);
   }
 
+  /** Whether the film is paused. */
+  filmPaused(): Promise<boolean> {
+    return this.video.evaluate((video: HTMLVideoElement) => video.paused);
+  }
+
+  /** Whether the film holds the focus, so that its own controls answer the keyboard. */
+  filmFocused(): Promise<boolean> {
+    return this.video.evaluate((video) => document.activeElement === video);
+  }
+
+  /** Presses Tab from where the focus is until `target` holds it; fails after `presses` presses. */
+  async tabTo(target: Locator, presses = 40): Promise<void> {
+    for (let press = 0; press < presses; press++) {
+      await this.page.keyboard.press('Tab');
+      if (await target.evaluate((element) => element === document.activeElement)) return;
+    }
+    throw new Error(`Tab did not reach ${target} in ${presses} presses`);
+  }
+
+  /**
+   * Every stop Tab makes from the top of the page to its end: the role and the name of what holds
+   * the focus, and whether it shows a focus ring.
+   */
+  async tabOrder(): Promise<{ stop: string; ring: boolean }[]> {
+    const stops: { stop: string; ring: boolean }[] = [];
+    for (let press = 0; press < 80; press++) {
+      await this.page.keyboard.press('Tab');
+      const stop = await this.page.evaluate(() => {
+        const element = document.activeElement as HTMLElement | null;
+        if (!element || element === document.body) return null;
+        const style = getComputedStyle(element);
+        const labelled =
+          (element.id ? document.querySelector(`label[for="${element.id}"]`)?.textContent : null) ??
+          element.closest('label')?.textContent;
+        const name = (element.getAttribute('aria-label') ?? labelled ?? element.textContent ?? '')
+          .replace(/\s+/g, ' ')
+          .trim();
+        const role =
+          element.tagName === 'A' ? 'link' : element.tagName === 'BUTTON' ? 'button' : 'field';
+        return {
+          stop: `${role} ${name}`,
+          ring: style.outlineStyle !== 'none' && parseFloat(style.outlineWidth) > 0,
+        };
+      });
+      if (!stop) break;
+      stops.push(stop);
+    }
+    return stops;
+  }
+
+  /** The duration of the play button's change of size, in seconds. */
+  playZoomDuration(): Promise<number> {
+    return this.player
+      .locator('.mkt-player__play')
+      .evaluate((circle) => parseFloat(getComputedStyle(circle).transitionDuration));
+  }
+
+  /**
+   * The film without sound, stood at `seconds`: how much of the band where a caption stands
+   * (under the middle of the picture) is light type and how much is the dark box behind it.
+   */
+  captionBand(seconds: number): Promise<{ light: number; dark: number }> {
+    return this.video.evaluate(async (video: HTMLVideoElement, at) => {
+      video.muted = true;
+      video.pause();
+      await new Promise<void>((resolve) => {
+        video.addEventListener('seeked', () => resolve(), { once: true });
+        video.currentTime = at;
+      });
+      const canvas = document.createElement('canvas');
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      const context = canvas.getContext('2d')!;
+      context.drawImage(video, 0, 0);
+      const x = Math.round(canvas.width * 0.4);
+      const y = Math.round(canvas.height * 0.89);
+      const band = context.getImageData(
+        x,
+        y,
+        Math.round(canvas.width * 0.2),
+        Math.round(canvas.height * 0.05),
+      ).data;
+      let light = 0;
+      let dark = 0;
+      for (let index = 0; index < band.length; index += 4) {
+        const luma = 0.2126 * band[index] + 0.7152 * band[index + 1] + 0.0722 * band[index + 2];
+        if (luma > 200) light++;
+        else if (luma < 60) dark++;
+      }
+      const pixels = band.length / 4;
+      return { light: light / pixels, dark: dark / pixels };
+    }, seconds);
+  }
+
   /** Starts noting what the page asks for; call before opening it. */
   watchRequests(): void {
     this.page.on('request', (request) => this.requests.push(request.url()));
