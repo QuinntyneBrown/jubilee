@@ -46,6 +46,10 @@ test.describe('manage products (L2-089 to L2-091, L2-095, L2-127, L2-130, L2-132
     await jb.goto(PRODUCTS);
 
     await expect(products.empty).toContainText('No products yet');
+    // L2-089 AC3: the empty state says what the requirement says.
+    await expect(products.empty).toContainText(
+      'Add what you sell with a photo and a price. Members can request an item and you confirm it.',
+    );
     await products.empty.getByRole('button', { name: 'Add product' }).click();
     await expect(editor.title).toHaveText('Add a product');
   });
@@ -452,6 +456,10 @@ test.describe('manage services (L2-092 to L2-095, L2-128)', () => {
     fake.services = 'ok';
     await services.tryAgain.click();
     await expect(services.empty).toContainText('No services yet');
+    // L2-093 AC2: the empty state says what the requirement says.
+    await expect(services.empty).toContainText(
+      'Offer custom work, consultations or lessons? Add them here so members can book or ask for a quote.',
+    );
   });
 
   test('L2-094: adding a service that members can book stores its length and modes', async ({
