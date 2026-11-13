@@ -4,7 +4,7 @@ LAYOUT_WITH_LEGEND()
 title Components — Give a listing an address
 
 Container_Boundary(api, "Jubilee API") {
-  Component(submit, "SubmitListingCommandHandler", "MediatR handler", "Publishes a listing; saves again with a fresh slug when two publishes collide")
+  Component(submit, "PublishListingCommandHandler", "MediatR handler", "Publishes a listing; saves again with a fresh slug when two publishes collide")
   Component(save, "SaveListingCommandHandler", "MediatR handler", "Moves the slug when the business name changes")
   Component(slugs, "ListingSlugs", "Application service", "Finds a free slug; keeps the old one on a change of name")
   Component(rules, "AddressRules", "Static rules", "Shape of a slug, numeric suffix, well-formed label")

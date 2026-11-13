@@ -55,7 +55,7 @@ commands, and in `Jubilee CLI` for listings that existed before the rules
   new name, the old slug becomes a kept slug, and a kept slug of the same
   listing that it takes back stops being kept. No other command changes a slug,
   and no endpoint accepts one.
-- **`SubmitListingCommandHandler`** — publishes a listing with the slug of
+- **`PublishListingCommandHandler`** — publishes a listing with the slug of
   `UniqueAsync`. When the save fails on the unique index of `Listings.Slug`
   because another publish took the same slug in the same moment, the handler
   asks for a free slug again and saves again, at most five times.
@@ -100,7 +100,7 @@ CLI` realigns existing listings against the same database with the same rules.
 
 ### Components
 
-`SubmitListingCommandHandler` and `SaveListingCommandHandler` reach the rules
+`PublishListingCommandHandler` and `SaveListingCommandHandler` reach the rules
 through `ListingSlugs`. `RealignListingSlugsCommandHandler` uses the same path
 from the CLI.
 

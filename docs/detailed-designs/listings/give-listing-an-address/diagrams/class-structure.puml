@@ -32,7 +32,7 @@ class ListingSlugs <<static>> {
   +CurrentOfAsync(db, slug): Task<string?>
 }
 
-class SubmitListingCommandHandler {
+class PublishListingCommandHandler {
   +Handle(command): Task<PublishedListingDto>
 }
 
@@ -65,7 +65,7 @@ ListingSlugs ..> AddressRules : shapes slugs with
 ListingSlugs ..> AddressSettings : reads reserved words
 ListingSlugs --> Listing : reads slugs in use
 ListingSlugs --> ListingSlug : reads and writes kept slugs
-SubmitListingCommandHandler ..> ListingSlugs : UniqueAsync
+PublishListingCommandHandler ..> ListingSlugs : UniqueAsync
 SaveListingCommandHandler ..> ListingSlugs : FollowNameAsync
 RealignListingSlugsCommandHandler ..> RealignListingSlugsCommand : handles
 RealignListingSlugsCommandHandler ..> ListingSlugs : UniqueAsync

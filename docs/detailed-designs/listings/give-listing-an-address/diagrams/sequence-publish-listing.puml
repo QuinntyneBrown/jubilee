@@ -20,7 +20,7 @@ box "Frontend — Jubilee Web" #E0F2FE
 end box
 box "Backend — Jubilee API" #D1FADF
   participant "ListingDraftsController" as controller
-  participant "SubmitListingCommandHandler" as handler
+  participant "PublishListingCommandHandler" as handler
   participant "ListingSlugs" as slugs
   participant "AddressRules" as rules
 end box
@@ -28,8 +28,8 @@ box "Backend — Jubilee Infrastructure" #FFF4E5
   database "Jubilee database" as db
 end box
 owner -> page : Press "Publish listing"
-page -> controller : POST /api/listing-drafts/{id}/submit
-controller -> handler : Send SubmitListingCommand
+page -> controller : POST /api/listing-drafts/{id}/publish
+controller -> handler : Send PublishListingCommand
 loop at most five times
   handler -> slugs : UniqueAsync(name, kind)
   slugs -> rules : SlugOf(name, kind) (L2-241 AC2, AC3; L2-242 AC5)

@@ -21,11 +21,11 @@ box "Frontend — Jubilee Web" #E0F2FE
   participant "CopyLink" as copy
 end box
 box "Backend — Jubilee API" #D1FADF
-  participant "SubmitListingCommandHandler" as handler
+  participant "PublishListingCommandHandler" as handler
   participant "AddressSettings" as settings
 end box
 owner -> page : Press "Publish listing"
-page -> handler : POST /api/listing-drafts/{id}/submit
+page -> handler : POST /api/listing-drafts/{id}/publish
 handler -> settings : AddressOf(slug)
 settings --> handler : https://{slug}.jubilee.to, or null with no address domain
 handler --> page : PublishedListingDto with slug and address

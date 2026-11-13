@@ -64,6 +64,8 @@ certificates for the four host names.
 
 | `StaffSignIn__TenantId`, `StaffSignIn__ClientId`, `StaffSignIn__ClientSecret`, `StaffSignIn__PublicBaseUrl` | staff sign-in (see "The admin application" below) |
 | `StaffAccess__AllowedNetworks`, `StaffAccess__ProxyKey` | the networks the staff endpoints answer, and the key of the admin host's and the marketing host's proxy; without the first, every staff endpoint is refused |
+| `ADDRESS_DOMAIN`, `APP_ORIGIN`, `OWN_HOSTS`, `Addresses__Domain` | listing addresses, `https://{slug}.jubilee.to` (see "Listing addresses" below); set by `deploy.sh` when it is given `ADDRESS_DOMAIN`. **Not set yet: an owner step.** Without them every shared link is the app's `/b/{slug}` |
+| `Addresses__Reserved` | optional: more words that are never a slug, separated by commas, beside the built-in list (L2-242 AC4) |
 | `Launch__TeamEmail` | where each pre-registration and each new launch sign-up is e-mailed; set by `deploy.sh` (see "The launching-soon forms" below) |
 | `Security__OnCallEmail` | the on-call security contact, e-mailed "Security alert: a burst of password reset requests" when more than 100 reset requests arrive in 5 minutes (L2-143 AC4, ADR 0064); without it the Jubilee team's address (`Moderation__TeamEmail`, else `Launch__TeamEmail`) is e-mailed. **Set** on `jubilee-to-app` by the owner on 13 November 2026. Change it with `az webapp config appsettings set -g "$G" -n "$APP" -o none --settings Security__OnCallEmail=<address>` |
 | `Deletions__LedgerPath` | `/home/data/deletions/ledger.jsonl`: the deletion ledger, outside the database (L2-017 AC7, ADR 0069); set by `deploy.sh` |
@@ -445,6 +447,54 @@ ADR 0069). Three things make that so:
   **Owner step, only if wanted:** a private blob container can replace the folder; it needs a
   blob store written behind `IExportStore` first.
 
+## Listing addresses
+
+Every published listing has the address `https://{slug}.jubilee.to` (L1-032, ADR 0067). The app's
+host (`server.js` on `jubilee-to-app`) answers it with a 301 to `https://app.jubilee.to/b/{slug}`,
+which the API decides (`GET /api/addresses/{label}`); an address serves no file, no `/api` and no
+cookie. Addresses are **off** until the steps below are done: until then the app shares
+`https://app.jubilee.to/b/{slug}` and nothing is broken.
+
+### The owner's checklist
+
+Do the steps in order; each has its check. `G=rg-jubilee-prod`, `APP=jubilee-to-app`.
+
+1. **Wildcard DNS.** At Namecheap add `CNAME * → jubilee-to-app.azurewebsites.net.` The records of
+   `www`, `app`, `admin` and `notify` stay as they are: a named record wins over the wildcard.
+   Check: `dig +short anything-at-all.jubilee.to` answers the app's address.
+2. **A wildcard certificate.** An App Service managed certificate does not cover a wildcard, so
+   bring one for `*.jubilee.to` (bought, or issued through a DNS-01 challenge) as a PFX, upload it
+   and note its thumbprint:
+   `az webapp config ssl upload -g "$G" -n "$APP" --certificate-file wildcard.pfx --certificate-password "$PFX_PASSWORD" --query thumbprint -o tsv`
+3. **Bind the wildcard host name.**
+   `az webapp config hostname add -g "$G" --webapp-name "$APP" --hostname '*.jubilee.to'`, then
+   `az webapp config ssl bind -g "$G" -n "$APP" --certificate-thumbprint <thumbprint> --ssl-type SNI`.
+   Check: `curl -sI https://anything-at-all.jubilee.to` completes the TLS handshake.
+4. **HTTPS only**, so `http://` is sent to `https://` at the same address before the host sees it
+   (L2-246 AC2): `az webapp update -g "$G" -n "$APP" --https-only true`.
+   Check: `curl -sI http://luzandre-com.jubilee.to` answers 301 to `https://luzandre-com.jubilee.to/`.
+5. **An alert before the certificate expires** (L2-246 AC1, L2-176): an Azure Monitor alert, or a
+   calendar entry 30 days before the date of
+   `az webapp config ssl list -g "$G" --query "[?contains(subjectName, '*.jubilee.to')].expirationDate"`.
+   One certificate serves every address, so a new listing never waits for one.
+6. **Realign older slugs.** `bash eng/azure/deploy.sh --migrate` runs `jubilee migrate`, which
+   gives every listing whose slug breaks the address rules a new one and keeps the old as a
+   redirect (L2-241 AC5). It prints how many, and nothing on a second run.
+7. **Turn the addresses on.** `ADDRESS_DOMAIN=jubilee.to bash eng/azure/deploy.sh` (or add
+   `ADDRESS_DOMAIN` to the Deploy workflow's environment). It sets `ADDRESS_DOMAIN`, `APP_ORIGIN`
+   and `OWN_HOSTS` for the host and `Addresses__Domain` for the API on `jubilee-to-app`.
+8. **Check.**
+   - `curl -sI https://<a live slug>.jubilee.to/` answers `301` with
+     `Location: https://app.jubilee.to/b/<slug>` and no `Set-Cookie`;
+   - `curl -s -o /dev/null -w '%{http_code}' https://a.b.jubilee.to/` (if the certificate allows the
+     handshake) and `https://admin-x.jubilee.to/api/session` answer `404`;
+   - `curl -s -o /dev/null -w '%{http_code}' https://app.jubilee.to/api/health` still answers `200`;
+   - a listing's Share dialog shows `https://<slug>.jubilee.to`.
+
+To turn the addresses off again, remove `Addresses__Domain` (the app shares its own links again)
+and, if the hosts must stop answering, `ADDRESS_DOMAIN`:
+`az webapp config appsettings delete -g "$G" -n "$APP" --setting-names Addresses__Domain ADDRESS_DOMAIN`.
+
 ## DNS (Namecheap, Advanced DNS of `jubilee.to`)
 
 | Type | Host | Value |
@@ -453,6 +503,7 @@ ADR 0069). Three things make that so:
 | CNAME | `www` | `jubilee-to-www.azurewebsites.net.` |
 | CNAME | `app` | `jubilee-to-app.azurewebsites.net.` |
 | CNAME | `admin` | `jubilee-to-admin.azurewebsites.net.` |
+| CNAME | `*` | `jubilee-to-app.azurewebsites.net.` (listing addresses; **not added yet: an owner step**, see "Listing addresses") |
 | TXT | `asuid`, `asuid.www`, `asuid.app`, `asuid.admin` | the App Service domain verification ID |
 
 | TXT | `notify` | `v=spf1 include:spf.protection.outlook.com -all` (SPF of the sending domain) |

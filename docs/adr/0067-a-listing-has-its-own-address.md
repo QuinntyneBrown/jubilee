@@ -37,7 +37,7 @@ do not draw the address.
   listing (live, paused, removed, deleted with its owner's account: a deleted listing is kept as a
   row) and every kept slug. Slugs are stored in lower case, so the comparison is exact.
 - **Two publishers at once both succeed.** The unique index on `Listings.Slug` refuses the second
-  of two equal slugs. `SubmitListingCommandHandler` catches that failure, asks for a free slug
+  of two equal slugs. `PublishListingCommandHandler` catches that failure, asks for a free slug
   again and saves again, up to five times, so the owner never sees a failure caused by the
   address.
 - **Listings that existed before are realigned by `jubilee migrate`.** After the schema step the
@@ -78,7 +78,9 @@ do not draw the address.
   caller (`RateLimits:AddressesPerMinute`); the host states the caller as it does for a page load.
 - **The static not-found page** is built with the other two static pages
   (`tools/static-pages/build.mjs`) from `pages/not-found/default.html`, with its two links
-  pointing at `APP_ORIGIN`, which the host writes between markers.
+  its icon and its font pointing at `APP_ORIGIN`, which the host writes into them; the app's host
+  lets any origin read a font file (`Access-Control-Allow-Origin: *` on `.woff2` only), because a
+  browser fetches a font with CORS.
 - **The listing page names its canonical link.** `BusinessPage` sets
   `<link rel="canonical" href="{origin}/b/{slug}">` while it shows and removes it when it leaves,
   so a crawler that followed an address indexes the listing once.
