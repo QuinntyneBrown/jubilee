@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Jubilee.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20261112233320_AddReviews")]
+    [Migration("20261113001612_AddReviews")]
     partial class AddReviews
     {
         /// <inheritdoc />
@@ -1170,6 +1170,25 @@ namespace Jubilee.Infrastructure.Migrations
                         .IsUnique();
 
                     b.ToTable("ListingReportEntries", (string)null);
+                });
+
+            modelBuilder.Entity("Jubilee.Domain.ListingSlug", b =>
+                {
+                    b.Property<string>("Slug")
+                        .HasMaxLength(120)
+                        .HasColumnType("nvarchar(120)");
+
+                    b.Property<Guid>("ListingId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("RetiredAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.HasKey("Slug");
+
+                    b.HasIndex("ListingId");
+
+                    b.ToTable("ListingSlugs", (string)null);
                 });
 
             modelBuilder.Entity("Jubilee.Domain.ListingSubmission", b =>
