@@ -1,6 +1,7 @@
 using System.Net;
 using System.Text.Json;
 using Jubilee.Application.Abstractions;
+using Jubilee.Application.Content;
 using Jubilee.Application.Directory;
 using Jubilee.Infrastructure.Persistence;
 using Jubilee.Tests.Shared;
@@ -246,6 +247,11 @@ public class JubileeApiFactory : WebApplicationFactory<Program>
             await db.SaveChangesAsync();
         });
         Services.GetRequiredService<IDirectoryReadCache>().Invalidate();
+        var content = Services.GetRequiredService<IContentReadCache>();
+        foreach (var slug in Domain.ContentVersion.Slugs)
+        {
+            await content.RemoveAsync(slug, CancellationToken.None);
+        }
     }
 
     public async Task<JsonElement> GetJson(string url, HttpClient? client = null)

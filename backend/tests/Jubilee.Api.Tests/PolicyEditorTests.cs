@@ -149,4 +149,57 @@ public sealed class PolicyEditorTests : IClassFixture<JubileeApiFactory>, IAsync
         Assert.Equal(0, await _factory.Query(db => db.ContentVersions.CountAsync()));
         Assert.Equal(0, await _factory.Query(db => db.AuditRecords.CountAsync()));
     }
+
+    [Fact]
+    public async Task L2_226_AC11_a_page_read_once_is_served_from_the_read_cache_while_the_database_is_down()
+    {
+        var visitor = _factory.CreateClient();
+        Assert.Equal(1, (await Json(await visitor.GetAsync("/api/content/privacy"))).GetProperty("version").GetInt32());
+
+        _factory.Database.Unavailable = true;
+        try
+        {
+            var response = await visitor.GetAsync("/api/content/privacy");
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            Assert.Equal(1, (await Json(response)).GetProperty("version").GetInt32());
+        }
+        finally
+        {
+            _factory.Database.Unavailable = false;
+        }
+    }
+
+    [Fact]
+    public async Task L2_226_AC11_the_next_read_after_a_publish_is_the_new_version()
+    {
+        var visitor = _factory.CreateClient();
+        await visitor.GetAsync("/api/content/privacy");
+
+        (await AsAdmin().PostAsJsonAsync("/api/admin/content/privacy/versions", Privacy())).EnsureSuccessStatusCode();
+
+        var page = await Json(await visitor.GetAsync("/api/content/privacy"));
+        Assert.Equal(2, page.GetProperty("version").GetInt32());
+        Assert.Equal("Write to privacy@jubilee.to.", page.GetProperty("sections")[0].GetProperty("body").GetString());
+    }
+
+    [Fact]
+    public async Task L2_226_AC11_a_cached_page_is_read_again_from_the_database_after_ten_minutes()
+    {
+        var visitor = _factory.CreateClient();
+        await visitor.GetAsync("/api/content/terms");
+        await _factory.WithDbBehindTheApp(async db =>
+        {
+            db.ContentVersions.Add(Domain.ContentVersion.Publish(
+                "terms", 2, "Terms of use", "Changed behind the app.", "[{\"Heading\":\"Using Jubilee\",\"Anchor\":\"using\",\"Body\":\"Text.\"}]",
+                _factory.Clock.GetUtcNow(), "Daniel Osei"));
+            await db.SaveChangesAsync();
+        });
+
+        _factory.Clock.Advance(TimeSpan.FromMinutes(9));
+        Assert.Equal(1, (await Json(await visitor.GetAsync("/api/content/terms"))).GetProperty("version").GetInt32());
+
+        _factory.Clock.Advance(TimeSpan.FromMinutes(1));
+        Assert.Equal(2, (await Json(await visitor.GetAsync("/api/content/terms"))).GetProperty("version").GetInt32());
+    }
 }

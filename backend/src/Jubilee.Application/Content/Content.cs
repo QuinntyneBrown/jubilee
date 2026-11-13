@@ -79,8 +79,9 @@ public static class ContentDefaults
 }
 
 /// <summary>Reads the published version of a page: the highest stored number, or the built-in first version.</summary>
-public sealed class ContentReader(IAppDbContext db)
+public sealed class ContentReader(IAppDbContext db, IContentReadCache cache)
 {
+    /// <summary>The published version of a page, through the read cache (L2-226 AC11).</summary>
     public async Task<ContentDto?> Published(string slug, CancellationToken cancellationToken)
     {
         if (!ContentVersion.Slugs.Contains(slug))
@@ -88,9 +89,15 @@ public sealed class ContentReader(IAppDbContext db)
             return null;
         }
 
+        return await cache.GetOrCreateAsync(slug, ct => FromDatabase(slug, ct), cancellationToken);
+    }
+
+    /// <summary>The published version as stored, past the cache: what a publish numbers its version from.</summary>
+    public async Task<ContentDto> FromDatabase(string slug, CancellationToken cancellationToken)
+    {
         var stored = await db.ContentVersions.AsNoTracking()
             .Where(v => v.Slug == slug).OrderByDescending(v => v.Number).FirstOrDefaultAsync(cancellationToken);
-        return stored is null ? ContentDefaults.For(slug) : ToDto(stored);
+        return stored is null ? ContentDefaults.For(slug)! : ToDto(stored);
     }
 
     /// <summary>The number of the published terms, recorded with each agreement (L2-108 AC2).</summary>
@@ -177,15 +184,20 @@ public sealed record PublishContentVersionCommand(
     Reviewer Admin, string Slug, string? Title, string? Lead, IReadOnlyList<ContentSectionDto>? Sections, int? BasedOn = null)
     : IRequest<ContentDto>;
 
-public sealed partial class PublishContentVersionCommandHandler(IAppDbContext db, ContentReader reader, TimeProvider clock)
+public sealed partial class PublishContentVersionCommandHandler(
+    IAppDbContext db, ContentReader reader, IContentReadCache cache, TimeProvider clock)
     : IRequestHandler<PublishContentVersionCommand, ContentDto>
 {
     public const int MaxBodyLength = 20_000;
 
     public async Task<ContentDto> Handle(PublishContentVersionCommand request, CancellationToken cancellationToken)
     {
-        var current = await reader.Published(request.Slug, cancellationToken)
-            ?? throw new NotFoundException("CONTENT_NOT_FOUND", "There is no such page.");
+        if (!ContentVersion.Slugs.Contains(request.Slug))
+        {
+            throw new NotFoundException("CONTENT_NOT_FOUND", "There is no such page.");
+        }
+
+        var current = await reader.FromDatabase(request.Slug, cancellationToken);
 
         // A draft started from an older version would overwrite one published since (ADR 0066).
         if (request.BasedOn is { } basedOn && basedOn != current.Version)
@@ -239,6 +251,9 @@ public sealed partial class PublishContentVersionCommandHandler(IAppDbContext db
             db, request.Admin, "content.published", "content", request.Slug,
             $"version {current.Version}", $"version {version.Number}", null, version.PublishedAt);
         await db.SaveChangesAsync(cancellationToken);
+
+        // Every instance reads the new version on its next request (L2-226 AC11).
+        await cache.RemoveAsync(request.Slug, cancellationToken);
         return ContentReader.ToDto(version);
     }
 
