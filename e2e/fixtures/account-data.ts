@@ -10,8 +10,8 @@ export interface FakeAccountData {
   /** `unavailable` answers the link with 404, as for an expired or foreign token. */
   download: 'ok' | 'unavailable';
   summary: 'ok' | 'fails';
-  /** `fails` answers the deletion with a 500; `mismatch` with the server's 422. */
-  deletion: 'ok' | 'fails' | 'mismatch';
+  /** `fails` answers the deletion with a 500; `mismatch` with the server's 422; `offline` drops the connection. */
+  deletion: 'ok' | 'fails' | 'mismatch' | 'offline';
   conversations: number;
   openRequests: number;
   exportRequests: number;
@@ -90,6 +90,7 @@ export async function stubAccountData(
     if (route.request().method() !== 'DELETE') return route.fallback();
     const { confirmation } = route.request().postDataJSON() as { confirmation: string };
     fake.deletions.push(confirmation);
+    if (fake.deletion === 'offline') return route.abort('internetdisconnected');
     if (fake.deletion === 'fails') return route.fulfill(problem(500, { code: 'SERVER_ERROR' }));
     if (fake.deletion === 'mismatch') {
       return route.fulfill(

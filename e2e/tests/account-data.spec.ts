@@ -206,6 +206,23 @@ test.describe('delete your account (L2-017)', () => {
     await expect(dialog.delete).toBeEnabled();
   });
 
+  test('L2-128 AC2: a dropped connection says nothing was sent and keeps what was typed', async ({
+    page,
+    jb,
+  }) => {
+    const { dialog } = await open(page, jb, { deletion: 'offline' });
+
+    await dialog.confirmation.fill('DELETE');
+    await dialog.delete.click();
+
+    await expect(dialog.alert).toContainText('We couldn’t delete your account');
+    await expect(dialog.alert).toContainText(
+      'Your connection dropped before it reached us. Nothing was sent and what you typed is still here. Try again.',
+    );
+    await expect(dialog.confirmation).toHaveValue('DELETE');
+    await expect(dialog.delete).toBeEnabled();
+  });
+
   test('Keep my account closes the dialog and changes nothing', async ({ page, jb }) => {
     const { dialog, fake, account } = await open(page, jb);
 
