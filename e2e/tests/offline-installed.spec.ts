@@ -41,9 +41,7 @@ test.describe('the installed app (L2-119 AC3)', () => {
       await page.reload();
 
       await expect(browse.featuredCards.first()).toBeVisible();
-      await expect(banner.root).toContainText(
-        /Showing the directory saved at \d+:\d\d [ap]\.m\./,
-      );
+      await expect(banner.root).toContainText(/Showing the directory saved at \d+:\d\d [ap]\.m\./);
       // Nothing else the page reads replaces it with the offline page.
       await page.waitForTimeout(1_000);
       await expect(page.locator('body')).toHaveAttribute('data-page', 'browse');
