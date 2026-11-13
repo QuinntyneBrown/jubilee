@@ -22,13 +22,15 @@ box "Frontend — Jubilee Web" #E0F2FE
 end box
 box "Backend — Jubilee API" #D1FADF
   participant "PublishListingCommandHandler" as handler
+  participant "AddressBehavior" as behavior
   participant "AddressSettings" as settings
 end box
 owner -> page : Press "Publish listing"
 page -> handler : POST /api/listing-drafts/{id}/publish
-handler -> settings : AddressOf(slug)
-settings --> handler : https://{slug}.jubilee.to, or null with no address domain
-handler --> page : PublishedListingDto with slug and address
+handler --> behavior : PublishedListingDto with slug
+behavior -> settings : AddressOf(slug)
+settings --> behavior : https://{slug}.jubilee.to, or null with no address domain
+behavior --> page : PublishedListingDto with slug and address
 page -> helper : listingAddress(address, slug, origin)
 helper --> page : url and text (the app's /b/{slug} where address is null, L2-244 AC6)
 page --> owner : "{name} is live", "Your address", the address text and "Copy" (L2-244 AC2)

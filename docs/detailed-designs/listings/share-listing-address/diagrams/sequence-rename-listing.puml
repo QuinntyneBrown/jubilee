@@ -22,7 +22,7 @@ end box
 box "Backend — Jubilee API" #D1FADF
   participant "SaveListingCommandHandler" as handler
   participant "ListingSlugs" as slugs
-  participant "AddressSettings" as settings
+  participant "AddressBehavior" as behavior
 end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
   database "Jubilee database" as db
@@ -32,8 +32,8 @@ page -> handler : PUT /api/my-business/listing
 handler -> slugs : FollowNameAsync (L2-245 AC1)
 slugs -> db : Keep the old slug; move the listing to the new one
 handler -> db : SaveChanges
-handler -> settings : AddressOf(new slug)
-handler --> page : ListingEditorDto with the new slug and address
+handler --> behavior : ListingEditorDto with the new slug
+behavior --> page : ListingEditorDto with the new slug and address
 page -> helper : listingAddress(address, slug, origin)
 helper --> page : the new link; the page still holds the link shown before the save
 page --> owner : "Listing updated. Your changes are live now."\n"Your address is now {new address}. {old address} still opens your listing." (L2-245 AC4)

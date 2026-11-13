@@ -230,6 +230,17 @@ export function patchListing(
   });
 }
 
+/** The domain of listing addresses in the screen states, as the mocks draw it (L2-244). */
+const ADDRESS_DOMAIN = 'jubilee.to';
+
+/** The owner's workspace of a screen state, with the address the mocks show. */
+const ownerWorkspace: typeof stubMyBusiness = (page, initial = {}, member) =>
+  stubMyBusiness(page, { addressDomain: ADDRESS_DOMAIN, ...initial }, member);
+
+/** The listing form of a screen state; its publish states the address the mocks show. */
+const publishing: typeof stubListingDrafts = (page, initial = {}) =>
+  stubListingDrafts(page, { address: `https://luzandre-com.${ADDRESS_DOMAIN}`, ...initial });
+
 /** Installs the API answers that put a screen in a state the seeded data cannot produce. */
 export async function applyStub(page: Page, name: StubName): Promise<unknown> {
   switch (name) {
@@ -519,40 +530,40 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
       return fake;
     }
     case 'business':
-      return stubMyBusiness(page);
+      return ownerWorkspace(page);
     case 'business-away':
-      return stubMyBusiness(page, { awayUntil: '2026-11-16T05:00:00Z' });
+      return ownerWorkspace(page, { awayUntil: '2026-11-16T05:00:00Z' });
     case 'business-switcher':
-      return stubMyBusiness(page, { others: OTHER_BUSINESSES });
+      return ownerWorkspace(page, { others: OTHER_BUSINESSES });
     case 'business-empty':
-      return stubMyBusiness(page, { state: 'none' });
+      return ownerWorkspace(page, { state: 'none' });
     case 'business-retrying':
-      return stubMyBusiness(page, { overview: 'fails' });
+      return ownerWorkspace(page, { overview: 'fails' });
     case 'business-paused':
-      return stubMyBusiness(page, { paused: true });
+      return ownerWorkspace(page, { paused: true });
     case 'business-statement-due':
       await stubStatementAgreement(page);
-      return stubMyBusiness(page, {}, naomiOwing());
+      return ownerWorkspace(page, {}, naomiOwing());
     case 'business-statement-pending':
       await stubStatementAgreement(page, 'pending');
-      return stubMyBusiness(page, {}, naomiOwing());
+      return ownerWorkspace(page, {}, naomiOwing());
     case 'business-statement-failing':
       await stubStatementAgreement(page, 'fails');
-      return stubMyBusiness(page, {}, naomiOwing());
+      return ownerWorkspace(page, {}, naomiOwing());
     case 'business-statement-lapsed':
       await stubStatementAgreement(page);
-      return stubMyBusiness(page, { paused: true }, naomiOwing(STATEMENT_LAPSED));
+      return ownerWorkspace(page, { paused: true }, naomiOwing(STATEMENT_LAPSED));
     case 'listing-draft':
-      return stubListingDrafts(page);
+      return publishing(page);
     case 'order':
       return stubOrder(page);
     case 'quote':
       // The mock shows the phone of the member's profile already filled in (L2-045 AC7).
       return stubQuote(page, { phone: '416-555-0142' });
     case 'editor':
-      return stubMyBusiness(page);
+      return ownerWorkspace(page);
     case 'editor-photos':
-      return stubMyBusiness(page, {
+      return ownerWorkspace(page, {
         photos: [
           {
             id: '9e1d0000-0000-4000-8000-000000000001',
@@ -575,9 +586,9 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
         ],
       });
     case 'editor-space':
-      return stubMyBusiness(page, { listing: SUITE });
+      return ownerWorkspace(page, { listing: SUITE, slug: 'guest-suite-near-roncesvalles' });
     case 'editor-error':
-      return stubMyBusiness(page, { editor: 'fails' });
+      return ownerWorkspace(page, { editor: 'fails' });
     case 'profile':
       return void (await stubProfile(page));
     case 'message-draft-restored':
@@ -643,7 +654,7 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
       return void (await stubFeedback(page, { businesses: [] }));
     case 'feedback-check-in':
       // The listing is submitted, then the question is answered.
-      await stubListingDrafts(page);
+      await publishing(page);
       return void (await stubFeedback(page));
     case 'saved':
       return void (await stubSaved(page));

@@ -11,6 +11,15 @@ skinparam class {
 }
 title Class structure — Share the address of a listing
 
+interface IAddressed {
+  +Slug: string?
+  +Address: string?
+}
+
+class AddressBehavior {
+  +Handle(request, next): Task<TResponse>
+}
+
 class AddressSettings {
   +Domain: string
   +AddressOf(slug: string): string?
@@ -60,28 +69,29 @@ class ShareListingDialog {
 }
 
 class ListBusinessPage {
-  +address: Signal<ListingLink | null>
+  +listingLink: Signal<ListingLink | null>
 }
 
 class MyBusinessPage {
-  +address: Signal<ListingLink | null>
+  +address(business): ListingLink | null
 }
 
 class EditListingPage {
-  +address: Signal<ListingLink | null>
+  +listingLink(editor): ListingLink
   +moved: Signal<{ now: string, before: string } | null>
 }
 
-ListingPageDto ..> AddressSettings : filled from
-PublishedListingDto ..> AddressSettings : filled from
-MyBusinessDto ..> AddressSettings : filled from
-ListingEditorDto ..> AddressSettings : filled from
+ListingPageDto ..|> IAddressed
+PublishedListingDto ..|> IAddressed
+MyBusinessDto ..|> IAddressed
+ListingEditorDto ..|> IAddressed
+AddressBehavior ..> IAddressed : writes Address on
+AddressBehavior ..> AddressSettings : AddressOf(slug)
 Helper --> ListingLink : answers
 ShareListingDialog ..> Helper
 ListBusinessPage ..> Helper
 MyBusinessPage ..> Helper
 EditListingPage ..> Helper
-ShareListingDialog --> CopyLink
 ListBusinessPage --> CopyLink
 MyBusinessPage --> CopyLink
 ListBusinessPage ..> PublishedListingDto : reads

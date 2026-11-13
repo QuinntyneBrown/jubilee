@@ -12,7 +12,7 @@ Container_Boundary(web, "Jubilee Web") {
   Component(copy, "CopyLink", "Class", "Clipboard write and the 2-second Copied state")
 }
 Container_Boundary(api, "Jubilee API") {
-  Component(handlers, "Listing page, publish, My business and editor handlers", "MediatR handlers", "Fill address on their DTOs")
+  Component(handlers, "AddressBehavior", "MediatR pipeline behaviour", "Writes address on the listing page, publish, My business and editor answers")
   Component(settings, "AddressSettings", "Singleton", "AddressOf(slug)")
 }
 
@@ -20,11 +20,10 @@ Rel(share, helper, "Builds its link with")
 Rel(list, helper, "Builds its link with")
 Rel(mine, helper, "Builds its link with")
 Rel(edit, helper, "Builds its link with")
-Rel(share, copy, "Copies through")
 Rel(list, copy, "Copies through")
 Rel(mine, copy, "Copies through")
 Rel(list, handlers, "Publishes through", "JSON/HTTPS")
 Rel(mine, handlers, "Reads My business from", "JSON/HTTPS")
 Rel(edit, handlers, "Reads and saves the listing through", "JSON/HTTPS")
-Rel(handlers, settings, "Ask AddressOf(slug)")
+Rel(handlers, settings, "Asks AddressOf(slug)")
 @enduml

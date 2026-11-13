@@ -45,11 +45,14 @@ page load decides whether the listing page or the not-found page shows.
   `Cache-Control: no-store`. A 404 answers the static not-found page with 404.
   A 429 is passed on with its `Retry-After`. No answer in time answers 503 with
   `Retry-After: 5`. Every other method and every `/api` path answer the static
-  not-found page with 404.
+  not-found page with 404 (`addressNotFound`). A location that is not a path
+  under `/b/` is not followed.
 - **`not-found.html`** — static not-found page built by
   `tools/static-pages/build.mjs` from the mock `pages/not-found/default.html`
   into `frontend/projects/jubilee/public/static/`. The host writes `APP_ORIGIN`
-  into its "Back to browse" and "Search" links.
+  into its "Back to browse" and "Search" links and into the addresses of its
+  icon and font, since an address serves no file; the app's host lets any
+  origin read a font file.
 - **`AddressesController`** — anonymous ASP.NET Core controller in
   `Jubilee.Api` for `GET /api/addresses/{label}`, under the rate-limit policy
   `addresses`. It answers `AddressDto` with `Cache-Control: no-store`.

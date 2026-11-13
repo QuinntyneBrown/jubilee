@@ -44,6 +44,9 @@ commands, and in `Jubilee CLI` for listings that existed before the rules
   list of `L2-242` AC4 joined with the words of `Addresses:Reserved`.
   `IsReserved(label)` compares in lower case. `AddressOf(slug)` answers
   `https://{slug}.{Domain}`, or null where `Domain` is empty.
+- **`IAddressed`** and **`AddressBehavior`** — an answer about one listing that
+  states its address implements `IAddressed`; the MediatR pipeline behaviour
+  writes `Address` on it from `AddressSettings.AddressOf`, so no handler does.
 - **`ListingSlugs.UniqueAsync`** — the existing lookup of a free slug, now
   given the listing kind and the settings. A candidate is taken when a reserved
   word equals it, when any listing has it (live, paused, removed, or deleted
@@ -58,11 +61,13 @@ commands, and in `Jubilee CLI` for listings that existed before the rules
 - **`PublishListingCommandHandler`** — publishes a listing with the slug of
   `UniqueAsync`. When the save fails on the unique index of `Listings.Slug`
   because another publish took the same slug in the same moment, the handler
-  asks for a free slug again and saves again, at most five times.
+  asks for a free slug again and saves again, at most five times. The
+  notices of a new business link the slug, so they are written again with it.
 - **`RealignListingSlugsCommand`** and its handler — sent by `jubilee migrate`
   after the schema step. Every listing whose slug is not a well-formed label or
-  is a reserved word receives a slug by the rules; the old slug becomes a kept
-  slug of that listing. A listing whose slug keeps the rules is not touched, so
+  is a reserved word is moved by `ListingSlugs.FollowNameAsync` to a slug by
+  the rules; the old slug becomes a kept slug of that listing. Listings are
+  saved one by one, so each sees the slug the one before it took. A listing whose slug keeps the rules is not touched, so
   a second run changes nothing. The command answers the number of listings
   realigned, which the CLI prints.
 - **`Listing`** and **`ListingSlug`** — existing entities. `Listing.Slug` holds

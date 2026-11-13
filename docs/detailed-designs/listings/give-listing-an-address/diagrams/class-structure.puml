@@ -68,6 +68,6 @@ ListingSlugs --> ListingSlug : reads and writes kept slugs
 PublishListingCommandHandler ..> ListingSlugs : UniqueAsync
 SaveListingCommandHandler ..> ListingSlugs : FollowNameAsync
 RealignListingSlugsCommandHandler ..> RealignListingSlugsCommand : handles
-RealignListingSlugsCommandHandler ..> ListingSlugs : UniqueAsync
+RealignListingSlugsCommandHandler ..> ListingSlugs : FollowNameAsync
 ListingSlug --> "1" Listing : kept for
 @enduml

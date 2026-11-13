@@ -30,16 +30,18 @@ links of the app.
 ## Description
 
 - **`address`** — field of `ListingPageDto`, `PublishedListingDto`,
-  `MyBusinessDto` and `ListingEditorDto` in `Jubilee.Application`. Each handler
-  fills it with `AddressSettings.AddressOf(slug)`: `https://{slug}.{domain}`,
-  or null where no address domain is set.
+  `MyBusinessDto` and `ListingEditorDto` in `Jubilee.Application`. Each of
+  them implements `IAddressed`, and the MediatR pipeline behaviour
+  `AddressBehavior` writes the field on every such answer with
+  `AddressSettings.AddressOf(slug)`: `https://{slug}.{domain}`, or null where
+  no address domain is set. No handler sets it.
 - **`listingAddress(address, slug, origin)`** — pure helper of the `api`
   library. It answers the link to share as `{ url, text }`: the address where
   the API gave one, otherwise `{origin}/b/{slug}`; `text` is `url` without its
   scheme. Every screen below builds its link through it, so each criterion
   holds with either link (`L2-244` AC6).
-- **`CopyLink`** — small class of `Jubilee Web` (`services/copy-link.ts`) that
-  the screens share. `copy(url, field)` writes the link with
+- **`CopyLink`** — injectable of `Jubilee Web` (`services/copy-link.ts`) that
+  the publish success state and My business each provide. `copy(url, field)` writes the link with
   `navigator.clipboard.writeText`, or selects the field and copies it where the
   clipboard is refused; `copied` is a signal that is true for 2 seconds.
 - **`ShareListingDialog`** — existing dialog (`L2-038`). Its link, the body of
@@ -98,8 +100,9 @@ person's device.
 
 ### Components
 
-Four screens build their link through `listingAddress` and copy it through
-`CopyLink`. Four handlers fill `address` from `AddressSettings`.
+Four screens build their link through `listingAddress`; two copy it through
+`CopyLink`, and the share dialog keeps its own copy. `AddressBehavior` writes
+`address` on the four answers from `AddressSettings`.
 
 ![C4 component view for sharing the address of a listing](diagrams/c4-component.png)
 
