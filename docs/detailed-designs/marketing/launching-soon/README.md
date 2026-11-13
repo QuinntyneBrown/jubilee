@@ -218,8 +218,11 @@ Each changed component keeps its look where it was already used.
   answers 404 on the marketing host, so a public host never forwards a staff path. The proxy
   states the caller's address in `X-Jubilee-Client-Address` and proves itself with
   `X-Jubilee-Proxy-Key` (`PROXY_KEY`, the key of `StaffAccess:ProxyKey`); without that the limits
-  would count every visitor as the marketing host. Without `API_ORIGIN` the host serves files
-  only and the forms show their error state.
+  would count every visitor as the marketing host. The proxy replaces whatever address or key
+  the caller sent, and the API's `StaffProxyMiddleware` believes the address only with the key,
+  before the rate limiter reads it, so each visitor's address has its own 5 an hour of each form
+  (`L2-218` AC3). Without `API_ORIGIN` the host serves files only and answers `/api/launch` 404;
+  the page then keeps sending and says "Still sending." (`L2-216` AC6, `L2-217` AC6).
 - **Host of a forwarded request** — a request forwarded to an API on another host always names
   that host in `Host`, with or without `PROXY_KEY`: App Service's front end routes by it, and a
   request still addressed to `www.jubilee.to` would come back to the marketing site. Forwarding
@@ -259,10 +262,17 @@ Each changed component keeps its look where it was already used.
   three App Services when there is none); on `jubilee-to-app` `Launch__TeamEmail`. After the
   health check the script asks `https://www.jubilee.to/api/launch` for 200 and
   `https://www.jubilee.to/api/session` for 404, and fails the deployment otherwise. The
-  Turnstile widget lists `jubilee.to` and `www.jubilee.to` before a site key is set.
+  Turnstile widget lists `jubilee.to` and `www.jubilee.to` before a site key is set. The
+  owner's ordered checklist of these settings, each step with its command and how to check it
+  worked, is "The launching-soon forms" in `eng/azure/README.md` (ADR 0062).
 - **Tests** — `eng/azure/server.test.js` (`node --test`, run by CI) starts `server.js` against a
-  stand-in API and covers the `Host` rule, the pass-through answers, keeping, sending again and
-  the 12-month deletion.
+  stand-in API and covers the `Host` rule, the caller's address the proxy states in place of
+  the caller's own, the pass-through answers, keeping, sending again and the 12-month deletion.
+  `backend/tests/Jubilee.Api.Tests/LaunchTests*.cs` cover the endpoints, the limits per visitor
+  behind the proxy and the kept submissions; `backend/tests/Jubilee.Cli.Tests/LaunchCommandTests.cs`
+  the CLI; `e2e/tests/launch-notification.spec.ts` and `business-pre-registration.spec.ts` every
+  state of the two forms, the server's answer for a field and the bot challenge, against a
+  stand-in for Cloudflare's script.
 
 ## Requirements
 
@@ -373,7 +383,7 @@ found with the design.
 | What does a visitor see when Jubilee cannot be reached? | Never an error. The marketing host keeps what the API cannot take and answers 202; when the page cannot reach the marketing host it says "Still sending." and tries again every 5 seconds (ADR 0047). |
 | Where is a kept submission held? | One file each in `/home/data/launch-kept` on the marketing host, App Service's persistent storage. A queue or a second database would be one more resource to run for a state that should be rare and short. |
 | Which time is the consent time of a kept submission? | The time the marketing host received it, stated in `X-Jubilee-Received-At` and believed only with the proxy key. |
-| Is a kept submission asked for the bot challenge again? | No. Its token has expired, so the API skips the challenge for a submission the marketing host's proxy marks as kept; the per-address limit still counts it. |
+| Is a kept submission asked for the bot challenge again? | No. Its token has expired, so the API skips the challenge for a submission the marketing host's proxy marks as kept, and does not count it against the limit of its address: sending it again is the marketing host's doing (`L2-218` AC9). |
 | Is the team's e-mail of a sign-up mocked? | No. Like the e-mail of a pre-registration it is plain text for the team, not one of the member e-mails of `docs/mocks/emails/`. |
 | How long is the data kept? | 12 months, then `LaunchRetentionJob` deletes it. The launch is expected well inside that time. |
 | How does the page return to its launched state? | By reverting the marketing-site commits of this change and lifting the suspension of `L2-185`. The endpoints, the tables and the CLI stay until the data has been used and deleted. |
