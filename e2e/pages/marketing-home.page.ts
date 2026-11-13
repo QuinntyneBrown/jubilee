@@ -121,6 +121,13 @@ export class LaunchFormPart {
     );
   }
 
+  /** The height of each field and button of the form, in px (L2-215 AC8). */
+  controlHeights(): Promise<number[]> {
+    return this.form
+      .locator('input:not([type="checkbox"]), select, textarea, button')
+      .evaluateAll((controls) => controls.map((c) => c.getBoundingClientRect().height));
+  }
+
   /** Whether the element with focus is `locator`. */
   hasFocus(locator: Locator): Promise<boolean> {
     return locator.evaluate((element) => element === document.activeElement);
@@ -460,6 +467,11 @@ export class MarketingHomePage implements Screen {
   /** The distance of an element's top from the top of the viewport. */
   topOf(locator: Locator): Promise<number> {
     return locator.evaluate((element) => element.getBoundingClientRect().top);
+  }
+
+  /** The distance of an element's left edge from the left of the viewport. */
+  leftOf(locator: Locator): Promise<number> {
+    return locator.evaluate((element) => element.getBoundingClientRect().left);
   }
 
   topBarHeight(): Promise<number> {

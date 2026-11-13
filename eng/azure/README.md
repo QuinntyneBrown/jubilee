@@ -129,31 +129,86 @@ and serving photos from a separate cookieless domain. A message photo is deliver
 While Jubilee is launching soon the marketing page sends two forms, the launch notification and
 the business pre-registration, to `/api/launch` on its own origin (ADR 0044). `server.js` on
 `jubilee-to-www` forwards that prefix, and nothing else of `/api`, to the app's host, as the admin
-host forwards its calls. Everything this needs is done by the Deploy workflow on every
-deployment (ADR 0047); there is no step to run by hand.
+host forwards its calls. The Deploy workflow applies every setting below on each deployment
+(ADR 0047), each only when its value differs, and never prints a value.
 
-- **The migrations.** `deploy.sh --migrate` applies `AddLaunchSubscribers` and
-  `AddBusinessPreRegistrations` with the rest.
-- **The settings.** `deploy.sh` sets each of these when its value differs, and prints names only:
+### The owner's checklist
 
-  | App Service | Setting | Value |
-  |---|---|---|
-  | `jubilee-to-www` | `API_ORIGIN` | `https://app.jubilee.to` |
-  | `jubilee-to-www` | `API_PATHS` | `/api/launch` (any other `/api` path answers 404 on this host) |
-  | `jubilee-to-www` | `PROXY_KEY` | the key of `StaffAccess__ProxyKey` on `jubilee-to-app`, so the API counts the limits of five an hour per visitor's address, not per host, and believes the time a submission was received |
-  | `jubilee-to-www` | `KEEP_DIR` | `/home/data/launch-kept` (persistent storage) |
-  | `jubilee-to-app` | `Launch__TeamEmail` | `quinntynebrown@gmail.com` (`LAUNCH_TEAM_EMAIL` in `deploy.sh`) |
+Run these in order, in Azure Cloud Shell (bash) from a clone of this repository, after the first
+deployment and whenever the forms seem not to arrive (ADR 0062). Each step says how to check it
+and, if the check fails, how to put it right. Nothing here prints a secret or anyone's details;
+step 7 reads the database through the CLI, and that reading is written to the audit log.
 
-  When `jubilee-to-app` has no `StaffAccess__ProxyKey`, the script makes one and sets it on the
-  three App Services. The key only lets a proxy state the caller's address and, for a launch
-  submission, when it was received; the staff endpoints still answer only the allowed networks,
-  and this host never forwards them. Rotating the key means removing `StaffAccess__ProxyKey` from
-  `jubilee-to-app` and deploying.
-- **The check.** After the health check `deploy.sh` asks `https://www.jubilee.to/api/launch` for
-  200 and `https://www.jubilee.to/api/session` for 404. The deployment fails if either differs.
-- **The team's e-mail.** Each business pre-registration and each new launch notification sign-up
-  queues one e-mail to `Launch__TeamEmail` in the outbox, which the worker sends (see "E-mail").
-  A repeat sign-up of a known address e-mails no one.
+```bash
+G=rg-jubilee-prod; WWW=jubilee-to-www; APP=jubilee-to-app
+setting() { az webapp config appsettings list -g "$G" -n "$1" --query "[?name=='$2'].value | [0]" -o tsv; }
+```
+
+1. **The database has the launch tables.** The Deploy workflow runs `deploy.sh --migrate`, which
+   applies `AddLaunchSubscribers` and `AddBusinessPreRegistrations` with the rest.
+   Check: `gh run list --workflow deploy.yml -L 1` shows `completed success`.
+   Fix: `gh workflow run deploy.yml` (or `bash eng/azure/deploy.sh --migrate` here), then check again.
+2. **The app has the proxy key.** The API believes a visitor's address and the time a submission
+   was received only from a proxy that presents it.
+   Check: `[ -n "$(setting $APP StaffAccess__ProxyKey)" ] && echo set` prints `set`.
+   Fix: run step 1's fix; `deploy.sh` makes a key and sets it on the three App Services.
+3. **The marketing host sends `/api/launch`, and only that, to the app, with the same key.**
+   Check:
+
+   ```bash
+   for name in API_ORIGIN API_PATHS KEEP_DIR; do echo "$name=$(setting $WWW $name)"; done
+   [ "$(setting $WWW PROXY_KEY | sha256sum)" = "$(setting $APP StaffAccess__ProxyKey | sha256sum)" ] && echo "same key"
+   ```
+
+   prints `API_ORIGIN=https://app.jubilee.to`, `API_PATHS=/api/launch`,
+   `KEEP_DIR=/home/data/launch-kept` and `same key`. Without the key the API would count every
+   visitor as the marketing host, so the limit of five an hour would be shared by everyone.
+   Fix (by hand, without printing the key):
+
+   ```bash
+   KEY=$(setting $APP StaffAccess__ProxyKey) && az webapp config appsettings set -g "$G" -n "$WWW" -o none \
+     --settings API_ORIGIN=https://app.jubilee.to API_PATHS=/api/launch KEEP_DIR=/home/data/launch-kept "PROXY_KEY=$KEY"; unset KEY
+   ```
+
+4. **The team's address is set.** Each business pre-registration and each new sign-up is e-mailed
+   there through the outbox (`L2-216` AC10, `L2-217` AC9).
+   Check: `setting $APP Launch__TeamEmail` prints the address (`LAUNCH_TEAM_EMAIL` in `deploy.sh`).
+   Fix: `az webapp config appsettings set -g "$G" -n "$APP" -o none --settings Launch__TeamEmail=<address>`.
+5. **The forms reach the API.**
+   Check: `curl -s -w ' %{http_code}\n' https://www.jubilee.to/api/launch` prints `{} 200` (or the
+   site key of step 8 and `200`), and
+   `curl -s -o /dev/null -w '%{http_code}\n' https://www.jubilee.to/api/session` prints `404`.
+   Fix: the settings of step 3; the marketing host restarts by itself when they change, so allow
+   it a minute.
+6. **Send each form once.** Open `https://www.jubilee.to`, choose "Tell me when it launches", and
+   send your own address with the box ticked; then choose "Send your business’s details" and send
+   a test business with your address.
+   Check: the page shows "You’re on the list." and "Thank you. We have your details."
+7. **Read them back.**
+   Check the sign-up: start the workflow "Check a launch sign-up" from the Actions tab with your
+   address (or `bash eng/azure/check-launch.sh <your address>` here); it prints
+   `Launch notification sign-ups: <n>` and `<your address> is among them: yes`. Check the
+   pre-registration: within two minutes the team's address receives "New business pre-registration:
+   <the business's name>", and "New launch notification sign-up" for the address of step 6. To
+   export either list, run `jubilee launch list --kind notifications > sign-ups.csv` (or
+   `--kind businesses`) with the connection string, as `check-launch.sh` does; it prints the
+   header row alone when nothing is stored.
+   If the page confirmed but the row is missing, the marketing host kept the submission:
+   `az webapp log tail -g "$G" -n "$WWW"` shows `Kept a launch submission (n waiting).`, and
+   `Sent n kept launch submissions (0 waiting).` once the API takes it, within a minute of its
+   return. Fix what step 3 or 5 found and wait for that line.
+8. **The bot challenge (when it is turned on).** It is off until the Turnstile keys of the join
+   form are set (`BotChallenge__SiteKey` and `BotChallenge__SecretKey` on `jubilee-to-app`, both or
+   neither); the widget must also list `jubilee.to` and `www.jubilee.to`.
+   Check: `curl -s https://www.jubilee.to/api/launch` prints `{"botChallengeSiteKey":"<site key>"}`,
+   and steps 6 and 7 still pass.
+
+The test sign-up and the test business stay in the lists, marked by your own address; like every
+row they are deleted 12 months after they were sent (`L2-218` AC6).
+
+### How it works
+
+- **The team's e-mail.** A repeat sign-up of a known address e-mails no one.
 - **A submission the API cannot take.** When the API is restarting, down or slow, `server.js`
   keeps the submission as one file in `KEEP_DIR`, answers the visitor 202, and sends it to the API
   again every minute until it is accepted; then the file is removed. The row's consent time is
@@ -164,13 +219,16 @@ deployment (ADR 0047); there is no step to run by hand.
   CPU for several minutes while they restart. A form sent then is usually kept, and reaches the
   database a few minutes later, once the API answers within 8 seconds. The API does not count a
   kept submission against the 5 an hour of its address, so nothing holds it back.
-- **Reading the submissions.** `jubilee launch list --kind notifications` (or `--kind businesses`)
-  prints CSV to whoever holds the connection string; each run is written to the audit log. The
-  rows are deleted 12 months after they were sent. To check that one sign-up arrived without
-  reading the list, start the workflow "Check a launch sign-up" from the Actions tab with the
-  address: it prints the number of rows and whether that address is among them, and nothing else.
-- **The bot challenge.** When the Turnstile keys are set (above), the widget must also list
-  `jubilee.to` and `www.jubilee.to`; the page then loads Cloudflare's script for the challenge.
+- **The deployment's own check.** After the health check `deploy.sh` asks
+  `https://www.jubilee.to/api/launch` for 200 and `https://www.jubilee.to/api/session` for 404
+  (step 5), and fails the deployment if either differs.
+- **Rotating the proxy key** means removing `StaffAccess__ProxyKey` from `jubilee-to-app` and
+  deploying. The key only lets a proxy state the caller's address and, for a launch submission,
+  when it was received; the staff endpoints still answer only the allowed networks, and this host
+  never forwards them.
+- **Reading the submissions** is `jubilee launch list` only, by whoever holds the connection
+  string; each run is written to the audit log, and the rows are deleted 12 months after they were
+  sent.
 
 At launch, revert the marketing site's commits of ADR 0044 and remove the four settings of
 `jubilee-to-www` from `deploy.sh` and from the App Service, once `KEEP_DIR` is empty.

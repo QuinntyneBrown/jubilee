@@ -56,6 +56,7 @@ something else: a new record supersedes it and both say so.
 | [0059](0059-finish-keep-listings-honest.md) | Finish keeping listings honest: the CLI audits each role change with its operator, and opening a listing in the admin application records the access to the owner's data | Accepted |
 | [0060](0060-finish-give-feedback.md) | Finish give feedback: on a touch screen a chip is pressed over 44 px through an invisible hit area and is still drawn 32 px tall; a parity spec whose reference is absent compares with `components/<component>/<case>-<width>.png` as soon as the owner saves it | Accepted |
 | [0061](0061-finish-track-and-cancel-requests.md) | Finish track and cancel requests: the member's request pages listen to the event stream and ask on a timer only while it cannot connect, the owner marks a confirmed order fulfilled from Incoming requests and the customer is told, and the booking-completion and unanswered-request jobs run once per schedule through `JobRun` | Accepted |
+| [0062](0062-finish-get-ready-for-launch.md) | Finish get ready for launch: one ordered checklist of the launch settings in `eng/azure/README.md`, each step with its command and its check; the limits of the launch forms count the visitor's address the proxy states; the bot challenge is tested against a stand-in for Cloudflare's script | Accepted |
 
 ## Format
 

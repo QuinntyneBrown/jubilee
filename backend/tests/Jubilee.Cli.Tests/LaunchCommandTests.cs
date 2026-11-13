@@ -87,6 +87,21 @@ public sealed class LaunchCommandTests
         Assert.DoesNotContain("example.com", $"{record.Actor}{record.ActorName}{record.TargetId}{record.Before}{record.After}{record.Reason}");
     }
 
+    // L2-218 AC4: the output is the export (`> file.csv`); with nothing stored it is the header row alone
+    [Theory]
+    [InlineData("notifications", "email,firstName,consentedAt,consentMethod")]
+    [InlineData("businesses", "businessName,contactName,email,phone,category,area,website,description,consentedAt,consentMethod")]
+    public async Task L2_218_AC4_with_nothing_stored_the_header_row_alone_is_printed_and_the_reading_is_audited(string kind, string header)
+    {
+        Assert.Equal(0, await Run("launch", "list", "--kind", kind));
+
+        Assert.Equal([header], Lines());
+        var record = Assert.Single(await Query(db => db.AuditRecords.ToListAsync()));
+        Assert.Equal("launch.list", record.Action);
+        Assert.Equal(kind, record.TargetType);
+        Assert.Equal("0 rows", record.After);
+    }
+
     [Theory]
     [InlineData("launch")]
     [InlineData("launch", "list")]

@@ -375,6 +375,35 @@ test.describe('launching-soon marketing page (L2-215)', () => {
   });
 });
 
+test.describe('the launch forms at every width (L2-215 AC8)', () => {
+  for (const width of [360, 576, 768, 992, 1280]) {
+    test(`AC8: at ${width} px the forms fit, every field and button is at least 44 px high, and from 1024 px each form stands beside its heading`, async ({
+      page,
+      jb,
+    }) => {
+      const home = new MarketingHomePage(page);
+      await page.setViewportSize({ width, height: 800 });
+      await jb.open('marketing-home');
+      await home.ready();
+      expect(await home.horizontalOverflow()).toBe(0);
+      for (const [form, heading] of [
+        [home.businessForm, home.preRegisterHeading],
+        [home.notifyForm, home.notifyHeading],
+      ] as const) {
+        const heights = await form.controlHeights();
+        expect(heights.length).toBeGreaterThan(0);
+        for (const height of heights) expect(height).toBeGreaterThanOrEqual(44);
+        if (width >= 1024) {
+          expect(await home.leftOf(form.form)).toBeGreaterThan(await home.leftOf(heading));
+        } else {
+          expect(await home.topOf(form.form)).toBeGreaterThan(await home.topOf(heading));
+          expect(await home.leftOf(form.form)).toBeLessThanOrEqual(await home.leftOf(heading));
+        }
+      }
+    });
+  }
+});
+
 test.describe('in-page links (L2-185 AC3; AC1, AC2 and AC4 are suspended until launch)', () => {
   test('AC3: a top bar link moves to its section, clear of the sticky top bar', async ({
     page,

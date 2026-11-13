@@ -484,6 +484,20 @@ test('Given an API on another host and a proxy key, when /api is forwarded, then
   assert.equal(api.requests[0].headers['x-jubilee-client-address'], '203.0.113.5');
 });
 
+// The limits of 5 an hour count the visitor's address (L2-218 AC3, ADR 0062): a caller cannot choose
+// its own by sending the headers the proxy states.
+test('Given the marketing host and a proxy key, when a caller sends its own address and key, then the API is told the address App Service saw, with the host\'s key', async () => {
+  const api = await standIn('127.0.0.1', () => ({ status: 202 }));
+  const site = await host({ API_ORIGIN: api.origin, API_PATHS: '/api/launch', PROXY_KEY: 'the-proxy-key' });
+
+  await post(site, NOTIFICATIONS, SIGN_UP, { 'X-Jubilee-Client-Address': '192.0.2.99', 'X-Jubilee-Proxy-Key': 'a-caller-key' });
+  await post(site, BUSINESSES, SIGN_UP, { 'X-Forwarded-For': '192.0.2.99, 198.51.100.20:443' });
+
+  assert.equal(api.to(NOTIFICATIONS)[0].headers['x-jubilee-client-address'], '203.0.113.5');
+  assert.equal(api.to(NOTIFICATIONS)[0].headers['x-jubilee-proxy-key'], 'the-proxy-key');
+  assert.equal(api.to(BUSINESSES)[0].headers['x-jubilee-client-address'], '198.51.100.20');
+});
+
 test('Given the API beside it on loopback, when /api is forwarded, then Host stays the public host', async () => {
   const api = await standIn('127.0.0.1', () => ({ status: 200, body: '{}' }));
   const site = await host({ API_ORIGIN: api.origin });

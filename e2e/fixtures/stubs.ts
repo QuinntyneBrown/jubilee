@@ -708,6 +708,18 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
       return stubSent(page, '**/api/launch/notifications', limited);
     case 'launch-notify-challenge':
       return stubSent(page, '**/api/launch/notifications', challengeFailed);
+    case 'launch-notify-refused-field':
+      return stubSent(page, '**/api/launch/notifications', refused({ email: 'EMAIL_INVALID' }));
+    case 'launch-notify-unreachable':
+      return stubSent(page, '**/api/launch/notifications', (route) => route.abort('failed'));
+    case 'launch-business-refused-fields':
+      return stubSent(
+        page,
+        '**/api/launch/businesses',
+        refused({ category: 'CATEGORY_UNKNOWN', website: 'WEBSITE_INVALID' }),
+      );
+    case 'launch-business-unreachable':
+      return stubSent(page, '**/api/launch/businesses', (route) => route.abort('failed'));
     case 'launch-business-pending':
       return stubSent(page, '**/api/launch/businesses', pending);
     case 'launch-business-failing':
@@ -817,6 +829,21 @@ function limited(route: Route): Promise<void> {
     contentType: 'application/problem+json',
     body: JSON.stringify({ title: 'You’re doing that a lot.', status: 429, code: 'rate_limited' }),
   });
+}
+
+/** The server refuses fields the page let through, with a code for each (ADR 0012). */
+function refused(errors: Record<string, string>): (route: Route) => Promise<void> {
+  return (route) =>
+    route.fulfill({
+      status: 422,
+      contentType: 'application/problem+json',
+      body: JSON.stringify({
+        title: 'Fix the highlighted fields.',
+        status: 422,
+        code: 'validation_failed',
+        errors,
+      }),
+    });
 }
 
 /** The bot challenge was not passed (L2-137 AC2). */

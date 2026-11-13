@@ -34,9 +34,10 @@ export class Jb {
       return;
     }
     if ('site' in route && route.site === 'marketing') {
-      // The site's photos and Inter live on other hosts; a spec never depends on them.
+      // The site's photos and Inter live on other hosts; a spec never depends on them. The bot
+      // challenge's host is left to the stand-in a spec installs, or to the page fixture's abort.
       await this.page.route(
-        (url) => url.hostname !== 'localhost',
+        (url) => url.hostname !== 'localhost' && url.hostname !== CHALLENGE_HOST,
         (r) => r.abort(),
       );
       if (route.stub) await applyStub(this.page, route.stub);
@@ -88,6 +89,9 @@ export class Jb {
   }
 }
 
+/** Where Cloudflare Turnstile, the bot challenge, is loaded from (L2-137 AC2). */
+const CHALLENGE_HOST = 'challenges.cloudflare.com';
+
 export const test = base.extend<{ jb: Jb }, { apiRecording: void }>({
   // ADR 0009: no test reaches the API. Every /api request of the page is answered from the
   // recording, and one without a recorded answer fails the test.
@@ -98,6 +102,9 @@ export const test = base.extend<{ jb: Jb }, { apiRecording: void }>({
       (globalThis as { __jbTimings?: object }).__jbTimings = { retryWindow: 0 };
     });
     if (!BASELINE) await installMockApi(page, unanswered);
+    // No test reaches Cloudflare: a spec that needs the bot challenge installs its stand-in
+    // (fixtures/bot-challenge.ts), which takes precedence over this.
+    await page.route(`https://${CHALLENGE_HOST}/**`, (route) => route.abort());
     await use(page);
     expect(unanswered, 'API requests without a recorded answer (ADR 0009)').toEqual([]);
   },
