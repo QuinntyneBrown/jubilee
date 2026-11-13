@@ -83,6 +83,9 @@ export function meetsOn(days: number[]): string {
 }
 
 export interface FakeCatalogue {
+  /** A listing that is not live yet gives its stage in place of "Live since" (L2-097 AC3). */
+  live: boolean;
+  subtitle: string;
   /** `fails` answers the list with a 503; `forbidden` with a 403. */
   products: CatalogueOutcome;
   services: CatalogueOutcome;
@@ -182,6 +185,8 @@ export async function stubCatalogue(
 ): Promise<FakeCatalogue> {
   let next = 50;
   const fake: FakeCatalogue = {
+    live: true,
+    subtitle: 'Live since June 2026',
     products: 'ok',
     services: 'ok',
     save: 'ok',
@@ -216,8 +221,8 @@ export async function stubCatalogue(
   const products = () => ({
     business: 'Luzandre.com',
     slug: 'luzandre-com',
-    subtitle: 'Live since June 2026',
-    live: true,
+    subtitle: fake.subtitle,
+    live: fake.live,
     total: fake.productRows.length,
     soldOut: fake.productRows.filter(soldOut).length,
     max: 100,
@@ -227,8 +232,8 @@ export async function stubCatalogue(
   const services = () => ({
     business: 'Luzandre.com',
     slug: 'luzandre-com',
-    subtitle: 'Live since June 2026',
-    live: true,
+    subtitle: fake.subtitle,
+    live: fake.live,
     total: fake.serviceRows.length,
     max: 50,
     rows: fake.serviceRows,
