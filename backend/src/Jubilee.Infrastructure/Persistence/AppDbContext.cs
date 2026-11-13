@@ -69,6 +69,14 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
 
     public DbSet<BusinessPreRegistration> BusinessPreRegistrations => Set<BusinessPreRegistration>();
 
+    public DbSet<MerchProduct> MerchProducts => Set<MerchProduct>();
+
+    public DbSet<MerchVariant> MerchVariants => Set<MerchVariant>();
+
+    public DbSet<MerchOrder> MerchOrders => Set<MerchOrder>();
+
+    public DbSet<MerchOrderLine> MerchOrderLines => Set<MerchOrderLine>();
+
     public DbSet<FeaturedSlot> FeaturedSlots => Set<FeaturedSlot>();
 
     public DbSet<Conversation> Conversations => Set<Conversation>();

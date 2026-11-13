@@ -1699,7 +1699,7 @@
         {
           "heading": "Does Jubilee take payment?",
           "anchor": "does-jubilee-take-payment",
-          "body": "No. You send a booking, quote or order request, the business confirms it, and you pay the business directly in the way they offer."
+          "body": "Not for anything you buy from a business. You send a booking, quote or order request, the business confirms it, and you pay the business directly in the way they offer. The one thing Jubilee sells is its own shirt, the Purpose Tee, paid by card on Stripe’s secure checkout."
         },
         {
           "heading": "Is it free?",
