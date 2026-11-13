@@ -224,6 +224,8 @@ test.describe('pages offline (L2-119, L2-122)', () => {
 
     await expect(browse.featuredCards.first()).toBeVisible();
     await expect(banner.root).toContainText(/Showing the directory saved at \d+:\d\d [ap]\.m\./);
+    // The time ends its own sentence: "9:00 a.m. Search…", as the mock has it, never "a.m..".
+    await expect(banner.root).toContainText(/saved at \d+:\d\d [ap]\.m\. Search and messages/);
     await expect(browse.searchBox).toBeDisabled();
   });
 

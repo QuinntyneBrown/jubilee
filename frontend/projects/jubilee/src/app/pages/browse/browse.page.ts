@@ -122,7 +122,7 @@ export class BrowsePage {
       const savedAt = this.store.savedAt();
       connection.detail.set(
         savedAt
-          ? `Showing the directory saved at ${clockTime(savedAt)}. Search and messages will work again when you’re connected.`
+          ? `Showing the directory saved at ${sentenceEnd(clockTime(savedAt))} Search and messages will work again when you’re connected.`
           : null,
       );
     });
@@ -147,4 +147,9 @@ export class BrowsePage {
     const q = query.trim();
     void this.router.navigate(['/search'], { queryParams: q ? { q } : {} });
   }
+}
+
+/** A time that ends a sentence: "9:00 a.m." already has its full stop; "14:05" gets one. */
+function sentenceEnd(time: string): string {
+  return time.endsWith('.') ? time : `${time}.`;
 }
