@@ -11,7 +11,15 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { ACCOUNT_DATA_API, Account, PROFILE_API, ProfileForm } from 'api';
+import {
+  ACCOUNT_DATA_API,
+  Account,
+  ClockService,
+  MemberSessionView,
+  PROFILE_API,
+  ProfileForm,
+  lastActive,
+} from 'api';
 import {
   EmptyState,
   Icon,
@@ -28,6 +36,7 @@ import {
   RowMeta,
   RowTitle,
   Rows,
+  RowListSkeleton,
   PageHeader,
   Tabs,
 } from 'components';
@@ -98,6 +107,7 @@ const MESSAGES: Record<string, string> = {
     RowActions,
     RowTitle,
     Rows,
+    RowListSkeleton,
     PageHeader,
     Tabs,
   ],
@@ -113,6 +123,7 @@ export class AccountPage implements OnInit, HasUnsavedChanges {
   private readonly dialog = inject(Dialog);
   private readonly session = inject(SessionService);
   private readonly toasts = inject(ToastService);
+  private readonly clock = inject(ClockService);
   private readonly summaryBox = viewChild(FormSummary);
 
   protected readonly state = signal<LoadState<Account>>({ status: 'loading' });
@@ -131,6 +142,10 @@ export class AccountPage implements OnInit, HasUnsavedChanges {
     if (others === 0) return 'Signed in on this phone only';
     return `Signed in on this phone and ${others} other device${others === 1 ? '' : 's'}`;
   });
+  /** "Where you're signed in" (L2-143 AC3), loaded on its own so a failure leaves the profile usable. */
+  protected readonly sessions = signal<LoadState<MemberSessionView[]>>({ status: 'loading' });
+  /** The session being signed out, whose button is busy. */
+  protected readonly ending = signal<string | null>(null);
   protected readonly problems = signal<Problem[]>([]);
   protected readonly failed = signal(false);
   protected readonly savedNow = signal<string | null>(null);
@@ -172,10 +187,56 @@ export class AccountPage implements OnInit, HasUnsavedChanges {
 
   ngOnInit(): void {
     this.load();
+    this.loadSessions();
     // A request still waiting is shown as such after a reload; nothing else about it needs saying here.
     this.dataApi.currentDataExport().subscribe({
       next: (current) => this.exportWaiting.set(current.status === 'requested'),
       error: () => undefined,
+    });
+  }
+
+  protected loadSessions(): void {
+    this.sessions.set({ status: 'loading' });
+    this.api.getSessions().subscribe({
+      next: (sessions) => this.sessions.set({ status: 'loaded', value: sessions }),
+      error: (error: unknown) =>
+        this.sessions.set({ status: 'error', reference: errorReference(error, 'JB-ACC-526') }),
+    });
+  }
+
+  /** "This device · Network 203.0.113.x" or "Last active 2 hours ago · Network 203.0.113.x". */
+  protected sessionMeta(session: MemberSessionView): string {
+    const when = session.current
+      ? 'This device'
+      : `Last active ${lastActive(session.lastActiveAt, this.clock.now())}`;
+    return session.network ? `${when} · Network ${session.network}` : when;
+  }
+
+  /** Signs one other device out at once (L2-143 AC3, ADR 0065): no dialog, as signing in again undoes it. */
+  protected endSession(session: MemberSessionView): void {
+    if (this.ending()) return;
+    this.ending.set(session.id);
+    this.api.endSession(session.id).subscribe({
+      next: () => {
+        this.ending.set(null);
+        const state = this.sessions();
+        if (state.status === 'loaded')
+          this.sessions.set({
+            status: 'loaded',
+            value: state.value.filter((s) => s.id !== session.id),
+          });
+        this.toasts.show({ tone: 'success', title: `Signed out of ${session.device}` });
+        // The "Sign out" row counts the other devices again.
+        this.session.resolve().subscribe();
+      },
+      error: () => {
+        this.ending.set(null);
+        this.toasts.show({
+          tone: 'danger',
+          title: `We couldn’t sign out ${session.device}`,
+          text: 'Try again.',
+        });
+      },
     });
   }
 
@@ -368,8 +429,9 @@ export class AccountPage implements OnInit, HasUnsavedChanges {
         restoreFocus: opener,
       })
       .closed.subscribe((ended) => {
-        if (ended)
-          this.toasts.show({ tone: 'success', title: 'Your other devices were signed out' });
+        if (!ended) return;
+        this.toasts.show({ tone: 'success', title: 'Your other devices were signed out' });
+        this.loadSessions();
       });
   }
 

@@ -31,9 +31,9 @@ public sealed class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<Ex
     {
         if (exception is NotFoundException notFound)
         {
-            if (notFound.Code == "conversation_not_found")
+            if (notFound.Code is "conversation_not_found" or "session_not_found")
             {
-                // Asking for a conversation that is not yours is answered as if there were none, and
+                // Asking for a conversation or a session that is not yours is answered as if there were none, and
                 // the attempt is logged (L2-133 AC2).
                 logger.LogWarning(
                     "Refused ({Code}) for {Actor} from {Address} on {Method} {Path}. CorrelationId {CorrelationId}",

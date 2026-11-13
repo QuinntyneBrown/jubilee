@@ -742,6 +742,8 @@ public sealed class MemberSessionConfiguration : IEntityTypeConfiguration<Member
         builder.HasIndex(s => s.MemberId);
         builder.Property(s => s.Kind).HasConversion<string>().HasMaxLength(16);
         builder.HasIndex(s => s.StaffMemberId);
+        builder.Property(s => s.Device).HasMaxLength(100);
+        builder.Property(s => s.Network).HasMaxLength(64);
     }
 }
 

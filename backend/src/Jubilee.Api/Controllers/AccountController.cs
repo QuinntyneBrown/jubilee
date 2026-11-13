@@ -282,6 +282,24 @@ public sealed class AccountController(ISender sender, IBotChallengeVerifier bot)
         return NoContent();
     }
 
+    /// <summary>"Where you're signed in": the member's live sessions, this device first (L2-143 AC3).</summary>
+    [HttpGet("sessions")]
+    [ErrorReference("JB-ACC-526")]
+    public async Task<ActionResult<IReadOnlyList<MemberSessionDto>>> Sessions(CancellationToken cancellationToken) =>
+        Ok(await sender.Send(new ListMemberSessionsQuery(MemberId(), CurrentSessionId()), cancellationToken));
+
+    /// <summary>Signs one device out (L2-143 AC3). Another member's session is not found and the attempt is logged (L2-133 AC2).</summary>
+    [HttpDelete("sessions/{id:guid}")]
+    [ErrorReference("JB-ACC-527")]
+    public async Task<IActionResult> EndSession(Guid id, CancellationToken cancellationToken)
+    {
+        await sender.Send(new EndMemberSessionCommand(MemberId(), id, HttpContext.Connection.RemoteIpAddress?.ToString()), cancellationToken);
+        return NoContent();
+    }
+
+    private Guid? CurrentSessionId() =>
+        Guid.TryParse(User.FindFirst(Jubilee.Api.Sessions.DatabaseTicketStore.SessionIdClaim)?.Value, out var id) ? id : null;
+
     [HttpPost("agreement")]
     public async Task<IActionResult> AcceptAgreement(CancellationToken cancellationToken)
     {

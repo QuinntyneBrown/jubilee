@@ -5,6 +5,7 @@ import {
   Account,
   EmailChangeOutcome,
   EmailChangeRequest,
+  MemberSessionView,
   NotificationPreferences,
   PasswordChangeRequest,
   PreferenceFrequency,
@@ -20,6 +21,10 @@ export interface ProfileApi {
   requestEmailChange(request: EmailChangeRequest): Observable<void>;
   confirmEmailChange(token: string): Observable<EmailChangeOutcome>;
   changePassword(request: PasswordChangeRequest): Observable<void>;
+  /** "Where you're signed in": the member's live sessions, this device first (L2-143 AC3). */
+  getSessions(): Observable<MemberSessionView[]>;
+  /** Signs one other device out at once (L2-143 AC3). */
+  endSession(id: string): Observable<void>;
   getPreferences(): Observable<NotificationPreferences>;
   setSwitch(setting: PreferenceSetting, enabled: boolean): Observable<NotificationPreferences>;
   setFrequency(frequency: PreferenceFrequency): Observable<NotificationPreferences>;
@@ -64,6 +69,14 @@ export class HttpProfileApi implements ProfileApi {
 
   changePassword(request: PasswordChangeRequest): Observable<void> {
     return this.http.put<void>('/api/account/password', request);
+  }
+
+  getSessions(): Observable<MemberSessionView[]> {
+    return this.http.get<MemberSessionView[]>('/api/account/sessions');
+  }
+
+  endSession(id: string): Observable<void> {
+    return this.http.delete<void>(`/api/account/sessions/${encodeURIComponent(id)}`);
   }
 
   getPreferences(): Observable<NotificationPreferences> {
