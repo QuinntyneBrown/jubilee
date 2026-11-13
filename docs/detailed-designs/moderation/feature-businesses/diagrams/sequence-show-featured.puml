@@ -14,44 +14,41 @@ skinparam package {
   FontColor #101828
   BackgroundColor #F9FAFB
 }
-actor "Member" as actor
-box "Frontend — Jubilee Web" #E0F2FE
-  participant "BrowsePage" as page
-  participant "FeaturedStrip" as strip
+actor "Member or visitor" as actor
+box "Frontend — Jubilee app" #E0F2FE
+  participant "WelcomePage or BrowsePage" as page
   participant "DirectoryApi" as client
 end box
 box "Backend — Jubilee API" #D1FADF
   participant "DirectoryController" as controller
 end box
 box "Backend — Jubilee Application and Domain" #ECFDF3
-  participant "GetFeaturedListingsQueryHandler" as handler
+  participant "GetWelcomeQueryHandler or GetBrowseHomeQueryHandler" as handler
+  participant "FeaturedSelector" as sel
 end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
   database "Cache" as cache
   database "Jubilee database" as db
 end box
-actor -> page : Open the browse page or the welcome page
-page -> strip : Render
-strip -> client : getFeatured()
-client -> controller : GET /api/featured
-controller -> handler : Send GetFeaturedListingsQuery(today)
-handler -> cache : Read the cached featured list
+actor -> page : Open the welcome page or Browse
+page -> client : getWelcome() or getHome()
+client -> controller : GET /api/directory/welcome or /home
+controller -> handler : Send the query
+handler -> cache : Read the cached answer
 alt cache hit
-  cache --> handler : Featured list
+  cache --> handler : Answer, at most 60 seconds old and dropped by any save of a slot or a listing
 else cache miss
-  cache --> handler : Nothing
-  handler -> db : Read the week active today: start date <= today < start date + 7 days
-  db --> handler : Slots joined to listings
-  handler -> handler : Skip listings that are paused or removed (L2-106)
-  handler -> cache : Store the list for a short time
-  cache --> handler : Stored
+  handler -> sel : SelectAsync(now, limit)
+  sel -> db : Slots with start date <= today < start date + 7 days in Toronto, joined to public listings
+  db --> sel : Listings in slot order, skipping paused, held or removed (L2-106)
+  sel --> handler : Featured listings, or the newest published when no slot is current
+  handler -> cache : Store the answer
 end
-handler --> controller : FeaturedBusinessDto list
-controller --> client : 200 with zero to five businesses
-client --> strip : Featured businesses
+handler --> controller : Answer with featured
+controller --> page : 200
 alt at least one business
-  strip --> actor : Show "Featured this week" with the businesses in slot order
+  page --> actor : Show "Featured this week" in slot order
 else none
-  strip --> actor : Render nothing
+  page --> actor : Render nothing
 end
 @enduml

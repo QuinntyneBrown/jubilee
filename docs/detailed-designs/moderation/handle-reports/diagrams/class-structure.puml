@@ -15,86 +15,87 @@ enum ReportStatus {
   InReview
   Resolved
 }
-enum ReportSubject {
-  Listing
-  Conversation
-}
 enum ReportActionKind {
   Dismiss
   MessageReporter
   MessageOwner
   PlaceOnHold
   RemoveListing
+  LiftHold
 }
-enum ListingStage {
-  Draft
-  Live
-}
-class Report {
+class ListingReport {
   +Guid Id
-  +ReportSubject Subject
   +Guid ListingId
-  +Guid? ConversationId
-  +string Reason
-  +string Description
-  +Guid ReporterId
-  +DateTimeOffset CreatedAt
+  +string ReporterSubject
+  +string ReporterName
   +ReportStatus Status
-  +StartReview(moderator: Member, now: DateTimeOffset): void
-  +RecordAction(kind: ReportActionKind, note: string, moderator: Member, now: DateTimeOffset): ReportActionEntry
+  +DateTimeOffset CreatedAt
+  +string? ResolutionNote
+  +StartReview(): void
+  +Resolve(note: string, now: DateTimeOffset): void
 }
-class ReportActionEntry {
+class ListingReportEntry {
+  +ReportReason Reason
+  +string Description
+  +string IdempotencyKey
+}
+class ConversationReport {
+  +Guid Id
+  +Guid ConversationId
+  +string ReporterSubject
+  +string Reason
+  +ReportStatus Status
+  +StartReview(): void
+  +Resolve(note: string, now: DateTimeOffset): void
+}
+class ReportAction {
+  +Guid ReportId
   +ReportActionKind Kind
   +string ResolutionNote
-  +string MessageText
-  +Guid ModeratorId
+  +string? MessageText
+  +string ActorName
   +DateTimeOffset At
 }
 class Listing {
   +Guid Id
-  +Guid OwnerId
-  +ListingStage Stage
+  +string OwnerId
   +bool IsUnderModerationHold
   +DateTimeOffset? DeletedAt
-  +PlaceOnHold(reportId: Guid, now: DateTimeOffset): void
-  +Remove(reportId: Guid, now: DateTimeOffset): void
+  +PlaceModerationHold(): void
+  +LiftModerationHold(): void
+  +Delete(now: DateTimeOffset): void
 }
-class ApplyReportActionCommand {
-  +Guid ReportId
-  +ReportActionKind Kind
-  +string ResolutionNote
-  +string MessageText
+class JubileeTeam {
+  +{static} Tell(db, settings, subject, body, now, correlationId): void
+  +{static} AdminLink(settings, path): string
 }
-class ApplyReportActionCommandValidator {
-  +Validate(command: ApplyReportActionCommand): ValidationResult
+class ReportSubmitted {
+  +{static} Tell(db, team, listing, report, entry, added, now): void
 }
-class ApplyReportActionCommandHandler {
-  +Handle(command: ApplyReportActionCommand): Task<Result>
+class ConversationReportSubmitted {
+  +{static} Tell(db, team, listing, report, now): void
 }
-class ReportListItem {
-  +Guid ReportId
-  +string ListingName
+class ReportListItemDto {
+  +Guid Id
+  +string Type
   +string Reason
-  +string Description
   +string ReporterName
-  +DateTimeOffset CreatedAt
-  +ReportStatus Status
+  +string Status
   +bool Overdue
 }
-class BusinessDayCalendar {
-  +BusinessDaysBetween(from: DateTimeOffset, to: DateTimeOffset): int
+class StaffSessionView {
+    +int ReportCount
 }
 
-ApplyReportActionCommandHandler ..> ApplyReportActionCommand : handles
-ApplyReportActionCommandValidator ..> ApplyReportActionCommand : validates
-ApplyReportActionCommandHandler --> Report : loads / mutates
-ApplyReportActionCommandHandler --> Listing : holds / removes
-Report "1" *-- "*" ReportActionEntry
-Report "*" --> "1" Listing
-Report --> ReportStatus
-Report --> ReportSubject
-ReportActionEntry --> ReportActionKind
-Listing --> ListingStage
-ReportListItem ..> Report : projects
-ReportListItem ..> BusinessDayCalendar : overdue from
+ListingReport "1" *-- "*" ListingReportEntry
+ListingReport "*" --> "1" Listing
+ConversationReport --> ReportStatus
+ListingReport --> ReportStatus
+ReportAction --> ReportActionKind
+ReportSubmitted ..> JubileeTeam : tells through
+ConversationReportSubmitted ..> JubileeTeam : tells through
+ReportListItemDto ..> ListingReport : projects
+ReportListItemDto ..> ConversationReport : projects
+StaffSessionView ..> ListingReport : counts unresolved
+StaffSessionView ..> ConversationReport : counts unresolved
 @enduml

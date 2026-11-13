@@ -6,12 +6,12 @@ Person(moderator, "Jubilee team member", "Reviews reports within one business da
 Person(member, "Member", "Reported a listing or a conversation")
 Person(owner, "Owner", "Owns the reported listing and never learns who reported it")
 System(jubilee, "Jubilee", "Toronto's Christian marketplace")
-System_Ext(email, "E-mail provider", "Delivers messages to the reporter and the owner")
+System_Ext(email, "E-mail provider", "Delivers the team's notice of a report")
 
 Rel(member, jubilee, "Sends a private report in", "HTTPS")
-Rel(moderator, jubilee, "Reviews and resolves reports in", "HTTPS")
-Rel(jubilee, owner, "Tells of a hold or a removal")
-Rel(jubilee, email, "Sends e-mail via")
-Rel(email, member, "Delivers moderator questions to")
-Rel(email, owner, "Delivers moderator messages to")
+Rel(moderator, jubilee, "Reviews and resolves reports in the admin application of", "HTTPS")
+Rel(jubilee, owner, "Tells of a hold or a removal in the notification centre")
+Rel(jubilee, member, "Passes the team's message to the reporter")
+Rel(jubilee, email, "Sends the notice of a new report via")
+Rel(email, moderator, "Delivers New report: business to")
 @enduml

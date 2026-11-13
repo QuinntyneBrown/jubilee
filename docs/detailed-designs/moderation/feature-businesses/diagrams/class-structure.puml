@@ -10,72 +10,57 @@ skinparam class {
   BackgroundColor #F9FAFB
 }
 title Class structure — Feature businesses
-enum ListingStage {
-  Draft
-  Live
-}
-class FeaturedWeek {
-  +Guid Id
-  +DateOnly StartDate
-  +DateOnly EndDate
-  +Guid SelectedBy
-  +IReadOnlyList<FeaturedSlot> Slots
-  +{static} int MaxSlots = 5
-  +{static} int LengthDays = 7
-  +SetSlots(listingIds: IReadOnlyList<Guid>): void
-  +IsActiveOn(date: DateOnly): bool
-}
 class FeaturedSlot {
+  +Guid Id
   +Guid ListingId
   +int Position
+  +DateOnly StartsOn
+  +{static} int DurationDays = 7
+  +{static} Create(listingId, position, startsOn): FeaturedSlot
 }
 class Listing {
   +Guid Id
   +string Name
   +string Slug
-  +ListingStage Stage
+  +bool IsPaused
+  +bool IsUnderModerationHold
+  +DateTimeOffset? DeletedAt
 }
 class SetFeaturedWeekCommand {
+  +Reviewer Reviewer
   +DateOnly StartDate
-  +IReadOnlyList<Guid> ListingIds
-}
-class SetFeaturedWeekCommandValidator {
-  +Validate(command: SetFeaturedWeekCommand): ValidationResult
+  +IReadOnlyList<Guid>? ListingIds
 }
 class SetFeaturedWeekCommandHandler {
-  +Handle(command: SetFeaturedWeekCommand): Task<Result>
+  +{static} int MaxSlots = 5
+  +Handle(command): Task<FeaturedWeekDto>
 }
-class GetFeaturedListingsQuery {
-  +DateOnly Today
+class FeaturedSelector {
+  +SelectAsync(now, limit, cancellationToken): Task<IReadOnlyList<Listing>>
 }
-class GetFeaturedListingsQueryHandler {
-  +Handle(query: GetFeaturedListingsQuery): Task<IReadOnlyList<FeaturedBusinessDto>>
+class GetWelcomeQueryHandler {
+  +{static} int FeaturedLimit = 4
 }
-class FeaturedBusinessDto {
-  +Guid ListingId
-  +string Name
-  +string Slug
-  +string Tagline
-  +string PhotoUrl
-  +int Position
+class GetBrowseHomeQueryHandler {
+  +{static} int FeaturedLimit = 5
 }
-class AuditEntry {
-  +Guid ActorId
-  +string Action
-  +string Target
-  +string Before
-  +string After
-  +DateTimeOffset At
+class FeaturedWeekDto {
+  +string StartDate
+  +string EndDate
+  +bool Active
+  +IReadOnlyList<FeaturedListingDto> Listings
+}
+class DirectoryCacheInvalidationInterceptor {
+  +SavedChangesAsync(...): ValueTask<int>
 }
 
 SetFeaturedWeekCommandHandler ..> SetFeaturedWeekCommand : handles
-SetFeaturedWeekCommandValidator ..> SetFeaturedWeekCommand : validates
-SetFeaturedWeekCommandHandler --> FeaturedWeek : creates / replaces
-SetFeaturedWeekCommandHandler ..> AuditEntry : appends
-GetFeaturedListingsQueryHandler ..> GetFeaturedListingsQuery : handles
-GetFeaturedListingsQueryHandler --> FeaturedBusinessDto : returns
-GetFeaturedListingsQueryHandler ..> FeaturedWeek : reads
-FeaturedWeek "1" *-- "0..5" FeaturedSlot
+SetFeaturedWeekCommandHandler --> FeaturedSlot : replaces
+SetFeaturedWeekCommandHandler --> FeaturedWeekDto : returns
 FeaturedSlot "*" --> "1" Listing
-Listing --> ListingStage
+GetWelcomeQueryHandler ..> FeaturedSelector
+GetBrowseHomeQueryHandler ..> FeaturedSelector
+FeaturedSelector ..> FeaturedSlot : reads current
+DirectoryCacheInvalidationInterceptor ..> FeaturedSlot : watches
+DirectoryCacheInvalidationInterceptor ..> Listing : watches
 @enduml

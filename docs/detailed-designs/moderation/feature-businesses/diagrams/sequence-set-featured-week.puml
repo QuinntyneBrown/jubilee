@@ -15,19 +15,18 @@ skinparam package {
   BackgroundColor #F9FAFB
 }
 actor "Jubilee team member" as actor
-box "Frontend — Jubilee Web" #E0F2FE
-  participant "FeaturedBusinessesPage" as page
+box "Frontend — Admin application" #E0F2FE
+  participant "AdminFeaturedPage" as page
   participant "AdminApi" as client
 end box
 box "Backend — Jubilee API" #D1FADF
   participant "AdminFeaturedController" as controller
 end box
 box "Backend — Jubilee Application and Domain" #ECFDF3
-  participant "SetFeaturedWeekCommandValidator" as validator
   participant "SetFeaturedWeekCommandHandler" as handler
-  participant "FeaturedWeek" as entity
 end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
+  participant "DirectoryCacheInvalidationInterceptor" as icpt
   database "Jubilee database" as db
   database "Cache" as cache
 end box
@@ -35,28 +34,18 @@ actor -> page : Choose listings and a start date for "Featured this week"
 page -> page : Stop the selection at five listings (L2-106)
 page -> client : setFeaturedWeek(startDate, listingIds)
 client -> controller : PUT /api/admin/featured-weeks/{startDate}
-controller -> controller : Authenticate session and apply ModeratorPolicy (L2-133)
-controller -> validator : Validate SetFeaturedWeekCommand
-validator -> db : Read the stages of the chosen listings
-db --> validator : Stages
-alt more than five listings or a listing is not live
-  validator --> controller : Validation failure
-  controller --> client : 422 ProblemDetails with per-field codes
-  client --> page : Field errors
-  page --> actor : Show which listing cannot be featured
+controller -> controller : RequiresModerator (L2-191)
+controller -> handler : Send SetFeaturedWeekCommand
+handler -> db : Read the stages of the chosen listings and the other weeks
+alt more than five, a duplicate, not live, in the past or overlapping
+  handler --> client : 422 ProblemDetails with the field code
+  client --> page : Field error
+  page --> actor : Say what cannot be saved
 else valid selection
-  validator --> controller : Valid
-  controller -> handler : Send SetFeaturedWeekCommand
-  handler -> db : Load the week for the start date when present
-  db --> handler : Existing week or none
-  handler -> entity : SetSlots(listingIds) for start date + 7 days (L2-106)
-  entity --> handler : Week with ordered slots
-  handler -> db : Save week and AuditEntry (L2-180) in one unit of work
-  db --> handler : Commit result
-  handler -> cache : Remove the cached featured list
-  cache --> handler : Removed
-  handler --> controller : Typed result
-  controller --> client : 200 with week
+  handler -> db : Replace the week's FeaturedSlot rows and add featured.set (L2-180) in one save
+  db -> icpt : Saved changed FeaturedSlot rows
+  icpt -> cache : Drop the directory read cache (ADR 0003)
+  handler --> client : 200 with the week
   client --> page : Saved week
   page --> actor : Show the saved selection and its dates
 end

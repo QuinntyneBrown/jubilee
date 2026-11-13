@@ -1,6 +1,6 @@
 # ADR 0033: Moderate reports and feature businesses
 
-Status: accepted
+Status: accepted, amended by 0058
 
 ## Context
 
@@ -20,3 +20,5 @@ Journey 25 (L2-105, L2-106) gives the verification team the reports members send
 - The verifier notification and realtime `report.created` event when a report arrives, and the report count in the top bar.
 - Outbox and search-index handling of holds and removals.
 - L2-098 AC2 and AC4.
+
+ADR 0058 closes the first two: a report of a conversation e-mails the team as a report of a listing does, there is no real-time event, the admin bar counts the unresolved reports, and holds and removals reach the public pages through the save itself.
