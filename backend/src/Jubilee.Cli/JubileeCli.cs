@@ -97,8 +97,8 @@ public static class JubileeCli
         {
             var lines = action switch
             {
-                "grant" => [await sender.Send(new GrantStaffRoleCommand(configuration["email"], configuration["role"]))],
-                "revoke" => [await sender.Send(new RevokeStaffRoleCommand(configuration["email"], configuration["role"]))],
+                "grant" => [await sender.Send(new GrantStaffRoleCommand(configuration["email"], configuration["role"], Environment.UserName))],
+                "revoke" => [await sender.Send(new RevokeStaffRoleCommand(configuration["email"], configuration["role"], Environment.UserName))],
                 _ => await sender.Send(new ListStaffQuery()),
             };
             foreach (var line in lines)

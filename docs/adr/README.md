@@ -53,6 +53,7 @@ something else: a new record supersedes it and both say so.
 | [0056](0056-finish-recover-from-errors.md) | Finish recover from errors: a listing's slug follows its name and the old one is kept and answered with 301; the app's host gives a page load its status (404, 403, 301, 503, 500) from `routes.json` and `GET /api/documents/status`; static server error and maintenance pages built from the mocks; "Ask for access" e-mails the Jubilee team | Accepted |
 | [0057](0057-ship-without-verification.md) | Ship without verification: owners publish and are live at once, no Verified mark, the Jubilee team (`moderator`) takes down listings that misrepresent a business, the queue and review become Listings | Accepted |
 | [0058](0058-finish-moderate-reports-and-feature-businesses.md) | Finish moderate reports and feature businesses: a report of a conversation e-mails the Jubilee team through `JubileeTeam.Tell`; no `report.created` event; the admin bar counts the unresolved reports, read with the staff session after each navigation and each action on a report; holds, removals and featured weeks reach the public pages through the save (ADR 0003, ADR 0011) | Accepted |
+| [0059](0059-finish-keep-listings-honest.md) | Finish keeping listings honest: the CLI audits each role change with its operator, and opening a listing in the admin application records the access to the owner's data | Accepted |
 
 ## Format
 

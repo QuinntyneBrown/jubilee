@@ -71,7 +71,10 @@ outbox as it sends every other e-mail.
 - **`GetAdminListingQueryHandler`** — returns `AdminListings.Detail`: the
   `AdminListingDto` assembled from the listing, its owner, the number of the
   owner's other listings, the flags of its `ListingSubmission`, and the
-  takedown when there is one. It writes no audit record.
+  takedown when there is one. Each time it answers for a listing with an
+  owner it records `owner.viewed` with `AuditLog.Record`: the target type
+  `member`, the owner's subject and the reason "Listing {id}" (`L2-150` AC1,
+  ADR 0059).
 - **`AdminListingDto`** — `Id`, `Slug`, `Name`, `Tagline`, `About`, `Kind`,
   `CategorySlug`, `CategoryName`, `PublishedAt`, `Status` and `StatusLabel`
   (`live`, `paused`, `on-hold` or `taken-down`, from `AdminListings.StatusOf`),
@@ -116,10 +119,8 @@ outbox as it sends every other e-mail.
 - **Listing again** — the owner's workspace does not count a deleted listing,
   so My business shows the empty state of `L2-086` and the owner may list
   again (`L2-101` AC7).
-- **Not built yet** — the Owner card gives the number of the owner's other
-  listings, not their names and stages (`L2-079` AC3), and opening a listing
-  writes no audit record of the access to the owner's personal data
-  (`L2-150` AC1).
+- **Other listings** — the Owner card names the owner's other listings and
+  drafts with their stages (`AdminOtherListing`, `L2-079` AC3).
 
 ## Requirements
 

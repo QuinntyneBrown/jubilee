@@ -33,12 +33,13 @@ page -> client : listing(id)
 client -> controller : GET /api/admin/listings/{id}
 controller -> controller : Authenticate the staff session and apply RequiresModerator (L2-098)
 controller -> qh : Send GetAdminListingQuery(Reviewer, ListingId)
-qh -> db : Load the listing (Live, published, not deleted or taken down), owner, count of other listings, submission flags
+qh -> db : Load the listing (Live, published, not deleted or taken down), owner, other listings and drafts, submission flags
 alt no such published listing
   qh --> controller : NotFound listing_not_found
   controller --> client : 404 ProblemDetails
 else listing found
   db --> qh : Listing state
+  qh -> db : AuditLog.Record owner.viewed (member, owner subject, "Listing {id}") and save (L2-150 AC1)
   qh --> controller : AdminListingDto
   controller --> client : 200 AdminListingDto
   client --> page : AdminListing

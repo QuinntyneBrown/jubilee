@@ -93,7 +93,12 @@ The feature runs from the Angular admin shell to the Jubilee database.
   `jubilee staff grant|revoke --role moderator|admin`
   (`accounts/sign-in-as-staff`, ADR 0040). No screen changes roles. The
   `moderator` role keeps the stored flag value (1) of the former `verifier`
-  role, so earlier grants carry over (ADR 0057).
+  role, so earlier grants carry over (ADR 0057). `GrantStaffRoleCommand` and
+  `RevokeStaffRoleCommand` carry the operator (`Environment.UserName` of the
+  CLI) and, when the roles change, add an `AuditRecord`
+  `staff.role-granted` or `staff.role-revoked` with the actor `cli|{user}`,
+  the account's address as the target and the roles before and after; a
+  command that changes nothing writes nothing (`L2-098` AC4, ADR 0059).
 
 ## Requirements
 
