@@ -57,7 +57,7 @@ export interface ReviewForm {
   listing: {
     slug: string;
     name: string;
-    kind: 'services' | 'shop' | 'space';
+    kind: 'services' | 'shop' | 'space' | 'platform';
     categoryName: string;
     categorySlug: string;
     ownerName: string | null;
@@ -71,6 +71,8 @@ export interface ReviewRequest {
   rating: number | null;
   itemId: string | null;
   text: string;
+  /** The member's own statement that they used a platform (L2-258 AC3); sent for a platform only. */
+  usedIt?: boolean;
 }
 
 /** The reasons of the Report this review dialog (L2-236 AC1). */

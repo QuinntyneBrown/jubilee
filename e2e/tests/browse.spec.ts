@@ -34,9 +34,10 @@ test.describe('browse home for a member (L2-021)', () => {
     await jb.open('browse');
     await expect.poll(() => browse.dataPage()).toBe('browse');
     await expect(browse.heading).toHaveText('Do business with Toronto’s Christian community.');
-    await expect(browse.subline).toHaveText('47 businesses — shops, advisors, trades and more.');
+    await expect(browse.subline).toHaveText('50 businesses — shops, advisors, trades and more.');
 
-    // Category chips: "All" plus the eleven categories, "Rooms & rentals" second (L2-197)
+    // Category chips: "All" plus the twelve categories, "Rooms & rentals" second (L2-197),
+    // "Software platforms" last (L2-252 AC1)
     await expect(browse.categoryChips).toHaveText(['All', ...chipCategories.map((c) => c.name)]);
     await expect(browse.categoryChips.first()).toHaveAttribute('aria-current', 'page');
     await expect(browse.categoryChips.nth(5)).toHaveAttribute('href', '/c/home-property');
@@ -52,9 +53,9 @@ test.describe('browse home for a member (L2-021)', () => {
     await expect(browse.allShops).toHaveAttribute('href', '/c/shops');
 
     // "All {n} businesses" grouped by category with each group's count
-    await expect(browse.directoryHeading).toHaveText('All 47 businesses');
-    await expect(browse.groups).toHaveCount(10);
-    const counts = [3, 3, 6, 10, 4, 4, 5, 2, 7, 3];
+    await expect(browse.directoryHeading).toHaveText('All 50 businesses');
+    await expect(browse.groups).toHaveCount(11);
+    const counts = [3, 3, 6, 10, 4, 4, 5, 2, 7, 3, 3];
     for (const [index, category] of categories.entries()) {
       const group = browse.group(category.name);
       await expect(group.count).toContainText(`${counts[index]}`);
@@ -148,7 +149,7 @@ test.describe('browse home for a member (L2-021)', () => {
     // "Try again" reloads the directory region
     await page.unroute('**/api/directory/home');
     await browse.tryAgain.click();
-    await expect(browse.directoryHeading).toHaveText('All 47 businesses');
+    await expect(browse.directoryHeading).toHaveText('All 50 businesses');
     await expect(browse.errorState).toHaveCount(0);
   });
 
@@ -158,7 +159,7 @@ test.describe('browse home for a member (L2-021)', () => {
     await expect(browse.subline).toHaveText('Loading the directory…');
     await expect(browse.loadingStatus).toHaveText('Loading the directory…');
     await expect(browse.skeletons.first()).toBeVisible();
-    await expect(browse.categoryChips).toHaveCount(12);
+    await expect(browse.categoryChips).toHaveCount(13);
   });
 });
 
@@ -171,7 +172,7 @@ test.describe('browse home for a visitor (L2-022)', () => {
     await browse.setWidth(1280);
     await jb.open('browse.signed-out');
 
-    await expect(browse.directoryHeading).toHaveText('All 47 businesses');
+    await expect(browse.directoryHeading).toHaveText('All 50 businesses');
     await expect(browse.featuredCards).toHaveCount(5);
     await expect(browse.joinPanel).toContainText('New here?');
     await expect(browse.joinPanel).toContainText(
@@ -244,8 +245,8 @@ test.describe('card content rules (L2-027)', () => {
   test('AC4: a four-digit count has a thousands separator', async ({ page, jb }) => {
     const browse = new BrowsePage(page);
     await jb.open('browse.edge');
-    await expect(browse.subline).toHaveText('1,204 businesses — shops, advisors, trades and more.');
-    await expect(browse.directoryHeading).toHaveText('All 1,204 businesses');
+    await expect(browse.subline).toHaveText('1,207 businesses — shops, advisors, trades and more.');
+    await expect(browse.directoryHeading).toHaveText('All 1,207 businesses');
   });
 
   test('AC5: a product card shows the product, the shop and the price, with "ea" for per-unit', async ({

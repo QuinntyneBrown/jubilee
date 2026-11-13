@@ -22,7 +22,12 @@ export type StubName =
   | 'space-loading'
   | 'space-error'
   | 'space-requested'
+  | 'platform-owner'
+  | 'platform-preview'
+  | 'platform-error'
+  | 'platform-no-website'
   | 'rooms-empty'
+  | 'platforms-empty'
   | 'business-loading'
   | 'business-retrying'
   | 'business-empty'
@@ -41,6 +46,7 @@ export type StubName =
   | 'write-review'
   | 'write-review-single-item'
   | 'write-review-space'
+  | 'write-review-platform'
   | 'write-review-not-eligible'
   | 'shop-loading'
   | 'shop-error'
@@ -132,6 +138,7 @@ export type StubName =
   | 'listing-draft'
   | 'editor-error'
   | 'editor-space'
+  | 'editor-platform'
   | 'notifications'
   | 'notifications-read'
   | 'notifications-empty'
@@ -179,6 +186,7 @@ export type StubName =
   | 'admin-listing-taken-down'
   | 'admin-listing-error'
   | 'admin-listing-space'
+  | 'admin-listing-platform'
   | 'moderation-reports'
   | 'moderation-reports-empty'
   | 'moderation-reports-error'
@@ -519,6 +527,13 @@ export const routes = {
     who: 'member',
     stub: 'listing-draft',
   },
+  // The platform form (L2-249); its invalid, busy and success states are reached by using it.
+  'list-business.platform': {
+    app: '/list?kind=platform',
+    mock: 'pages/list-business/platform.html',
+    who: 'member',
+    stub: 'listing-draft',
+  },
   // The editors opened from "Add a product" and "Add a service" on /list (L2-073).
   'product-editor.onboarding': {
     app: '/list',
@@ -627,6 +642,30 @@ export const routes = {
     who: 'member',
     stub: 'category-error',
   },
+  // Software platforms (L2-252): business cards, a sort and no filters.
+  'category.software-platforms': {
+    app: '/c/software-platforms',
+    mock: 'pages/category/software-platforms.html',
+    who: 'member',
+  },
+  'category.software-platforms-empty': {
+    app: '/c/software-platforms',
+    mock: 'pages/category/software-platforms-empty.html',
+    who: 'member',
+    stub: 'platforms-empty',
+  },
+  'category.software-platforms-loading': {
+    app: '/c/software-platforms',
+    mock: 'pages/category/software-platforms-loading.html',
+    who: 'member',
+    stub: 'category-loading',
+  },
+  'category.software-platforms-error': {
+    app: '/c/software-platforms',
+    mock: 'pages/category/software-platforms-error.html',
+    who: 'member',
+    stub: 'category-error',
+  },
   'category.loading': {
     app: '/c/home-property',
     mock: 'pages/category/loading.html',
@@ -728,6 +767,13 @@ export const routes = {
     who: 'member',
     stub: 'write-review-space',
   },
+  // The statement of use; its invalid, busy, failed and posted states are reached by using it (L2-259).
+  'write-review.platform': {
+    app: '/b/lanternread/review',
+    mock: 'pages/write-review/platform.html',
+    who: 'member',
+    stub: 'write-review-platform',
+  },
   'write-review.not-eligible': {
     app: '/b/luzandre/review',
     mock: 'pages/write-review/not-eligible.html',
@@ -781,6 +827,40 @@ export const routes = {
     mock: 'pages/business/replies-fast.html',
     who: 'member',
     stub: 'business-replies-fast',
+  },
+  // The page of a software platform (L2-254): Lanternread, from the seeded platforms.
+  platform: { app: '/b/lanternread', mock: 'pages/platform/default.html', who: 'member' },
+  'platform.signed-out': {
+    app: '/b/lanternread',
+    mock: 'pages/platform/signed-out.html',
+    who: 'visitor',
+  },
+  'platform.owner': {
+    app: '/b/lanternread',
+    mock: 'pages/platform/owner.html',
+    who: 'member',
+    stub: 'platform-owner',
+  },
+  'platform.preview': {
+    app: '/b/lanternread',
+    mock: 'pages/platform/preview.html',
+    who: 'member',
+    stub: 'platform-preview',
+  },
+  // Opened from Software platforms, so the page knows it failed to load a platform.
+  'platform.error': {
+    app: '/b/lanternread',
+    mock: 'pages/platform/error.html',
+    who: 'member',
+    stub: 'platform-error',
+    via: '/c/software-platforms',
+  },
+  // A stored address the rules refuse: no link out (L2-255 AC5). The mocks draw no such state.
+  'platform.no-website': {
+    app: '/b/lanternread',
+    mock: 'pages/platform/default.html',
+    who: 'member',
+    stub: 'platform-no-website',
   },
   'space.short-stay': {
     app: '/b/roncesvalles-guest-suite',
@@ -915,6 +995,12 @@ export const routes = {
     mock: 'pages/search/spaces.html',
     who: 'visitor',
     stub: 'search-spaces',
+  },
+  // A software platform among the businesses (L2-253 AC2).
+  'search.platforms': {
+    app: '/search?q=reading',
+    mock: 'pages/search/platforms.html',
+    who: 'member',
   },
   'search.no-results': {
     app: '/search?q=plumbre',
@@ -1090,6 +1176,12 @@ export const routes = {
     mock: 'pages/edit-listing/space.html',
     who: 'member',
     stub: 'editor-space',
+  },
+  'edit-listing.platform': {
+    app: '/my-business/listing',
+    mock: 'pages/edit-listing/platform.html',
+    who: 'member',
+    stub: 'editor-platform',
   },
   'edit-listing.error': {
     app: '/my-business/listing',
@@ -1574,6 +1666,13 @@ export const routes = {
     who: 'visitor',
     site: 'admin',
     stub: 'admin-listing-space',
+  },
+  'admin-listing.platform': {
+    app: '/listings/3f1d2c4e-7a55-4c0e-9d3a-0a1b2c3d4e5f',
+    mock: 'pages/admin-listing/platform.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'admin-listing-platform',
   },
   'admin-listing.error': {
     app: '/listings/3f1d2c4e-7a55-4c0e-9d3a-0a1b2c3d4e5f',

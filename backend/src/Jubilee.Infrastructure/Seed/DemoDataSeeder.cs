@@ -56,6 +56,29 @@ public sealed class DemoDataSeeder(AppDbContext db, TimeProvider clock)
             }
         }
 
+        // Platforms are older than every business, in catalogue order, so the lists of businesses keep their order.
+        for (var i = 0; i < Platforms.Length; i++)
+        {
+            var demo = Platforms[i];
+            if (!listings.ContainsKey(demo.Slug))
+            {
+                var publishedAt = now.AddDays(-(PublicListings.Length + i + 1));
+                var listing = Listing.Create(demo.Slug, demo.Name, demo.Tagline, Category.PlatformsSlug, publishedAt.AddDays(-14));
+                listing.SetHighlight(demo.Highlight);
+                listing.Describe(new ListingProfile(demo.Founder, [], null, null, null, null, null, null));
+                listing.DescribePlatform(PlatformDetails.Create(demo.Does, demo.For, demo.Pricing), demo.Website);
+                listing.Publish(publishedAt);
+                listing.RefreshRecommendedScore(now);
+                if (Owners.TryGetValue(demo.Slug, out var owner))
+                {
+                    listing.AssignOwner(owner);
+                }
+
+                listings[demo.Slug] = listing;
+                db.Listings.Add(listing);
+            }
+        }
+
         foreach (var hidden in HiddenListings)
         {
             if (!listings.ContainsKey(hidden.Listing.Slug))
@@ -168,7 +191,8 @@ public sealed class DemoDataSeeder(AppDbContext db, TimeProvider clock)
             var service = await db.Services.FirstOrDefaultAsync(s => s.ListingId == listing.Id && s.Name == demo.Item, cancellationToken);
             var product = await db.Products.FirstOrDefaultAsync(p => p.ListingId == listing.Id && p.Name == demo.Item, cancellationToken);
             var subject = $"demo|reviewer-{demo.Author.ToLowerInvariant().Replace(' ', '-')}";
-            var review = Review.Write(listing.Id, new ReviewItem(service?.Id, product?.Id, demo.Item), subject, demo.Author, demo.Rating, demo.Text, key, demo.At);
+            var review = Review.Write(listing.Id, new ReviewItem(service?.Id, product?.Id, demo.Item), subject, demo.Author, demo.Rating, demo.Text, key, demo.At,
+                statedUse: listing.Kind == ListingKind.Platform);
             if (demo.Reply is { } reply)
             {
                 review.ReplyWith(ReviewReplyName(listing), reply.Text, reply.At);

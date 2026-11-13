@@ -1,23 +1,23 @@
 # Estimates
 
-- Overall effort: 425 days
-- Complete: 77%
+- Overall effort: 441 days
+- Complete: 78%
 
 | Subsystem | Effort | Complete |
 |---|---|---|
-| [directory](directory.md) | 22 days | 100% |
+| [directory](directory.md) | 25 days | 100% |
 | [trust-content](trust-content.md) | 10 days | 91% |
 | [responsive-design](responsive-design.md) | 6 days | 40% |
 | [design-system](design-system.md) | 6 days | 30% |
 | [interaction-states](interaction-states.md) | 17 days | 5% |
 | [system-pages](system-pages.md) | 10 days | 100% |
-| [listings](listings.md) | 28 days | 99% |
+| [listings](listings.md) | 32 days | 100% |
 | [accounts](accounts.md) | 50 days | 99% |
 | [security](security.md) | 36 days | 37% |
 | [messaging](messaging.md) | 17 days | 98% |
 | [requests](requests.md) | 39 days | 100% |
 | [notifications](notifications.md) | 16 days | 100% |
-| [onboarding](onboarding.md) | 17 days | 100% |
+| [onboarding](onboarding.md) | 21 days | 100% |
 | [admin](admin.md) | 7 days | 95% |
 | [verification](verification.md) | 15 days | 100% |
 | [owner-workspace](owner-workspace.md) | 20 days | 100% |
@@ -28,7 +28,7 @@
 | [offline](offline.md) | 12 days | 99% |
 | [marketing](marketing.md) | 13 days | 98% |
 | [feedback](feedback.md) | 9 days | 99% |
-| [reviews](reviews.md) | 14 days | 95% |
+| [reviews](reviews.md) | 19 days | 96% |
 
 Jubilee ships without verification (ADR 0057), and that work is done: owners publish and are live
 at once (publish-listing), the Jubilee team browses published listings and takes one down
@@ -37,6 +37,9 @@ mark and the verification copy are gone from every screen, e-mail and the market
 verification subsystem's designs live in `detailed-designs/moderation/`. The access audit on the team's
 listing page (L2-150 AC1) and the audit record of a role change (L2-098 AC4) are done too
 (ADR 0059), so browse-listings and take-down-listing are at 100%.
+
+Software platforms (journey 33, ADR 0072) are done: browse-platforms, view-platform, describe-platform
+and review-a-platform, 16 days, each with its tests.
 
 ## Roadmap
 

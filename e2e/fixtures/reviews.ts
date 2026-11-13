@@ -133,6 +133,65 @@ export function joannasReview(): FakeReview {
   };
 }
 
+/** Lanternread's four reviews, newest first: each is about the platform itself (L2-260 AC1). */
+export function lanternreadReviews(): FakeReview[] {
+  return [
+    review(
+      'rv-lr-grace',
+      'Grace A.',
+      5,
+      'Their platform',
+      at(11, 2),
+      'We have used Lanternread since September. My two boys log their books before bed and the weekly goal has them asking for one more chapter. It has stayed free for us, as the site says.',
+    ),
+    review(
+      'rv-lr-samuel',
+      'Samuel P.',
+      5,
+      'Their platform',
+      at(10, 28),
+      'Simple and calm. I set it up in ten minutes and my daughter’s grandmother cheers her on from Lagos. Nothing to pay as a family.',
+    ),
+    review(
+      'rv-lr-ruth',
+      'Ruth M.',
+      4,
+      'Their platform',
+      at(10, 19),
+      'Good for our family reading night. I would like a way to log audiobooks, but the streak keeps the children keen and the price was what the site said.',
+      {
+        from: 'Abigail Thornton',
+        text: 'Thank you, Ruth. Audiobooks are on our list for the new year.',
+        at: at(10, 20),
+        editedAt: null,
+      },
+    ),
+    review(
+      'rv-lr-david',
+      'David C.',
+      3,
+      'Their platform',
+      at(10, 6),
+      'It does what it says, though the school side confused our teacher at first. Support answered in a day. We will keep using it for the summer.',
+    ),
+  ];
+}
+
+/** Joanna's own review of Lanternread (pages/platform/reviews-mine). */
+export function joannasPlatformReview(): FakeReview {
+  return {
+    ...review(
+      'rv-lr-joanna',
+      'Joanna A.',
+      4,
+      'Their platform',
+      at(11, 9),
+      'We started in October and my son has read every night since. The weekly goal is the part that works for us. Free for our family, as it says.',
+    ),
+    mine: true,
+  };
+}
+
 /** Luzandre.com's five reviews, newest first (pages/business/reviews-owner). */
 export function luzandreReviews(): FakeReview[] {
   const from = 'Luzandre.com';
@@ -379,12 +438,31 @@ export function suiteForm(): ReturnType<typeof legacyForm> {
   };
 }
 
+/** Lanternread's form: a platform shows no choice, and asks the statement of use (L2-259 AC7). */
+export function lanternreadForm(): ReturnType<typeof legacyForm> {
+  return {
+    listing: {
+      slug: 'lanternread',
+      name: 'Lanternread',
+      kind: 'platform',
+      categoryName: 'Software platforms',
+      categorySlug: 'software-platforms',
+      ownerName: 'Abigail Thornton',
+    },
+    items: [],
+    itemLegend: null,
+    authorName: 'Joanna A.',
+  };
+}
+
 export interface FormOptions {
   /** The form; `refusal` answers `GET …/reviews/new` with a refusal instead. */
   form?: ReturnType<typeof legacyForm>;
   refusal?: { status: number; code: string };
   /** How the post answers: `offline` 503, `limited` 429, `invalid` 422, `hang` never. */
   postMode?: 'ok' | 'offline' | 'limited' | 'invalid' | 'hang';
+  /** The field codes of an `invalid` answer; the unknown item when not given. */
+  errors?: Record<string, string>;
 }
 
 export interface FakeReviewForm {
@@ -418,7 +496,7 @@ export async function stubReviewForm(
       case 'limited':
         return problem(route, 429, { code: 'rate_limited' });
       case 'invalid':
-        return problem(route, 422, { errors: { itemId: 'ITEM_UNKNOWN' } });
+        return problem(route, 422, { errors: options.errors ?? { itemId: 'ITEM_UNKNOWN' } });
       default: {
         const item = form.items.find((i) => i.id === body['itemId']);
         const created: FakeReview = {
@@ -427,7 +505,13 @@ export async function stubReviewForm(
           initials: 'JA',
           rating: Number(body['rating']),
           itemId: (body['itemId'] as string | null) ?? null,
-          itemName: item?.name ?? (form.listing.kind === 'space' ? 'My stay' : 'Their service'),
+          itemName:
+            item?.name ??
+            (form.listing.kind === 'space'
+              ? 'My stay'
+              : form.listing.kind === 'platform'
+                ? 'Their platform'
+                : 'Their service'),
           text: String(body['text']).trim(),
           createdAt: '2026-11-12T15:00:00+00:00',
           editedAt: null,

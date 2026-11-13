@@ -1,0 +1,108 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure: Review a platform
+
+class Review {
+  +Guid Id
+  +Guid ListingId
+  +string ItemName
+  +string AuthorSubject
+  +string AuthorName
+  +int Rating
+  +string Text
+  +DateTimeOffset CreatedAt
+  +DateTimeOffset? EditedAt
+  +DateTimeOffset? StatedUseAt
+  +DateTimeOffset? TakenDownAt
+  +{static} Write(...): Review
+}
+
+class Listing {
+  +Guid Id
+  +string Slug
+  +string Name
+  +ListingKind Kind
+  +string? OwnerId
+}
+
+enum ListingKind {
+  Services
+  Shop
+  Space
+  Platform
+}
+
+class ReviewRules <<static>> {
+  +{static} NotEligibleCode: string = "NOT_ELIGIBLE"
+  +{static} OwnListingCode: string = "OWN_LISTING"
+  +{static} AlreadyReviewedCode: string = "ALREADY_REVIEWED"
+  +{static} WritingAsync(db, listing, viewer): string
+  +{static} EnsureMayWriteAsync(db, listing, subject)
+  +{static} HasConfirmedRequestAsync(db, listingId, subject): bool
+  +{static} Validate(rating, text, itemUnknown, ...): string
+}
+
+class ReviewWriting <<static>> {
+  +SignIn: string = "sign-in"
+  +Eligible: string = "eligible"
+  +NotEligible: string = "not-eligible"
+  +Written: string = "written"
+  +Owner: string = "owner"
+}
+
+class ReviewItems <<record>> {
+  +IReadOnlyList<ReviewItemOptionDto> Options
+  +string? Legend
+  +ReviewItem? Only
+  +{static} OfAsync(db, listing): ReviewItems
+}
+
+class WriteReviewCommand <<record>> {
+  +string Slug
+  +string Subject
+  +string MemberName
+  +int? Rating
+  +Guid? ItemId
+  +string? Text
+  +bool? UsedIt
+  +string? IdempotencyKey
+}
+
+class ReviewBody <<record>> {
+  +int? Rating
+  +Guid? ItemId
+  +string? Text
+  +bool? UsedIt
+}
+
+class WriteReviewCommandHandler {
+  +{static} PerDay: int = 5
+  +Handle(command: WriteReviewCommand): ReviewDto
+}
+
+class ReviewDto <<record>> {
+  no StatedUseAt
+}
+
+Review --> Listing : ListingId
+Listing --> ListingKind
+ReviewRules ..> ListingKind : Platform is eligible without a request
+ReviewRules ..> ReviewWriting : answers
+ReviewItems ..> ListingKind : Platform has the only item "Their platform"
+ReviewBody ..> WriteReviewCommand : becomes
+WriteReviewCommandHandler ..> ReviewRules : EnsureMayWriteAsync, Validate
+WriteReviewCommandHandler ..> ReviewItems : OfAsync
+WriteReviewCommandHandler ..> Review : Write with StatedUseAt for a platform, null otherwise
+WriteReviewCommandHandler ..> ReviewDto : answers
+@enduml

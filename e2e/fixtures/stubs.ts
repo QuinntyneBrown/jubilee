@@ -4,7 +4,7 @@ import { browseHomeFromMock, categoryPageFromMock, listingFromMock } from './moc
 import { fulfil, recordedAnswer } from './mock-api';
 import { legacyMessages, ownerRows, photoMessages, requestCards, stubMessaging } from './messaging';
 import { stubAccountData } from './account-data';
-import { SPACE_LISTING, stubAdmin } from './admin';
+import { PLATFORM_LISTING, SPACE_LISTING, stubAdmin } from './admin';
 import { daniel, miriam, stubStaff } from './staff';
 import { stubModeration } from './moderation';
 import { defaultVersions, stubPolicies } from './policies';
@@ -17,7 +17,7 @@ import { stubPasswordReset } from './password-reset';
 import { BACK_IN_STOCK, NOTIFICATIONS, stubNotifications } from './notifications';
 import { stubUnsubscribe } from './unsubscribe';
 import { LISTING_PHOTOS, stubListingMedia } from './photos';
-import { OTHER_BUSINESSES, SUITE, stubMyBusiness } from './my-business';
+import { LANTERNREAD, OTHER_BUSINESSES, SUITE, stubMyBusiness } from './my-business';
 import { DRAIN, stubMemberRequests } from './member-requests';
 import { stubListingDrafts } from './listing-drafts';
 import { stubOrder } from './order';
@@ -30,6 +30,7 @@ import {
   stubReviewForm,
   stubReviews,
   suiteForm,
+  lanternreadForm,
 } from './reviews';
 import type { StubName } from './routes';
 import { STATEMENT_LAPSED, naomiOwing, stubStatementAgreement } from './statement-of-faith';
@@ -40,6 +41,7 @@ const categoryListings = '**/api/categories/*/listings?*';
 const legacyFinancial = '**/api/listings/legacy-financial';
 const luzandre = '**/api/listings/luzandre';
 const roncesvalles = '**/api/listings/roncesvalles-guest-suite';
+const lanternread = '**/api/listings/lanternread';
 const tee = '**/api/listings/luzandre/products/faith-heavyweight-tee-charcoal';
 
 /** The ProblemDetails the API sends when a directory read cannot be served (L2-118). */
@@ -327,6 +329,27 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
           },
         }),
       );
+    case 'platforms-empty':
+      // No platform is live yet (L2-252 AC5).
+      return page.route(categoryListings, (route) =>
+        route.fulfill({
+          json: {
+            category: { slug: 'software-platforms', name: 'Software platforms' },
+            totalCount: 0,
+            matchCount: 0,
+            fact: null,
+            filters: { offers: [], areas: [] },
+            sort: 'recommended',
+            page: 1,
+            pageSize: 16,
+            pageCount: 1,
+            businesses: [],
+            spaces: [],
+            suggestions: [],
+            term: null,
+          },
+        }),
+      );
     case 'category-loading':
       return page.route(categoryListings, pending);
     case 'category-empty':
@@ -363,6 +386,27 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
       return patchListing(page, roncesvalles, (listing) => ({
         ...listing,
         openRequestId: 'r-space',
+      }));
+    case 'platform-owner':
+      // The demo member is not Lanternread's founder; the server decides the relation.
+      return patchListing(page, lanternread, (listing) => ({
+        ...listing,
+        viewerRelation: 'owner',
+      }));
+    case 'platform-preview':
+      // The founder's preview of a paused platform (L2-254 AC7).
+      return patchListing(page, lanternread, (listing) => ({
+        ...listing,
+        viewerRelation: 'owner',
+        status: 'paused',
+      }));
+    case 'platform-error':
+      return page.route(lanternread, (route) => route.fulfill(unavailable('JB-BIZ-503')));
+    case 'platform-no-website':
+      // The stored address no longer passes the rule, so the answer carries none (L2-255 AC5).
+      return patchListing(page, lanternread, (listing) => ({
+        ...listing,
+        platform: { ...(listing['platform'] as object), website: null, host: null },
       }));
     case 'business-loading':
       return page.route(legacyFinancial, pending);
@@ -421,6 +465,8 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
       return stubReviewForm(page, 'deeks-insurance', { form: deeksForm() });
     case 'write-review-space':
       return stubReviewForm(page, 'roncesvalles-guest-suite', { form: suiteForm() });
+    case 'write-review-platform':
+      return stubReviewForm(page, 'lanternread', { form: lanternreadForm() });
     case 'write-review-not-eligible':
       return stubReviewForm(page, 'luzandre', { refusal: { status: 403, code: 'NOT_ELIGIBLE' } });
     case 'business-replies-fast':
@@ -587,6 +633,8 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
       });
     case 'editor-space':
       return ownerWorkspace(page, { listing: SUITE, slug: 'guest-suite-near-roncesvalles' });
+    case 'editor-platform':
+      return ownerWorkspace(page, { listing: LANTERNREAD, slug: 'lanternread' });
     case 'editor-error':
       return ownerWorkspace(page, { editor: 'fails' });
     case 'profile':
@@ -721,6 +769,8 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
       });
     case 'admin-listing-space':
       return stubAdmin(page, { fields: SPACE_LISTING });
+    case 'admin-listing-platform':
+      return stubAdmin(page, { fields: PLATFORM_LISTING });
     case 'admin-listing-error':
       return stubAdmin(page, { listing: 'fails' });
     case 'moderation-reports':

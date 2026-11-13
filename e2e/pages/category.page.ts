@@ -36,6 +36,9 @@ export class CategoryPage extends ShellPage implements Screen {
   readonly loadingSpaceCards: Locator;
   readonly spare: Locator;
   readonly listASpace: Locator;
+  /** Software platforms (L2-252 AC4): the closing call to list a platform. */
+  readonly built: Locator;
+  readonly listAPlatform: Locator;
 
   constructor(page: Page) {
     super(page);
@@ -67,6 +70,8 @@ export class CategoryPage extends ShellPage implements Screen {
     this.loadingSpaceCards = this.main.locator('ul.card-grid[aria-hidden="true"] > li');
     this.spare = this.main.getByRole('region', { name: 'Have a spare room, suite or hall?' });
     this.listASpace = this.spare.getByRole('link', { name: 'List a space' });
+    this.built = this.main.getByRole('region', { name: 'Built something people use online?' });
+    this.listAPlatform = this.built.getByRole('link', { name: 'List a platform' });
   }
 
   chip(name: string): Locator {
@@ -75,6 +80,13 @@ export class CategoryPage extends ShellPage implements Screen {
 
   card(index: number): BusinessCard {
     return new BusinessCard(this.cards.nth(index));
+  }
+
+  /** The card of the business or platform with this name. */
+  cardNamed(name: string): BusinessCard {
+    return new BusinessCard(
+      this.cards.filter({ has: this.page.locator('.biz-card__name', { hasText: name }) }),
+    );
   }
 
   spaceCard(index: number): SpaceCard {

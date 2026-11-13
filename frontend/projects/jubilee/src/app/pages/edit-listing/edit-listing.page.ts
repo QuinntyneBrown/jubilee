@@ -1,3 +1,4 @@
+import { NgTemplateOutlet } from '@angular/common';
 import {
   CdkDrag,
   CdkDragDrop,
@@ -61,6 +62,17 @@ import {
   TERM_CHOICES,
   spaceMessage,
 } from '../../services/space-form';
+import {
+  DOES_MAX,
+  FOR_MAX,
+  PLATFORM_FIELDS,
+  PRICING_MAX,
+  PlatformField,
+  WEBSITE_MAX,
+  checkPlatform,
+  platformMessage,
+  platformSummary,
+} from '../../services/platform-form';
 import { FormDraftDirective } from '../../drafts/form-draft.directive';
 
 export const MAX_NAME = 80;
@@ -70,7 +82,17 @@ export const MAX_HIGHLIGHT = 30;
 export const MAX_ALT = 125;
 
 type DraftField =
-  'name' | 'tagline' | 'about' | 'category' | 'where' | 'hours' | 'website' | 'highlight';
+  | 'name'
+  | 'tagline'
+  | 'about'
+  | 'category'
+  | 'where'
+  | 'hours'
+  | 'website'
+  | 'highlight'
+  | 'does'
+  | 'for'
+  | 'pricing';
 
 type FieldName = DraftField | SpaceField;
 
@@ -80,7 +102,8 @@ type Saving = 'idle' | 'saving';
 
 /**
  * The listing editor at /my-business/listing (L2-087, L2-088): the words, the photos and the live
- * preview. A space edits its own fields instead of the category, hours and website (L2-209).
+ * preview. A space edits its own fields instead of the category, hours and website (L2-209), and
+ * a software platform its web address and its founder's words (L2-256).
  */
 @Component({
   selector: 'jb-edit-listing-page',
@@ -92,6 +115,7 @@ type Saving = 'idle' | 'saving';
     BusinessCard,
     EmptyState,
     FormsModule,
+    NgTemplateOutlet,
     Icon,
     RouterLink,
     WorkspaceHeader,
@@ -129,6 +153,10 @@ export class EditListingPage implements OnInit {
   protected readonly maxAbout = MAX_ABOUT;
   protected readonly maxHighlight = MAX_HIGHLIGHT;
   protected readonly maxAlt = MAX_ALT;
+  protected readonly maxWebsite = WEBSITE_MAX;
+  protected readonly maxDoes = DOES_MAX;
+  protected readonly maxFor = FOR_MAX;
+  protected readonly maxPricing = PRICING_MAX;
 
   protected readonly state = signal<LoadState<ListingEditor>>({ status: 'loading' });
   protected readonly draft = signal<Draft>(this.blank());
@@ -180,6 +208,7 @@ export class EditListingPage implements OnInit {
 
   protected readonly busy = computed(() => this.saving() === 'saving');
   protected readonly isSpace = computed(() => !!this.editor()?.space);
+  protected readonly isPlatform = computed(() => !!this.editor()?.platform);
 
   protected readonly dirty = computed(() => {
     const editor = this.editor();
@@ -193,7 +222,7 @@ export class EditListingPage implements OnInit {
   });
 
   protected readonly preview = computed(() => ({
-    name: this.draft().name || 'Your business',
+    name: this.draft().name || (this.isPlatform() ? 'Your platform' : 'Your business'),
     tagline: this.draft().tagline,
     highlight: this.draft().highlight || null,
     categorySlug: this.draft().category || 'shops',
@@ -239,6 +268,9 @@ export class EditListingPage implements OnInit {
       hours: '',
       website: '',
       highlight: '',
+      does: '',
+      for: '',
+      pricing: '',
     };
   }
 
@@ -250,14 +282,26 @@ export class EditListingPage implements OnInit {
       category: editor.categorySlug,
       where: editor.where ?? '',
       hours: editor.hours ?? '',
-      website: editor.website ?? '',
+      // A platform's web address is its own field: the link out of its page (L2-256 AC1).
+      website: editor.platform?.website ?? editor.website ?? '',
       highlight: editor.highlight ?? '',
+      does: editor.platform?.does ?? '',
+      for: editor.platform?.for ?? '',
+      pricing: editor.platform?.pricing ?? '',
     };
   }
 
   protected set(field: DraftField, value: string): void {
     this.draft.update((draft) => ({ ...draft, [field]: value }));
     this.saved.set(false);
+  }
+
+  /** A change of a platform field: its error goes as the founder types (L2-256). */
+  protected setPlatform(field: PlatformField, value: string): void {
+    this.set(field, value);
+    if (this.errors()[field]) {
+      this.errors.update((errors) => ({ ...errors, [field]: undefined }));
+    }
   }
 
   /** Called on every change of a space field. */
@@ -294,26 +338,41 @@ export class EditListingPage implements OnInit {
     const name = draft.name.trim();
     const tagline = draft.tagline.trim();
     const space = this.isSpace();
+    const platform = this.isPlatform();
     if (!name) {
       problems.push({
         field: 'name',
         message: space
           ? 'Enter a title that says what it is and where.'
-          : 'Enter your business name.',
-        summary: space ? 'Enter a listing title' : 'Enter your business name',
+          : platform
+            ? 'Enter the name people know your platform by.'
+            : 'Enter your business name.',
+        summary: space
+          ? 'Enter a listing title'
+          : platform
+            ? 'Enter your platform’s name'
+            : 'Enter your business name',
       });
     } else if (name.length > MAX_NAME) {
       problems.push({
         field: 'name',
         message: `Shorten this to ${MAX_NAME} characters. It has ${name.length}.`,
-        summary: `Shorten your ${space ? 'listing title' : 'business name'} to ${MAX_NAME} characters`,
+        summary: `Shorten your ${space ? 'listing title' : platform ? 'platform’s name' : 'business name'} to ${MAX_NAME} characters`,
       });
     }
     if (!tagline) {
       problems.push({
         field: 'tagline',
-        message: space ? 'Enter one line renters should know.' : 'Say in one line what you do.',
-        summary: space ? 'Enter one line renters should know' : 'Say in one line what you do',
+        message: space
+          ? 'Enter one line renters should know.'
+          : platform
+            ? 'Say in one line what it does.'
+            : 'Say in one line what you do.',
+        summary: space
+          ? 'Enter one line renters should know'
+          : platform
+            ? 'Say in one line what it does'
+            : 'Say in one line what you do',
       });
     } else if (tagline.length > MAX_TAGLINE) {
       problems.push({
@@ -328,6 +387,19 @@ export class EditListingPage implements OnInit {
       for (const field of Object.keys(codes) as SpaceField[]) {
         const message = spaceMessage(field, codes[field] ?? '');
         problems.push({ field, message, summary: message.replace(/\.$/, '') });
+      }
+      return problems;
+    }
+    if (platform) {
+      // A platform is checked as when it was listed (L2-256 AC2), and has no hours.
+      const codes = checkPlatform(draft);
+      for (const field of Object.keys(codes) as PlatformField[]) {
+        const code = codes[field] ?? '';
+        problems.push({
+          field,
+          message: platformMessage(field, code),
+          summary: platformSummary(field, code),
+        });
       }
       return problems;
     }
@@ -371,6 +443,18 @@ export class EditListingPage implements OnInit {
       website: draft.website.trim(),
       highlight: draft.highlight.trim(),
       ...(this.isSpace() ? { space: this.space.body() } : {}),
+      ...(this.isPlatform()
+        ? {
+            // The address travels with the platform's words; the business field stays empty.
+            website: '',
+            platform: {
+              website: draft.website.trim(),
+              does: draft.does.trim(),
+              for: draft.for.trim(),
+              pricing: draft.pricing.trim(),
+            },
+          }
+        : {}),
     };
     this.saving.set('saving');
     this.api.save(changes).subscribe({
@@ -413,10 +497,22 @@ export class EditListingPage implements OnInit {
 
   /** The server's own refusal of a field the browser let through. */
   private showServer(errors: Record<string, string>): void {
-    const map: Record<string, FieldName> = { category: 'category', ...SPACE_FIELDS };
+    const map: Record<string, FieldName> = {
+      category: 'category',
+      ...SPACE_FIELDS,
+      ...PLATFORM_FIELDS,
+    };
     const problems = Object.keys(errors).map((key) => {
       const field = (map[key] ?? key) as FieldName;
       const space = SPACE_FIELDS[key];
+      const platform = PLATFORM_FIELDS[key];
+      if (platform) {
+        return {
+          field,
+          message: platformMessage(platform, errors[key]),
+          summary: platformSummary(platform, errors[key]),
+        };
+      }
       const message = space
         ? spaceMessage(space, errors[key])
         : errors[key] === 'TOO_LONG'
@@ -443,7 +539,9 @@ export class EditListingPage implements OnInit {
             : field === 'where'
               ? 'area'
               : field === 'website'
-                ? 'web'
+                ? this.isPlatform()
+                  ? 'website'
+                  : 'web'
                 : field === 'highlight'
                   ? 'perk'
                   : field;

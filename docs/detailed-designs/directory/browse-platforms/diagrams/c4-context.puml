@@ -1,0 +1,14 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context: Browse platforms
+
+Person(visitor, "Visitor", "Finds platforms without signing in")
+Person(member, "Member", "Finds platforms to use")
+Person(owner, "Owner (founder)", "Has a live platform listed")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace of Christian-owned businesses")
+
+Rel(visitor, jubilee, "Browses Software platforms and searches")
+Rel(member, jubilee, "Browses, sorts and searches platforms")
+Rel(owner, jubilee, "Has a public platform listed")
+@enduml

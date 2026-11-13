@@ -17,7 +17,7 @@ test('a visitor completes the journey with the keyboard only', async ({ page, jb
   // From the welcome page to the browse home
   await welcome.browseBusinesses.focus();
   await welcome.pressEnter();
-  await expect(browse.directoryHeading).toHaveText('All 47 businesses');
+  await expect(browse.directoryHeading).toHaveText('All 50 businesses');
 
   // From a category chip to the category page
   await browse.categoryChip('Home & property').focus();

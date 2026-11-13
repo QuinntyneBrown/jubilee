@@ -44,6 +44,8 @@ public static class ReviewRules
             cancellationToken);
 
     /// <summary>The member's review of the listing that is shown, if they have one (L2-226 AC5).</summary>
+    public const string StatementRequiredCode = "STATEMENT_REQUIRED";
+
     public static Task<Review?> OwnReviewAsync(IAppDbContext db, Guid listingId, string subject, CancellationToken cancellationToken) =>
         db.Reviews.SingleOrDefaultAsync(r => r.ListingId == listingId && r.AuthorSubject == subject && r.TakenDownAt == null, cancellationToken);
 
@@ -64,6 +66,12 @@ public static class ReviewRules
             return ReviewWriting.Written;
         }
 
+        // A platform takes no requests: a member reviews it on their own statement of use (L2-258 AC1).
+        if (listing.Kind == ListingKind.Platform)
+        {
+            return ReviewWriting.Eligible;
+        }
+
         return await HasConfirmedRequestAsync(db, listing.Id, subject, cancellationToken) ? ReviewWriting.Eligible : ReviewWriting.NotEligible;
     }
 
@@ -82,7 +90,7 @@ public static class ReviewRules
     }
 
     /// <summary>The rating and the trimmed text, or HTTP 422 with a code per field (L2-238 AC4).</summary>
-    public static string Validate(int? rating, string? text, bool itemUnknown)
+    public static string Validate(int? rating, string? text, bool itemUnknown, bool statementMissing = false)
     {
         var errors = new Dictionary<string, string>();
         if (!Review.IsRating(rating))
@@ -103,6 +111,12 @@ public static class ReviewRules
         else if (trimmed.Length > Review.MaxTextLength)
         {
             errors["text"] = "TOO_LONG";
+        }
+
+        if (statementMissing)
+        {
+            // A review of a platform rests on the member's own word that they used it (L2-258 AC3).
+            errors["usedIt"] = StatementRequiredCode;
         }
 
         return errors.Count > 0 ? throw new ValidationFailedException(errors) : trimmed;

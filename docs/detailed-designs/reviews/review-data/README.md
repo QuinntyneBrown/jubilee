@@ -69,6 +69,17 @@ The decisions are recorded in [ADR 0066](../../../adr/0066-reviews.md).
   `EntityConfigurations.cs`, added in one migration of
   `Jubilee.Infrastructure/Migrations` with the star-count columns; tests run on
   the InMemory provider (ADR 0009).
+- **Statement of use** (`L2-261 AC4`, ADR 0072): `Review.StatedUseAt`
+  (`DateTimeOffset?`) holds the time a member stated that they had used a
+  software platform; it is null for a review of a business, a shop or a
+  space. Only the time is kept. No answer of the API carries it, `ReviewDto`
+  included, and nothing of it is shown beyond the line of the "Reviews"
+  section of a platform (`review-a-platform`). It is a column of the review's
+  row, so it goes with the review on removal, on account deletion and at the
+  end of the retention of a take-down. The migration `AddSoftwarePlatforms`
+  adds the column. The limits above hold whatever the kind of listing
+  (`L2-261 AC3`): no request bounds who may review a platform, so the 5 new
+  reviews a day are what bound a member.
 
 ### Open questions
 
@@ -82,6 +93,8 @@ Every choice below is recorded in [ADR 0066](../../../adr/0066-reviews.md).
 | Taken-down reviews | Kept hidden 12 months, then deleted; the audit stays. | A record for a dispute, then deletion. |
 | Where the counts live | Stored star counts on `Listing` and `Product`. | Cards without a query each (`L2-156`). |
 | Limits | 5 reviews a day, 30 edits and replies an hour, 10 reports a day. | `L2-137`. |
+| What is kept of a statement of use | Its time only, on the review (ADR 0072). | Enough to say when the word was given (`L2-261 AC4`). |
+| The stated-use time in the data download | `<TO SUPPLY>` | `L2-261 AC4` and `L2-239 AC3` do not say whether `reviews` in the download carries it. |
 
 ## Requirements
 
@@ -98,6 +111,7 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 | `L2-136` | `L1-019` | Every input shall be validated on the server and text shall never be rendered as markup. |
 | `L2-137` | `L1-019` | Writes shall be rate limited with 429 and `Retry-After`. |
 | `L2-148` | `L1-020` | Data shall be deleted on its retention schedule. |
+| `L2-261` | `L1-033` | The review limits shall hold unchanged for platforms; only the time of a statement of use shall be kept with the review, nothing of it shall be shown beyond the line of the "Reviews" section, and it shall go with the review. |
 
 ## Diagrams
 

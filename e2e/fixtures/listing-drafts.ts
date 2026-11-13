@@ -33,8 +33,16 @@ export interface FakeDraftItem {
   inPersonPlace?: string | null;
 }
 
+/** The fields of a platform draft (L2-250). */
+export interface FakePlatformDraft {
+  website: string;
+  does: string;
+  for: string;
+  pricing: string;
+}
+
 export interface FakeDraftBody {
-  kind: 'products' | 'services' | 'space';
+  kind: 'products' | 'services' | 'space' | 'platform';
   name: string;
   tagline: string;
   categorySlug: string | null;
@@ -44,6 +52,7 @@ export interface FakeDraftBody {
   items: FakeDraftItem[];
   idempotencyKey: string | null;
   space?: FakeSpaceDraft | null;
+  platform?: FakePlatformDraft | null;
 }
 
 export interface FakeDraft extends FakeDraftBody {
@@ -68,6 +77,8 @@ export interface FakeListingDrafts {
   address?: string | null;
   /** The field codes of an `invalid` answer. */
   errors: DraftErrors;
+  /** The slug the published listing gets. */
+  publishedSlug: string;
 }
 
 const problem = (status: number, body: object) => ({
@@ -87,6 +98,7 @@ export async function stubListingDrafts(
     saves: [],
     publishes: [],
     errors: { tagline: 'TOO_LONG:94' },
+    publishedSlug: 'luzandre-com',
     ...initial,
   };
   const store = (id: string, body: FakeDraftBody): FakeDraft => ({
@@ -135,7 +147,7 @@ export async function stubListingDrafts(
           status: 201,
           json: {
             listingId: 'l-1',
-            slug: 'luzandre-com',
+            slug: fake.publishedSlug,
             address: fake.address ?? null,
             name: body.name,
             kind: body.kind,

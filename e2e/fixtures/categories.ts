@@ -1,4 +1,7 @@
-/** The ten business categories, in their fixed order: the groups of the directory (L2-023 AC5). */
+/**
+ * The eleven categories of businesses, in their fixed order: the groups of the directory (L2-023 AC5).
+ * "Software platforms" is the last (L2-248 AC2); its platforms count among the businesses (L2-252 AC1).
+ */
 export const categories = [
   { slug: 'shops', name: 'Shops' },
   { slug: 'financial-insurance', name: 'Financial & insurance' },
@@ -10,9 +13,10 @@ export const categories = [
   { slug: 'learning', name: 'Learning' },
   { slug: 'media', name: 'Media' },
   { slug: 'community', name: 'Community' },
+  { slug: 'software-platforms', name: 'Software platforms' },
 ] as const;
 
-/** The eleven categories of the chips, "Rooms & rentals" second (L2-020, L2-197). */
+/** The twelve categories of the chips, "Rooms & rentals" second (L2-020, L2-197). */
 export const chipCategories = [
   categories[0],
   { slug: 'rooms-rentals', name: 'Rooms & rentals' },

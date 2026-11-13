@@ -92,6 +92,29 @@
             </p>
           </section>
         }
+        @if (l.platform; as platform) {
+          <section jb-card heading="The platform" headingId="plt">
+            <dl jb-description-list>
+              @if (platform.website) {
+                <div jb-description-item term="Web address">
+                  <a [href]="platform.website" target="_blank" rel="noopener noreferrer nofollow"
+                    >{{ platform.address
+                    }}<span class="visually-hidden"> (opens in a new tab)</span></a
+                  >
+                </div>
+              } @else {
+                <div jb-description-item term="Web address" [value]="platform.address"></div>
+              }
+              <div jb-description-item term="What it does" [value]="platform.does"></div>
+              <div jb-description-item term="Who it is for" [value]="platform.for"></div>
+              <div jb-description-item term="Pricing" [value]="platform.pricing"></div>
+            </dl>
+            <p class="text-caption">
+              Jubilee never opens or checks this address. Follow it yourself to see what the listing
+              describes.
+            </p>
+          </section>
+        }
       </div>
       <aside class="split__sticky" aria-labelledby="pv">
         @for (flag of flags(); track flag) {
@@ -111,7 +134,8 @@
             [tagline]="l.tagline"
             [tint]="t.tint"
             [icon]="t.icon"
-            [tag]="l.kind === 'products' ? 'Shop' : 'Business'"
+            [tag]="l.kind === 'platform' ? t.label : l.kind === 'products' ? 'Shop' : 'Business'"
+            [highlight]="l.highlight ?? ''"
             published
           ></div>
         }

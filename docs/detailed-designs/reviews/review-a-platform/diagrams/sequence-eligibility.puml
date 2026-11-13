@@ -1,0 +1,69 @@
+@startuml
+title UML sequence behaviour: Decide who may write a review, by kind
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Visitor or member" as actor
+box "Frontend: Jubilee Web" #E0F2FE
+  participant "BusinessPage with jb-reviews" as page
+  participant "ReviewsApi" as client
+end box
+box "Backend: Jubilee API" #D1FADF
+  participant "ReviewsController" as controller
+end box
+box "Backend: Jubilee Application and Domain" #ECFDF3
+  participant "GetListingReviewsQuery" as handler
+  participant "ReviewRules" as rules
+end box
+box "Backend: Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+actor -> page : Open /b/lanternread
+page -> client : list(lanternread)
+client -> controller : GET /api/listings/lanternread/reviews
+controller -> handler : Send with the viewer of the session
+handler -> rules : ListingAsync(slug, viewer)
+rules -> db : Listing by slug
+alt Not public and the viewer is neither its owner nor the team
+  rules --> controller : NotFoundException, 404 (L2-258 AC7)
+else May be seen
+  handler -> rules : WritingAsync(listing, viewer)
+  alt No session
+    rules --> handler : sign-in
+  else The viewer owns the listing
+    rules --> handler : owner (L2-258 AC4)
+  else The viewer has a review of it shown
+    rules -> db : Own review, not taken down
+    rules --> handler : written (L2-258 AC5)
+  else listing.Kind is Platform
+    rules --> handler : eligible, the requests are not read (L2-258 AC1)
+  else Services, Shop or Space
+    rules -> db : A request of the member, Confirmed or Completed?
+    rules --> handler : eligible or not-eligible (L2-226 AC1, AC2)
+  end
+  handler --> controller : Reviews with writing
+  controller --> client : 200 OK
+  client --> page : ListingReviews
+  page --> actor : "Reviews" with "Reviews here are from members who say they have used Lanternread. That is their own word. Jubilee does not check it." (L2-258 AC6)
+  alt writing is eligible
+    page --> actor : the line that says whose word the reviews are, and "Write a review"
+  else writing is sign-in
+    page --> actor : "Write a review" opens "Join to review Lanternread" (L2-226 AC3)
+  else writing is written
+    page --> actor : "Your review" in its place
+  else writing is owner
+    page --> actor : No "Write a review"
+  end
+end
+@enduml

@@ -1,0 +1,58 @@
+@startuml
+title UML sequence behaviour: Open the Software platforms category page
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Visitor or member" as actor
+box "Frontend: Jubilee Web" #E0F2FE
+  participant "CategoryPage" as page
+  participant "DirectoryApi" as client
+end box
+box "Backend: Jubilee API" #D1FADF
+  participant "CategoriesController" as controller
+end box
+box "Backend: Jubilee Application and Domain" #ECFDF3
+  participant "GetCategoryListingsQueryHandler" as handler
+  participant "IDirectoryReadCache" as cache
+end box
+box "Backend: Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+actor -> page : Open /c/software-platforms?areas=downtown&sort=newest
+page --> actor : Card skeletons (L2-252 AC6)
+page -> client : getCategory(software-platforms, sort newest, page 1)
+client -> controller : GET /api/categories/software-platforms/listings?areas=downtown&sort=newest
+controller -> handler : Send GetCategoryListingsQuery
+handler -> handler : Category is PlatformsSlug: drop offers and areas (L2-252 AC3)
+handler -> cache : Get the page keyed by slug, sort and page
+alt Cached
+  cache --> handler : CategoryPageResult
+else Not cached
+  handler -> db : Public listings of software-platforms (L2-028)
+  db --> handler : Platforms
+  handler -> handler : Sort (L2-025), 16 a page (L2-026), BusinessCardDto.From each
+  handler -> cache : Store for 60 s (L2-156)
+end
+handler --> controller : CategoryPageResult with Businesses, Fact null, no filters
+controller --> client : 200 OK
+alt Load fails
+  client --> page : Error
+  page --> actor : "We couldn't load this category" with JB-CAT-503 (L2-118)
+else No live platform
+  page --> actor : "No platform is listed here yet", "List a platform", "Browse other categories" (L2-252 AC5)
+else Platforms
+  page --> actor : "Software platforms", "{n} platforms", Sort, business cards, no chips and no "Filters" (L2-252 AC2)
+  page --> actor : "Built something people use online?" with "List a platform" to /list?kind=platform (L2-252 AC4)
+end
+@enduml

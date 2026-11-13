@@ -1,7 +1,7 @@
 import { BusinessCard, CategoryLink, ProductCard, SpaceCard, SpaceTerm } from './directory';
 
 /** Main offer of a listing; it picks the layout of the listing page. */
-export type ListingKind = 'services' | 'shop' | 'space';
+export type ListingKind = 'services' | 'shop' | 'space' | 'platform';
 
 /** The caller's relation to the listing, decided by the server from the session. */
 export type ViewerRelation = 'visitor' | 'member' | 'owner' | 'moderator';
@@ -70,6 +70,20 @@ export interface ListingPagePhoto {
   height: number;
 }
 
+/**
+ * What the page of a software platform shows (L2-254): the founder's words and the web address
+ * the link out goes to. `website` and `host` are null when the stored address fails the rule,
+ * and the page then links nowhere (L2-255 AC5).
+ */
+export interface PlatformDetails {
+  website: string | null;
+  /** The host the link out names, without `www.`. */
+  host: string | null;
+  does: string;
+  for: string;
+  pricing: string;
+}
+
 /** `GET /api/listings/{slug}`: the listing page of one business (L2-033, L2-034). */
 export interface ListingPage {
   slug: string;
@@ -103,4 +117,6 @@ export interface ListingPage {
   openRequestId?: string | null;
   /** The business carries the "Replies fast" badge (L2-054); never a space. */
   repliesFast: boolean;
+  /** The founder's words and the link out; null unless the listing is a software platform. */
+  platform?: PlatformDetails | null;
 }

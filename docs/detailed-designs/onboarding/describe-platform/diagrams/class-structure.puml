@@ -1,0 +1,119 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure: Describe a platform
+
+enum ListingKind {
+  Services
+  Shop
+  Space
+  Platform
+}
+
+class Category <<record>> {
+  +{static} PlatformsSlug: string = "software-platforms"
+  +{static} KindOf(slug: string): ListingKind
+}
+
+class PlatformDetails <<owned record, JSON column Platform>> {
+  +{static} MaxDoesLength: int = 600
+  +{static} MaxForLength: int = 300
+  +{static} MaxPricingLength: int = 120
+  +string Does
+  +string For
+  +string Pricing
+}
+
+class PlatformRules <<static>> {
+  +{static} IsWebAddress(value: string): bool
+  +{static} Host(value: string): string
+}
+
+class ListingDraft {
+  +Guid Id
+  +string OwnerSubject
+  +ListingKind Kind
+  +string Name
+  +string Tagline
+  +string? Highlight
+  +string? Website
+  +PlatformDetails? Platform
+  +bool Agreed
+  +Save(...)
+}
+
+class Listing {
+  +string Slug
+  +string Name
+  +string Tagline
+  +string CategorySlug
+  +ListingKind Kind
+  +string? Website
+  +PlatformDetails? Platform
+  +DescribePlatform(details: PlatformDetails, website: string)
+  +Publish(now: DateTimeOffset)
+}
+
+class PlatformInput <<record>> {
+  +string? Website
+  +string? Does
+  +string? For
+  +string? Pricing
+}
+
+class DraftInput <<record>> {
+  +string? Kind
+  +string? Name
+  +string? Tagline
+  +string? Highlight
+  +bool Agreed
+  +SpaceInput? Space
+  +PlatformInput? Platform
+}
+
+class PlatformDraftDto <<record>> {
+  +string? Website
+  +string? Does
+  +string? For
+  +string? Pricing
+}
+
+class ListingDraftDto <<record>> {
+  +Guid Id
+  +string Kind
+  +SpaceDraftDto? Space
+  +PlatformDraftDto? Platform
+}
+
+class Drafts <<static>> {
+  +{static} KindOf(kind: string?): ListingKind
+  +{static} ValidatePlatform(platform: PlatformInput?, errors)
+}
+
+class PublishListingCommandHandler {
+  +Handle(command: PublishListingCommand): PublishedListingDto
+}
+
+ListingDraft *-- "0..1" PlatformDetails
+Listing *-- "0..1" PlatformDetails
+ListingDraft --> ListingKind
+Listing --> ListingKind
+Category ..> ListingKind : KindOf derives Platform
+DraftInput *-- "0..1" PlatformInput
+ListingDraftDto *-- "0..1" PlatformDraftDto
+Drafts ..> PlatformInput : validates
+Drafts ..> PlatformRules : IsWebAddress
+PublishListingCommandHandler ..> Drafts : ValidatePlatform
+PublishListingCommandHandler ..> Listing : creates in PlatformsSlug, DescribePlatform, Publish
+PublishListingCommandHandler ..> ListingDraft : keeps on 422, removes on success
+@enduml

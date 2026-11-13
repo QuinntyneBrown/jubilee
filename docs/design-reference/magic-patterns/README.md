@@ -125,6 +125,18 @@ Until a file is here the case is compared with its mock only, and its test says 
   space, no incoming request or request detail for a space, and the roommate space's "Meet the
   household" and the short-stay dates are shown only as drawn. The Riverdale Fellowship Hall
   card shows hourly pricing ("$45 / hour"); hourly hall pricing is not built and has no frame.
+- **No software platform (ADR 0072).** The design draws no software platform, no "Software
+  platforms" category and no statement of use. The platform screens are drawn in the mocks only,
+  from the frames of what they are built with: the platform page (`pages/platform/`) from the
+  business frames (`business-services-*.png`: the tile, the head, the sections, "Details") with
+  the Reviews section of the Listing frame; its category page from the category and space
+  frames; the platform form and the fourth card of "What do you offer?" from "List your
+  business" and "List a space" (`list-your-business-1280.png`, `list-a-space-1280.png`); and the
+  Write a review screen of a platform from the "Write a Review" frame, with the checkbox of the
+  listing form as the statement of use. The twelfth media tile (gold, the `monitor` icon), the
+  link out ("Visit {host}", a primary button that is a link, with the `arrow-up-right` icon) and
+  the line under "Reviews" have no frame; their parity specs name the nearest frame and compare
+  with the mock only.
 - **The "Marketing Site" frame "Home".** It exists in the Magic Patterns editor only, which needs
   the owner's account; it is not on the published site. The repository owner exports it here as
   `marketing-home-360.png` and `marketing-home-1280.png` and adds its rows to the table. Until

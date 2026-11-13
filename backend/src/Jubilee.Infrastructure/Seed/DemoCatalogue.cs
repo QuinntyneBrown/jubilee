@@ -225,6 +225,48 @@ internal static class DemoCatalogue
                 ["No smoking", "No pets (building rule)", "Tenant insurance required"])),
     ];
 
+    /// <summary>
+    /// A software platform in "Software platforms" (L2-248): its founder, its web address and what the founder
+    /// says of it. Every one is invented, on an <c>.example</c> address; no real product is seeded (ADR 0072).
+    /// </summary>
+    internal sealed record DemoPlatform(
+        string Slug, string Name, string Tagline, string? Highlight, string Founder, string Website, string Does, string For, string Pricing);
+
+    /// <summary>The live platforms of the design's sample data.</summary>
+    internal static readonly DemoPlatform[] Platforms =
+    [
+        new(
+            "lanternread",
+            "Lanternread",
+            "A reading log families keep together",
+            "Free for families",
+            "Abigail Thornton",
+            "https://lanternread.example",
+            "Families log the books their children read, set a weekly reading goal together and see the streak grow. Grandparents and teachers can cheer from their own accounts.",
+            "Families with children aged 4 to 12, and the teachers who cheer them on.",
+            "Free for families. Schools pay per classroom."),
+        new(
+            "gatherboard",
+            "Gatherboard",
+            "Volunteer rosters for small churches",
+            null,
+            "Nathaniel Brooks",
+            "https://gatherboard.example",
+            "Plan Sunday teams, swap shifts and send reminders by e-mail. Volunteers say yes or no from their phone, with no account to make.",
+            "Churches and ministries with up to 200 volunteers.",
+            "Free up to 25 volunteers, then $19 a month."),
+        new(
+            "ledgerleaf",
+            "Ledgerleaf",
+            "Bookkeeping in plain words for sole traders",
+            "30-day free trial",
+            "Priscilla Wong",
+            "https://ledgerleaf.example",
+            "Send invoices, snap receipts and see what to set aside for HST. Your bookkeeper can sign in beside you at tax time.",
+            "Sole traders and small shops in Ontario.",
+            "$12 a month after a 30-day trial."),
+    ];
+
     /// <summary>"Featured this week", positions 1 to 5.</summary>
     internal static readonly string[] FeaturedSlugs =
     [
@@ -244,6 +286,7 @@ internal static class DemoCatalogue
         ["legacy-financial"] = "demo|trevor-chew",
         ["luzandre"] = "demo|naomi-laurent",
         ["roncesvalles-guest-suite"] = "demo|paul-kowalski",
+        ["lanternread"] = "demo|abigail-thornton",
     };
 
     /// <summary>What the product page of a demo product tells members, by product slug.</summary>

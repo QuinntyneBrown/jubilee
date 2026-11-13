@@ -76,7 +76,7 @@ test.describe('Rooms & places to stay on Browse (L2-201)', () => {
     await browse.setWidth(1280);
     await jb.open('browse');
 
-    await expect(browse.directoryHeading).toHaveText('All 47 businesses');
+    await expect(browse.directoryHeading).toHaveText('All 50 businesses');
     await expect(browse.group('Rooms & rentals').root).toHaveCount(0);
     // The hero's search box is the phone's (L2-164 AC4).
     await browse.setWidth(360);

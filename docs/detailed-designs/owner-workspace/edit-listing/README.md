@@ -201,6 +201,45 @@ term is live immediately in the space's cards and page. Photos follow
 `L2-088`; onboarding has none, so they are added here (ADR 0042; see
 [Describe a space](../../onboarding/describe-space/README.md)).
 
+### Platforms
+
+For a software platform (kind `platform`, ADR 0072), the screen shows Photos,
+"Platform name", "One line on what it does" with its counter, "Web address",
+"What it does", "Who it is for", "Pricing" and "Highlight" with their stored
+values, and not "About", "Category", "Where", "Hours" or "Website"; the web
+address takes the place of "Website". The page holds the four platform fields
+in the shared `PlatformForm` and checks them with the rules and the messages
+of `/list` (`L2-250`; see
+[Describe a platform](../../onboarding/describe-platform/README.md)). The live
+preview stays `jb-business-card`, with the "Software platforms" tile.
+
+`GET /api/my-business/listing` returns `ListingEditorDto` with `Platform`
+(`PlatformDraftDto`: `website`, `does`, `for`, `pricing`), and its
+`Categories` hold "Software platforms" alone; the editor of a business is not
+offered that category. `PUT /api/my-business/listing` takes `platform`
+(`PlatformInput` on `SaveListingCommand`, `SaveListingBody` and
+`ListingChanges`). For a platform, `SaveListingCommandHandler` checks the name
+and the line as for any listing, validates `platform` with
+`Drafts.ValidatePlatform` (`platform.website` `REQUIRED` or `INVALID`,
+`platform.does`, `platform.for` and `platform.pricing` `REQUIRED`), and does
+not require hours. The top-level `website` of the body is not read for a
+platform, so the rule of `PlatformRules.IsWebAddress` (`https` only, 200
+characters) applies and not the rule of a business's website. The handler then
+calls `Listing.Edit` and `Listing.DescribePlatform`, which sets
+`Listing.Platform` and `Listing.Website`. The change is live at once, and a
+change of name is audited as `listing.renamed` (`L2-087` AC5, AC6).
+
+A save that names another category for a platform, or `software-platforms`
+for a business, a shop or a space, is refused with HTTP 422 and `category`
+`CATEGORY_LOCKED`, as for a space. Pause and resume (`pause-listing`) and the
+overview (`view-business-overview`) are unchanged; a platform has no products,
+services or requests, and their screens show their empty states. A caller who
+is not the founder is answered as for any listing that is not theirs
+(`L2-097`, `L2-133`). Photos follow `L2-088`.
+
+The integration tests are in `PlatformEditTests`, beside `SpaceEditTests`,
+and the Playwright behaviour spec is `e2e/tests/edit-platform.spec.ts`.
+
 ## Requirements
 
 The feature realizes the following level-2 (L2) requirements. Each L2
@@ -218,6 +257,7 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 | `L2-138` | `L1-019` | The server shall check each upload by its magic bytes, accept only JPEG and PNG up to 5 MB and 8,000 × 8,000 pixels, re-encode the image, strip metadata, scan it for malware and serve it from a separate cookieless domain. |
 | `L2-209` | `L1-028` | `/my-business/listing` for a space shall show the space fields with their stored values and not "Category", "Hours" or "Website", validate them as on `/list`, and publish a change of term to the cards and page. |
 | `L2-208` | `L1-028` | The exact address shall reach only the member whose space request is `confirmed` or `completed`, and the owner shall see and change it on Edit listing. |
+| `L2-256` | `L1-033` | `/my-business/listing` for a platform shall show the platform fields with their stored values and not "About", "Category", "Where", "Hours" or "Website", validate them as on `/list`, publish changes when saved, refuse a change of category with HTTP 422 `category: CATEGORY_LOCKED`, and keep pause, resume and the overview as for any listing. |
 
 ## Diagrams
 

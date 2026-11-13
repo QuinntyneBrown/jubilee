@@ -990,6 +990,10 @@ namespace Jubilee.Infrastructure.Migrations
                     b.Property<DateTimeOffset>("UpdatedAt")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<string>("Website")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("UpdatedAt");
@@ -2068,6 +2072,9 @@ namespace Jubilee.Infrastructure.Migrations
                     b.Property<Guid?>("ServiceId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<DateTimeOffset?>("StatedUseAt")
+                        .HasColumnType("datetimeoffset");
+
                     b.Property<string>("TakeDownReason")
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
@@ -2462,6 +2469,31 @@ namespace Jubilee.Infrastructure.Migrations
 
             modelBuilder.Entity("Jubilee.Domain.Listing", b =>
                 {
+                    b.OwnsOne("Jubilee.Domain.PlatformDetails", "Platform", b1 =>
+                        {
+                            b1.Property<Guid>("ListingId");
+
+                            b1.Property<string>("Does")
+                                .IsRequired();
+
+                            b1.Property<string>("For")
+                                .IsRequired();
+
+                            b1.Property<string>("Pricing")
+                                .IsRequired();
+
+                            b1.HasKey("ListingId");
+
+                            b1.ToTable("Listings");
+
+                            b1
+                                .ToJson("Platform")
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.WithOwner()
+                                .HasForeignKey("ListingId");
+                        });
+
                     b.OwnsOne("Jubilee.Domain.SpaceDetails", "Space", b1 =>
                         {
                             b1.Property<Guid>("ListingId");
@@ -2507,11 +2539,38 @@ namespace Jubilee.Infrastructure.Migrations
                                 .HasForeignKey("ListingId");
                         });
 
+                    b.Navigation("Platform");
+
                     b.Navigation("Space");
                 });
 
             modelBuilder.Entity("Jubilee.Domain.ListingDraft", b =>
                 {
+                    b.OwnsOne("Jubilee.Domain.PlatformDetails", "Platform", b1 =>
+                        {
+                            b1.Property<Guid>("ListingDraftId");
+
+                            b1.Property<string>("Does")
+                                .IsRequired();
+
+                            b1.Property<string>("For")
+                                .IsRequired();
+
+                            b1.Property<string>("Pricing")
+                                .IsRequired();
+
+                            b1.HasKey("ListingDraftId");
+
+                            b1.ToTable("ListingDrafts");
+
+                            b1
+                                .ToJson("Platform")
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.WithOwner()
+                                .HasForeignKey("ListingDraftId");
+                        });
+
                     b.OwnsOne("Jubilee.Domain.SpaceDetails", "Space", b1 =>
                         {
                             b1.Property<Guid>("ListingDraftId");
@@ -2556,6 +2615,8 @@ namespace Jubilee.Infrastructure.Migrations
                             b1.WithOwner()
                                 .HasForeignKey("ListingDraftId");
                         });
+
+                    b.Navigation("Platform");
 
                     b.Navigation("Space");
                 });

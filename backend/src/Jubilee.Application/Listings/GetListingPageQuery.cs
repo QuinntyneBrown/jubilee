@@ -143,6 +143,7 @@ public sealed class GetListingPageQueryHandler(IAppDbContext db, IDirectoryReadC
             RepliesFast: !isSpace && fast.Contains(listing.Id))
         {
             Photos = photos,
+            Platform = PlatformPageDto.From(listing),
         };
     }
 

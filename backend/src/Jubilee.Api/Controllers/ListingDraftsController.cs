@@ -44,6 +44,13 @@ public sealed record SpaceDraftRequest(
         new(Term, Rent, Available, MinimumStay, Neighbourhood, Address, Place, Facts, Included, Household, Rules);
 }
 
+/// <summary>The platform fields of the form (L2-250).</summary>
+[JsonUnmappedMemberHandling(JsonUnmappedMemberHandling.Disallow)]
+public sealed record PlatformDraftRequest(string? Website, string? Does, string? For, string? Pricing)
+{
+    public PlatformInput ToInput() => new(Website, Does, For, Pricing);
+}
+
 /// <summary>
 /// The listing form. It has no stage or owner field: unknown fields are refused with 400
 /// and nothing is changed (L2-133 AC4).
@@ -59,12 +66,14 @@ public sealed record ListingDraftRequest(
     bool Agreed,
     IReadOnlyList<DraftItemRequest>? Items,
     string? IdempotencyKey,
-    SpaceDraftRequest? Space = null)
+    SpaceDraftRequest? Space = null,
+    PlatformDraftRequest? Platform = null)
 {
     public DraftInput ToInput() => new(
         Kind, Name, Tagline, CategorySlug, Highlight, Place, Agreed,
         Items?.Select(i => i.ToInput()).ToList(),
-        Space?.ToInput());
+        Space?.ToInput(),
+        Platform?.ToInput());
 }
 
 /// <summary>Listing a business: drafts, saving them and publishing them (L2-071 to L2-079, ADR 0057).</summary>

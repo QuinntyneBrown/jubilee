@@ -76,6 +76,7 @@ and observability are marked `<TO SUPPLY>` in the feature designs.
 |---|---|
 | [Browse a category](directory/browse-category/README.md) | `L2-023`, `L2-024`, `L2-025`, `L2-026`, `L2-028`, `L2-113`, `L2-118`, `L2-202` |
 | [Browse home](directory/browse-home/README.md) | `L2-021`, `L2-022`, `L2-027`, `L2-028`, `L2-012`, `L2-106`, `L2-118`, `L2-156`, `L2-201` |
+| [Browse platforms](directory/browse-platforms/README.md) | `L2-248`, `L2-252`, `L2-253`, `L2-025`, `L2-026`, `L2-028`, `L2-118`, `L2-156` |
 | [Browse spaces](directory/browse-spaces/README.md) | `L2-197`, `L2-201`, `L2-202`, `L2-203`, `L2-204`, `L2-208`, `L2-026`, `L2-028`, `L2-118`, `L2-156` |
 | [Search the directory](directory/search-directory/README.md) | `L2-029`, `L2-030`, `L2-031`, `L2-032`, `L2-028`, `L2-118`, `L2-133`, `L2-181`, `L2-204` |
 | [View welcome page](directory/view-welcome-page/README.md) | `L2-020`, `L2-028`, `L2-027`, `L2-106` |
@@ -111,6 +112,7 @@ and observability are marked `<TO SUPPLY>` in the feature designs.
 | [Share a listing](listings/share-listing/README.md) | `L2-038`, `L2-028`, `L2-130` |
 | [Share the address of a listing](listings/share-listing-address/README.md) | `L2-244`, `L2-245`, `L2-038`, `L2-078`, `L2-085`, `L2-087` |
 | [View a business page](listings/view-business-page/README.md) | `L2-033`, `L2-034`, `L2-037`, `L2-040`, `L2-028`, `L2-118`, `L2-133`, `L2-205` |
+| [View a platform](listings/view-platform/README.md) | `L2-254`, `L2-255`, `L2-248`, `L2-261`, `L2-262`, `L2-012`, `L2-028`, `L2-037`, `L2-118`, `L2-136` |
 | [View a product](listings/view-product/README.md) | `L2-035`, `L2-036`, `L2-028`, `L2-118` |
 | [View a space](listings/view-space/README.md) | `L2-205`, `L2-206`, `L2-208`, `L2-012`, `L2-028`, `L2-037`, `L2-118` |
 
@@ -132,10 +134,10 @@ listings and takes down one that misrepresents a business.
 
 | Feature | L2 requirements cited |
 |---|---|
-| [Browse listings](moderation/browse-listings/README.md) | `L2-098`, `L2-099`, `L2-133`, `L2-180`, `L2-118` |
+| [Browse listings](moderation/browse-listings/README.md) | `L2-098`, `L2-099`, `L2-133`, `L2-180`, `L2-118`, `L2-257` |
 | [Feature businesses](moderation/feature-businesses/README.md) | `L2-106`, `L2-133`, `L2-180` |
 | [Handle reports](moderation/handle-reports/README.md) | `L2-105`, `L2-063`, `L2-133`, `L2-150`, `L2-180` |
-| [Take down a listing](moderation/take-down-listing/README.md) | `L2-100`, `L2-101`, `L2-098`, `L2-079`, `L2-150`, `L2-180` |
+| [Take down a listing](moderation/take-down-listing/README.md) | `L2-100`, `L2-101`, `L2-098`, `L2-079`, `L2-150`, `L2-180`, `L2-257` |
 
 ### notifications
 
@@ -159,6 +161,7 @@ listings and takes down one that misrepresents a business.
 | Feature | L2 requirements cited |
 |---|---|
 | [Describe a listing](onboarding/describe-listing/README.md) | `L2-071`, `L2-072`, `L2-073`, `L2-076`, `L2-005`, `L2-126`, `L2-133`, `L2-198` |
+| [Describe a platform](onboarding/describe-platform/README.md) | `L2-248`, `L2-249`, `L2-250`, `L2-251`, `L2-261`, `L2-262`, `L2-076`, `L2-077`, `L2-126`, `L2-133`, `L2-136` |
 | [Describe a space](onboarding/describe-space/README.md) | `L2-197`, `L2-198`, `L2-199`, `L2-200`, `L2-076`, `L2-077`, `L2-126`, `L2-133` |
 | [Save a draft](onboarding/save-draft/README.md) | `L2-077`, `L2-118`, `L2-133`, `L2-182` |
 | [Publish a listing](onboarding/publish-listing/README.md) | `L2-078`, `L2-079`, `L2-028`, `L2-005`, `L2-126`, `L2-127`, `L2-132` |
@@ -186,7 +189,7 @@ listings and takes down one that misrepresents a business.
 
 | Feature | L2 requirements cited |
 |---|---|
-| [Edit a listing](owner-workspace/edit-listing/README.md) | `L2-087`, `L2-088`, `L2-126`, `L2-127`, `L2-133`, `L2-138`, `L2-209`, `L2-208` |
+| [Edit a listing](owner-workspace/edit-listing/README.md) | `L2-087`, `L2-088`, `L2-126`, `L2-127`, `L2-133`, `L2-138`, `L2-209`, `L2-208`, `L2-256` |
 | [Manage products](owner-workspace/manage-products/README.md) | `L2-089`, `L2-090`, `L2-091`, `L2-092`, `L2-132`, `L2-133`, `L2-128`, `L2-129` |
 | [Manage services](owner-workspace/manage-services/README.md) | `L2-093`, `L2-094`, `L2-095`, `L2-090`, `L2-132`, `L2-133`, `L2-129` |
 | [Pause and resume a listing](owner-workspace/pause-listing/README.md) | `L2-096`, `L2-028`, `L2-067`, `L2-129`, `L2-133` |
@@ -230,7 +233,7 @@ listings and takes down one that misrepresents a business.
 
 ### reviews
 
-Decisions in [ADR 0066](../adr/0066-reviews.md).
+Decisions in [ADR 0066](../adr/0066-reviews.md); reviews of software platforms in [ADR 0072](../adr/0072-software-platforms.md).
 
 | Feature | L2 requirements cited |
 |---|---|
@@ -238,8 +241,9 @@ Decisions in [ADR 0066](../adr/0066-reviews.md).
 | [Moderate reviews](reviews/moderate-reviews/README.md) | `L2-236`, `L2-237`, `L2-235`, `L2-238`, `L2-239`, `L2-105`, `L2-180` |
 | [Read reviews](reviews/read-reviews/README.md) | `L2-229`, `L2-230`, `L2-231`, `L2-232`, `L2-226`, `L2-238`, `L2-239`, `L2-240`, `L2-123`, `L2-125` |
 | [Reply to a review](reviews/reply-to-a-review/README.md) | `L2-234`, `L2-235`, `L2-229`, `L2-238`, `L2-064`, `L2-068` |
-| [Review data](reviews/review-data/README.md) | `L2-238`, `L2-239`, `L2-017`, `L2-018`, `L2-133`, `L2-136`, `L2-137`, `L2-148` |
-| [Write a review](reviews/write-a-review/README.md) | `L2-226`, `L2-227`, `L2-228`, `L2-235`, `L2-238`, `L2-240`, `L2-126`, `L2-127`, `L2-132`, `L2-137` |
+| [Review a platform](reviews/review-a-platform/README.md) | `L2-258`, `L2-259`, `L2-260`, `L2-261`, `L2-262`, `L2-226`, `L2-227`, `L2-228`, `L2-238`, `L2-126` |
+| [Review data](reviews/review-data/README.md) | `L2-238`, `L2-239`, `L2-017`, `L2-018`, `L2-133`, `L2-136`, `L2-137`, `L2-148`, `L2-261` |
+| [Write a review](reviews/write-a-review/README.md) | `L2-226`, `L2-227`, `L2-228`, `L2-235`, `L2-238`, `L2-240`, `L2-126`, `L2-127`, `L2-132`, `L2-137`, `L2-258`, `L2-259` |
 
 ### security
 

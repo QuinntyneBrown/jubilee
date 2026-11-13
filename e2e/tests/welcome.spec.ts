@@ -3,7 +3,7 @@ import { expect, test } from '../fixtures/jb-test';
 import { WelcomePage } from '../pages/welcome.page';
 
 // Welcome page: L2-020, with L2-106 (featured) and L2-027 (card rules); no Verified mark (ADR 0057).
-// The default state runs against the recorded answers of the seeded API (ADR 0009): the mocks' catalogue of 47 businesses.
+// The default state runs against the recorded answers of the seeded API (ADR 0009): the mocks' catalogue of 50 businesses.
 
 test.describe('welcome page (L2-020)', () => {
   test('AC1: a visitor sees the tagline, heading, live count and the two actions', async ({
@@ -17,21 +17,21 @@ test.describe('welcome page (L2-020)', () => {
     await expect(welcome.tagline).toHaveText('Toronto’s Christian marketplace');
     await expect(welcome.heading).toHaveText('Do business with Toronto’s Christian community.');
     await expect(welcome.countLine).toHaveText(
-      '47 businesses — shops, advisors, trades and more. Free to join, free to list.',
+      '50 businesses — shops, advisors, trades and more. Free to join, free to list.',
     );
     await expect(welcome.joinFree).toHaveAttribute('href', '/join');
     await expect(welcome.browseBusinesses).toHaveAttribute('href', '/');
     await expect.poll(() => welcome.dataPage()).toBe('welcome');
   });
 
-  test('AC2: it lists the eleven categories, the three steps, the featured four and the owner panel', async ({
+  test('AC2: it lists the twelve categories, the three steps, the featured four and the owner panel', async ({
     page,
     jb,
   }) => {
     const welcome = new WelcomePage(page);
     await jb.open('welcome');
 
-    // All eleven categories as links, in the fixed order (L2-020)
+    // All twelve categories as links, in the fixed order (L2-020)
     await expect(welcome.categoryLinks).toHaveText(categories.map((c) => c.name));
     for (const [index, category] of categories.entries()) {
       await expect(welcome.categoryLinks.nth(index)).toHaveAttribute('href', `/c/${category.slug}`);
@@ -51,7 +51,7 @@ test.describe('welcome page (L2-020)', () => {
     await expect(welcome.featuredCard(1).name).toHaveText('Luzandre.com');
     await expect(welcome.featuredCard(2).name).toHaveText('Christian Bookstores');
     await expect(welcome.featuredCard(3).name).toHaveText('Adrianne Sequeira, DMin., RP, RMFT, RN');
-    await expect(welcome.browseAll).toHaveText('Browse all 47');
+    await expect(welcome.browseAll).toHaveText('Browse all 50');
     await expect(welcome.browseAll).toHaveAttribute('href', '/');
     // The "Own a business?" panel
     await expect(welcome.ownABusiness).toContainText(
@@ -90,7 +90,7 @@ test.describe('welcome page (L2-020)', () => {
     await expect(welcome.countLine).toHaveText(
       'Shops, advisors, trades and more. Free to join, free to list.',
     );
-    await expect(welcome.categoryLinks).toHaveCount(11);
+    await expect(welcome.categoryLinks).toHaveCount(12);
     await expect(welcome.featured).toHaveCount(0);
     await expect(welcome.listYourBusiness).toBeVisible();
   });

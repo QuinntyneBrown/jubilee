@@ -4,6 +4,7 @@
 |---|---|---|
 | browse-category | 4 days | 100% |
 | browse-home | 5 days | 100% |
+| browse-platforms | 3 days | 100% |
 | browse-spaces | 5 days | 100% |
 | search-directory | 4 days | 100% |
 | view-welcome-page | 4 days | 100% |
@@ -15,3 +16,5 @@ browse-home, view-welcome-page (ADR 0003): the directory read cache is removed b
 search-directory (ADR 0011): the index over the database is the final design, so there is no indexing job to build; a publish (ADR 0057), an edit, a pause, a resume, a deletion, a moderation hold and a change to a service or a product each reach the next search, with tests (`SearchCurrencyTests`, `e2e/tests/search.spec.ts`). Nothing is left. Search latency under load is measured in performance.
 
 ADR 0057 is done in every design above: the cards, rows and search results carry no "Verified" mark and the API no `verified` field, counts read "{n} businesses", and "Newest" orders by `PublishedAt`.
+
+browse-platforms (ADR 0072): the "Software platforms" category, twelfth of twelve, its chip and group on Browse, its category page without filters, platforms on the business card, among featured and saved listings and in search over the founder's words are done with tests (`PlatformDirectoryTests`, `PlatformListsTests`, `PlatformSearchTests`, `platforms.spec.ts`), and the marketing site's pre-registration lists the twelve. Nothing is left.

@@ -2,7 +2,7 @@ namespace Jubilee.Infrastructure.Seed;
 
 /// <summary>
 /// The sample reviews of the mocks (ADR 0066): the same authors, ratings, items, texts, dates and replies as
-/// <c>docs/mocks/pages/business</c>, <c>shop</c> and <c>space</c>. An item names a service or a product of the listing
+/// <c>docs/mocks/pages/business</c>, <c>shop</c>, <c>space</c> and <c>platform</c>. An item names a service or a product of the listing
 /// by name, or is the stay of a space. Dates are fixed so the recording and the mocks agree.
 /// </summary>
 internal static class DemoReviews
@@ -46,5 +46,18 @@ internal static class DemoReviews
             new("You’re welcome back any time, Lydia!", On(10, 28))),
         new("roncesvalles-guest-suite", "Chris Dubois", 4, "My stay", On(9, 5),
             "Lovely suite and hosts. Street parking was tight on a Saturday, plan for a short walk."),
+
+        // The invented platforms of journey 33: each review rests on its author's statement of use (L2-258).
+        new("lanternread", "Grace Adebayo", 5, "Their platform", On(11, 2),
+            "We have used Lanternread since September. My two boys log their books before bed and the weekly goal has them asking for one more chapter. It has stayed free for us, as the site says."),
+        new("lanternread", "Samuel Park", 5, "Their platform", On(10, 28),
+            "Simple and calm. I set it up in ten minutes and my daughter's grandmother cheers her on from Lagos. Nothing to pay as a family."),
+        new("lanternread", "Ruth Mensah", 4, "Their platform", On(10, 19),
+            "Good for our family reading night. I would like a way to log audiobooks, but the streak keeps the children keen and the price was what the site said.",
+            new("Thank you, Ruth. Audiobooks are on our list for the new year.", On(10, 20))),
+        new("lanternread", "David Chen", 3, "Their platform", On(10, 6),
+            "It does what it says, though the school side confused our teacher at first. Support answered in a day. We will keep using it for the summer."),
+        new("ledgerleaf", "Esther Lau", 4, "Their platform", On(10, 12),
+            "I send my invoices from it and the HST estimate was close to what my bookkeeper worked out. The trial was the full thirty days and the price after it was what the site said."),
     ];
 }

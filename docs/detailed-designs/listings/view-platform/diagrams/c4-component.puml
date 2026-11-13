@@ -1,0 +1,36 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components: View a platform
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(page, "BusinessPage", "Angular page", "Chooses the platform layout when kind is platform")
+  Component(button, "a[jb-button]", "Library component", "The link out: Visit {host}, arrow-up-right, new tab")
+  Component(rows, "jb-description-list", "Library component", "Pricing, Website, On Jubilee since, Replies")
+  Component(reviews, "jb-reviews", "Library component", "Reviews with the line on the statement of use")
+  Component(card, "jb-business-card", "Library component", "More in Software platforms")
+  Component(prompt, "SignInPromptService", "Angular service", "Prompts a visitor for the member actions")
+  Component(client, "ListingsApi", "Service contract", "GET /api/listings/{slug}")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(ctrl, "ListingsController", "ASP.NET Core controller", "Anonymous listing page")
+  Component(handler, "GetListingPageQueryHandler", "MediatR handler", "Builds ListingPageDto with Platform")
+  Component(dto, "PlatformPageDto", "DTO", "Website, Host, Does, For, Pricing")
+  Component(rules, "PlatformRules", "Domain rule", "IsWebAddress and Host; never requests the address")
+  Component(quote, "RequestQuoteCommandHandler", "MediatR handler", "409 NOT_OFFERED for a platform")
+}
+ContainerDb(db, "Jubilee database", "SQL Server", "Listings")
+
+Rel(page, button, "Renders when platform.website is set")
+Rel(page, rows, "Renders")
+Rel(page, reviews, "Renders")
+Rel(page, card, "Renders up to two")
+Rel(page, prompt, "Opens for a visitor")
+Rel(page, client, "Loads the page")
+Rel(client, ctrl, "GET /api/listings/{slug}", "JSON/HTTPS")
+Rel(ctrl, handler, "Sends GetListingPageQuery")
+Rel(handler, dto, "Projects to")
+Rel(dto, rules, "Checks the address and reads the host with")
+Rel(handler, db, "Reads", "EF Core")
+Rel(quote, db, "Reads the listing's kind", "EF Core")
+@enduml

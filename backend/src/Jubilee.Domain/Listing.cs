@@ -121,7 +121,7 @@ public sealed class Listing
     {
         if (Category.Find(categorySlug) is null)
         {
-            throw new ArgumentException($"'{categorySlug}' is not one of the eleven categories.", nameof(categorySlug));
+            throw new ArgumentException($"'{categorySlug}' is not one of the twelve categories.", nameof(categorySlug));
         }
 
         return new Listing
@@ -254,6 +254,21 @@ public sealed class Listing
         }
 
         Space = details;
+    }
+
+    /// <summary>What a founder says of a software platform; null for every other kind (L2-250).</summary>
+    public PlatformDetails? Platform { get; private set; }
+
+    /// <summary>Replaces the details and the web address of a platform (L2-250, L2-256).</summary>
+    public void DescribePlatform(PlatformDetails details, string? website)
+    {
+        if (Kind != ListingKind.Platform)
+        {
+            throw new InvalidOperationException("Only a software platform has platform details.");
+        }
+
+        Platform = details;
+        Website = Clean(website);
     }
 
     public void Delete(DateTimeOffset now) => DeletedAt ??= now;

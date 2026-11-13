@@ -182,6 +182,12 @@
          alt="Trevor Chew at his desk with a client" width="1280" height="960" fetchpriority="high"&gt;
   &lt;/picture&gt;
 &lt;/div&gt;</code></pre>
+          <h3>Software platforms</h3>
+      <p>The twelfth category tile (L2-252 AC1, ADR 0072): the gold tone, the <code>monitor</code> icon and the short label “Software”. It stands for a software platform on its card, on its page, in search and in the listing form’s preview until its founder adds a cover photo. The tone is shared with Shops; the icon and the tag tell them apart, so colour is never the only sign.</p>
+      <div class="ds-example"><div class="ds-example__canvas">
+        <div style="inline-size: calc(var(--space-24) * 2);"><div class="media media--gold"><span class="media__tag">Software</span><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div></div>
+      </div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;div style="inline-size: calc(var(--space-24) * 2);"&gt;&lt;div class="media media--gold"&gt;&lt;span class="media__tag"&gt;Software&lt;/span&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;rect x="2" y="3" width="20" height="14" rx="2"/&gt;&lt;path d="M8 21h8M12 17v4"/&gt;&lt;/svg&gt;&lt;/div&gt;&lt;/div&gt;</code></pre></details></div>
     </section>
     <section class="ds-section" id="sizes"><h2><a href="#sizes">Sizes</a></h2>
       <p>Width always comes from the container; the modifier fixes the shape.</p>
@@ -327,6 +333,7 @@
         <li><a href="../../mocks/pages/product/default.html">pages/product/default</a> (square product photo)</li>
         <li><a href="../../mocks/pages/my-products/default.html">pages/my-products/default</a> (thumbs)</li>
         <li><a href="../../mocks/pages/saved/default.html">pages/saved/default</a> (ink tile in a saved card)</li>
+        <li><a href="../../mocks/pages/category/software-platforms.html">pages/category/software-platforms</a>, <a href="../../mocks/pages/platform/default.html">pages/platform/default</a> (the gold “Software” tile with the monitor icon)</li>
       </ul>
       <p>Drift fixed during extraction: <code>.media--ink</code> was used 114 times but never defined; it is now defined on the brand tokens. The mocks emit an empty class slot (<code>class="media media--green "</code>) everywhere, which is harmless but should not be copied. No mock shows a real photo, so there was no rule for one: <code>.media &gt; img</code> needs <code>width: 100%; height: 100%; object-fit: cover;</code> in the CSS (proposed).</p>
     </section>

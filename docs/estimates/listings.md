@@ -9,6 +9,7 @@
 | share-listing | 3 days | 100% |
 | share-listing-address | 2 days | 100% |
 | view-business-page | 3 days | 100% |
+| view-platform | 4 days | 100% |
 | view-product | 5 days | 100% |
 | view-space | 4 days | 100% |
 
@@ -23,3 +24,5 @@ view-business-page and view-product (ADR 0007, ADR 0045): the business and shop 
 ADR 0057 is done in view-business-page, view-product and view-space: the line above the name gives the category (a space, the neighbourhood) with no verified label, "Sold by {Business}" carries no mark, and the owner's banner and the preview statuses of a listing that is not public use the new copy.
 
 give-listing-an-address, open-listing-by-address and share-listing-address (L1-032, ADR 0071): the slug rules of one DNS label with reserved words as a setting, both of two simultaneous publishes succeeding, `jubilee migrate` realigning older slugs, `address` on the listing page, a publish, My business and the listing editor, `GET /api/addresses/{label}`, the app host answering `{slug}.jubilee.to` with a 301 or the static not-found page, the canonical link of the listing page, the share dialog sharing the address, and "Your address" on the publish success state, My business and the listing editor with the note after a rename are done with tests (`ListingAddressRulesTests`, `ListingAddressTests`, `AddressResolutionTests`, `RealignSlugsTests`, `eng/azure/server.test.js`, `share-report.spec.ts`, `list-business.spec.ts`, `my-business.spec.ts`, `business.spec.ts`). Left in open-listing-by-address: the owner's steps of `eng/azure/README.md`, "Listing addresses" (wildcard DNS record and certificate, then `ADDRESS_DOMAIN`), until which the app shares `/b/{slug}`; the 200 ms bound of L2-243 AC8 is not measured. The product page has no share action, so a product's address is opened but not yet given out.
+
+view-platform (ADR 0072): the platform page with its link out (a plain link to the founder's `https` address that carries nothing of the member and that the server never opens), "Message founder", save, share and report, the owner view and preview, the refusal of requests, and the platform panel on the Jubilee team's listing screen (L2-257) are done with tests (`PlatformPageTests`, `PlatformAdminTests`, `platform.spec.ts`, `admin-platform.spec.ts`, `platform-review-changes.spec.ts` for offline). Nothing is left.

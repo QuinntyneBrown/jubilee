@@ -1,0 +1,60 @@
+@startuml
+title UML sequence behaviour: Choose a platform, fill it in and save a draft
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member (founder)" as actor
+box "Frontend: Jubilee Web" #E0F2FE
+  participant "ListBusinessPage" as page
+  participant "PlatformForm" as form
+  participant "ListingDraftsApi" as client
+end box
+box "Backend: Jubilee API" #D1FADF
+  participant "ListingDraftsController" as controller
+end box
+box "Backend: Jubilee Application and Domain" #ECFDF3
+  participant "SaveListingDraftCommandHandler" as handler
+  participant "ListingDraft" as draft
+end box
+box "Backend: Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+actor -> page : Open /list?kind=platform, or choose "A software platform"
+page --> actor : "List a software platform", "Platform name", "One line on what it does" (L2-249 AC2)
+page --> actor : Web address, What it does, Who it is for, Pricing; no Category, items or place (L2-250 AC1)
+actor -> page : Type the fields
+page -> form : Set website, does, for, pricing
+form --> page : Counters "{n} / 600", "{n} / 300", "{n} / 120" (L2-250 AC2)
+page --> actor : Preview "How members see it": business card, "Not published yet" (L2-249 AC3, L2-076)
+actor -> page : Press "Save draft"
+page -> form : body()
+page -> client : save(draft id, kind platform, platform {website, does, for, pricing})
+client -> controller : POST or PUT /api/listing-drafts
+controller -> handler : Send SaveListingDraftCommand with the member of the session
+handler -> db : The member's own draft (L2-261 AC2)
+handler -> draft : Save(kind Platform, name, line, highlight, website, PlatformDetails)
+draft -> draft : Keep as typed, cut to the limits, no validation (L2-250 AC8)
+handler -> db : SaveChanges
+handler --> controller : ListingDraftDto with kind platform and PlatformDraftDto
+controller --> client : 200 OK
+client --> page : Draft
+page --> actor : Draft saved
+opt The member returns later
+  actor -> page : Open /list
+  page -> client : current()
+  client -> controller : GET /api/listing-drafts/current
+  controller --> client : ListingDraftDto, kind platform
+  page --> actor : "A software platform" chosen and every field restored (L2-249 AC4)
+end
+@enduml

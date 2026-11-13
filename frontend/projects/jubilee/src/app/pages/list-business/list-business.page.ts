@@ -1,3 +1,4 @@
+import { NgTemplateOutlet } from '@angular/common';
 import { Dialog } from '@angular/cdk/dialog';
 import { HttpErrorResponse } from '@angular/common/http';
 import {
@@ -10,6 +11,16 @@ import {
 } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Observable, switchMap, of, timeout } from 'rxjs';
+import {
+  DOES_MAX,
+  FOR_MAX,
+  PLATFORM_FIELDS,
+  PRICING_MAX,
+  WEBSITE_MAX,
+  checkPlatform,
+  platformMessage,
+  platformSummary,
+} from '../../services/platform-form';
 import {
   CATEGORIES,
   DraftItem,
@@ -79,6 +90,10 @@ type FieldName =
   | 'neighbourhood'
   | 'address'
   | 'household'
+  | 'website'
+  | 'does'
+  | 'for'
+  | 'pricing'
   | 'agreed';
 
 /** The element each field's summary link and first-invalid focus go to. */
@@ -91,6 +106,10 @@ const FIELD_ID: Record<FieldName, string> = {
   neighbourhood: 'area',
   address: 'address',
   household: 'household',
+  website: 'website',
+  does: 'does',
+  for: 'for',
+  pricing: 'pricing',
   agreed: 'agree',
 };
 
@@ -103,6 +122,10 @@ const FIELD_ORDER: FieldName[] = [
   'neighbourhood',
   'address',
   'household',
+  'website',
+  'does',
+  'for',
+  'pricing',
   'agreed',
 ];
 const AUTOSAVE_MS = 10_000;
@@ -111,20 +134,31 @@ const SUBMIT_TIMEOUT_MS = 10_000;
 const TAGLINE_MAX = 90;
 /** The green line of the card, as in the listing editor (L2-072 AC7, L2-087). */
 const HIGHLIGHT_MAX = 30;
-
 /** FieldName-level wording (L2-071 to L2-079). Codes come from the server or from the same checks here. */
-export function messageFor(field: FieldName, code: string, space = false): string {
+export function messageFor(
+  field: FieldName,
+  code: string,
+  space = false,
+  platform = false,
+): string {
   if (code.startsWith('TOO_LONG')) {
     const n = code.split(':')[1] ?? '';
     return `Shorten this to ${TAGLINE_MAX} characters. It has ${n}.`;
   }
   switch (field) {
     case 'name':
+      if (platform) return 'Enter the name people know your platform by.';
       return space
         ? 'Enter a title that says what it is and where.'
         : 'Enter your business name as customers know it.';
     case 'tagline':
+      if (platform) return 'Say in one line what it does.';
       return space ? 'Enter one line renters should know.' : 'Enter one line on what you do.';
+    case 'website':
+    case 'does':
+    case 'for':
+    case 'pricing':
+      return platformMessage(field, code);
     case 'rent':
     case 'available':
     case 'neighbourhood':
@@ -141,12 +175,18 @@ export function messageFor(field: FieldName, code: string, space = false): strin
 }
 
 /** The summary's shorter wording ("Enter your business name"). */
-function summaryFor(field: FieldName, code: string, space: boolean): string {
-  if (code.startsWith('TOO_LONG')) return messageFor(field, code, space);
-  const text = messageFor(field, code, space);
+function summaryFor(field: FieldName, code: string, space: boolean, platform: boolean): string {
+  if (code.startsWith('TOO_LONG')) return messageFor(field, code, space, platform);
+  const text = messageFor(field, code, space, platform);
   switch (field) {
     case 'name':
+      if (platform) return 'Enter your platform’s name';
       return space ? 'Enter a listing title' : 'Enter your business name';
+    case 'website':
+    case 'does':
+    case 'for':
+    case 'pricing':
+      return platformSummary(field, code);
     case 'agreed':
       return space
         ? 'Agree to the statement of faith and the rental terms'
@@ -165,6 +205,7 @@ function summaryFor(field: FieldName, code: string, space: boolean): string {
   selector: 'jb-list-business-page',
   imports: [
     FormsModule,
+    NgTemplateOutlet,
     RouterLink,
     Icon,
     MediaTile,
@@ -207,10 +248,15 @@ export class ListBusinessPage {
   private readonly route = inject(ActivatedRoute);
   protected readonly session = inject(SessionService);
 
-  protected readonly categories = CATEGORIES;
+  /** A business chooses its category; a platform is always in "Software platforms" (L2-248 AC1). */
+  protected readonly categories = CATEGORIES.filter((c) => c.slug !== 'software-platforms');
   protected readonly format = formatPrice;
   protected readonly taglineMax = TAGLINE_MAX;
   protected readonly highlightMax = HIGHLIGHT_MAX;
+  protected readonly websiteMax = WEBSITE_MAX;
+  protected readonly doesMax = DOES_MAX;
+  protected readonly forMax = FOR_MAX;
+  protected readonly pricingMax = PRICING_MAX;
 
   protected readonly loading = signal(true);
   protected readonly loadFailed = signal(false);
@@ -223,6 +269,12 @@ export class ListBusinessPage {
   protected readonly place = signal('');
   protected readonly agreed = signal(false);
   protected readonly items = signal<DraftItem[]>([]);
+
+  // A software platform (L2-249, L2-250): its web address and the founder's words.
+  protected readonly website = signal('');
+  protected readonly does = signal('');
+  protected readonly forWhom = signal('');
+  protected readonly pricing = signal('');
 
   // A space (L2-198, L2-199), its fields held by the form the editor shares (L2-209).
   private readonly space = new SpaceForm();
@@ -246,7 +298,7 @@ export class ListBusinessPage {
     FIELD_ORDER.filter((f) => this.errors()[f]).map((f) => ({
       field: f,
       id: FIELD_ID[f],
-      text: summaryFor(f, this.codes[f] ?? '', this.isSpace()),
+      text: summaryFor(f, this.codes[f] ?? '', this.isSpace(), this.isPlatform()),
     })),
   );
   protected readonly failed = signal('');
@@ -264,12 +316,26 @@ export class ListBusinessPage {
   protected readonly publishedIn = computed(() =>
     this.isSpace()
       ? 'Rooms & rentals'
-      : (CATEGORIES.find((c) => c.slug === this.categorySlug())?.name ?? ''),
+      : this.isPlatform()
+        ? 'Software platforms'
+        : (CATEGORIES.find((c) => c.slug === this.categorySlug())?.name ?? ''),
   );
 
-  protected readonly tile = computed(() => categoryTile(this.categorySlug()));
+  /** The tile of the card: the category chosen, or "Software platforms" for a platform. */
+  protected readonly tile = computed(() =>
+    categoryTile(this.isPlatform() ? 'software-platforms' : this.categorySlug()),
+  );
   protected readonly isServices = computed(() => this.kind() === 'services');
   protected readonly isSpace = computed(() => this.kind() === 'space');
+  protected readonly isPlatform = computed(() => this.kind() === 'platform');
+  /** The heading of the form, by what is listed (L2-198 AC1, L2-249 AC2). */
+  protected readonly heading = computed(() =>
+    this.isSpace()
+      ? 'List a space'
+      : this.isPlatform()
+        ? 'List a software platform'
+        : 'List your business',
+  );
   protected readonly nightly = this.space.nightly;
   protected readonly minimumChoices = this.space.minimumChoices;
   protected readonly householdLabel = this.space.householdLabel;
@@ -295,7 +361,10 @@ export class ListBusinessPage {
     this.loadFailed.set(false);
     const wanted = this.route.snapshot.queryParamMap.get('draft');
     // /list?kind=space opens the space form (L2-198 AC2); a saved draft has the last word.
-    if (this.route.snapshot.queryParamMap.get('kind') === 'space') this.kind.set('space');
+    const asked = this.route.snapshot.queryParamMap.get('kind');
+    if (asked === 'space') this.kind.set('space');
+    // /list?kind=platform opens the platform form (L2-249 AC2).
+    if (asked === 'platform') this.kind.set('platform');
     const source: Observable<ListingDraft | null> =
       wanted === 'new' ? of(null) : wanted ? this.api.get(wanted) : this.api.current();
     source.subscribe({
@@ -321,6 +390,12 @@ export class ListBusinessPage {
     this.agreed.set(draft.agreed);
     this.items.set(draft.items);
     if (draft.space) this.space.apply(draft.space);
+    if (draft.platform) {
+      this.website.set(draft.platform.website);
+      this.does.set(draft.platform.does);
+      this.forWhom.set(draft.platform.for);
+      this.pricing.set(draft.platform.pricing);
+    }
   }
 
   /** A change of term keeps what was typed; only a minimum stay the new term lacks resets (AC5). */
@@ -359,12 +434,20 @@ export class ListBusinessPage {
       kind: this.kind(),
       name: this.name().trim(),
       tagline: this.tagline().trim(),
-      categorySlug: this.isSpace() ? null : this.categorySlug() || null,
+      categorySlug: this.isSpace() || this.isPlatform() ? null : this.categorySlug() || null,
       highlight: this.isSpace() ? null : this.highlight().trim() || null,
-      place: this.isSpace() ? null : this.place().trim() || null,
+      place: this.isSpace() || this.isPlatform() ? null : this.place().trim() || null,
       agreed: this.agreed(),
-      items: this.isSpace() ? [] : this.items(),
+      items: this.isSpace() || this.isPlatform() ? [] : this.items(),
       space: this.isSpace() ? this.space.body() : null,
+      platform: this.isPlatform()
+        ? {
+            website: this.website().trim(),
+            does: this.does().trim(),
+            for: this.forWhom().trim(),
+            pricing: this.pricing().trim(),
+          }
+        : null,
       idempotencyKey: null,
     };
   }
@@ -424,7 +507,17 @@ export class ListBusinessPage {
     if (!tagline) codes.tagline = 'REQUIRED';
     else if (tagline.length > TAGLINE_MAX) codes.tagline = `TOO_LONG:${tagline.length}`;
     if (this.isSpace()) Object.assign(codes, this.space.check());
-    else if (!this.categorySlug()) codes.categorySlug = 'REQUIRED';
+    else if (this.isPlatform()) {
+      Object.assign(
+        codes,
+        checkPlatform({
+          website: this.website(),
+          does: this.does(),
+          for: this.forWhom(),
+          pricing: this.pricing(),
+        }),
+      );
+    } else if (!this.categorySlug()) codes.categorySlug = 'REQUIRED';
     if (!this.agreed()) codes.agreed = 'REQUIRED';
     return codes;
   }
@@ -434,7 +527,7 @@ export class ListBusinessPage {
     const errors: Partial<Record<FieldName, string>> = {};
     for (const field of FIELD_ORDER) {
       const code = codes[field];
-      if (code) errors[field] = messageFor(field, code, this.isSpace());
+      if (code) errors[field] = messageFor(field, code, this.isSpace(), this.isPlatform());
     }
     this.errors.set(errors);
     if (Object.keys(errors).length) {
@@ -494,7 +587,7 @@ export class ListBusinessPage {
 function fieldCodes(errors: Record<string, string>): Partial<Record<FieldName, string>> {
   const codes: Partial<Record<FieldName, string>> = {};
   for (const [key, code] of Object.entries(errors)) {
-    const field = (SPACE_FIELDS[key] ?? key) as FieldName;
+    const field = (PLATFORM_FIELDS[key] ?? SPACE_FIELDS[key] ?? key) as FieldName;
     if (field in FIELD_ID) codes[field] = code;
   }
   return codes;

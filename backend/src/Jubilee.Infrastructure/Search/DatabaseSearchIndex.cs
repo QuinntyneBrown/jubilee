@@ -69,6 +69,20 @@ public sealed class DatabaseSearchIndex(IAppDbContext db) : ISearchIndex
                 }
             }
 
+            // A platform is found by the founder's words; never by its web address or its pricing (L2-253 AC2).
+            if (listing.Platform is { } platform)
+            {
+                if (Matches(stems, platform.Does))
+                {
+                    fields.Add(("what it does", platform.Does));
+                }
+
+                if (Matches(stems, platform.For))
+                {
+                    fields.Add(("who it is for", platform.For));
+                }
+            }
+
             if (matchedServices.Count > 0)
             {
                 fields.Add((Count(matchedServices.Count, "service"), matchedServices[0].Name));

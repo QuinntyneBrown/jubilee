@@ -1,0 +1,15 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers: Describe a platform
+
+Person(member, "Member (founder)", "Lists a platform")
+System_Boundary(jubilee, "Jubilee") {
+  Container(web, "Jubilee Web", "Angular single-page application", "ListBusinessPage with the platform fields and the preview")
+  Container(api, "Jubilee API", "ASP.NET Core", "/api/listing-drafts: save, resume and publish")
+  ContainerDb(db, "Jubilee database", "SQL Server", "ListingDrafts and Listings, each with Website and the Platform JSON column")
+}
+Rel(member, web, "Fills in the form at /list?kind=platform", "HTTPS")
+Rel(web, api, "Saves the draft and publishes", "JSON/HTTPS")
+Rel(api, db, "Stores the draft and the live listing", "EF Core")
+@enduml

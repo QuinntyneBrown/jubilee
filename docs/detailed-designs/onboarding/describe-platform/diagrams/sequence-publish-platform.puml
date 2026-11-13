@@ -1,0 +1,72 @@
+@startuml
+title UML sequence behaviour: Publish a platform
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member (founder)" as actor
+box "Frontend: Jubilee Web" #E0F2FE
+  participant "ListBusinessPage" as page
+  participant "PlatformForm" as form
+  participant "ListingDraftsApi" as client
+end box
+box "Backend: Jubilee API" #D1FADF
+  participant "ListingDraftsController" as controller
+end box
+box "Backend: Jubilee Application and Domain" #ECFDF3
+  participant "PublishListingCommandHandler" as handler
+  participant "Drafts" as drafts
+  participant "PlatformRules" as rules
+  participant "Listing" as listing
+end box
+box "Backend: Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+actor -> page : Tick the agreement and press "Publish listing"
+page -> form : check()
+alt A field is empty or the web address is not https
+  form --> page : Messages per field
+  page --> actor : Summary and a message under each field; nothing is sent (L2-250 AC3 to AC5, L2-126)
+else Valid in the browser
+  page --> actor : Fields read-only, button busy (L2-251 AC2, L2-127)
+  page -> client : publish(draft id, body, idempotency key)
+  client -> controller : POST /api/listing-drafts/{id}/publish
+  controller -> handler : Send PublishListingCommand with the member of the session
+  handler -> db : The member's own draft (L2-261 AC2)
+  handler -> handler : Name and line as for any listing (L2-072)
+  handler -> drafts : ValidatePlatform(input.Platform, errors)
+  drafts -> rules : IsWebAddress(website)
+  rules --> drafts : https, dotted host, no user info, 200 at most; no request is made (L2-255 AC4)
+  drafts --> handler : platform.website REQUIRED or INVALID; platform.does, for, pricing REQUIRED
+  handler -> handler : agreed REQUIRED when unticked (L2-251 AC1)
+  alt Errors
+    handler -> db : Keep what was typed in the draft (L2-077)
+    handler --> controller : ValidationFailedException
+    controller --> client : 422 with errors (L2-250 AC6)
+    client --> page : Field codes
+    page --> actor : The same messages under the fields; nothing is published
+  else No errors
+    handler -> listing : Create in Category.PlatformsSlug, Kind Platform (L2-248 AC1)
+    handler -> listing : AssignOwner, Describe(owner name), SetHighlight
+    handler -> listing : DescribePlatform(PlatformDetails, website)
+    handler -> listing : Publish(now), live at once (L2-078)
+    handler -> db : Add Listing and ListingSubmission with flags from the name and line only (L2-250 AC7)
+    handler -> db : Remove the draft; tell members who follow Software platforms (L2-253 AC3)
+    handler -> db : SaveChanges, one transaction
+    handler --> controller : PublishedListingDto, kind platform, stage live
+    controller --> client : 200 OK
+    client --> page : Published listing
+    page --> actor : "{Platform name} is live. Members can find it in Software platforms now." (L2-251 AC2)
+  end
+end
+@enduml

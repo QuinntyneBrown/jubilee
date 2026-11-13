@@ -50,6 +50,12 @@ public sealed class Review
 
     public DateTimeOffset? EditedAt { get; private set; }
 
+    /// <summary>
+    /// When the author stated they have used the software platform (L2-258, ADR 0072). It is their own word:
+    /// Jubilee does not check it. Null for a review of a business, a shop or a space.
+    /// </summary>
+    public DateTimeOffset? StatedUseAt { get; private set; }
+
     /// <summary>The client's key for this review; a repeat of it returns the first answer (L2-132).</summary>
     public string IdempotencyKey { get; private set; } = string.Empty;
 
@@ -87,7 +93,8 @@ public sealed class Review
     }
 
     public static Review Write(
-        Guid listingId, ReviewItem item, string authorSubject, string authorFullName, int rating, string text, string idempotencyKey, DateTimeOffset now) => new()
+        Guid listingId, ReviewItem item, string authorSubject, string authorFullName, int rating, string text, string idempotencyKey, DateTimeOffset now,
+        bool statedUse = false) => new()
     {
         Id = Guid.NewGuid(),
         ListingId = listingId,
@@ -99,6 +106,9 @@ public sealed class Review
         Rating = rating,
         Text = text.Trim(),
         CreatedAt = now,
+
+        // The author's own word that they used a platform; only its time is kept (L2-258 AC3, L2-261 AC4).
+        StatedUseAt = statedUse ? now : null,
         IdempotencyKey = idempotencyKey,
     };
 

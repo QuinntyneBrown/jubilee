@@ -63,7 +63,9 @@
 } @else {
   @switch (state.status) {
     @case ('loading') {
-      <p class="visually-hidden" role="status">Loading businesses…</p>
+      <p class="visually-hidden" role="status">
+        {{ platforms() ? 'Loading platforms…' : 'Loading businesses…' }}
+      </p>
       <ul jb-card-grid-skeleton [count]="8"></ul>
     }
     @case ('error') {
@@ -80,7 +82,21 @@
     }
     @case ('loaded') {
       @let page = state.value;
-      @if (page.totalCount === 0) {
+      @if (page.totalCount === 0 && platforms()) {
+        <!-- No platform is live yet (L2-252 AC5). -->
+        <div jb-empty-state icon="monitor" heading="No platform is listed here yet">
+          Know a Christian founder in Toronto? Invite them to list free, or list your own platform.
+          <a
+            slot="actions"
+            jb-button
+            variant="primary"
+            routerLink="/list"
+            [queryParams]="{ kind: 'platform' }"
+            ><svg jb-icon name="plus"></svg>List a platform</a
+          >
+          <a slot="actions" jb-button routerLink="/">Browse other categories</a>
+        </div>
+      } @else if (page.totalCount === 0) {
         <div jb-empty-state icon="wrench" heading="No one has listed here yet">
           Know a Christian {{ category()?.trades ?? 'business owner' }} in Toronto? Invite them to
           list free, or list your own business.
@@ -91,26 +107,31 @@
         </div>
       } @else {
         <div class="cluster cluster--between" style="margin-bottom: var(--space-6)">
-          <div class="cluster only-desktop" role="group" aria-label="Filters">
-            @for (chip of chips; track chip.filter.value) {
-              <button
-                jb-chip
-                type="button"
-                [selected]="store.isOn(chip.filter)"
-                (click)="store.toggle(chip.filter)"
-              >
-                {{ chip.label }}
-              </button>
-            }
-          </div>
-          <button
-            jb-button
-            class="only-mobile"
-            type="button"
-            (click)="openFilters(page.category.slug, page.matchCount)"
-          >
-            <svg jb-icon name="filter"></svg>Filters{{ filterCount() ? ' · ' + filterCount() : '' }}
-          </button>
+          <!-- A platform has no offers and serves no area: the sort alone (L2-252 AC2). -->
+          @if (!platforms()) {
+            <div class="cluster only-desktop" role="group" aria-label="Filters">
+              @for (chip of chips; track chip.filter.value) {
+                <button
+                  jb-chip
+                  type="button"
+                  [selected]="store.isOn(chip.filter)"
+                  (click)="store.toggle(chip.filter)"
+                >
+                  {{ chip.label }}
+                </button>
+              }
+            </div>
+            <button
+              jb-button
+              class="only-mobile"
+              type="button"
+              (click)="openFilters(page.category.slug, page.matchCount)"
+            >
+              <svg jb-icon name="filter"></svg>Filters{{
+                filterCount() ? ' · ' + filterCount() : ''
+              }}
+            </button>
+          }
           <div
             jb-field
             label="Sort"
@@ -166,6 +187,21 @@
             }
           </ul>
           <jb-pagination [page]="page.page" [pageSize]="page.pageSize" [total]="page.matchCount" />
+        }
+        @if (platforms()) {
+          <section jb-section divided labelledBy="built">
+            <div class="cluster cluster--between">
+              <div>
+                <h2 jb-card-title id="built">Built something people use online?</h2>
+                <p class="text-muted">
+                  List your platform for free. Members go to your website to use it.
+                </p>
+              </div>
+              <a jb-button variant="primary" routerLink="/list" [queryParams]="{ kind: 'platform' }"
+                >List a platform</a
+              >
+            </div>
+          </section>
         }
       }
     }

@@ -1,0 +1,40 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components: Browse platforms
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(browse, "BrowsePage", "Angular page", "Category chips and the Software platforms group")
+  Component(category, "CategoryPage", "Angular page", "Software platforms with Sort and no filters")
+  Component(search, "SearchPage", "Angular page", "Lists platform hits under Businesses")
+  Component(card, "jb-business-card", "Library component", "Tile or cover, Software, name, line, highlight, rating")
+  Component(tile, "categoryTile", "Library helper", "software-platforms: gold tint, monitor icon, label Software")
+  Component(client, "DirectoryApi and SearchApi", "Typed HTTP clients", "Call the directory and search endpoints")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(dirctrl, "DirectoryController and CategoriesController", "ASP.NET Core controllers", "Anonymous directory reads")
+  Component(searchctrl, "SearchController", "ASP.NET Core controller", "Anonymous search")
+  Component(home, "GetBrowseHomeQueryHandler", "MediatR handler", "Groups by category through DirectoryGrouping")
+  Component(cat, "GetCategoryListingsQueryHandler", "MediatR handler", "Ignores offers and areas for software-platforms")
+  Component(find, "SearchDirectoryQueryHandler", "MediatR handler", "Asks ISearchIndex")
+  Component(index, "DatabaseSearchIndex", "ISearchIndex", "Matches name, line, Does and For; never Website or Pricing")
+  Component(dto, "BusinessCardDto", "DTO", "Projection without the web address")
+}
+ContainerDb(db, "Jubilee database", "SQL Server", "Listings")
+
+Rel(browse, client, "Loads the home")
+Rel(category, card, "Renders")
+Rel(card, tile, "Reads the tile from")
+Rel(category, client, "Loads the category with sort and page")
+Rel(search, client, "Searches")
+Rel(client, dirctrl, "GET /api/directory/home, GET /api/categories/software-platforms/listings", "JSON/HTTPS")
+Rel(client, searchctrl, "GET /api/search?q=", "JSON/HTTPS")
+Rel(dirctrl, home, "Sends GetBrowseHomeQuery")
+Rel(dirctrl, cat, "Sends GetCategoryListingsQuery")
+Rel(searchctrl, find, "Sends SearchDirectoryQuery")
+Rel(find, index, "SearchAsync")
+Rel(cat, dto, "Projects to")
+Rel(home, db, "Reads", "EF Core")
+Rel(cat, db, "Reads", "EF Core")
+Rel(index, db, "Reads", "EF Core")
+@enduml

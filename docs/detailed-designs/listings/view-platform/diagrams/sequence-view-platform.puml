@@ -1,0 +1,65 @@
+@startuml
+title UML sequence behaviour: Open a platform page and follow the link out
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Visitor or member" as actor
+box "Frontend: Jubilee Web" #E0F2FE
+  participant "BusinessPage" as page
+  participant "ListingsApi" as client
+end box
+box "Backend: Jubilee API" #D1FADF
+  participant "ListingsController" as controller
+end box
+box "Backend: Jubilee Application and Domain" #ECFDF3
+  participant "GetListingPageQueryHandler" as handler
+  participant "PlatformRules" as rules
+end box
+box "Backend: Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+participant "Platform's website" as site
+actor -> page : Open /b/lanternread
+page -> client : get(lanternread)
+client -> controller : GET /api/listings/lanternread
+controller -> handler : Send GetListingPageQuery with the viewer of the session
+handler -> db : Public listing by slug, or the owner's or the team's preview (L2-028, L2-219)
+alt Not found, or not public for this viewer
+  handler --> controller : NotFoundException
+  controller --> client : 404
+  page --> actor : Not-found page (L2-254 AC7)
+else Found
+  db --> handler : Listing with Website and Platform details
+  handler -> rules : IsWebAddress(Website), Host(Website)
+  rules --> handler : Address and host, or null when the rule refuses it (L2-255 AC5)
+  handler --> controller : ListingPageDto, kind platform, Platform {website, host, does, for, pricing} (L2-254 AC9)
+  controller --> client : 200 OK
+  client --> page : ListingPage
+  page --> actor : Platform layout: name, "Founded by", line, What it does, Who it is for, Details, Reviews (L2-254 AC1)
+  alt platform.website is set
+    page --> actor : "Visit lanternread.example" and the note that Jubilee takes no payment and has not checked it (L2-254 AC2)
+    actor -> site : Follow the link in a new tab: exact address, no referrer, nothing added (L2-255 AC1, AC2)
+    note over page, db : Jubilee receives no request and records no click (L2-255 AC3)
+  else No valid address
+    page --> actor : No link out and no "Website" row (L2-255 AC5)
+  end
+  opt Visitor presses "Message founder", save or "Report this listing"
+    page --> actor : Sign-in prompt (L2-012, L2-254 AC5)
+  end
+end
+opt Load fails
+  client --> page : Error
+  page --> actor : "We couldn't load this platform" with JB-BIZ-503 and "Try again" (L2-254 AC8)
+end
+@enduml

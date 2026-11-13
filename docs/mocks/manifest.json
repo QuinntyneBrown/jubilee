@@ -284,7 +284,8 @@
         "saved-hearts"
       ],
       "requirements": [
-        "L2-231"
+        "L2-231",
+        "L2-252"
       ]
     },
     {
@@ -302,10 +303,16 @@
         "rooms-rentals",
         "rooms-rentals-empty",
         "rooms-rentals-loading",
-        "rooms-rentals-error"
+        "rooms-rentals-error",
+        "software-platforms",
+        "software-platforms-empty",
+        "software-platforms-loading",
+        "software-platforms-error"
       ],
       "requirements": [
-        "L2-231"
+        "L2-231",
+        "L2-252",
+        "L2-253"
       ]
     },
     {
@@ -319,10 +326,12 @@
         "empty",
         "error",
         "no-results",
-        "spaces"
+        "spaces",
+        "platforms"
       ],
       "requirements": [
-        "L2-231"
+        "L2-231",
+        "L2-253"
       ]
     },
     {
@@ -390,6 +399,37 @@
       }
     },
     {
+      "id": "platform",
+      "kind": "page",
+      "title": "Platform",
+      "route": "/b/:slug",
+      "requirements": [
+        "L2-254",
+        "L2-255",
+        "L2-258",
+        "L2-260",
+        "L2-262"
+      ],
+      "states": [
+        "default",
+        "signed-out",
+        "owner",
+        "preview",
+        "error",
+        "reviews-empty",
+        "reviews-loading",
+        "reviews-error",
+        "reviews-filtered",
+        "reviews-mine",
+        "reviews-owner",
+        "reviews-not-stated"
+      ],
+      "not_applicable": {
+        "loading": "/b/:slug does not know the listing is a platform until it has loaded; the skeleton is the business page’s (pages/business/loading.html, L2-123).",
+        "empty": "A platform page shows one platform, and every field of L2-248 AC3 but the highlight is required; with no reviews the section is the reviews-empty state."
+      }
+    },
+    {
       "id": "shop",
       "kind": "page",
       "title": "Shop",
@@ -437,7 +477,9 @@
         "L2-226",
         "L2-227",
         "L2-228",
-        "L2-240"
+        "L2-240",
+        "L2-258",
+        "L2-259"
       ],
       "states": [
         "default",
@@ -447,7 +489,12 @@
         "posted",
         "space",
         "single-item",
-        "not-eligible"
+        "not-eligible",
+        "platform",
+        "platform-invalid",
+        "platform-busy",
+        "platform-failed",
+        "platform-posted"
       ],
       "not_applicable": {
         "loading": "The form needs what GET /api/listings/{slug}/reviews/new answers; it shows the page skeleton of L2-123 like every page, drawn on business/loading.",
@@ -660,7 +707,11 @@
         "space-invalid",
         "space-submitting",
         "space-draft-saved",
-        "space-success"
+        "space-success",
+        "platform",
+        "platform-invalid",
+        "platform-busy",
+        "platform-success"
       ],
       "not_applicable": {
         "empty": "A form page has no collection that could be empty."
@@ -695,7 +746,8 @@
         "submitting",
         "success",
         "space",
-        "photos"
+        "photos",
+        "platform"
       ],
       "not_applicable": {
         "empty": "A form page has no collection that could be empty."
@@ -829,7 +881,8 @@
         "loading",
         "error",
         "taken-down",
-        "space"
+        "space",
+        "platform"
       ],
       "not_applicable": {
         "empty": "The page shows one listing; it has no collection that could be empty."

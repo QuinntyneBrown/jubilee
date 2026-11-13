@@ -22,6 +22,12 @@ export class AdminListingPage extends AdminShellPage implements Screen {
   readonly previewHeading: Locator;
   readonly space: Locator;
   readonly spacePreview: Locator;
+  /** The panel of a software platform (L2-257 AC2). */
+  readonly platform: Locator;
+  /** The platform's address as a link that leaves Jubilee; absent when the address fails the rule. */
+  readonly platformLink: Locator;
+  readonly previewTag: Locator;
+  readonly previewPerks: Locator;
 
   constructor(page: Page) {
     super(page);
@@ -43,6 +49,10 @@ export class AdminListingPage extends AdminShellPage implements Screen {
     this.previewHeading = this.main.locator('aside h2');
     this.space = this.main.locator('section[aria-labelledby="spc"]');
     this.spacePreview = this.main.locator('aside .space-card');
+    this.platform = this.main.locator('section[aria-labelledby="plt"]');
+    this.platformLink = this.platform.getByRole('link');
+    this.previewTag = this.preview.locator('.media__tag');
+    this.previewPerks = this.preview.locator('.perk');
   }
 
   /** The value of one row of the owner card or the space card, by its term. */
@@ -55,6 +65,13 @@ export class AdminListingPage extends AdminShellPage implements Screen {
 
   spaceRow(term: string): Locator {
     return this.space
+      .locator('.dl__item')
+      .filter({ has: this.page.getByText(term, { exact: true }) })
+      .locator('dd');
+  }
+
+  platformRow(term: string): Locator {
+    return this.platform
       .locator('.dl__item')
       .filter({ has: this.page.getByText(term, { exact: true }) })
       .locator('dd');

@@ -43,6 +43,9 @@ public sealed class ListingConfiguration : IEntityTypeConfiguration<Listing>
             s.ToJson("Space");
             s.Ignore(x => x.MinimumStayLabel);
         });
+
+        // A software platform's own words are one JSON column too; every other kind has none (ADR 0072).
+        builder.OwnsOne(l => l.Platform, p => p.ToJson("Platform"));
     }
 }
 
@@ -582,6 +585,7 @@ public sealed class ListingDraftConfiguration : IEntityTypeConfiguration<Listing
         builder.Property(d => d.CategorySlug).HasMaxLength(60);
         builder.Property(d => d.Highlight).HasMaxLength(60);
         builder.Property(d => d.Place).HasMaxLength(200);
+        builder.Property(d => d.Website).HasMaxLength(PlatformRules.MaxWebsiteLength);
         builder.HasIndex(d => new { d.OwnerSubject, d.UpdatedAt });
         builder.HasIndex(d => d.UpdatedAt);
         builder.HasMany(d => d.Items).WithOne().HasForeignKey(i => i.ListingDraftId).OnDelete(DeleteBehavior.Cascade);
@@ -593,6 +597,9 @@ public sealed class ListingDraftConfiguration : IEntityTypeConfiguration<Listing
             s.ToJson("Space");
             s.Ignore(x => x.MinimumStayLabel);
         });
+
+        // A platform draft keeps the founder's words as one JSON column, like its listing (ADR 0072).
+        builder.OwnsOne(d => d.Platform, p => p.ToJson("Platform"));
     }
 }
 

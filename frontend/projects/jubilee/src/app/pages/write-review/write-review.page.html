@@ -124,6 +124,24 @@
             (ngModelChange)="text.set($event)"
           ></textarea>
         </div>
+        @if (platform()) {
+          <div>
+            <jb-checkbox
+              controlId="rv-used"
+              name="usedIt"
+              hint="This is your own word. Jubilee does not check it."
+              [disabled]="busy()"
+              [checked]="usedIt()"
+              [invalid]="!!found.usedIt"
+              [describedBy]="found.usedIt ? 'rv-used-error' : null"
+              (checkedChange)="stateUse($event)"
+              >I have used {{ review.listing.name }} myself.</jb-checkbox
+            >
+            @if (found.usedIt; as message) {
+              <span jb-field-error id="rv-used-error">{{ message }}</span>
+            }
+          </div>
+        }
         <div class="stack stack--sm">
           <p class="text-muted">
             Your review posts under your first name and last initial: {{ review.authorName }}

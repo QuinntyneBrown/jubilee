@@ -122,6 +122,27 @@ outbox as it sends every other e-mail.
 - **Other listings** — the Owner card names the owner's other listings and
   drafts with their stages (`AdminOtherListing`, `L2-079` AC3).
 
+### Platforms
+
+For a software platform (kind `platform`, ADR 0072), `AdminListingDto` carries
+`Kind` `platform` and `Platform` (`AdminListingPlatform`: `Website`, `Does`,
+`For` and `Pricing`), null for every other kind. `AdminListingPage` shows the
+header as for any listing, "Software platforms · published {when} ·
+{status}", "Take down listing", the Owner card and the flags of `L2-072`. Its
+preview "How members see it" shows the line, "Web address", "What it does",
+"Who it is for" and "Pricing" (`L2-257` AC2). The web address shows as text.
+It is also a link, with `rel="noopener noreferrer nofollow"` and
+`target="_blank"`, when it passes `PlatformRules.IsWebAddress`; an address
+that fails the rule stays text only. Every field is rendered by
+interpolation, never as markup (`L2-261` AC1), and the server never requests
+the address (`L2-255` AC4). No line calls the platform verified, approved or
+vetted.
+
+A takedown of a platform (`L2-101`) and a report of it (`L2-105`,
+`moderation/handle-reports`) follow the same handlers as for any listing: the
+platform leaves every public list, its page answers 404 and its founder is
+told (`L2-257` AC3).
+
 ## Requirements
 
 The feature realizes the following level-2 (L2) requirements. Each L2
@@ -135,6 +156,7 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 | `L2-079` | `L1-011` | When the Jubilee team opens a listing in the admin application, the system shall show the owner's other listings with their stages. |
 | `L2-150` | `L1-020` | The system shall record in the audit log each staff view of a member's personal data, with the reason (report ID or listing ID). |
 | `L2-180` | `L1-025` | The system shall store an append-only audit record with actor, action, target, time, before and after values, and reason for each sensitive action, including a takedown. |
+| `L2-257` | `L1-033` | The listing screen of a platform in the admin application shall show, in the preview "How members see it", the line, "Web address" (as text, and as a link with `rel="noopener noreferrer nofollow"` and `target="_blank"`), "What it does", "Who it is for" and "Pricing"; a platform taken down or reported shall be handled as any listing. |
 
 ## Diagrams
 

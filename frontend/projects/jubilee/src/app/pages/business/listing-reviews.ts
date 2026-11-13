@@ -61,6 +61,8 @@ export class ListingReviews {
   readonly items = input<ReviewItemOption[]>([]);
   readonly itemLegend = input<'service' | 'product' | null>(null);
   readonly space = input(false);
+  /** A software platform: its reviews rest on each member's own statement of use (L2-258 AC6). */
+  readonly platform = input(false);
 
   protected readonly store = inject(ListingReviewsStore);
   private readonly session = inject(SessionService);
@@ -87,11 +89,16 @@ export class ListingReviews {
     return writing === 'eligible' || writing === 'sign-in';
   });
 
-  protected readonly notice = computed(() =>
-    this.store.state().status === 'loaded' && this.store.writing() === 'not-eligible'
+  protected readonly notice = computed(() => {
+    if (this.store.state().status !== 'loaded') return null;
+    // A platform says whose word its reviews are, with or without reviews (L2-258 AC6).
+    if (this.platform()) {
+      return `Reviews here are from members who say they have used ${this.name()}. That is their own word. Jubilee does not check it.`;
+    }
+    return this.store.writing() === 'not-eligible'
       ? `You can review ${this.name()} after they confirm a request of yours.`
-      : null,
-  );
+      : null;
+  });
 
   /** The Write a review screen, with the product chosen on a product page (L2-232 AC3). */
   protected readonly writeHref = computed(

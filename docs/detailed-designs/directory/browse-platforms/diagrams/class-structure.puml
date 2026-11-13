@@ -1,0 +1,109 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure: Browse platforms
+
+class Category <<record>> {
+  +string Slug
+  +string Name
+  +{static} PlatformsSlug: string = "software-platforms"
+  +{static} All: IReadOnlyList<Category>
+  +{static} KindOf(slug: string): ListingKind
+  +{static} Find(slug: string?): Category?
+}
+
+enum ListingKind {
+  Services
+  Shop
+  Space
+  Platform
+}
+
+class Listing {
+  +string Slug
+  +string Name
+  +string Tagline
+  +string? Highlight
+  +string CategorySlug
+  +ListingKind Kind
+  +string? Website
+  +PlatformDetails? Platform
+}
+
+class PlatformDetails <<owned type, JSON column Platform>> {
+  +string Does
+  +string For
+  +string Pricing
+}
+
+class BusinessCardDto <<record>> {
+  +string Slug
+  +string Name
+  +string Tagline
+  +string? Highlight
+  +string CategorySlug
+  +string? CoverPhoto
+  +bool RepliesFast
+  +CardRatingDto? Rating
+  +{static} From(listing: Listing, fast): BusinessCardDto
+}
+
+class GetCategoryListingsQuery <<record>> {
+  +string Slug
+  +CategoryFilterSet Filters
+  +ListingSort Sort
+  +int Page
+  +SpaceTerm? Term
+}
+
+class CategoryPageResult <<record>> {
+  +CategoryLinkDto Category
+  +int TotalCount
+  +int MatchCount
+  +CategoryFactDto? Fact
+  +AppliedFiltersDto Filters
+  +string Sort
+  +int Page
+  +int PageCount
+  +IReadOnlyList<BusinessCardDto> Businesses
+}
+
+class DatabaseSearchIndex {
+  +SearchAsync(query: string): SearchResults
+}
+
+class SearchHit <<record>> {
+  +string Kind
+  +string Name
+  +string Slug
+  +string CategorySlug
+  +MatchExplanation? Explanation
+  +SpaceCardDto? Space
+}
+
+class CategoryTile <<TypeScript>> {
+  +tint: TileTint
+  +icon: IconName
+  +label: string
+}
+
+Category ..> ListingKind : KindOf derives
+Listing --> ListingKind
+Listing *-- "0..1" PlatformDetails
+BusinessCardDto ..> Listing : projects, never Website
+CategoryPageResult *-- "0..16" BusinessCardDto
+GetCategoryListingsQuery ..> Category : filters dropped for PlatformsSlug
+DatabaseSearchIndex ..> PlatformDetails : matches Does and For only
+DatabaseSearchIndex ..> SearchHit : builds, Kind business
+CategoryTile ..> Category : one per slug
+@enduml

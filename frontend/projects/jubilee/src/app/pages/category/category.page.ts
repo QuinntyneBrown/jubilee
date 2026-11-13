@@ -116,8 +116,14 @@ export class CategoryPage {
   /** Rooms & rentals lists spaces, not businesses (L2-202). */
   protected readonly rooms = computed(() => this.slug().get('category') === 'rooms-rentals');
 
-  protected readonly filterCount = computed(
-    () => this.store.query().offers.length + this.store.query().areas.length,
+  /** Software platforms has the sort and no filters (L2-252). */
+  protected readonly platforms = computed(
+    () => this.slug().get('category') === 'software-platforms',
+  );
+
+  /** The filters applied; none for platforms, whatever the address says (L2-252 AC3). */
+  protected readonly filterCount = computed(() =>
+    this.platforms() ? 0 : this.store.query().offers.length + this.store.query().areas.length,
   );
 
   protected readonly subtitle = computed(() => {
@@ -127,6 +133,12 @@ export class CategoryPage {
       if (state.status !== 'loaded') return this.category()?.blurb ?? '';
       const n = state.value.matchCount;
       return `${formatCount(n)} ${n === 1 ? 'space' : 'spaces'}`;
+    }
+    if (this.platforms()) {
+      if (state.status === 'loading') return 'Loading platforms…';
+      if (state.status !== 'loaded') return this.category()?.blurb ?? '';
+      const n = state.value.totalCount;
+      return `${formatCount(n)} ${n === 1 ? 'platform' : 'platforms'}`;
     }
     if (state.status === 'loading') return 'Loading businesses…';
     if (state.status !== 'loaded') return this.category()?.blurb ?? '';
