@@ -59,14 +59,20 @@
                   <th jb-table-cell scope="col"><span class="visually-hidden">Actions</span></th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody
+                cdkDropList
+                cdkDropListLockAxis="y"
+                [cdkDropListData]="list.rows"
+                [cdkDropListDisabled]="moving()"
+                (cdkDropListDropped)="drop(list, $event)"
+              >
                 @for (
                   product of list.rows;
                   track product.id;
                   let first = $first;
                   let last = $last
                 ) {
-                  <tr>
+                  <tr cdkDrag [cdkDragData]="product">
                     <td jb-table-cell>
                       <div class="cluster" style="flex-wrap: nowrap">
                         @if (product.photo; as photo) {
@@ -105,6 +111,19 @@
                         class="cluster cluster--end"
                         style="flex-wrap: nowrap; gap: var(--space-1)"
                       >
+                        <button
+                          jb-button
+                          iconOnly
+                          variant="ghost"
+                          size="sm"
+                          type="button"
+                          cdkDragHandle
+                          tabindex="-1"
+                          aria-hidden="true"
+                          title="Drag to reorder"
+                        >
+                          ⋮⋮
+                        </button>
                         <button
                           jb-button
                           iconOnly
@@ -158,6 +177,7 @@
               </tbody>
             </table>
           </div>
+          <p jb-field-help>Drag a product by its handle, or use the arrows, to change the order.</p>
         }
       </div>
     }

@@ -53,9 +53,16 @@
           @if (list.total >= list.max) {
             <p class="text-muted" role="status">You can list up to {{ list.max }} services.</p>
           }
-          <ul jb-rows>
+          <ul
+            jb-rows
+            cdkDropList
+            cdkDropListLockAxis="y"
+            [cdkDropListData]="list.rows"
+            [cdkDropListDisabled]="moving()"
+            (cdkDropListDropped)="drop(list, $event)"
+          >
             @for (service of list.rows; track service.id; let first = $first; let last = $last) {
-              <li jb-row stack>
+              <li jb-row stack cdkDrag [cdkDragData]="service">
                 <div jb-row-title>{{ service.name }}</div>
                 @if (meta(service)) {
                   <div jb-row-meta>{{ meta(service) }}</div>
@@ -65,6 +72,19 @@
                   price(service)
                 }}</span>
                 <div slot="trailing" jb-row-actions>
+                  <button
+                    jb-button
+                    iconOnly
+                    variant="ghost"
+                    size="sm"
+                    type="button"
+                    cdkDragHandle
+                    tabindex="-1"
+                    aria-hidden="true"
+                    title="Drag to reorder"
+                  >
+                    ⋮⋮
+                  </button>
                   <button
                     jb-button
                     iconOnly
@@ -115,6 +135,7 @@
               </li>
             }
           </ul>
+          <p jb-field-help>Drag a service by its handle, or use the arrows, to change the order.</p>
         }
       </div>
     }
