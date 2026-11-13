@@ -2,8 +2,8 @@
 
 ## Overview
 
-Jubilee is Toronto's Christian marketplace. Owners upload listing photos, and
-members and owners attach photos to messages. A file from an untrusted person
+Jubilee is Toronto's Christian marketplace. Owners upload listing photos and
+product photos, and members and owners attach photos to messages. A file from an untrusted person
 can be oversized, can be something other than the image it claims to be, can
 carry malware, or can carry hidden data such as the location where a photo was
 taken. This feature defines the path an uploaded photo takes before any browser
@@ -23,13 +23,15 @@ and is never served. The bytes of an upload are never published as they came;
 only the checked image is, under a random name. The `Jubilee API` accepts JPEG
 and PNG only, up to `5 MB` and 8,000 pixels.
 
-Two paths are built, and they share the media store. A message photo is
+Three paths are built, and they share the media store. A message photo is
 checked, scanned for malware and then stored, and is reached only through a
 signed link (ADR 0014, ADR 0039, ADR 0051). A listing photo is checked,
 re-encoded into renditions and stored, and is served publicly under its random
-name (journey 15). Listing photos are not scanned yet. Product photos have no
-upload yet. The cookieless media domain is not registered yet. These three are
-open and are named below.
+name (journey 15). A product photo is checked and re-encoded as a listing photo
+is, scanned as a message photo is, and only then stored and served publicly
+under its random name (journey 16, ADR 0063). Listing photos are not scanned
+yet, and the cookieless media domain is not registered yet. These two are open
+and are named below.
 
 ## Description
 
@@ -40,19 +42,23 @@ The slice runs from the Angular upload control to the media store.
   `PhotoAttachmentService` read the first bytes, shrink a photo over `5 MB` on a
   canvas, and refuse anything else with "Photo couldn't be attached. Use a JPG
   or PNG under 5 MB." (ADR 0039). For a listing, `EditListingPage` shows the
-  server's reason under the Photos area.
+  server's reason under the Photos area. For a product, `ProductEditorDialog`
+  refuses a file over `5 MB` before it is sent with "Photos can be 5 MB at
+  most." and shows the server's reason beside "Add photo".
 - **`MessagesApi`** and **`MyBusinessApi`** — service contracts of the `api`
   library. `MessagesApi.attach` posts one file as multipart form data to
   `POST /api/conversations/{id}/attachments`. `MyBusinessApi.addPhoto` posts one
-  file to `POST /api/my-business/photos`. Both are state-changing requests and
-  carry the anti-CSRF header that `CsrfMiddleware` checks (L2-135).
-- **`ConversationsController.Attach`** and **`MyBusinessController.AddPhoto`** —
-  the two upload routes. Each requires a signed-in member, caps the request body
+  file to `POST /api/my-business/photos`. `CatalogueApi.uploadProductPhoto`
+  posts one file to `POST /api/my-business/products/photos`. All are
+  state-changing requests and carry the anti-CSRF header that `CsrfMiddleware`
+  checks (L2-135).
+- **`ConversationsController.Attach`**, **`MyBusinessController.AddPhoto`** and
+  **`CatalogueController.UploadProductPhoto`** — the three upload routes. Each requires a signed-in member, caps the request body
   at `6 MB` (`[RequestSizeLimit]`: `5 MB` plus the multipart overhead) so a
   larger body is cut off, and sends its command through MediatR. `Attach`
   carries `[RequiresConfirmedEmail]` and is open to the participants of the
-  conversation only (`404` for anyone else); `AddPhoto` changes only the
-  caller's own listing (L2-133).
+  conversation only (`404` for anyone else); `AddPhoto` and
+  `UploadProductPhoto` change only the caller's own listing (L2-133).
 - **`UploadAttachmentCommandHandler`** — MediatR handler for a message photo.
   It runs the check, the malware scan and the store in that order, and stops at
   the first failure. Scanning before storing, in the request, makes the rule
@@ -92,6 +98,16 @@ The slice runs from the Angular upload control to the media store.
   and re-encode the upload, saves every rendition through `IMediaStore` under
   one random key, and stores a `ListingPhoto` row with the key and the
   dimensions. It does not call `IMalwareScanner`.
+- **`UploadProductPhotoCommandHandler`** — MediatR handler for a product photo.
+  It refuses more than `CatalogueRules.PhotosPerHour` (30) uploads an hour per
+  owner (`429`, `rate_limited`), has `IImageProcessor` check and re-encode the
+  upload, gives it to `IMalwareScanner` and stops on `Infected` or
+  `Unavailable`, and only then saves every rendition through `IMediaStore` under
+  one random key and stores a `ProductPhoto` row of the caller's listing with
+  the key and the dimensions. It answers `ProductPhotoDto` (id, key, width,
+  height). `SaveProductCommandHandler` takes a `photoId` only when it names a
+  `ProductPhoto` of the caller's listing, and deletes from the media store a
+  photo that a save replaces or removes.
 - **`IImageProcessor`** — application service implemented by
   `SkiaImageProcessor` (SkiaSharp). `Process` refuses more than `5 MB`, accepts
   only the JPEG signature (`FF D8 FF`) and the PNG signature, and refuses more
@@ -113,7 +129,8 @@ The slice runs from the Angular upload control to the media store.
   `TOO_LARGE` (`InvalidImageException`), `422` with `FAILED_SCAN` for an
   infected photo, and `503` with `SCAN_UNAVAILABLE` when the scan cannot be
   done. A listing photo: `422` with `NOT_AN_IMAGE`, `TOO_LARGE` or
-  `TOO_BIG_IN_PIXELS` (`InvalidPhotoException`).
+  `TOO_BIG_IN_PIXELS` (`InvalidPhotoException`). A product photo: the same three
+  codes, `422` with `FAILED_SCAN` and `503` with `SCAN_UNAVAILABLE`.
 - **Serving a message photo** — `AttachmentsController` answers
   `/api/attachments/{id}?expires=…&sig=…`. `GetAttachmentQueryHandler` checks the
   HMAC-SHA256 signature and the expiry through `IAttachmentLinks`, then reads
@@ -124,7 +141,7 @@ The slice runs from the Angular upload control to the media store.
   `GET /api/conversations/{id}/attachments/{attachmentId}`. A row stored before
   ADR 0051 has no key and is read from its nullable `Content` column; no new row
   writes it.
-- **Serving a listing photo** — `MediaController` answers
+- **Serving a listing or product photo** — `MediaController` answers
   `/media/{key}/{width}.{jpg|webp}` to anyone. It accepts a key of 32
   hexadecimal characters and the widths `320`, `640` and `1280` only, fixes
   `Content-Type` to `image/jpeg` or `image/webp`, and sends
@@ -133,8 +150,8 @@ The slice runs from the Angular upload control to the media store.
   random and never reused.
 - **Open: listing photos are not scanned** — `AddPhotoCommandHandler` does not
   give a listing photo to `IMalwareScanner`. The seam is there; the change
-  belongs to journeys 15 and 16 (ADR 0051). Until then the scan of L2-138 holds
-  for message photos only.
+  belongs to journey 15 (ADR 0051). Until then the scan of L2-138 holds for
+  message photos and product photos.
 - **Open: media domain and object storage** — L2-138 asks for object storage
   and a separate cookieless domain. Today the store is the API's persistent
   folder, and both kinds of photo are delivered by the API on the application's
@@ -146,7 +163,10 @@ The slice runs from the Angular upload control to the media store.
 - **Tests** — `MessagingTests` uploads a PNG with text chunks, a JPEG with an
   EXIF segment, a file that is not an image under an image's name, a photo over
   `5 MB` and one over 8,000 pixels wide, and asserts each outcome, with the
-  signed link's expiry and forgery (`L2_060_…`, `L2_138_AC1_…`). No test runs a
+  signed link's expiry and forgery (`L2_060_…`, `L2_138_AC1_…`). `CatalogueTests`
+  uploads product photos that pass, fail the checks, fail the scan or find the
+  scanner unavailable, and one owner's photo offered to another's product
+  (`L2_138_AC6_…`). No test runs a
   real scanner or a real store (ADR 0009).
 
 ## Requirements
@@ -156,7 +176,7 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 
 | L2 ID | Refines (L1) | Requirement |
 |-------|--------------|-------------|
-| `L2-138` | `L1-019` | The server shall check each upload's content type by its magic bytes, accept only JPEG and PNG up to 5 MB and 8,000 × 8,000 pixels, re-encode the image and strip metadata. Uploads shall be kept in object storage outside the web root with random names, scanned for malware, and served from a separate cookieless domain with `Content-Type` fixed and `X-Content-Type-Options: nosniff`; a file that fails any check shall be rejected and never served. A message photo that passed the checks shall be given to the malware scanner before it is stored: an infected photo shall be refused with 422 `FAILED_SCAN`, and with no scanner configured or no answer in time the photo shall be refused with 503 `SCAN_UNAVAILABLE`; in both cases nothing shall be stored. Only a development machine and the e2e API shall run without a scanner. The bytes of a message photo shall be kept by the media store, outside the web root and the database, under a random name of 128 bits, and reached only through the signed link. |
+| `L2-138` | `L1-019` | The server shall check each upload's content type by its magic bytes, accept only JPEG and PNG up to 5 MB and 8,000 × 8,000 pixels, re-encode the image and strip metadata. Uploads shall be kept in object storage outside the web root with random names, scanned for malware, and served from a separate cookieless domain with `Content-Type` fixed and `X-Content-Type-Options: nosniff`; a file that fails any check shall be rejected and never served. A message photo that passed the checks shall be given to the malware scanner before it is stored: an infected photo shall be refused with 422 `FAILED_SCAN`, and with no scanner configured or no answer in time the photo shall be refused with 503 `SCAN_UNAVAILABLE`; in both cases nothing shall be stored. Only a development machine and the e2e API shall run without a scanner. The bytes of a message photo shall be kept by the media store, outside the web root and the database, under a random name of 128 bits, and reached only through the signed link. A product photo shall be scanned the same way before it is stored, kept as renditions under a random name and served publicly; a product shall take only a photo its own owner uploaded, and an owner shall upload at most 30 product photos an hour. |
 | `L2-060` | `L1-009` | A photo shall be scanned for malware before it is stored, and only a stored photo shall be put in a message or opened: the other participant shall never receive a photo that was not scanned. A stored attachment shall be retrievable only by the conversation's participants through signed URLs valid for 5 minutes. |
 | `L2-133` | `L1-019` | The server shall check the caller's role and ownership of the specific object on every API endpoint before doing anything. |
 | `L2-135` | `L1-019` | The system shall reject a state-changing request without a valid anti-CSRF token bound to the session with 403. |

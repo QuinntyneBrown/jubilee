@@ -31,7 +31,7 @@ journey that is implemented: the effort-weighted average of its feature designs 
 | 13 | Respond to customer requests | See incoming requests and confirm or decline each one. | 6 | 100% |
 | 14 | Track and cancel requests | Follow each request's progress and cancel an open one. | 6 | 100% |
 | 15 | Run a business listing | Monitor the listing, edit its details, pause or resume it. | 9 | 100% |
-| 16 | Manage products and services | Add, edit, reorder and delete products and services. | 8 | 90% |
+| 16 | Manage products and services | Add, edit, reorder and delete products and services. | 8 | 100% |
 | 17 | Stay notified | Receive events through the notification centre, toasts, banners and e-mail. | 9 | 100% |
 | 18 | Recover a forgotten password | Request a reset link by e-mail and set a new password. | 3 | 90% |
 | 19 | Save listings for later | Save businesses and products to a private list. | 3 | 100% |
@@ -48,7 +48,7 @@ journey that is implemented: the effort-weighted average of its feature designs 
 | 30 | Work in the admin application | Staff sign in to the admin application through single sign-on from an allowed network, work in its shell and sign out; old admin links in the app point there. | 20 | 92% |
 | 31 | Get ready for launch | Before Jubilee opens: see that it is launching soon, leave an e-mail address for the launch notice, or send a business's details to be listed on launch day; the team reads them with the CLI. | 7 | 100% |
 
-**Total: 217 days** for the 30 journeys, **97% complete** weighted by effort.
+**Total: 217 days** for the 30 journeys, **98% complete** weighted by effort.
 
 ## Notes
 

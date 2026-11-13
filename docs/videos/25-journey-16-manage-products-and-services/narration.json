@@ -1,0 +1,45 @@
+{
+  "title": "25 · Journey 16: Manage products and services",
+  "scenes": [
+    {
+      "id": "intro",
+      "say": "Journey sixteen: manage products and services. An owner keeps what their business sells and offers on Jubilee up to date."
+    },
+    {
+      "id": "products",
+      "say": "Products lists each item with its price, status and requests. Each row now has a handle to drag it, with the arrows kept for the keyboard."
+    },
+    {
+      "id": "photo",
+      "say": "Add product now takes a photo. It is uploaded, checked and scanned before the product is saved, and shows beside the button."
+    },
+    {
+      "id": "options",
+      "say": "The editor also has the minimum order and the options, such as sizes, each with its own stock."
+    },
+    {
+      "id": "saved",
+      "say": "Saving lists the product with its photo, and the toast links to it in the shop."
+    },
+    {
+      "id": "drag",
+      "say": "Dragging a product by its handle moves it, saves the new order and says where it went."
+    },
+    {
+      "id": "page",
+      "say": "On the product page, members see the photo in place of the tile, named by the product."
+    },
+    {
+      "id": "deleted",
+      "say": "A product the shop deletes after a member saved it reads No longer available in their list."
+    },
+    {
+      "id": "behind",
+      "say": "Behind the screen, the tests prove an infected photo is refused, uploads are limited to thirty an hour, and a draft listing's catalogue can be managed."
+    },
+    {
+      "id": "close",
+      "say": "Journey sixteen is complete. Jubilee takes no payment: members pay the business directly."
+    }
+  ]
+}

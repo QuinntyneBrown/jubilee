@@ -120,6 +120,23 @@ public sealed class Product
 
     public void MoveTo(int position) => Position = position;
 
+    /// <summary>The product's photo, or null: its tile shows instead (L2-091 AC10).</summary>
+    public Guid? PhotoId { get; private set; }
+
+    public ProductPhoto? Photo { get; private set; }
+
+    /// <summary>Shows a photo of the same listing in place of the tile, or none (L2-091 AC9).</summary>
+    public void ShowPhoto(ProductPhoto? photo)
+    {
+        if (photo is not null && photo.ListingId != ListingId)
+        {
+            throw new ArgumentException("A product shows only a photo of its own listing.", nameof(photo));
+        }
+
+        Photo = photo;
+        PhotoId = photo?.Id;
+    }
+
     /// <summary>The owner's edit of the words and the price; the slug stays, so links keep working (L2-091).</summary>
     public void Revise(string name, int priceCents, string? description)
     {

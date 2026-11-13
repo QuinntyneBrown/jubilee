@@ -9,13 +9,18 @@ import {
   signal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { CATALOGUE_API, DraftItem, OwnerProduct } from 'api';
+import { CATALOGUE_API, DraftItem, OwnerProduct, ProductPhoto } from 'api';
 import {
   Button,
   Alert,
   Field,
+  FieldError,
+  Icon,
+  IconName,
   Input,
+  MediaTile,
   Textarea,
+  TileTint,
   DialogFrame,
   DialogBody,
   DialogFooter,
@@ -41,10 +46,31 @@ export interface ProductSaved {
 
 type View = 'form' | 'busy' | 'failed' | 'discard';
 
-type FieldName = 'name' | 'price' | 'stock' | 'description';
+type FieldName = 'name' | 'price' | 'stock' | 'description' | 'minimumQuantity' | 'options';
+
+/** One option as the editor holds it: its name and stock as typed, and a key for the list. */
+interface OptionDraft {
+  id: number;
+  label: string;
+  stock: string;
+}
+
+/** A product has at most this many options (L2-091 AC8). */
+const MAX_OPTIONS = 10;
 
 /** A submission that takes longer than this fails rather than spinning (L2-127 AC2). */
 const SAVE_TIMEOUT_MS = 10_000;
+
+/** The largest photo the server takes (L2-138 AC1); a larger one is refused before it is sent. */
+const MAX_PHOTO_BYTES = 5 * 1024 * 1024;
+
+/** What a refused photo says, by the code of the server's answer (L2-091 AC9). */
+const PHOTO_PROBLEMS: Record<string, string> = {
+  TOO_LARGE: 'Photos can be 5 MB at most.',
+  NOT_AN_IMAGE: 'Add a JPG or PNG photo.',
+  TOO_BIG_IN_PIXELS: 'Photos can be 8,000 by 8,000 pixels at most.',
+  FAILED_SCAN: 'This photo didn’t pass our safety check.',
+};
 
 /**
  * ProductEditorDialog (L2-091): add or change a product; it is live on the listing as soon as it
@@ -58,7 +84,10 @@ const SAVE_TIMEOUT_MS = 10_000;
     Button,
     Alert,
     Field,
+    FieldError,
+    Icon,
     Input,
+    MediaTile,
     Textarea,
     DialogFrame,
     DialogBody,
@@ -90,23 +119,106 @@ export class ProductEditorDialog {
   protected readonly price = signal(this.product ? (this.product.priceCents / 100).toFixed(2) : '');
   protected readonly stock = signal(this.product?.stock?.toString() ?? '');
   protected readonly description = signal(this.product?.description ?? '');
-  protected readonly hasOptions = (this.product?.options.length ?? 0) > 0;
-
-  private readonly initial = [this.name(), this.price(), this.stock(), this.description()].join(
-    '\u0000',
+  protected readonly maxOptions = MAX_OPTIONS;
+  private nextOption = 0;
+  /** "Minimum order" as typed; empty is 1 (L2-091 AC8). */
+  protected readonly minimum = signal(
+    this.product && this.product.minimumQuantity > 1 ? `${this.product.minimumQuantity}` : '',
+  );
+  protected readonly optionName = signal(this.product?.optionName ?? '');
+  protected readonly options = signal<OptionDraft[]>(
+    (this.product?.options ?? []).map((option) => ({
+      id: this.nextOption++,
+      label: option.label,
+      stock: option.stock?.toString() ?? '',
+    })),
+  );
+  protected readonly optionsHint = computed(() =>
+    this.options().length >= MAX_OPTIONS
+      ? '10 options is the most a product can have.'
+      : 'Sizes or colours, each with its own stock.',
   );
 
-  protected readonly dirty = computed(
-    () =>
-      [this.name(), this.price(), this.stock(), this.description()].join('\u0000') !== this.initial,
-  );
+  /** The tile beside "Add photo" until a photo fills it. */
+  protected readonly tint = (this.product?.tint ?? 'gold') as TileTint;
+  protected readonly icon = (this.product?.icon ?? 'bag') as IconName;
+  /** The photo the product shows when it is saved (L2-091 AC9). */
+  protected readonly photo = signal<ProductPhoto | null>(this.product?.photo ?? null);
+  protected readonly uploading = signal(false);
+  protected readonly photoError = signal<string | null>(null);
+
+  private readonly values = () =>
+    [
+      this.name(),
+      this.price(),
+      this.stock(),
+      this.description(),
+      this.photo()?.id ?? '',
+      this.minimum(),
+      this.optionName(),
+      ...this.options().flatMap((option) => [option.label, option.stock]),
+    ].join('\u0000');
+
+  private readonly initial = this.values();
+
+  protected readonly dirty = computed(() => this.values() !== this.initial);
 
   constructor() {
     guardClose(this.ref, inject(DestroyRef), () => this.close());
   }
 
+  /** Uploads the chosen photo at once; a refusal is told beside the button and nothing else changes. */
+  protected choosePhoto(input: HTMLInputElement): void {
+    const file = input.files?.[0];
+    input.value = '';
+    if (!file) return;
+    if (file.size > MAX_PHOTO_BYTES) {
+      this.photoError.set(PHOTO_PROBLEMS['TOO_LARGE']);
+      return;
+    }
+    this.photoError.set(null);
+    this.uploading.set(true);
+    this.api.uploadProductPhoto(file).subscribe({
+      next: (photo) => {
+        this.uploading.set(false);
+        this.photo.set(photo);
+      },
+      error: (error: unknown) => {
+        this.uploading.set(false);
+        const code =
+          error instanceof HttpErrorResponse
+            ? (error.error as { code?: string } | null)?.code
+            : undefined;
+        this.photoError.set(PHOTO_PROBLEMS[code ?? ''] ?? 'We couldn’t add the photo. Try again.');
+      },
+    });
+  }
+
+  /** Adds an empty option and puts the cursor in its name. */
+  protected addOption(): void {
+    if (this.options().length >= MAX_OPTIONS) return;
+    const option = { id: this.nextOption++, label: '', stock: '' };
+    this.options.update((options) => [...options, option]);
+    setTimeout(() => document.getElementById(`d-opt-${option.id}`)?.focus());
+  }
+
+  protected removeOption(index: number): void {
+    this.options.update((options) => options.filter((_, i) => i !== index));
+  }
+
+  protected setOption(index: number, change: Partial<OptionDraft>): void {
+    this.options.update((options) =>
+      options.map((option, i) => (i === index ? { ...option, ...change } : option)),
+    );
+  }
+
+  protected removePhoto(): void {
+    this.photo.set(null);
+    this.photoError.set(null);
+  }
+
   protected save(): void {
-    if (this.busy()) return;
+    if (this.busy() || this.uploading()) return;
     const problems = this.check();
     this.errors.set(problems);
     if (Object.keys(problems).length > 0) {
@@ -131,13 +243,22 @@ export class ProductEditorDialog {
       return;
     }
     this.view.set('busy');
+    const options = this.options().map((option) => ({
+      label: option.label.trim(),
+      stock: option.stock.trim() === '' ? null : Number(option.stock.trim()),
+    }));
+    const minimum = this.minimum().trim();
     this.api
       .saveProduct(this.product?.id ?? null, {
         name: this.name().trim(),
         price: this.price().trim(),
-        stock: stock === '' ? null : Number(stock),
+        stock: options.length > 0 || stock === '' ? null : Number(stock),
         description: this.description().trim(),
+        minimumQuantity: minimum === '' ? 1 : Number(minimum),
+        optionName: options.length > 0 ? this.optionName().trim() || null : null,
+        options,
         idempotencyKey: this.key,
+        photoId: this.photo()?.id ?? null,
       })
       .pipe(timeout(SAVE_TIMEOUT_MS))
       .subscribe({
@@ -176,8 +297,25 @@ export class ProductEditorDialog {
       problems.price = 'Enter a price in dollars, like 24.00.';
     }
     const stock = this.stock().trim();
-    if (stock !== '' && (!/^\d{1,4}$/.test(stock) || Number(stock) > 9999)) {
+    if (
+      this.options().length === 0 &&
+      stock !== '' &&
+      (!/^\d{1,4}$/.test(stock) || Number(stock) > 9999)
+    ) {
       problems.stock = 'Enter a whole number from 0 to 9,999, or leave it empty.';
+    }
+    if (!this.data.draft) {
+      const minimum = this.minimum().trim();
+      if (minimum !== '' && (!/^\d{1,3}$/.test(minimum) || Number(minimum) < 1)) {
+        problems.minimumQuantity = 'Enter a whole number from 1 to 999.';
+      }
+      const names = this.options().map((option) => option.label.trim().toLowerCase());
+      const stocks = this.options().map((option) => option.stock.trim());
+      if (names.some((name) => name === '') || new Set(names).size !== names.length) {
+        problems.options = 'Give each option its own name.';
+      } else if (stocks.some((value) => value !== '' && !/^\d{1,4}$/.test(value))) {
+        problems.options = 'Give each option a stock from 0 to 9,999, or leave it empty.';
+      }
     }
     // A draft has no server to refuse a long description, so the editor says it (L2-091).
     if (this.data.draft && this.description().trim().length > 1000) {
@@ -192,11 +330,17 @@ export class ProductEditorDialog {
       price: 'Enter a price in dollars, like 24.00.',
       stock: 'Enter a whole number from 0 to 9,999, or leave it empty.',
       description: 'Shorten the description to 1,000 characters.',
+      minimumQuantity: 'Enter a whole number from 1 to 999.',
+      options: 'Give each option its own name.',
+      optionName: 'Name what the options choose in 40 characters or fewer.',
     };
+    // A photo the server would not take is told beside the photo, not as a field (L2-091 AC9).
+    if (fields['photo']) this.photo.set(null);
+    if (fields['photo']) this.photoError.set('We couldn’t add the photo. Try again.');
     return Object.fromEntries(
       Object.keys(fields)
         .filter((key) => key in text)
-        .map((key) => [key, text[key]]),
+        .map((key) => [key === 'optionName' ? 'options' : key, text[key]]),
     );
   }
 

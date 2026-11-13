@@ -13,98 +13,75 @@ skinparam class {
 ' --------------------------
 title Class structure — Manage services
 
-enum ServicePricing {
+enum ServicePriceKind {
   Free
-  FixedPrice
-  AskForQuote
+  Amount
+  Ask
 }
 
-enum MemberAction {
-  BookATime
-  AskForQuote
-}
-
-enum MeetingModes <<flags>> {
-  Video
-  InPerson
-}
-
-class Listing {
-  +Guid Id
-  +Guid OwnerId
-  +string Hours
-  +int MaxServices = 50
-  +AddService(details: ServiceDetails): Service
-  +RemoveService(serviceId: Guid, now: DateTimeOffset): void
-  +ReorderServices(serviceIds: IReadOnlyList<Guid>): void
+enum ServiceAction {
+  Book
+  Ask
 }
 
 class Service {
   +Guid Id
-  +string Name
-  +string? Detail
-  +ServicePricing Pricing
-  +int? PriceCents
-  +MemberAction MemberAction
-  +int? DurationMinutes
-  +MeetingModes? Modes
-  +string? Place
-  +int SortOrder
-  +DateTimeOffset? DeletedAt
-  +Update(details: ServiceDetails): void
-  +PriceLabel(): string
-}
-
-class ServiceDetails {
-  +string Name
-  +string? Detail
-  +ServicePricing Pricing
-  +int? PriceCents
-  +MemberAction MemberAction
-  +int? DurationMinutes
-  +MeetingModes? Modes
-  +string? Place
-}
-
-class AddServiceCommand {
   +Guid ListingId
+  +int Position
   +string Name
-  +string? Detail
-  +ServicePricing Pricing
-  +string? Price
-  +MemberAction MemberAction
+  +string Detail
+  +ServicePriceKind PriceKind
+  +int? PriceCents
+  +ServiceAction Action
   +int? DurationMinutes
-  +MeetingModes? Modes
+  +bool OffersVideo
+  +bool OffersInPerson
+  +string? InPersonPlace
+  +string? IdempotencyKey
+  +int MaxPerListing = 50
+  +{static} Create(listingId, position, name, detail, price, action): Service
+  +Revise(name, detail, price, action, duration, video, inPerson, place): void
+  +Remember(idempotencyKey): void
+  +MoveTo(position): void
+}
+
+class ServicePrice {
+  +ServicePriceKind Kind
+  +int? Cents
+}
+
+class SaveServiceCommand {
+  +string Subject
+  +Guid? Id
+  +string? Name
+  +string? Detail
+  +string? Pricing
+  +string? Price
+  +string? Action
+  +int? DurationMinutes
+  +bool OffersVideo
+  +bool OffersInPerson
   +string? Place
+  +string? IdempotencyKey
 }
 
-class ServiceCommandValidator {
-  +int DetailMax = 60
-  +int DurationMin = 15
-  +int DurationMax = 480
-  +Validate(command: AddServiceCommand): ValidationResult
-}
-
-class AddServiceCommandHandler {
-  +Handle(command: AddServiceCommand): Task<Result<ServiceDto>>
+class SaveServiceCommandHandler {
+  +Handle(command): Task<OwnerServiceRowDto>
 }
 
 class DeleteServiceCommandHandler {
-  +Handle(command: DeleteServiceCommand): Task<Result>
+  +Handle(command: DeleteServiceCommand): Task<DeletedItemDto>
 }
 
-class ReorderServicesCommandHandler {
-  +Handle(command: ReorderServicesCommand): Task<Result>
+class MoveServiceCommandHandler {
+  +Handle(command: MoveServiceCommand): Task<ServicesDto>
 }
 
-Listing "1" *-- "0..50" Service
-Service --> ServicePricing : has
-Service --> MemberAction : has
-Service --> MeetingModes : offers
-ServiceCommandValidator ..> AddServiceCommand : validates
-AddServiceCommandHandler ..> AddServiceCommand : handles
-AddServiceCommandHandler ..> ServiceDetails : builds
-AddServiceCommandHandler --> Listing : adds service
-DeleteServiceCommandHandler --> Listing : removes service
-ReorderServicesCommandHandler --> Listing : reorders
+Service --> ServicePriceKind : has
+Service --> ServiceAction : has
+SaveServiceCommandHandler ..> SaveServiceCommand : handles
+SaveServiceCommandHandler ..> ServicePrice : builds
+SaveServiceCommandHandler --> Service : creates or revises
+DeleteServiceCommandHandler --> Service : removes
+MoveServiceCommandHandler --> Service : renumbers
 @enduml

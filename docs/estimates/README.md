@@ -20,7 +20,7 @@
 | [onboarding](onboarding.md) | 17 days | 100% |
 | [admin](admin.md) | 7 days | 90% |
 | [verification](verification.md) | 15 days | 100% |
-| [owner-workspace](owner-workspace.md) | 20 days | 96% |
+| [owner-workspace](owner-workspace.md) | 20 days | 100% |
 | [privacy](privacy.md) | 12 days | 38% |
 | [accessibility](accessibility.md) | 10 days | 0% |
 | [performance](performance.md) | 9 days | 6% |

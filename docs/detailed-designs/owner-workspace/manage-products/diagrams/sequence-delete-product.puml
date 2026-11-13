@@ -17,45 +17,36 @@ skinparam package {
 actor "Owner" as actor
 box "Frontend — Jubilee Web" #E0F2FE
   participant "MyProductsPage" as page
-  participant "DeleteProductDialog" as dialog
-  participant "ProductsApi" as client
+  participant "DeleteItemDialog" as dialog
+  participant "CatalogueApi" as client
 end box
 box "Backend — Jubilee API" #D1FADF
-  participant "OwnerProductsController" as controller
+  participant "CatalogueController" as controller
 end box
 box "Backend — Jubilee Application and Domain" #ECFDF3
   participant "DeleteProductCommandHandler" as handler
-  participant "Listing" as entity
+  participant "Product" as entity
 end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
   database "Jubilee database" as db
 end box
-actor -> page : Press "Delete" on a product
-page -> dialog : Open "Delete “{name}”?" with the past request count
-dialog --> actor : Focus "Keep product" (L2-129)
+actor -> page : Press "Delete {name}"
+page -> dialog : Open with name and past request count
+dialog --> actor : "Delete “{name}”?" with "Keep product" focused (L2-129)
 actor -> dialog : Press "Delete product"
-dialog -> client : Build typed request
-client -> controller : DELETE /api/owner/listings/{listingId}/products/{productId}
-controller -> controller : Authenticate and apply ListingOwnerPolicy (L2-133)
+dialog -> client : deleteProduct(id)
+client -> controller : DELETE /api/my-business/products/{id}
 controller -> handler : Send DeleteProductCommand
-handler -> db : Load listing with the product
-db --> handler : Listing
-handler -> entity : RemoveProduct sets DeletedAt (L2-092)
-entity --> handler : Product removed
-handler -> db : Save product and ProductChanged outbox message
-note right of db : Request rows keep their name and price snapshot.\nOpen order requests stay open (L2-092).
-alt Save succeeds
-  db --> handler : Commit result
-  handler --> controller : Success
-  controller --> client : 204 No Content
-  client --> dialog : Deleted
-  dialog --> page : Close and remove the row
-  page --> actor : Show the updated product count
-else Save fails
-  db --> handler : Error
-  handler --> controller : Failure
-  controller --> client : ProblemDetails with error reference
-  client --> dialog : Failed
-  dialog --> actor : Show "We couldn't delete it. The product is still listed. Try again."
+handler -> db : Find the owner's product (404 otherwise)
+handler -> entity : Delete(now)
+handler -> db : Save; requests and saved items untouched
+alt Save fails
+  controller --> client : Error
+  dialog --> actor : "We couldn't delete it. The product is still listed. Try again."
+else Saved
+  controller --> client : DeletedItemDto
+  dialog --> page : Deleted
+  page --> actor : Reload the list; toast "Product deleted"
+  note over db : Public pages filter deleted products; a member's saved list reads it as "No longer available" (L2-092)
 end
 @enduml

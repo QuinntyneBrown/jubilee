@@ -16,62 +16,63 @@ skinparam package {
 }
 actor "Owner" as actor
 box "Frontend — Jubilee Web" #E0F2FE
-  participant "MyProductsPage" as page
   participant "ProductEditorDialog" as dialog
-  participant "ProductsApi" as client
+  participant "CatalogueApi" as client
 end box
 box "Backend — Jubilee API" #D1FADF
-  participant "IdempotencyMiddleware" as idem
-  participant "OwnerProductsController" as controller
+  participant "CatalogueController" as controller
 end box
 box "Backend — Jubilee Application and Domain" #ECFDF3
-  participant "AddProductCommandHandler" as handler
-  participant "Listing" as entity
+  participant "UploadProductPhotoCommandHandler" as upload
+  participant "SaveProductCommandHandler" as handler
 end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
+  participant "IMalwareScanner" as scanner
+  participant "IMediaStore" as media
   database "Jubilee database" as db
 end box
-actor -> page : Press "Add product"
-page -> dialog : Open "Add a product"
-actor -> dialog : Fill fields and press "Add product"
-dialog -> dialog : Validate name and price and stock (L2-091)
-alt Invalid in the browser
-  dialog --> actor : Show "Enter a name for the product." under the field (L2-126)
-else Valid in the browser
-  dialog -> client : Build typed request with idempotency key
-  client -> idem : POST /api/owner/listings/{listingId}/products
-  idem -> idem : Look up Idempotency-Key (L2-132)
-  alt Key seen within 24 hours
-    idem --> client : Original response
-  else New key
-    idem -> controller : Pass request
-    controller -> controller : Authenticate and apply ListingOwnerPolicy (L2-133)
-    controller -> handler : Send AddProductCommand
-    handler -> handler : Validate price 0.01 to 100,000.00 and stock 0 to 9,999 (L2-091)
-    handler -> db : Load listing with products
-    db --> handler : Listing
-    handler -> entity : AddProduct with 100 product limit (L2-089)
-    alt Limit reached or field invalid
-      entity --> handler : Rule violated
-      handler --> controller : PRODUCT_LIMIT_REACHED or field codes
-      controller --> client : 422 ProblemDetails
-    else Accepted
-      entity --> handler : Product with PriceCents
-      handler -> db : Save product and ProductChanged outbox message
-      db --> handler : Commit result
-      handler --> controller : ProductDto
-      controller --> idem : 201 product
-      idem --> client : 201 product
-    end
-  end
-  client --> dialog : Result
-  alt Saved
-    dialog --> page : Close with product
-    page --> actor : Toast "Product added. “{name}” is live in your shop." with "View in shop"
-  else Limit reached
-    dialog --> actor : Show "You can list up to 100 products."
-  else Save failed
-    dialog --> actor : Show "We couldn't save the product." and keep input (L2-128)
+actor -> dialog : Choose a photo
+alt File over 5 MB
+  dialog --> actor : "Photos can be 5 MB at most."
+else
+  dialog -> client : uploadProductPhoto(file)
+  dialog --> actor : "Adding photo…", primary button waits
+  client -> controller : POST /api/my-business/products/photos
+  controller -> upload : Send UploadProductPhotoCommand
+  upload -> db : Count the owner's uploads in the last hour
+  upload -> upload : IImageProcessor checks and re-encodes (L2-138)
+  upload -> scanner : Scan
+  alt Refused, infected or scanner unavailable
+    upload --> controller : 422 code or 503 SCAN_UNAVAILABLE
+    controller --> client : ProblemDetails
+    client --> dialog : Refusal
+    dialog --> actor : Say why beside the photo, keep the tile
+  else Clean
+    upload -> media : Save renditions under a random key
+    upload -> db : Add ProductPhoto
+    upload --> controller : ProductPhotoDto
+    controller --> client : 201
+    client --> dialog : Photo
+    dialog --> actor : Show the photo, "Change photo" and "Remove photo"
   end
 end
+actor -> dialog : Fill name, price, stock, options, minimum and press "Add product"
+dialog -> dialog : Check the fields (L2-091)
+dialog -> client : saveProduct(null, input with photoId and idempotencyKey)
+client -> controller : POST /api/my-business/products
+controller -> handler : Send SaveProductCommand
+handler -> db : Find the owner's listing (403 when none)
+handler -> handler : Validate fields (422 per field)
+handler -> db : Look up the key in the last 24 hours (L2-132)
+alt Key already used
+  handler --> controller : The first product
+else New
+  handler -> db : Count products (409 PRODUCT_LIMIT at 100)
+  handler -> db : Find the ProductPhoto of this listing (photo INVALID otherwise)
+  handler -> db : Save the product with its photo
+  handler --> controller : ProductRowDto
+end
+controller --> client : 201
+client --> dialog : Saved
+dialog --> actor : Close; toast "Product added" with "View in shop"
 @enduml

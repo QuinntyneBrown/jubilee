@@ -39,6 +39,8 @@ public interface IAppDbContext
 
     DbSet<ListingPhoto> ListingPhotos { get; }
 
+    DbSet<ProductPhoto> ProductPhotos { get; }
+
     DbSet<RecentSearch> RecentSearches { get; }
 
     DbSet<Notification> Notifications { get; }

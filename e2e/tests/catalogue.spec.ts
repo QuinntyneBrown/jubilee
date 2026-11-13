@@ -1,5 +1,5 @@
 import { expect, test } from '../fixtures/jb-test';
-import { stubCatalogue } from '../fixtures/catalogue';
+import { SERVICES as SERVICE_ROWS, stubCatalogue } from '../fixtures/catalogue';
 import { DeleteItemDialog } from '../pages/delete-item.dialog';
 import { ForbiddenPage } from '../pages/forbidden.page';
 import { MyProductsPage } from '../pages/my-products.page';
@@ -46,6 +46,10 @@ test.describe('manage products (L2-089 to L2-091, L2-095, L2-127, L2-130, L2-132
     await jb.goto(PRODUCTS);
 
     await expect(products.empty).toContainText('No products yet');
+    // L2-089 AC3: the empty state says what the requirement says.
+    await expect(products.empty).toContainText(
+      'Add what you sell with a photo and a price. Members can request an item and you confirm it.',
+    );
     await products.empty.getByRole('button', { name: 'Add product' }).click();
     await expect(editor.title).toHaveText('Add a product');
   });
@@ -452,6 +456,10 @@ test.describe('manage services (L2-092 to L2-095, L2-128)', () => {
     fake.services = 'ok';
     await services.tryAgain.click();
     await expect(services.empty).toContainText('No services yet');
+    // L2-093 AC2: the empty state says what the requirement says.
+    await expect(services.empty).toContainText(
+      'Offer custom work, consultations or lessons? Add them here so members can book or ask for a quote.',
+    );
   });
 
   test('L2-094: adding a service that members can book stores its length and modes', async ({
@@ -615,5 +623,58 @@ test.describe('manage services (L2-092 to L2-095, L2-128)', () => {
       .toEqual(['Church merch package', 'Custom design consultation']);
     expect(fake.moves).toHaveLength(1);
     expect(fake.moves[0].position).toBe(2);
+  });
+});
+
+test.describe('the rest of the catalogue criteria (L2-093 AC3, L2-097 AC3)', () => {
+  test('L2-093 AC3: with 50 services the page says so and Add service is refused', async ({
+    page,
+    jb,
+  }) => {
+    const services = new MyServicesPage(page);
+    const toasts = new Toasts(page);
+    await services.setWidth(1280);
+    const rows = Array.from({ length: 50 }, (_, i) => ({
+      ...SERVICE_ROWS[1],
+      id: `b2000000-0000-4000-8000-0000000001${String(i).padStart(2, '0')}`,
+      name: `Service ${i + 1}`,
+    }));
+    const fake = await stubCatalogue(page, { serviceRows: rows });
+    await jb.goto(SERVICES);
+
+    await expect(services.limit).toBeVisible();
+    await services.add.click();
+
+    await expect(toasts.withTitle('You can list up to 50 services.')).toBeVisible();
+    await expect(page.getByRole('dialog')).toHaveCount(0);
+    expect(fake.serviceSaves).toHaveLength(0);
+  });
+
+  test('L2-097 AC3: the products of a listing that is not live give its stage and can be managed', async ({
+    page,
+    jb,
+  }) => {
+    const products = new MyProductsPage(page);
+    await products.setWidth(1280);
+    await stubCatalogue(page, { live: false, subtitle: 'Draft · not published yet' });
+    await jb.goto(PRODUCTS);
+
+    await expect(products.pageHeader).toContainText('Draft · not published yet');
+    await expect(products.pageHeader).not.toContainText('Live since');
+    await expect(products.add).toBeEnabled();
+  });
+
+  test('L2-097 AC3: the services of a listing that is not live give its stage and can be managed', async ({
+    page,
+    jb,
+  }) => {
+    const services = new MyServicesPage(page);
+    await services.setWidth(1280);
+    await stubCatalogue(page, { live: false, subtitle: 'Draft · not published yet' });
+    await jb.goto(SERVICES);
+
+    await expect(services.pageHeader).toContainText('Draft · not published yet');
+    await expect(services.pageHeader).not.toContainText('Live since');
+    await expect(services.add).toBeEnabled();
   });
 });

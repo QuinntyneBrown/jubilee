@@ -34,7 +34,8 @@ public sealed record ProductPageDto(
     bool SoldOut,
     string? RestockNote,
     IReadOnlyList<ProductCardDto> More,
-    bool StockAlertRequested = false);
+    bool StockAlertRequested = false,
+    ListingPagePhotoDto? Photo = null);
 
 public sealed record GetProductPageQuery(string ListingSlug, string ProductSlug, Viewer Viewer) : IRequest<ProductPageDto>;
 
@@ -73,7 +74,7 @@ public sealed class GetProductPageQueryHandler(IAppDbContext db, IDirectoryReadC
         var shop = await db.Listings.AsNoTracking().WherePublic().SingleOrDefaultAsync(l => l.Slug == listingSlug, cancellationToken)
             ?? throw NotFound();
         var shopProducts = db.Products.AsNoTracking().Where(p => p.ListingId == shop.Id && !p.IsDeleted);
-        var product = await shopProducts.SingleOrDefaultAsync(p => p.Slug == productSlug, cancellationToken)
+        var product = await shopProducts.Include(p => p.Photo).SingleOrDefaultAsync(p => p.Slug == productSlug, cancellationToken)
             ?? throw NotFound();
         var more = await shopProducts
             .Where(p => p.Id != product.Id)
@@ -100,7 +101,9 @@ public sealed class GetProductPageQueryHandler(IAppDbContext db, IDirectoryReadC
             product.MaxQuantity,
             product.IsSoldOut,
             product.IsSoldOut ? product.RestockNote : null,
-            [.. more.Select(p => ProductCardDto.From(p, shop))]);
+            [.. more.Select(p => ProductCardDto.From(p, shop))],
+            // The product's photo, named by the product, fills its tile (L2-091 AC10).
+            Photo: product.Photo is { } photo ? new ListingPagePhotoDto(photo.Key, product.Name, photo.Width, photo.Height) : null);
     }
 
     private static NotFoundException NotFound() => new(NotFoundCode, "There is no such product.");

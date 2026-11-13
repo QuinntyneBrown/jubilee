@@ -4,18 +4,16 @@ LAYOUT_WITH_LEGEND()
 title Containers — Manage products
 
 Person(owner, "Owner", "Manages the products of a shop")
+System_Ext(scanner, "Malware scanner", "clamd")
 System_Boundary(jubilee, "Jubilee") {
   Container(web, "Jubilee Web", "Angular single-page application", "Products page with editor and delete dialogs")
-  Container(api, "Jubilee API", "ASP.NET Core", "Owner product endpoints and rules")
-  Container(worker, "Jubilee Worker", ".NET worker service", "Outbox dispatch and search indexing")
-  ContainerDb(db, "Jubilee database", "SQL Server", "Products, options, requests and outbox")
-  ContainerDb(cache, "Cache", "Redis", "Idempotency keys")
-  ContainerDb(search, "Search index", "Query-time analysis over SQL Server", "Full-text search over products")
+  Container(api, "Jubilee API", "ASP.NET Core", "Owner catalogue endpoints, rules and photo uploads")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Products, options, product photos and requests")
+  ContainerDb(media, "Media store", "Persistent folder outside the web root", "Photo renditions under random keys")
 }
 Rel(owner, web, "Uses", "HTTPS")
-Rel(web, api, "Calls product endpoints", "JSON/HTTPS")
+Rel(web, api, "Calls /api/my-business/products", "JSON and multipart/HTTPS")
 Rel(api, db, "Reads and writes", "EF Core")
-Rel(api, cache, "Stores idempotency keys for 24 hours", "Redis protocol")
-Rel(worker, db, "Reads outbox", "EF Core")
-Rel(worker, search, "Adds updates and removes product documents")
+Rel(api, scanner, "Scans a photo before storing it", "TCP")
+Rel(api, media, "Saves and deletes renditions; serves /media")
 @enduml
