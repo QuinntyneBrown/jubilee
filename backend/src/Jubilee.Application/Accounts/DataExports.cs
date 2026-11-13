@@ -255,6 +255,13 @@ internal static class DataArchive
             ["feedback"] = await FeedbackOf(db, subject, cancellationToken),
             ["reviews"] = await ReviewsOf(db, r => r.AuthorSubject == subject, cancellationToken),
             ["reviewReports"] = await ReviewReportsOf(db, subject, cancellationToken),
+            ["sessions"] = (await db.Sessions.AsNoTracking().Where(s => s.MemberId == member.Id).ToListAsync(cancellationToken))
+                .OrderBy(s => s.CreatedAt)
+                .Select(s => new { s.Device, s.Network, started = s.CreatedAt, lastActive = s.LastActivityAt, ended = s.EndedAt })
+                .ToList(),
+            ["statementAgreements"] = (await db.StatementAgreements.AsNoTracking().Where(a => a.OwnerSubject == subject).ToListAsync(cancellationToken))
+                .OrderBy(a => a.AgreedAt).Select(a => new { a.Version, agreed = a.AgreedAt }).ToList(),
+            ["stockAlerts"] = await StockAlertsOf(db, subject, cancellationToken),
         };
 
         var owned = await db.Listings.AsNoTracking().Where(l => l.OwnerId == subject && l.DeletedAt == null).ToListAsync(cancellationToken);
@@ -262,10 +269,13 @@ internal static class DataArchive
         {
             var ids = owned.Select(l => l.Id).ToList();
             var names = owned.ToDictionary(l => l.Id, l => l.Name);
+            var photos = (await db.ListingPhotos.AsNoTracking().Where(p => ids.Contains(p.ListingId)).Select(p => p.ListingId).ToListAsync(cancellationToken))
+                .GroupBy(id => id).ToDictionary(g => g.Key, g => g.Count());
             document["listings"] = owned.OrderBy(l => l.SortName).Select(l => new
             {
                 l.Name,
                 l.Slug,
+                photos = photos.GetValueOrDefault(l.Id),
                 l.Tagline,
                 l.About,
                 category = l.CategorySlug,
@@ -277,7 +287,7 @@ internal static class DataArchive
                 paused = l.IsPaused,
             }).ToList();
             document["products"] = (await db.Products.AsNoTracking().Where(p => ids.Contains(p.ListingId) && !p.IsDeleted).ToListAsync(cancellationToken))
-                .OrderBy(p => p.Position).Select(p => new { business = names[p.ListingId], p.Name, p.PriceCents, p.Description }).ToList();
+                .OrderBy(p => p.Position).Select(p => new { business = names[p.ListingId], p.Name, p.PriceCents, p.Description, photo = p.PhotoId != null }).ToList();
             document["services"] = (await db.Services.AsNoTracking().Where(s => ids.Contains(s.ListingId)).ToListAsync(cancellationToken))
                 .OrderBy(s => s.Position).Select(s => new { business = names[s.ListingId], s.Name, s.Detail, s.PriceCents, s.DurationMinutes }).ToList();
             document["incomingRequests"] = (await db.Requests.AsNoTracking().Where(r => ids.Contains(r.ListingId)).ToListAsync(cancellationToken))
@@ -317,6 +327,21 @@ internal static class DataArchive
             reply = r.ReplyText,
             takenDown = r.TakenDownAt,
             takenDownReason = r.TakeDownReason,
+        }).ToList();
+    }
+
+    /// <summary>The products the member asked to be told about when they are back in stock (ADR 0069).</summary>
+    private static async Task<object> StockAlertsOf(IAppDbContext db, string subject, CancellationToken cancellationToken)
+    {
+        var alerts = (await db.StockAlerts.AsNoTracking().Where(a => a.MemberSubject == subject).ToListAsync(cancellationToken))
+            .OrderBy(a => a.RequestedAt).ToList();
+        var ids = alerts.Select(a => a.ProductId).ToList();
+        var names = await db.Products.AsNoTracking().Where(p => ids.Contains(p.Id)).ToDictionaryAsync(p => p.Id, p => p.Name, cancellationToken);
+        return alerts.Select(a => new
+        {
+            product = names.GetValueOrDefault(a.ProductId) ?? "(no longer listed)",
+            asked = a.RequestedAt,
+            told = a.NotifiedAt,
         }).ToList();
     }
 
@@ -410,7 +435,8 @@ internal static class DataArchive
         {
             business = names.GetValueOrDefault(c.ListingId),
             started = c.CreatedAt,
-            messages = messages.Where(m => m.ConversationId == c.Id).Select(m => new { from = m.SenderName, fromBusiness = m.FromOwner, m.Body, at = m.CreatedAt }).ToList(),
+            messages = messages.Where(m => m.ConversationId == c.Id)
+                .Select(m => new { from = m.SenderName, fromBusiness = m.FromOwner, m.Body, photo = m.AttachmentId != null, at = m.CreatedAt }).ToList(),
         }).ToList();
     }
 }

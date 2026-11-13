@@ -42,6 +42,9 @@ public sealed class ListingReport
     /// <summary>The name of the reporter when they reported, for the Jubilee team only (L2-105 AC1).</summary>
     public string ReporterName { get; private set; } = string.Empty;
 
+    /// <summary>The reporter's account was erased: the Jubilee team sees a former member (L2-017 AC6, ADR 0069).</summary>
+    public void ForgetReporter() => ReporterName = "Former member";
+
     public ReportStatus Status { get; private set; }
 
     public DateTimeOffset CreatedAt { get; private set; }

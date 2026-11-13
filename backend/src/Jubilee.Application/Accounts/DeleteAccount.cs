@@ -141,6 +141,8 @@ public static class AccountDeletion
         }
 
         db.SavedItems.RemoveRange(await db.SavedItems.Where(s => s.MemberSubject == subject).ToListAsync(cancellationToken));
+        db.StockAlerts.RemoveRange(await db.StockAlerts.Where(s => s.MemberSubject == subject).ToListAsync(cancellationToken));
+        db.ListingDrafts.RemoveRange(await db.ListingDrafts.Where(d => d.OwnerSubject == subject).ToListAsync(cancellationToken));
         db.RecentSearches.RemoveRange(await db.RecentSearches.Where(s => s.MemberSubject == subject).ToListAsync(cancellationToken));
         db.Notifications.RemoveRange(await db.Notifications.Where(n => n.MemberSubject == subject).ToListAsync(cancellationToken));
         db.LinkTokens.RemoveRange(await db.LinkTokens.Where(t => t.MemberId == member.Id).ToListAsync(cancellationToken));
@@ -186,7 +188,7 @@ public static class AccountDeletion
 /// The worker's side of deletion: 30 days after an account was deleted its personal data is erased. What the member wrote
 /// stays for the business, from a "Former member" (L2-017 AC6, L2-148).
 /// </summary>
-public sealed class AccountErasure(IAppDbContext db, IExportStore exports, TimeProvider clock)
+public sealed class AccountErasure(IAppDbContext db, IExportStore exports, IMediaStore media, TimeProvider clock)
 {
     public async Task<int> EraseDueAsync(CancellationToken cancellationToken)
     {
@@ -211,6 +213,15 @@ public sealed class AccountErasure(IAppDbContext db, IExportStore exports, TimeP
                 request.ForgetMember();
             }
 
+            foreach (var report in await db.ListingReports.Where(r => r.ReporterSubject == subject).ToListAsync(cancellationToken))
+            {
+                report.ForgetReporter();
+            }
+
+            await ErasePhotosAsync(subject, cancellationToken);
+            db.Sessions.RemoveRange(await db.Sessions.Where(s => s.MemberId == member.Id).ToListAsync(cancellationToken));
+            db.StatementAgreements.RemoveRange(await db.StatementAgreements.Where(a => a.OwnerSubject == subject).ToListAsync(cancellationToken));
+
             foreach (var export in await db.DataExports.Where(e => e.MemberId == member.Id).ToListAsync(cancellationToken))
             {
                 await ExportFiles.DeleteAsync(exports, export, cancellationToken);
@@ -225,5 +236,33 @@ public sealed class AccountErasure(IAppDbContext db, IExportStore exports, TimeP
         }
 
         return due.Count;
+    }
+
+    /// <summary>
+    /// The photos of the member's listings and products leave the media store (ADR 0069). A photo sent in a message stays
+    /// with the message for the business, as the words do.
+    /// </summary>
+    private async Task ErasePhotosAsync(string subject, CancellationToken cancellationToken)
+    {
+        var listings = await db.Listings.Where(l => l.OwnerId == subject).Select(l => l.Id).ToListAsync(cancellationToken);
+        if (listings.Count == 0)
+        {
+            return;
+        }
+
+        foreach (var product in await db.Products.Where(p => listings.Contains(p.ListingId) && p.PhotoId != null).ToListAsync(cancellationToken))
+        {
+            product.ShowPhoto(null);
+        }
+
+        var productPhotos = await db.ProductPhotos.Where(p => listings.Contains(p.ListingId)).ToListAsync(cancellationToken);
+        var listingPhotos = await db.ListingPhotos.Where(p => listings.Contains(p.ListingId)).ToListAsync(cancellationToken);
+        foreach (var key in productPhotos.Select(p => p.Key).Concat(listingPhotos.Select(p => p.Key)))
+        {
+            await media.Delete(key, cancellationToken);
+        }
+
+        db.ProductPhotos.RemoveRange(productPhotos);
+        db.ListingPhotos.RemoveRange(listingPhotos);
     }
 }
