@@ -79,6 +79,43 @@ test.describe('the connection banner (L2-121)', () => {
   });
 });
 
+test.describe('the connection banner, waiting and announcing (L2-121 AC3, L2-067 AC3)', () => {
+  test('L2-121 AC3: while Jubilee cannot be reached, it is tried again after 5, 10, 20, 40 and then 60 seconds', async ({
+    page,
+    jb,
+  }) => {
+    const banner = new ConnectionBannerRegion(page);
+    await jb.open('messages');
+    await page.clock.install();
+    await goOffline(page);
+    await goOnline(page, 'down');
+
+    for (const wait of [5, 10, 20, 40, 60, 60]) {
+      await expect(banner.root).toContainText(`Reconnecting… Trying again in ${wait} seconds.`);
+      await page.clock.runFor(wait * 1_000);
+    }
+  });
+
+  test('L2-067 AC3: the banner is announced in a polite live region and does not move the focus', async ({
+    page,
+    jb,
+  }) => {
+    const conversation = new ConversationPage(page);
+    const banner = new ConnectionBannerRegion(page);
+    await jb.signInAs('member');
+    await stubMessaging(page);
+    await jb.goto('/messages/c-legacy');
+    await conversation.ready();
+    await conversation.composer.focus();
+
+    await goOffline(page);
+
+    await expect(banner.root).toContainText('You’re offline.');
+    await expect(banner.root).toHaveAttribute('role', 'status');
+    await expect(conversation.composer).toBeFocused();
+  });
+});
+
 test.describe('a slow connection (L2-121 AC4, AC5)', () => {
   test('AC4: when requests take long on average, a warning says the connection is slow', async ({
     page,
