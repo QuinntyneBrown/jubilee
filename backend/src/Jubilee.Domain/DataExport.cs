@@ -38,6 +38,9 @@ public sealed class DataExport
 
     public int Attempts { get; private set; }
 
+    /// <summary>After a failed build, when it is tried again: 1, 2, 4 and 8 minutes later (L2-182 AC2).</summary>
+    public DateTimeOffset? NextAttemptAt { get; private set; }
+
     /// <summary>The hash of the e-mailed link's token (L2-140): the link is found by it.</summary>
     public string? TokenHash { get; private set; }
 
@@ -61,14 +64,25 @@ public sealed class DataExport
         ExpiresAt = now + LinkToken.DataDownloadLifetime;
     }
 
-    /// <summary>A build that failed: tried again until the attempts are used up.</summary>
-    public void RecordFailedAttempt()
+    /// <summary>A waiting export whose back-off, if any, has passed.</summary>
+    public bool IsDue(DateTimeOffset now) => Status == DataExportStatus.Requested && (NextAttemptAt is null || now >= NextAttemptAt);
+
+    /// <summary>
+    /// A build that failed: tried again after 1, 2, 4 and 8 minutes, and marked failed after the fifth (L2-182 AC2). True
+    /// when this failure made the export its dead letter.
+    /// </summary>
+    public bool RecordFailedAttempt(DateTimeOffset now)
     {
         Attempts++;
         if (Attempts >= MaxAttempts)
         {
             Status = DataExportStatus.Failed;
+            NextAttemptAt = null;
+            return true;
         }
+
+        NextAttemptAt = now + TimeSpan.FromMinutes(1 << (Attempts - 1));
+        return false;
     }
 
     public void Expire()

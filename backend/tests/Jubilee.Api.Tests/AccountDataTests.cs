@@ -282,6 +282,8 @@ public sealed partial class AccountDataTests : IClassFixture<JubileeApiFactory>,
         for (var i = 0; i < DataExport.MaxAttempts; i++)
         {
             await BuildExports();
+            // Each attempt waits out the back-off of the one before (L2-182 AC2).
+            _factory.Clock.Advance(TimeSpan.FromMinutes(10));
         }
 
         var export = await Read(db => db.DataExports.SingleAsync());

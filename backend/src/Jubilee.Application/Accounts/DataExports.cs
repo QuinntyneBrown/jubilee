@@ -108,12 +108,14 @@ public sealed class DownloadDataExportQueryHandler(IAppDbContext db, TimeProvide
 /// The worker's side of "Download my data": builds each waiting archive, stores it, mails the link, and later deletes
 /// the files whose link has expired (L2-018, L2-182). A build that fails is tried again, up to 5 times.
 /// </summary>
-public sealed class DataExportBuilder(IAppDbContext db, AccountSettings settings, TimeProvider clock, ILogger<DataExportBuilder> logger)
+public sealed class DataExportBuilder(
+    IAppDbContext db, AccountSettings settings, SecuritySettings security, TimeProvider clock, ILogger<DataExportBuilder> logger)
 {
     public async Task<int> BuildDueAsync(CancellationToken cancellationToken)
     {
+        var due = clock.GetUtcNow();
         var waiting = (await db.DataExports.Where(e => e.Status == DataExportStatus.Requested).ToListAsync(cancellationToken))
-            .OrderBy(e => e.RequestedAt).ToList();
+            .Where(e => e.IsDue(due)).OrderBy(e => e.RequestedAt).ToList();
         var built = 0;
         foreach (var export in waiting)
         {
@@ -137,12 +139,37 @@ public sealed class DataExportBuilder(IAppDbContext db, AccountSettings settings
             catch (Exception exception) when (exception is not OperationCanceledException)
             {
                 logger.LogError(exception, "The data export {ExportId} could not be built.", export.Id);
-                export.RecordFailedAttempt();
+                if (export.RecordFailedAttempt(clock.GetUtcNow()))
+                {
+                    DeadLetter(export);
+                }
+
                 await db.SaveChangesAsync(cancellationToken);
             }
         }
 
         return built;
+    }
+
+    /// <summary>
+    /// The export that failed 5 times is its dead letter (L2-182 AC2, ADR 0069): logged, and the on-call contact is
+    /// e-mailed at once with its reference and the number of attempts, never whose it is. The member sees it failed on
+    /// the account page and can ask again (L2-018 AC7).
+    /// </summary>
+    private void DeadLetter(DataExport export)
+    {
+        logger.LogError("Dead letter: DataExport {ExportId}", export.Id);
+        if (string.IsNullOrWhiteSpace(security.OnCallEmail))
+        {
+            return;
+        }
+
+        db.OutboxMessages.Add(OutboxMessage.Email(
+            null,
+            security.OnCallEmail.Trim(),
+            "Job alert: a data export failed",
+            $"The data export {export.Id} could not be built after {export.Attempts} attempts, so it is marked failed and will not be tried again. The member is told on the account page and can ask again.\n\nLook at the worker's log for \"The data export {export.Id} could not be built\" to see why.\n\nJubilee · Toronto's Christian marketplace\n",
+            clock.GetUtcNow()));
     }
 
     /// <summary>Deletes the archive of every export whose link no longer works (L2-018 AC2).</summary>
