@@ -94,4 +94,59 @@ public sealed class PolicyEditorTests : IClassFixture<JubileeApiFactory>, IAsync
         Assert.Equal(HttpStatusCode.Unauthorized, (await visitor.GetAsync("/api/admin/content/privacy")).StatusCode);
         Assert.Equal(0, await _factory.Query(db => db.ContentVersions.CountAsync()));
     }
+
+    [Fact]
+    public async Task L2_226_AC6_a_publish_is_stored_with_the_administrators_name_read_at_once_and_audited()
+    {
+        var admin = AsAdmin();
+
+        var response = await admin.PostAsJsonAsync("/api/admin/content/privacy/versions", Privacy());
+
+        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+        var read = await Json(await _factory.CreateClient().GetAsync("/api/content/privacy"));
+        Assert.Equal(2, read.GetProperty("version").GetInt32());
+        Assert.Equal("Write to privacy@jubilee.to.", read.GetProperty("sections")[0].GetProperty("body").GetString());
+        var stored = await _factory.Query(db => db.ContentVersions.SingleAsync());
+        Assert.Equal("Daniel Osei", stored.PublishedBy);
+        var audit = await _factory.Query(db => db.AuditRecords.SingleAsync(a => a.Action == "content.published"));
+        Assert.Equal("staff|daniel", audit.Actor);
+        Assert.Equal("Daniel Osei", audit.ActorName);
+        Assert.Equal("content", audit.TargetType);
+        Assert.Equal("privacy", audit.TargetId);
+        Assert.Equal("version 1", audit.Before);
+        Assert.Equal("version 2", audit.After);
+    }
+
+    [Fact]
+    public async Task L2_226_AC7_a_publish_based_on_an_older_version_is_refused_and_nothing_is_published()
+    {
+        var admin = AsAdmin();
+        (await admin.PostAsJsonAsync("/api/admin/content/privacy/versions", Privacy(basedOn: 1))).EnsureSuccessStatusCode();
+
+        var stale = await admin.PostAsJsonAsync("/api/admin/content/privacy/versions", Privacy(basedOn: 1, body: "Older draft."));
+
+        Assert.Equal(HttpStatusCode.Conflict, stale.StatusCode);
+        Assert.Equal("VERSION_CHANGED", (await Json(stale)).GetProperty("code").GetString());
+        Assert.Equal(1, await _factory.Query(db => db.ContentVersions.CountAsync()));
+        Assert.Equal(1, await _factory.Query(db => db.AuditRecords.CountAsync(a => a.Action == "content.published")));
+        var read = await Json(await _factory.CreateClient().GetAsync("/api/content/privacy"));
+        Assert.Equal("Write to privacy@jubilee.to.", read.GetProperty("sections")[0].GetProperty("body").GetString());
+    }
+
+    [Fact]
+    public async Task L2_226_AC4_an_incomplete_section_is_refused_and_nothing_is_published_or_audited()
+    {
+        var response = await AsAdmin().PostAsJsonAsync("/api/admin/content/privacy/versions", new
+        {
+            title = "Privacy",
+            lead = "",
+            sections = new[] { new { heading = "What we keep", anchor = "", body = " " } },
+            basedOn = 1,
+        });
+
+        Assert.Equal(HttpStatusCode.UnprocessableEntity, response.StatusCode);
+        Assert.Equal("SECTION_INCOMPLETE", (await Json(response)).GetProperty("errors").GetProperty("sections").GetString());
+        Assert.Equal(0, await _factory.Query(db => db.ContentVersions.CountAsync()));
+        Assert.Equal(0, await _factory.Query(db => db.AuditRecords.CountAsync()));
+    }
 }

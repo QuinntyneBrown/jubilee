@@ -1,0 +1,57 @@
+<jb-dialog
+  heading="Publish version {{ data.version }} of {{ data.text.title }}?"
+  description="Members read it at once at /{{ data.slug }}. Version {{
+    data.version - 1
+  }} is kept, and the publish is recorded in the audit log."
+  [busy]="busy()"
+  (closed)="close()"
+>
+  @if (view() === 'failed') {
+    <div jb-dialog-body class="stack">
+      <div jb-alert tone="danger" heading="We couldn’t publish it" role="alert">
+        <div>Nothing was published. Check your connection and try again.</div>
+      </div>
+    </div>
+  }
+  @if (view() === 'conflict') {
+    <div jb-dialog-body class="stack">
+      <div
+        jb-alert
+        tone="warning"
+        heading="Version {{ data.version }} was published while you were editing"
+        role="alert"
+      >
+        <div>Nothing was published. Reload to start from it.</div>
+      </div>
+    </div>
+  }
+  <div jb-dialog-footer>
+    <button jb-button type="button" cdkFocusInitial [disabled]="busy()" (click)="close()">
+      Keep editing
+    </button>
+    @switch (view()) {
+      @case ('conflict') {
+        <button jb-button variant="primary" type="button" (click)="reload()">
+          <svg jb-icon name="refresh"></svg>Reload
+        </button>
+      }
+      @case ('failed') {
+        <button jb-button variant="primary" type="button" (click)="publish()">
+          <svg jb-icon name="refresh"></svg>Try again
+        </button>
+      }
+      @default {
+        <button
+          jb-button
+          variant="primary"
+          type="button"
+          [disabled]="busy()"
+          [busy]="busy()"
+          (click)="publish()"
+        >
+          <svg jb-icon name="arrow-up"></svg>Publish version {{ data.version }}
+        </button>
+      }
+    }
+  </div>
+</jb-dialog>

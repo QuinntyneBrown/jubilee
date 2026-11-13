@@ -9,6 +9,7 @@ import {
   inject,
   signal,
 } from '@angular/core';
+import { Dialog } from '@angular/cdk/dialog';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import {
@@ -40,7 +41,13 @@ import {
   Rows,
   Skeleton,
   Textarea,
+  ToastService,
 } from 'components';
+import {
+  PublishPolicyData,
+  PublishPolicyDialog,
+  PublishPolicyResult,
+} from '../../dialogs/publish-policy/publish-policy.dialog';
 
 /** One section of the draft; `key` tells the sections apart while they are added and removed. */
 export interface DraftSection {
@@ -93,6 +100,8 @@ export class AdminPolicyPage implements OnInit {
   private readonly clock = inject(ClockService);
   private readonly injector = inject(Injector);
   private readonly document = inject(DOCUMENT);
+  private readonly dialog = inject(Dialog);
+  private readonly toasts = inject(ToastService);
   protected readonly slug = inject(ActivatedRoute).snapshot.paramMap.get('slug') as ContentSlug;
 
   protected readonly state = signal<LoadState<AdminContent>>({ status: 'loading' });
@@ -213,6 +222,35 @@ export class AdminPolicyPage implements OnInit {
   /** Publish is pressed: the fields say what is missing, or the publish is confirmed. */
   protected publish(): void {
     this.checked.set(true);
-    if (this.invalid()) return;
+    const value = this.published();
+    if (this.invalid() || !value) return;
+    const draft = this.draft();
+    const version = this.nextVersion();
+    const ref = this.dialog.open<PublishPolicyResult, PublishPolicyData>(PublishPolicyDialog, {
+      data: {
+        slug: this.slug,
+        version,
+        text: {
+          title: draft.title.trim(),
+          lead: draft.lead.trim(),
+          sections: draft.sections.map(({ heading, anchor, body }) => ({
+            heading: heading.trim(),
+            anchor,
+            body: body.trim(),
+          })),
+          basedOn: value.published.version,
+        },
+      },
+    });
+    ref.closed.subscribe((result) => {
+      if (result === 'published') {
+        this.toasts.show({
+          tone: 'success',
+          title: `Version ${version} published`,
+          text: 'Members read it now.',
+        });
+      }
+      if (result) this.load();
+    });
   }
 }

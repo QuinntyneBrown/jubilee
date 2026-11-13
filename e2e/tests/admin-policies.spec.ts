@@ -8,6 +8,8 @@ import { defaultVersions, stubPolicies } from '../fixtures/policies';
 import { daniel, miriam } from '../fixtures/staff';
 import { AdminPoliciesPage } from '../pages/admin-policies.page';
 import { AdminPolicyPage } from '../pages/admin-policy.page';
+import { PublishPolicyDialog } from '../pages/publish-policy.dialog';
+import { Toasts } from '../pages/toasts';
 
 test.describe('the policies list (L2-226)', () => {
   test('AC1: an administrator sees the four pages with their published version, and Policies in the admin bar', async ({
@@ -205,6 +207,141 @@ test.describe('the policy editor (L2-226)', () => {
     await expect(editor.fieldError(editor.sectionText(2))).toHaveText('Write this section’s text.');
     await expect(editor.title).toHaveAttribute('aria-invalid', 'true');
     expect(fake.published).toEqual([]);
+  });
+
+  test('AC5: a valid draft asks before it is published, with Keep editing focused', async ({
+    page,
+    jb,
+  }) => {
+    const editor = new AdminPolicyPage(page);
+    const dialog = new PublishPolicyDialog(page);
+    const fake = await stubPolicies(page);
+    await jb.gotoAdmin('/policies/privacy');
+
+    await editor.publish.click();
+
+    await expect(dialog.title).toHaveText('Publish version 3 of Privacy?');
+    await expect(dialog.description).toHaveText(
+      'Members read it at once at /privacy. Version 2 is kept, and the publish is recorded in the audit log.',
+    );
+    await expect(dialog.keepEditing).toBeFocused();
+    await expect(dialog.publish).toHaveText('Publish version 3');
+
+    await dialog.keepEditing.click();
+    await expect(dialog.root).toHaveCount(0);
+    expect(fake.published).toEqual([]);
+  });
+
+  test('AC6: a confirmed publish sends the draft with its version, says so, and shows the new version as published', async ({
+    page,
+    jb,
+  }) => {
+    const editor = new AdminPolicyPage(page);
+    const dialog = new PublishPolicyDialog(page);
+    const toasts = new Toasts(page);
+    const fake = await stubPolicies(page);
+    await jb.gotoAdmin('/policies/privacy');
+
+    await editor.sectionText(2).fill('Change what we e-mail you in your notification settings.');
+    await editor.publish.click();
+    await dialog.publish.click();
+
+    await expect(toasts.withTitle('Version 3 published')).toContainText('Members read it now.');
+    await expect(dialog.root).toHaveCount(0);
+    expect(fake.published).toHaveLength(1);
+    expect(fake.published[0].slug).toBe('privacy');
+    expect(fake.published[0].body.basedOn).toBe(2);
+    expect(fake.published[0].body.title).toBe('Privacy');
+    expect(fake.published[0].body.sections.map((s) => s.anchor)).toEqual([
+      'what-we-keep',
+      'your-choices',
+      'privacy-contact',
+    ]);
+    expect(fake.published[0].body.sections[1].body).toBe(
+      'Change what we e-mail you in your notification settings.',
+    );
+
+    await expect(editor.subtitle).toHaveText(
+      'Version 3 is published, since 10 Nov 2026. Publishing makes version 4; version 3 is kept.',
+    );
+    await expect(editor.versionRows.locator('.row__title')).toHaveText([
+      'Version 3 · published',
+      'Version 2',
+      'Version 1',
+    ]);
+    await expect(editor.publish).toHaveText('Publish version 4');
+  });
+
+  test('AC6: while the publish is sent the dialog is busy and cannot be dismissed', async ({
+    page,
+    jb,
+  }) => {
+    const editor = new AdminPolicyPage(page);
+    const dialog = new PublishPolicyDialog(page);
+    await stubPolicies(page, { publish: 'hangs' });
+    await jb.gotoAdmin('/policies/privacy');
+
+    await editor.publish.click();
+    await dialog.publish.click();
+
+    await expect(dialog.publish).toHaveAttribute('aria-busy', 'true');
+    await expect(dialog.keepEditing).toBeDisabled();
+    await page.keyboard.press('Escape');
+    await expect(dialog.title).toBeVisible();
+  });
+
+  test('AC7: a version published since the editor opened is refused, and Reload starts from it', async ({
+    page,
+    jb,
+  }) => {
+    const editor = new AdminPolicyPage(page);
+    const dialog = new PublishPolicyDialog(page);
+    const fake = await stubPolicies(page, { publish: 'conflict' });
+    await jb.gotoAdmin('/policies/privacy');
+
+    await editor.publish.click();
+    await dialog.publish.click();
+
+    await expect(dialog.alert).toContainText('Version 3 was published while you were editing');
+    await expect(dialog.alert).toContainText('Nothing was published. Reload to start from it.');
+    await expect(dialog.publish).toHaveCount(0);
+
+    fake.versions.privacy.unshift({
+      ...fake.versions.privacy[0],
+      number: 3,
+      title: 'Privacy notice',
+      publishedAt: '2026-11-10T13:00:00Z',
+      publishedBy: 'Ruth Mensah',
+    });
+    await dialog.reload.click();
+
+    await expect(dialog.root).toHaveCount(0);
+    await expect(editor.title).toHaveValue('Privacy notice');
+    await expect(editor.publish).toHaveText('Publish version 4');
+  });
+
+  test('AC8: a publish that fails says nothing was published, and Try again sends it again', async ({
+    page,
+    jb,
+  }) => {
+    const editor = new AdminPolicyPage(page);
+    const dialog = new PublishPolicyDialog(page);
+    const toasts = new Toasts(page);
+    const fake = await stubPolicies(page, { publish: 'fails' });
+    await jb.gotoAdmin('/policies/privacy');
+
+    await editor.publish.click();
+    await dialog.publish.click();
+
+    await expect(dialog.alert).toContainText('We couldn’t publish it');
+    await expect(dialog.alert).toContainText(
+      'Nothing was published. Check your connection and try again.',
+    );
+
+    fake.publish = 'ok';
+    await dialog.tryAgain.click();
+    await expect(toasts.withTitle('Version 3 published')).toBeVisible();
+    expect(fake.published).toHaveLength(2);
   });
 
   test('AC9: an editor that fails to load says so with its reference', async ({ page, jb }) => {

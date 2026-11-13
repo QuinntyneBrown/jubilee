@@ -187,6 +187,13 @@ public sealed partial class PublishContentVersionCommandHandler(IAppDbContext db
         var current = await reader.Published(request.Slug, cancellationToken)
             ?? throw new NotFoundException("CONTENT_NOT_FOUND", "There is no such page.");
 
+        // A draft started from an older version would overwrite one published since (ADR 0066).
+        if (request.BasedOn is { } basedOn && basedOn != current.Version)
+        {
+            throw new ConflictException(
+                "VERSION_CHANGED", $"Version {current.Version} was published while you were editing. Nothing was published.");
+        }
+
         var errors = new Dictionary<string, string>();
         if (string.IsNullOrWhiteSpace(request.Title))
         {
@@ -228,6 +235,9 @@ public sealed partial class PublishContentVersionCommandHandler(IAppDbContext db
             request.Slug, current.Version + 1, request.Title!.Trim(), request.Lead?.Trim() ?? string.Empty,
             JsonSerializer.Serialize(sections), clock.GetUtcNow(), request.Admin.Name);
         db.ContentVersions.Add(version);
+        AuditLog.Record(
+            db, request.Admin, "content.published", "content", request.Slug,
+            $"version {current.Version}", $"version {version.Number}", null, version.PublishedAt);
         await db.SaveChangesAsync(cancellationToken);
         return ContentReader.ToDto(version);
     }
