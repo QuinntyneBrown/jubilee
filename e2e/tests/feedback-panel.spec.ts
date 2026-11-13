@@ -289,4 +289,61 @@ test.describe('feedback launcher and panel (L2-210)', () => {
 
     await expect(panel.note).toHaveAttribute('maxlength', '1000');
   });
+
+  test('AC12: with reduced motion the launcher and the panel appear without movement', async ({
+    page,
+    jb,
+  }) => {
+    const shell = new ShellPage(page);
+    const panel = new FeedbackDialog(page);
+    await shell.setWidth(360);
+    await jb.signInAs('member');
+    await jb.goto('/');
+    // Without the preference the launcher answers a press and the panel slides in
+    expect(await shell.feedbackLauncherMotionMs()).toBeGreaterThan(1);
+    await shell.feedbackLauncher.click();
+    await expect(panel.title).toBeVisible();
+    expect(await panel.arrivalMs()).toBeGreaterThan(1);
+    await page.keyboard.press('Escape');
+
+    // Given the member prefers reduced motion
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+
+    // Then neither moves
+    expect(await shell.feedbackLauncherMotionMs()).toBeLessThanOrEqual(1);
+    await shell.feedbackLauncher.click();
+    await expect(panel.title).toBeVisible();
+    expect(await panel.arrivalMs()).toBeLessThanOrEqual(1);
+  });
+
+  test.describe('on a touch screen', () => {
+    test.use({ hasTouch: true });
+
+    for (const width of [360, 1280]) {
+      test(`AC12: every target of the panel can be pressed over 44 px at ${width} px`, async ({
+        page,
+        jb,
+      }) => {
+        const shell = new ShellPage(page);
+        const panel = new FeedbackDialog(page);
+        await shell.setWidth(width);
+        await jb.signInAs('member');
+        await stubFeedback(page);
+        await jb.goto('/');
+        await shell.feedbackLauncher.tap();
+        await panel.settled();
+
+        expect(await panel.targetsSmallerThan(44)).toEqual([]);
+        await panel.tab('Report a bug').tap();
+        expect(await panel.targetsSmallerThan(44)).toEqual([]);
+        await panel.tab('Kudos').tap();
+        await expect(panel.chips).toBeVisible();
+        expect(await panel.targetsSmallerThan(44)).toEqual([]);
+        await panel.chip('Quick replies').tap();
+        await panel.send.tap();
+        await expect(panel.done).toBeVisible();
+        expect(await panel.targetsSmallerThan(44)).toEqual([]);
+      });
+    }
+  });
 });

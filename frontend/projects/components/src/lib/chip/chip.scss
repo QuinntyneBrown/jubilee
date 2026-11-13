@@ -19,3 +19,8 @@
   padding-inline: var(--space-2);
   font-size: var(--font-size-xs);
 }
+
+// A small chip sits in a dense card and keeps its 24 px target (L2-162).
+:host(.chip--sm)::after {
+  content: none;
+}
