@@ -11,7 +11,7 @@
 | edit-profile | 3 days | 90% |
 | join-with-email | 4 days | 95% |
 | manage-session | 5 days | 100% |
-| reset-password | 4 days | 90% |
+| reset-password | 4 days | 100% |
 | sign-in | 4 days | 100% |
 | sign-in-as-staff | 5 days | 90% |
 
@@ -23,7 +23,7 @@
 
 confirm-email (ADR 0049): the unconfirmed address is changed in `ChangeUnconfirmedEmailDialog` from the waiting page and the banner, with its invalid, sending, in-use and limit states (L2-004 AC5, AC8 to AC10); the resend limit is said in the banner, on the waiting page and on "Check your e-mail" (L2-005 AC5); `LoggedPath` keeps tokens out of the logs (L2-140 AC3). With tests: `join.spec.ts`, `TokenRedactionTests`. The return to the started action after joining (L2-012 AC2) and the `__Host-` cookie (L2-135 AC1) were built by journey 5 (ADR 0046).
 
-reset-password (ADR 0026): the forgot-password and reset-password pages, the queued request with the 3-an-hour limit, hashed single-use 60-minute links, the reset that ends earlier sessions, the security e-mail and the smallest password sign-in are done with tests. Deferred: a 429 for reset requests, the on-call alert and the session list (journey 20).
+reset-password (ADR 0026, ADR 0064): the forgot-password and reset-password pages, the request that counts the address’s requests and answers a fourth in an hour with 429 and `Retry-After` the same for any address (with the page’s warning and its `rate-limited` mock and route), hashed single-use 60-minute links, the reset that ends every other session, the security e-mail, the median-time test of 100 requests each, the proof that no reset token reaches the API’s or the worker’s log, and the alert to the on-call contact on more than 100 reset requests in 5 minutes are done with tests (`PasswordResetTests`, `PasswordResetAlertTests`, `TokenRedactionTests`, `PasswordResetJobTests`, `password-reset.spec.ts`). Nothing is left in the design. Owner step: set `Security__OnCallEmail` on `jubilee-to-app` (`eng/azure/README.md`); until then the alert goes to the Jubilee team’s address. Outside this journey: the alerts on failed sign-ins and role changes (L2-143 AC2) and the session list (L2-143 AC3, journey 20).
 
 download-data and delete-account (ADR 0034): the "Your data" card with the export request (rate limit, same export while one waits), the worker that builds the JSON archive and mails the 7-day link, the sign-in-bound download page, the expiry job, the delete-account dialog with live counts and DELETE confirmation, the deletion (sessions ended, open requests cancelled and the businesses told, listings unpublished, audit record, confirmation e-mail) and the erasure job after 30 days (messages stay from "Former member") are done with tests (`AccountDataTests`, `account-data.spec.ts`). Deferred: object storage for archives, the backup rotation, the weekly retention schedule beyond account deletion, search-index removal through the outbox and the data-export e-mail unsubscribe wording.
 

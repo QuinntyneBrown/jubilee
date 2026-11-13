@@ -88,8 +88,11 @@ and the outbox in the `Jubilee database`.
   an existing and a non-existing address to each of the three endpoints and
   fails when the median times differ by 50 ms or more.
 
-As built for password reset (ADR 0026, ADR 0064): there is no shared
-`RateLimitMiddleware` or `IRateLimitStore`. `RequestPasswordResetCommandHandler`
+As built for password reset (ADR 0026, ADR 0064): the per-address limits of the
+directory, search, join, resend and launch forms are ASP.NET Core rate limiter
+policies (`DirectoryRateLimit.cs`), not a `RateLimitMiddleware` with an
+`IRateLimitStore`, and the reset limit counts rows of its own.
+`RequestPasswordResetCommandHandler`
 counts the `PasswordResetRequest` rows of the address in the hour before and
 throws `RateLimitedException`, which `ExceptionHandlingMiddleware` writes as
 `429` with `Retry-After` and the code `rate_limited`; the trip is logged as
