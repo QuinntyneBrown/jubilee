@@ -82,7 +82,7 @@ public partial class AccountTests : IClassFixture<JubileeApiFactory>, IAsyncLife
     [InlineData("Grace Toronto Church", null, "Grace Toronto Church", null)]
     [InlineData(null, " 383 Jarvis Street, Toronto ", null, "383 Jarvis Street, Toronto")]
     [InlineData("   ", "   ", null, null)]
-    public async Task L2_188_a_member_joins_with_the_name_the_address_both_or_neither(string? church, string? address, string? storedChurch, string? storedAddress)
+    public async Task L2_196_a_member_joins_with_the_name_the_address_both_or_neither(string? church, string? address, string? storedChurch, string? storedAddress)
     {
         var response = await _factory.CreateClient().PostAsJsonAsync("/api/account/join", Form(church: church, churchAddress: address));
 
@@ -115,7 +115,7 @@ public partial class AccountTests : IClassFixture<JubileeApiFactory>, IAsyncLife
 
     // L2-196 AC4
     [Fact]
-    public async Task L2_188_AC4_a_home_church_address_over_200_characters_is_refused_and_200_is_kept()
+    public async Task L2_196_AC4_a_home_church_address_over_200_characters_is_refused_and_200_is_kept()
     {
         var refused = await _factory.CreateClient().PostAsJsonAsync("/api/account/join", Form(churchAddress: new string('a', 201)));
         var kept = await _factory.CreateClient().PostAsJsonAsync("/api/account/join", Form(churchAddress: new string('a', 200)));

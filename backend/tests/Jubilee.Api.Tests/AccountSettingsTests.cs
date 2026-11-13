@@ -111,7 +111,7 @@ public sealed partial class AccountSettingsTests : IClassFixture<JubileeApiFacto
 
     // L2-196 AC3, AC5: either field without the other, and clearing removes the value
     [Fact]
-    public async Task L2_188_the_address_is_saved_without_a_name_and_cleared_when_it_is_emptied()
+    public async Task L2_196_the_address_is_saved_without_a_name_and_cleared_when_it_is_emptied()
     {
         var client = await Join();
 
@@ -128,7 +128,7 @@ public sealed partial class AccountSettingsTests : IClassFixture<JubileeApiFacto
 
     // L2-196 AC4
     [Fact]
-    public async Task L2_188_AC4_a_home_church_address_over_200_characters_is_refused()
+    public async Task L2_196_AC4_a_home_church_address_over_200_characters_is_refused()
     {
         var client = await Join();
 
