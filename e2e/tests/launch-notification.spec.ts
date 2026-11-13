@@ -1,3 +1,4 @@
+import { stubChallenge, stubLaunchChallenge } from '../fixtures/bot-challenge';
 import { expect, test } from '../fixtures/jb-test';
 import { MarketingHomePage } from '../pages/marketing-home.page';
 
@@ -190,5 +191,62 @@ test.describe('launch notification sign-up (L2-217)', () => {
     );
     await expect(home.notifyForm.field('First name')).toHaveValue('Joanna');
     await expect(home.notifyForm.consent).toBeChecked();
+  });
+
+  test('AC7 and L2-218 AC5: with a bot challenge configured the sign-up carries its token', async ({
+    page,
+    jb,
+  }) => {
+    const home = new MarketingHomePage(page);
+    // Given the API names the site key of a bot challenge
+    const loaded = await stubChallenge(page, ['token-1']);
+    await stubLaunchChallenge(page);
+    await jb.open('marketing-home');
+    await home.fillNotify();
+    // When the visitor sends the form
+    const request = await home.notifyForm.sendAndCapture();
+    // Then the token of the challenge goes with the sign-up
+    expect(request.postDataJSON().challengeToken).toBe('token-1');
+    expect(loaded()).toBe(1);
+  });
+
+  test('L2-218 AC5: without a site key the page loads no challenge and sends no token', async ({
+    page,
+    jb,
+  }) => {
+    const home = new MarketingHomePage(page);
+    const loaded = await stubChallenge(page, ['token-1']);
+    await jb.open('marketing-home');
+    await home.fillNotify();
+    const request = await home.notifyForm.sendAndCapture();
+    expect(request.postDataJSON().challengeToken).toBeNull();
+    expect(loaded()).toBe(0);
+  });
+
+  test('AC7: after a challenge that was not passed, the next send carries a fresh token', async ({
+    page,
+    jb,
+  }) => {
+    const home = new MarketingHomePage(page);
+    // Given a bot challenge is configured and the API refuses the first token
+    await stubChallenge(page, ['token-1', 'token-2']);
+    await stubLaunchChallenge(page);
+    await jb.open('marketing-home.notify-challenge-failed');
+    const form = home.notifyForm;
+    const bodies = form.capture();
+    await home.fillNotify();
+    // When the visitor sends the form, is refused and sends it again
+    await form.send.click();
+    await expect(form.alert).toHaveText(
+      'We couldn’t check that you’re not a robot. Wait a moment and try again.',
+    );
+    await expect(form.summary).toHaveCount(0);
+    await form.send.click();
+    // Then the second send carries the fresh token the page asked for
+    await expect.poll(() => bodies().length).toBe(2);
+    expect(bodies().map((body) => (body as { challengeToken: string }).challengeToken)).toEqual([
+      'token-1',
+      'token-2',
+    ]);
   });
 });

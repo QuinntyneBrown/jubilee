@@ -1,4 +1,5 @@
 import type { Page } from '@playwright/test';
+import { stubChallenge } from '../fixtures/bot-challenge';
 import { expect, test } from '../fixtures/jb-test';
 import {
   stubConfirmation,
@@ -905,27 +906,6 @@ test.describe('join with Google: off, cancelled or refused (L2-003)', () => {
 });
 
 test.describe('the bot challenge of the join form (L2-137)', () => {
-  /** Stands in for Cloudflare: the script renders nothing and hands the form a token. */
-  async function stubChallenge(page: Page, tokens: string[]) {
-    let requests = 0;
-    await page.route('https://challenges.cloudflare.com/**', (route) => {
-      requests++;
-      return route.fulfill({
-        contentType: 'text/javascript',
-        body: `(() => {
-          const tokens = ${JSON.stringify(tokens)};
-          let callback = () => {};
-          window.turnstile = {
-            render: (_el, options) => { callback = options.callback; callback(tokens.shift()); return 'w1'; },
-            reset: () => callback(tokens.shift()),
-            remove: () => {},
-          };
-        })();`,
-      });
-    });
-    return () => requests;
-  }
-
   test('AC2: with a site key the form sends the token of the challenge', async ({ page, jb }) => {
     const join = new JoinPage(page);
     const loaded = await stubChallenge(page, ['token-1']);

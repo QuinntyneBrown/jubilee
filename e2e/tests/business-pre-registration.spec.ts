@@ -1,3 +1,4 @@
+import { stubChallenge, stubLaunchChallenge } from '../fixtures/bot-challenge';
 import { expect, test } from '../fixtures/jb-test';
 import { MarketingHomePage, naomiDetails } from '../pages/marketing-home.page';
 
@@ -250,5 +251,56 @@ test.describe('business pre-registration (L2-216)', () => {
     await expect(home.businessForm.field('About your business')).toHaveValue(
       naomiDetails.description,
     );
+  });
+
+  test('AC8 and L2-218 AC5: with a bot challenge configured the details carry its token', async ({
+    page,
+    jb,
+  }) => {
+    const home = new MarketingHomePage(page);
+    const loaded = await stubChallenge(page, ['token-1']);
+    await stubLaunchChallenge(page);
+    await jb.open('marketing-home');
+    await home.fillBusiness();
+    const request = await home.businessForm.sendAndCapture();
+    expect(request.postDataJSON().challengeToken).toBe('token-1');
+    expect(loaded()).toBe(1);
+  });
+
+  test('L2-218 AC5: without a site key the page loads no challenge and sends no token', async ({
+    page,
+    jb,
+  }) => {
+    const home = new MarketingHomePage(page);
+    const loaded = await stubChallenge(page, ['token-1']);
+    await jb.open('marketing-home');
+    await home.fillBusiness();
+    const request = await home.businessForm.sendAndCapture();
+    expect(request.postDataJSON().challengeToken).toBeNull();
+    expect(loaded()).toBe(0);
+  });
+
+  test('AC8: after a challenge that was not passed, the next send carries a fresh token', async ({
+    page,
+    jb,
+  }) => {
+    const home = new MarketingHomePage(page);
+    await stubChallenge(page, ['token-1', 'token-2']);
+    await stubLaunchChallenge(page);
+    await jb.open('marketing-home.business-challenge-failed');
+    const form = home.businessForm;
+    const bodies = form.capture();
+    await home.fillBusiness();
+    await form.send.click();
+    await expect(form.alert).toHaveText(
+      'We couldn’t check that you’re not a robot. Wait a moment and try again.',
+    );
+    await expect(form.summary).toHaveCount(0);
+    await form.send.click();
+    await expect.poll(() => bodies().length).toBe(2);
+    expect(bodies().map((body) => (body as { challengeToken: string }).challengeToken)).toEqual([
+      'token-1',
+      'token-2',
+    ]);
   });
 });
