@@ -100,6 +100,17 @@ The feature runs from the Angular admin shell to the Jubilee database.
   the account's address as the target and the roles before and after; a
   command that changes nothing writes nothing (`L2-098` AC4, ADR 0059).
 
+### Platforms
+
+A published software platform (kind `platform`, ADR 0071) is listed like any
+listing. The list has no column for the kind: the Category column reads
+"Software platforms", because `AdminListingRow.CategoryName` comes from
+`Category.Find` and the category is the twelfth of `Category.All`. The search
+by name finds a platform as it finds any listing. Nothing in
+`GetAdminListingsQueryHandler` branches on the kind (`L2-257` AC1). The
+platform's own fields show on its listing screen
+(`moderation/take-down-listing`).
+
 ## Requirements
 
 The feature realizes the following level-2 (L2) requirements. Each L2
@@ -112,6 +123,7 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 | `L2-133` | `L1-019` | The system shall check the caller's role and ownership of the specific object on every API endpoint before doing anything, without relying on the client hiding a control. |
 | `L2-180` | `L1-025` | The system shall store an append-only audit record with actor, action, target, time, before and after values, and reason for each sensitive action, including role changes. |
 | `L2-118` | `L1-016` | The system shall show a quotable error reference on every load-error state, with `503` when the service was unavailable. |
+| `L2-257` | `L1-033` | A published platform shall be listed at `/listings` in the admin application like any listing, with the category "Software platforms", and the search by name shall find it. |
 
 ## Diagrams
 

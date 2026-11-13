@@ -1,0 +1,96 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure: View a platform
+
+class ListingPageDto <<record>> {
+  +string Slug
+  +string Kind
+  +string Name
+  +CategoryLinkDto Category
+  +string Status
+  +string ViewerRelation
+  +string? OwnerName
+  +string Tagline
+  +string? Highlight
+  +ListingDetailsDto Details
+  +IReadOnlyList<BusinessCardDto> Related
+  +SpacePageDto? Space
+  +PlatformPageDto? Platform
+}
+
+class PlatformPageDto <<record>> {
+  +string? Website
+  +string? Host
+  +string Does
+  +string For
+  +string Pricing
+  +{static} From(listing: Listing): PlatformPageDto?
+}
+
+class PlatformRules <<static>> {
+  +{static} IsWebAddress(value: string): bool
+  +{static} Host(value: string): string
+}
+
+class Listing {
+  +string Slug
+  +string Name
+  +ListingKind Kind
+  +string? OwnerName
+  +string? Website
+  +PlatformDetails? Platform
+  +DescribePlatform(details: PlatformDetails, website: string)
+}
+
+class PlatformDetails <<owned type, JSON column Platform>> {
+  +{static} MaxDoesLength: int = 600
+  +{static} MaxForLength: int = 300
+  +{static} MaxPricingLength: int = 120
+  +string Does
+  +string For
+  +string Pricing
+}
+
+enum ListingKind {
+  Services
+  Shop
+  Space
+  Platform
+}
+
+class GetListingPageQueryHandler {
+  +Handle(query: GetListingPageQuery): ListingPageDto
+}
+
+class RequestQuoteCommandHandler {
+  +Handle(command: RequestQuoteCommand): BookedRequestDto
+}
+
+class PlatformPage <<TypeScript>> {
+  +website: string | null
+  +host: string | null
+  +does: string
+  +for: string
+  +pricing: string
+}
+
+ListingPageDto *-- "0..1" PlatformPageDto
+PlatformPageDto ..> Listing : reads Website and Platform
+PlatformPageDto ..> PlatformRules : Website kept only when IsWebAddress
+Listing *-- "0..1" PlatformDetails
+Listing --> ListingKind
+GetListingPageQueryHandler ..> ListingPageDto : builds
+RequestQuoteCommandHandler ..> ListingKind : 409 NOT_OFFERED when Platform
+PlatformPage ..> PlatformPageDto : mirrors
+@enduml

@@ -1,0 +1,12 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context: Describe a platform
+
+Person(member, "Member (founder)", "Lists a software platform they founded")
+Person(team, "Jubilee team", "Looks through published listings")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace of Christian-owned businesses")
+
+Rel(member, jubilee, "Describes, saves and publishes a platform at /list")
+Rel(team, jubilee, "Sees the published platform in the admin application")
+@enduml

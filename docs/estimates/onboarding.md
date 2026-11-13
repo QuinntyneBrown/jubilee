@@ -3,6 +3,7 @@
 | Design | Effort | Complete |
 |---|---|---|
 | describe-listing | 3 days | 100% |
+| describe-platform | 4 days | 0% |
 | describe-space | 5 days | 100% |
 | save-draft | 5 days | 100% |
 | publish-listing | 4 days | 100% |
@@ -14,3 +15,5 @@ publish-listing replaces submit-for-verification (ADR 0057) and is done with tes
 Left for the owner, by hand: the visual parity of the new screen states against their mocks (`statement-agreement`, `my-business.statement-due`, `my-business.statement-lapsed`), which only the sweeps check (ADR 0010). Publishing a new statement of faith is a change to `StatementOfFaith.Version` and the page; tell owners by e-mail before it ships, because 30 days later their listings are paused.
 
 describe-space (ADR 0042): List a space with its terms, fields, checks and live preview, its draft and publishing it straight away are done with tests. Excludes deferred work (see ADR 0042): hourly rent and the sign-up intents.
+
+describe-platform (ADR 0071): designed, not built. List a software platform with its fields, checks, preview, draft and publishing, and the `AddSoftwarePlatforms` migration; the effort includes editing a platform on Edit listing (L2-256). The percent is set when journey 33 is implemented.

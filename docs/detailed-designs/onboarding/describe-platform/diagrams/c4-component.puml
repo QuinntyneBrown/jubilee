@@ -1,0 +1,38 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components: Describe a platform
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(page, "ListBusinessPage", "Angular page", "Fourth choice, relabelled form, summary and success page")
+  Component(form, "PlatformForm", "Angular service", "The four fields, limits, checks, body and preview view model")
+  Component(choice, "jb-choice-card", "Library component", "A software platform, one of four radio cards")
+  Component(fields, "jb-input and jb-textarea", "Library components", "Web address, What it does, Who it is for, Pricing with counters")
+  Component(card, "jb-business-card", "Library component", "How members see it, marked Not published yet")
+  Component(client, "ListingDraftsApi", "Typed HTTP client", "Saves, resumes and publishes drafts")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(ctrl, "ListingDraftsController", "ASP.NET Core controller", "Passes platform as DraftInput.Platform")
+  Component(save, "SaveListingDraftCommandHandler", "MediatR handler", "Stores the fields without validation")
+  Component(current, "GetCurrentDraftQueryHandler", "MediatR handler", "Answers ListingDraftDto with PlatformDraftDto")
+  Component(publish, "PublishListingCommandHandler", "MediatR handler", "Validates, creates the Listing, publishes")
+  Component(validate, "Drafts.ValidatePlatform", "Application rule", "platform.website, does, for and pricing codes")
+  Component(rules, "PlatformRules", "Domain rule", "IsWebAddress: https, dotted host, no user info, 200 at most")
+}
+ContainerDb(db, "Jubilee database", "SQL Server", "ListingDrafts, Listings, ListingSubmissions")
+
+Rel(page, choice, "Renders")
+Rel(page, fields, "Renders")
+Rel(page, card, "Renders the preview")
+Rel(page, form, "Holds the platform fields in")
+Rel(page, client, "Saves and publishes through")
+Rel(client, ctrl, "POST, PUT, GET /api/listing-drafts", "JSON/HTTPS")
+Rel(ctrl, save, "Sends SaveListingDraftCommand")
+Rel(ctrl, current, "Sends GetCurrentDraftQuery")
+Rel(ctrl, publish, "Sends PublishListingCommand")
+Rel(publish, validate, "Applies")
+Rel(validate, rules, "Checks the web address with")
+Rel(save, db, "Writes the draft", "EF Core")
+Rel(current, db, "Reads the draft", "EF Core")
+Rel(publish, db, "Writes the listing, removes the draft", "EF Core")
+@enduml

@@ -1,0 +1,17 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context: View a platform
+
+Person(visitor, "Visitor", "Opens a platform page without signing in")
+Person(member, "Member", "Opens a platform page, messages the founder, saves, shares, reports")
+Person(owner, "Owner (founder)", "Opens their own platform page")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace of Christian-owned businesses")
+System_Ext(site, "Platform's website", "The founder's own product; people sign up and pay there")
+
+Rel(visitor, jubilee, "Opens /b/{slug}")
+Rel(member, jubilee, "Opens /b/{slug} and uses the member actions")
+Rel(owner, jubilee, "Sees the owner view or the preview")
+Rel(visitor, site, "Follows Visit {host} in a new tab")
+Rel(member, site, "Follows Visit {host} in a new tab")
+@enduml

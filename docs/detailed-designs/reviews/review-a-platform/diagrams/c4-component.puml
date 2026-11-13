@@ -1,0 +1,44 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components: Review a platform
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(business, "BusinessPage", "Angular page", "Platform page; sets the basis line of the Reviews section")
+  Component(reviews, "jb-reviews", "Library component", "Heading, basis line, summary, list, Write a review")
+  Component(page, "WriteReviewPage", "Page container", "Rating, text, statement of use, view and one idempotency key")
+  Component(subject, "jb-review-subject", "Library component", "Software platforms tile, name and category")
+  Component(stars, "jb-star-scale", "Library component", "Five native radios named n of 5 and a word")
+  Component(check, "jb-checkbox", "Library component", "I have used {name} myself. with aria-invalid")
+  Component(posted, "jb-review-posted", "Library component", "Thanks, your review is live. Their platform")
+  Component(client, "ReviewsApi", "Service contract", "REVIEWS_API implemented by HttpReviewsApi")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(ctrl, "ReviewsController", "ASP.NET Core controller", "ReviewBody with UsedIt")
+  Component(list, "GetListingReviewsQuery", "MediatR handler", "Reviews with the writing state")
+  Component(form, "GetReviewFormQuery", "MediatR handler", "Listing kind platform, no items")
+  Component(write, "WriteReviewCommandHandler", "MediatR handler", "Key, eligibility, validation with usedIt, limit, store, notify")
+  Component(rules, "ReviewRules", "Application rule", "WritingAsync branches on Listing.Kind")
+  Component(items, "ReviewItems", "Application rule", "Only item Their platform")
+}
+ComponentDb(db, "Jubilee database", "SQL Server", "Reviews, Requests, Listings, Notifications, OutboxMessages")
+
+Rel(business, reviews, "Renders")
+Rel(reviews, page, "Write a review links to /b/{slug}/review")
+Rel(page, subject, "Composes")
+Rel(page, stars, "Composes")
+Rel(page, check, "Composes")
+Rel(page, posted, "Shows after posting")
+Rel(page, client, "Loads and posts through")
+Rel(client, ctrl, "Calls", "JSON/HTTPS")
+Rel(ctrl, list, "Sends")
+Rel(ctrl, form, "Sends")
+Rel(ctrl, write, "Sends")
+Rel(list, rules, "WritingAsync")
+Rel(form, rules, "EnsureMayWriteAsync")
+Rel(write, rules, "EnsureMayWriteAsync and Validate")
+Rel(form, items, "OfAsync")
+Rel(write, items, "OfAsync")
+Rel(rules, db, "Reads requests for other kinds only", "EF Core")
+Rel(write, db, "Saves in one transaction", "EF Core")
+@enduml

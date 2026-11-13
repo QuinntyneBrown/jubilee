@@ -1,0 +1,35 @@
+@startuml
+title UML sequence behaviour: Refuse a quote request for a platform
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Backend: Jubilee API" #D1FADF
+  participant "RequestsController" as controller
+end box
+box "Backend: Jubilee Application and Domain" #ECFDF3
+  participant "RequestQuoteCommandHandler" as handler
+end box
+box "Backend: Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+note over actor : No screen offers a quote on a platform (L2-254 AC3); the request is sent by hand
+actor -> controller : POST a quote request naming the slug of a platform
+controller -> handler : Send RequestQuoteCommand with the member of the session
+handler -> db : Public listing by slug
+db --> handler : Listing, Kind Platform
+handler --> controller : ConflictException NOT_OFFERED, before the fields are checked
+controller --> actor : 409 ProblemDetails with code NOT_OFFERED (L2-248 AC5)
+note over handler, db : No Request, no notification and no e-mail is created
+@enduml

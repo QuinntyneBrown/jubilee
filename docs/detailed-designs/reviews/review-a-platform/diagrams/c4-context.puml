@@ -1,0 +1,14 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context: Review a platform
+
+Person(member, "Member", "States that they have used a platform and reviews it")
+Person(owner, "Owner (founder)", "Is told of the review and may reply")
+Person(reader, "Visitor or member", "Reads the reviews and what they rest on")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace of Christian-owned businesses")
+
+Rel(member, jubilee, "Writes one review with a statement of use")
+Rel(jubilee, owner, "Tells of the new review in the app and by e-mail")
+Rel(reader, jubilee, "Reads reviews under the line that Jubilee does not check them")
+@enduml

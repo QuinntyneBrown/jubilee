@@ -134,6 +134,28 @@ only (ADR 0035).
   and the star counts; `jubilee migrate` applies it (the API never migrates).
   `DemoDataSeeder` adds the sample reviews idempotently.
 
+### Software platforms
+
+A software platform takes no requests, so the rule above cannot apply to it
+([ADR 0071](../../../adr/0071-software-platforms.md), `L2-258`). The slice
+branches by the listing's kind in three places; the detail is in
+[Review a platform](../review-a-platform/README.md).
+
+- **Who may write**: `ReviewRules.WritingAsync` branches on `listing.Kind`.
+  For `Platform`, every signed-in member who is not the owner and has no
+  review shown is `eligible`; no request is read. For a business, a shop or a
+  space the rule is unchanged.
+- **The statement of use**: the body of `POST api/listings/{slug}/reviews`
+  gains `usedIt` (`ReviewBody.UsedIt`, `WriteReviewCommand.UsedIt`, `bool?`).
+  A review of a platform without `usedIt: true` is refused with HTTP 422
+  `usedIt: STATEMENT_REQUIRED`; with it, the time is stored as
+  `Review.StatedUseAt`. For every other kind `usedIt` is ignored: it never
+  makes a member eligible, and `NOT_ELIGIBLE` is answered as before.
+- **The screen and the item**: for `listing.kind` `platform`,
+  `WriteReviewPage` shows no item choice and adds a `jb-checkbox` "I have
+  used {name} myself." above the note; `ReviewItems.OfAsync` returns the only
+  item "Their platform".
+
 ### Open questions
 
 Every choice below is recorded in [ADR 0066](../../../adr/0066-reviews.md).
@@ -167,6 +189,8 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 | `L2-127` | `L1-018` | While submitting, the primary button shall be busy and a second press shall send nothing. |
 | `L2-132` | `L1-018` | Each create request shall carry an idempotency key and a repeat shall return the first result. |
 | `L2-137` | `L1-019` | Writes shall be limited per member and answered 429 with `Retry-After` beyond the limit. |
+| `L2-258` | `L1-033` | A member shall review a platform on their own statement of use, sent as `usedIt: true`; a statement of use shall never make a member eligible to review a business, a shop or a space. |
+| `L2-259` | `L1-033` | The Write a review screen of a platform shall add the statement of use and show no item choice, the review being about "Their platform". |
 
 ## Diagrams
 

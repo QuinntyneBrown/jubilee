@@ -1,0 +1,47 @@
+@startuml
+title UML sequence behaviour: Find a platform in search
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Visitor or member" as actor
+box "Frontend: Jubilee Web" #E0F2FE
+  participant "SearchPage" as page
+  participant "SearchApi" as client
+end box
+box "Backend: Jubilee API" #D1FADF
+  participant "SearchController" as controller
+end box
+box "Backend: Jubilee Application and Domain" #ECFDF3
+  participant "SearchDirectoryQueryHandler" as handler
+  participant "ISearchIndex" as index
+end box
+box "Backend: Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+actor -> page : Search "reading"
+page -> client : search("reading")
+client -> controller : GET /api/search?q=reading
+controller -> handler : Send SearchDirectoryQuery
+handler -> index : SearchAsync("reading")
+index -> db : Public listings (L2-028)
+db --> index : Listings, platforms with their Platform details
+index -> index : Match name, line, Platform.Does and Platform.For; never Website or Pricing (L2-253 AC2)
+index --> handler : Hits; a platform hit has Kind business and "Matches reading in what it does"
+handler --> controller : SearchResults with counts including platforms
+controller --> client : 200 OK, no web address in the body
+client --> page : Results
+page --> actor : Under "Businesses", Lanternread with its match explanation
+actor -> page : Activate the result
+page --> actor : Navigate to /b/lanternread (listings/view-platform)
+@enduml

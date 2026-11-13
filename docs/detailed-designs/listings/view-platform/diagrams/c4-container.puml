@@ -1,0 +1,22 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers: View a platform
+
+Person(member, "Visitor or member", "Opens a platform page")
+System_Boundary(jubilee, "Jubilee") {
+  Container(web, "Jubilee Web", "Angular single-page application", "BusinessPage with the platform layout and the link out")
+  Container(api, "Jubilee API", "ASP.NET Core", "GET /api/listings/{slug}; refuses quote requests for a platform")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Listings with Website and the Platform JSON column")
+  ContainerDb(cache, "Cache", "Redis or in memory", "Directory read cache for 60 seconds")
+  Container(media, "Media storage", "Object storage and CDN", "Cover photos")
+}
+System_Ext(site, "Platform's website", "Opened by the browser only")
+
+Rel(member, web, "Opens /b/{slug}", "HTTPS")
+Rel(web, api, "Loads the listing page", "JSON/HTTPS")
+Rel(web, media, "Loads the cover", "HTTPS")
+Rel(api, cache, "Reads and fills the listing page")
+Rel(api, db, "Reads the platform", "EF Core")
+Rel(member, site, "Follows the link out in a new tab, no referrer", "HTTPS")
+@enduml

@@ -1,0 +1,76 @@
+@startuml
+title UML sequence behaviour: Post a review of a platform
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend: Jubilee Web" #E0F2FE
+  participant "WriteReviewPage" as page
+  participant "ReviewsApi" as client
+end box
+box "Backend: Jubilee API" #D1FADF
+  participant "ReviewsController" as controller
+end box
+box "Backend: Jubilee Application and Domain" #ECFDF3
+  participant "WriteReviewCommandHandler" as handler
+  participant "ReviewRules" as rules
+  participant "Review" as review
+end box
+box "Backend: Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+actor -> page : Open /b/lanternread/review
+page -> client : form(lanternread)
+client -> controller : GET /api/listings/lanternread/reviews/new
+controller --> client : listing.kind platform, items empty, itemLegend null (L2-259 AC7)
+page --> actor : Stars, "Tell others about it", "I have used Lanternread myself." unticked, "This is your own word. Jubilee does not check it." (L2-258 AC2)
+actor -> page : Press "Post review"
+alt The statement is not ticked
+  page --> actor : "Tick the box to say you have used Lanternread.", checkbox aria-invalid, nothing sent (L2-259 AC2)
+else Stars, text and statement given
+  page --> actor : "Posting…" busy, fields disabled (L2-127)
+  page -> client : write(slug, {rating, text, usedIt: true}, key)
+  client -> controller : POST /api/listings/lanternread/reviews with Idempotency-Key
+  controller -> handler : Send WriteReviewCommand with UsedIt and the member of the session
+  handler -> db : Review of this member with this key?
+  alt Key seen before
+    handler --> controller : First review (L2-132)
+  else New key
+    handler -> rules : EnsureMayWriteAsync(listing, subject)
+    rules --> handler : Passes for a platform; 403 OWN_LISTING or 409 ALREADY_REVIEWED otherwise (L2-258 AC4, AC5)
+    handler -> rules : Validate rating and text; for a platform, UsedIt must be true
+    alt UsedIt is not true
+      rules --> controller : 422 usedIt: STATEMENT_REQUIRED, nothing stored (L2-258 AC3)
+    else Valid
+      handler -> db : Reviews of the member in the last day
+      alt 5 already
+        handler --> controller : 429 with Retry-After (L2-261 AC3)
+      else Allowed
+        handler -> review : Write(..., item "Their platform", StatedUseAt now)
+        handler -> db : Add Review, recount Stars1 to Stars5 (L2-238 AC9)
+        handler -> db : Add the founder's Notification and the outbox e-mail (L2-260 AC6)
+        handler -> db : SaveChanges, one transaction
+        handler --> controller : ReviewDto, without the statement (L2-261 AC4)
+      end
+    end
+  end
+  controller --> client : 201 with the review
+  client --> page : Review
+  page --> actor : "Thanks, your review is live." with "Their platform · Lanternread" (L2-259 AC4)
+end
+opt Fails, times out, or answers 422 or 429
+  client --> page : Error
+  page --> actor : Alert or the field message, everything kept (L2-228 AC6, L2-259 AC5)
+end
+@enduml
