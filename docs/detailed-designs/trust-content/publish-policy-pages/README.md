@@ -74,11 +74,12 @@ screens of the admin application to the `ContentVersions` table.
   published 13 Nov 2026 by Daniel Osei", or "Version 1 · built in · 2 Nov
   2026"), each with "Edit". Loading, and the error "We couldn’t load the
   policies" with `JB-ADM-521` and "Try again".
-- **`AdminPolicyPage`** — `/policies/{slug}`, the editor. The "Edit" tab holds
+- **`AdminPolicyPage`** — `/policies/{slug}`, the editor. The "Edit" card holds
   Title, Lead and each section's Heading and Text (with "Remove"), "Add a
-  section" and "Publish version {n}"; the "Preview" tab renders the draft with
-  `jb-policy-document`, dated today, under "Preview of version {n}. Not
-  published yet." Below them, "Kept versions" lists every version newest first.
+  section" and "Publish version {n}"; beside it (below it on a phone) the
+  "Preview" card renders the draft with `jb-policy-document`, dated today,
+  under "Preview of version {n}. Not published yet.", and follows every change.
+  Below the fields, "Kept versions" lists every version newest first.
   The draft is not stored (ADR 0066). A draft without a title, or a section
   without a heading or text, is refused in the fields before anything is sent.
   The error "We couldn’t load this policy" carries `JB-ADM-522`.

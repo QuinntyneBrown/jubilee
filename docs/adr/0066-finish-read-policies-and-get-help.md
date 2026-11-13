@@ -26,8 +26,8 @@ so this journey changes neither.
 - **`/policies`** lists the four pages with the published version, when and by whom ("Version 2
   · published 13 Nov 2026 by Daniel Osei", "Version 1 · built in · 2 Nov 2026"), each with
   "Edit". **`/policies/{slug}`** is the editor: Title, Lead and each section's Heading and Text,
-  "Add a section", "Remove" on each section, the "Edit" and "Preview" tabs, "Publish version
-  {n}", and the kept versions newest first.
+  "Add a section", "Remove" on each section and "Publish version {n}", the kept versions newest
+  first, and beside the fields (below them on a phone) the preview, which follows every change.
 - **Administrators only.** The screens are for the `admin` role (`L2-133`): the route says
   `role: 'admin'`, and a staff member without it sees "Nothing here for your role. Policies are
   for Jubilee administrators. Ask a Jubilee administrator to add the admin role to your staff

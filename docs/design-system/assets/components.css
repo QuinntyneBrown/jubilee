@@ -1082,8 +1082,7 @@ a[data-state="hover"] { color: var(--color-fg-link-hover); text-decoration-thick
 @media (min-width: 48rem) { .booking-bar { display: none; } }
 @media (max-width: 47.99rem) { body:has(.tabbar):has(.booking-bar) { padding-bottom: calc(var(--layout-tabbar-height) + var(--control-height-lg) + var(--space-6) + env(safe-area-inset-bottom)); } }
 
-/* ==========================================================================
-   Reviews (L1-031, L2-226 to L2-240, ADR 0066). One contiguous region per
+/* ===================================================================   Reviews (L1-031, L2-226 to L2-240, ADR 0066). One contiguous region per
    block, opened by "=== block: <name> ===" and closed by "=== end: <name> ===",
    so each can be lifted into its component's stylesheet whole. No block styles
    another: a block that holds stars holds a .stars, styled here once.
@@ -1236,3 +1235,13 @@ a.rating-link:hover .rating-link__count, a.rating-link[data-state="hover"] .rati
 @media (min-width: 48rem) { .review-posted { padding-block: var(--space-16); } .review-posted__title { font-size: var(--font-size-4xl); } }
 @media (prefers-reduced-motion: reduce) { .review-posted__mark { animation: none; } }
 /* === end: review-posted === */
+=======
+/* ---------- Policy document: a policy page and its preview (L2-107 to L2-109, L2-226, ADR 0066) ---------- */
+.policy-document { display: block; max-width: var(--layout-measure); }
+.policy-document__title { font: var(--text-h1); font-size: var(--font-size-3xl); letter-spacing: var(--letter-spacing-tight); text-wrap: balance; margin: 0; }
+@media (min-width: 48rem) { .policy-document__title { font-size: var(--font-size-4xl); } }
+.policy-document__lead { font: var(--text-body-lg); color: var(--color-fg-muted); margin: var(--space-3) 0 0; }
+.policy-document__heading { font: var(--text-h2); letter-spacing: var(--letter-spacing-tight); text-wrap: balance; margin: var(--space-8) 0 0; }
+.policy-document__text, .policy-document__list { margin: var(--space-3) 0 0; }
+.policy-document__list li { margin-top: var(--space-1); }
+.policy-document__updated { font: var(--text-caption); color: var(--color-fg-muted); margin: var(--space-8) 0 0; }
