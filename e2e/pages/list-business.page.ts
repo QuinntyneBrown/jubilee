@@ -146,6 +146,8 @@ export class PlatformFields {
   readonly nameLabel: Locator;
   readonly nameHelp: Locator;
   readonly taglineLabel: Locator;
+  readonly nameError: Locator;
+  readonly taglineError: Locator;
   readonly website: Locator;
   readonly websiteHelp: Locator;
   readonly websiteError: Locator;
@@ -176,6 +178,8 @@ export class PlatformFields {
     this.nameLabel = main.locator('label[for="name"]');
     this.nameHelp = main.locator('#name-help');
     this.taglineLabel = main.locator('label[for="tagline"]');
+    this.nameError = main.locator('#name-error');
+    this.taglineError = main.locator('#tagline-error');
     this.website = main.locator('#website');
     this.websiteHelp = main.locator('#website-help');
     this.websiteError = main.locator('#website-error');

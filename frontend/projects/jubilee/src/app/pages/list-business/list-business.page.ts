@@ -135,17 +135,24 @@ const TAGLINE_MAX = 90;
 /** The green line of the card, as in the listing editor (L2-072 AC7, L2-087). */
 const HIGHLIGHT_MAX = 30;
 /** FieldName-level wording (L2-071 to L2-079). Codes come from the server or from the same checks here. */
-export function messageFor(field: FieldName, code: string, space = false): string {
+export function messageFor(
+  field: FieldName,
+  code: string,
+  space = false,
+  platform = false,
+): string {
   if (code.startsWith('TOO_LONG')) {
     const n = code.split(':')[1] ?? '';
     return `Shorten this to ${TAGLINE_MAX} characters. It has ${n}.`;
   }
   switch (field) {
     case 'name':
+      if (platform) return 'Enter the name people know your platform by.';
       return space
         ? 'Enter a title that says what it is and where.'
         : 'Enter your business name as customers know it.';
     case 'tagline':
+      if (platform) return 'Say in one line what it does.';
       return space ? 'Enter one line renters should know.' : 'Enter one line on what you do.';
     case 'website':
     case 'does':
@@ -168,11 +175,12 @@ export function messageFor(field: FieldName, code: string, space = false): strin
 }
 
 /** The summary's shorter wording ("Enter your business name"). */
-function summaryFor(field: FieldName, code: string, space: boolean): string {
-  if (code.startsWith('TOO_LONG')) return messageFor(field, code, space);
-  const text = messageFor(field, code, space);
+function summaryFor(field: FieldName, code: string, space: boolean, platform: boolean): string {
+  if (code.startsWith('TOO_LONG')) return messageFor(field, code, space, platform);
+  const text = messageFor(field, code, space, platform);
   switch (field) {
     case 'name':
+      if (platform) return 'Enter your platform’s name';
       return space ? 'Enter a listing title' : 'Enter your business name';
     case 'website':
     case 'does':
@@ -290,7 +298,7 @@ export class ListBusinessPage {
     FIELD_ORDER.filter((f) => this.errors()[f]).map((f) => ({
       field: f,
       id: FIELD_ID[f],
-      text: summaryFor(f, this.codes[f] ?? '', this.isSpace()),
+      text: summaryFor(f, this.codes[f] ?? '', this.isSpace(), this.isPlatform()),
     })),
   );
   protected readonly failed = signal('');
@@ -519,7 +527,7 @@ export class ListBusinessPage {
     const errors: Partial<Record<FieldName, string>> = {};
     for (const field of FIELD_ORDER) {
       const code = codes[field];
-      if (code) errors[field] = messageFor(field, code, this.isSpace());
+      if (code) errors[field] = messageFor(field, code, this.isSpace(), this.isPlatform());
     }
     this.errors.set(errors);
     if (Object.keys(errors).length) {

@@ -143,6 +143,31 @@ test.describe('list a software platform (L2-249 to L2-251)', () => {
     expect(drafts.publishes).toHaveLength(0);
   });
 
+  test('L2-250 AC5: an empty name or line is asked for in the words of a platform', async ({
+    page,
+    jb,
+  }) => {
+    const list = new ListBusinessPage(page);
+    await jb.signInAs('member');
+    const drafts = await stubListingDrafts(page);
+    await jb.goto('/list?kind=platform');
+
+    await list.platform.fillValid(list);
+    await list.name.fill('');
+    await list.tagline.fill('');
+    await list.publish.click();
+
+    await expect(list.platform.nameError).toHaveText(
+      'Enter the name people know your platform by.',
+    );
+    await expect(list.platform.taglineError).toHaveText('Say in one line what it does.');
+    await expect(list.summaryLinks).toHaveText([
+      'Enter your platform’s name',
+      'Say in one line what it does',
+    ]);
+    expect(drafts.publishes).toHaveLength(0);
+  });
+
   for (const address of [
     'http://lanternread.example',
     'lanternread.example',
