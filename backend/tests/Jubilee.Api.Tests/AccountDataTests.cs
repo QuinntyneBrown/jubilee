@@ -262,7 +262,7 @@ public sealed partial class AccountDataTests : IClassFixture<JubileeApiFactory>,
         await Run(s => s.GetRequiredService<DataExportBuilder>().ExpireAsync(CancellationToken.None));
         var export = await Read(db => db.DataExports.SingleAsync(e => e.MemberId == member.Id));
         Assert.Equal(DataExportStatus.Expired, export.Status);
-        Assert.Null(export.ArchiveJson);
+        Assert.Null(export.ArchiveKey);
         var current = await _factory.GetJson("/api/account/data-exports/current", client);
         Assert.Equal("expired", current.GetProperty("status").GetString());
     }
@@ -282,6 +282,8 @@ public sealed partial class AccountDataTests : IClassFixture<JubileeApiFactory>,
         for (var i = 0; i < DataExport.MaxAttempts; i++)
         {
             await BuildExports();
+            // Each attempt waits out the back-off of the one before (L2-182 AC2).
+            _factory.Clock.Advance(TimeSpan.FromMinutes(10));
         }
 
         var export = await Read(db => db.DataExports.SingleAsync());

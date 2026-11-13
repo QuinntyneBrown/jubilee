@@ -3,38 +3,41 @@
 LAYOUT_WITH_LEGEND()
 title Components — Delete account
 
-
 Container_Boundary(web, "Jubilee Web") {
   Component(dialog, "DeleteAccountDialog", "Angular dialog", "Live counts and the DELETE confirmation field")
-  Component(client, "AccountApi", "Typed HTTP client", "getDeletionImpact and deleteAccount")
-  Component(session, "SessionService", "Angular service", "Clears the session and navigates to /welcome")
+  Component(client, "AccountDataApi", "Typed HTTP client", "deletionSummary and deleteAccount")
+  Component(session, "SessionService", "Angular service", "accountDeleted: visitor, saved pages, queue and drafts cleared")
 }
 Container_Boundary(api, "Jubilee API") {
-  Component(ctrl, "AccountController", "ASP.NET Core controller", "deletion-impact and deletion endpoints")
-  Component(impact, "GetDeletionImpactQueryHandler", "MediatR handler", "Counts conversations and open requests")
-  Component(handler, "DeleteAccountCommandHandler", "MediatR handler", "Closes the account in one unit of work")
-  Component(validator, "DeleteAccountCommandValidator", "FluentValidation validator", "Confirmation equals DELETE")
-  Component(entities, "Member and Request and Listing", "Domain entities", "Delete and cancel and unpublish rules")
-  Component(sessions, "ISessionStore", "Application service", "EndAll")
+  Component(ctrl, "AccountController", "ASP.NET Core controller", "deletion-summary and DELETE /api/account")
+  Component(summary, "GetDeletionSummaryQueryHandler", "MediatR handler", "Counts conversations and open requests")
+  Component(handler, "DeleteAccountCommandHandler", "MediatR handler", "Checks DELETE, tells businesses, logs")
+  Component(deletion, "AccountDeletion", "Application service", "Deletes in one unit of work")
 }
 Container_Boundary(worker, "Jubilee Worker") {
-  Component(outbox, "OutboxDispatcherJob", "Hosted job", "Notifications and index removal and e-mail")
-  Component(erase, "AccountErasureJob", "Hosted job", "Erases personal data after 30 days")
+  Component(job, "AccountErasureJob", "Hosted job", "At start and every hour")
+  Component(replay, "DeletionLedgerReplay", "Application service", "Re-applies the ledger after a restore")
+  Component(erase, "AccountErasure", "Application service", "Erases personal data after 30 days")
+  Component(outbox, "OutboxDispatcherJob", "Hosted job", "Business and confirmation e-mails")
 }
-ContainerDb(db, "Jubilee database", "SQL Server", "System of record")
-ContainerDb(cache, "Cache", "Redis", "Sessions")
+Component(ledger, "IDeletionLedger", "FileDeletionLedger", "Deletions:LedgerPath")
+Component(store, "IExportStore and IMediaStore", "File stores", "Archives and photos")
+ContainerDb(db, "Jubilee database", "Azure SQL", "System of record")
 
 Rel(dialog, client, "Loads counts and submits")
-Rel(dialog, session, "Signs out on success")
+Rel(dialog, session, "On success, via AccountPage")
 Rel(client, ctrl, "Calls", "JSON/HTTPS")
-Rel(ctrl, impact, "Sends GetDeletionImpactQuery")
+Rel(ctrl, summary, "Sends GetDeletionSummaryQuery")
 Rel(ctrl, handler, "Sends DeleteAccountCommand")
-Rel(handler, validator, "Validated by")
-Rel(handler, entities, "Calls domain methods")
-Rel(handler, sessions, "Ends every session")
-Rel(impact, db, "Reads", "EF Core")
-Rel(handler, db, "Saves changes and outbox and audit entry", "EF Core")
-Rel(sessions, cache, "Deletes sessions")
-Rel(outbox, db, "Reads outbox", "EF Core")
+Rel(handler, deletion, "Deletes with")
+Rel(handler, ledger, "Records the deletion")
+Rel(deletion, db, "Saves the changes, the audit record and the outbox", "EF Core")
+Rel(deletion, store, "Deletes the archives")
+Rel(job, replay, "Runs first")
+Rel(job, erase, "Runs second")
+Rel(replay, ledger, "Reads and completes")
+Rel(replay, deletion, "Deletes again with")
 Rel(erase, db, "Erases due members", "EF Core")
+Rel(erase, store, "Removes archives and listing photos")
+Rel(outbox, db, "Reads the outbox", "EF Core")
 @enduml

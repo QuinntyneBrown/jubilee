@@ -1,6 +1,6 @@
 # ADR 0034: Download your data and delete your account
 
-Status: accepted. Amended by ADR 0041, 12 November 2026: the church reference is removed, so the archive has no reference or answer to leave out (L2-146 is retired); the profile section gains the home church address, and erasure removes it with the home church.
+Status: accepted. Amended by ADR 0041, 12 November 2026: the church reference is removed, so the archive has no reference or answer to leave out (L2-146 is retired); the profile section gains the home church address, and erasure removes it with the home church. Amended by ADR 0069, 13 November 2026: archives move to the export store, a failed export is dead-lettered and alerts on-call, deletions are re-applied from a ledger after a restore, backups are kept 35 days or less, the reporter name is anonymised at erasure, and search needs no outbox removal because it reads the listings.
 
 ## Context
 

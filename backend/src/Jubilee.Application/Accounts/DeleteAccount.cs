@@ -6,6 +6,7 @@ using Jubilee.Application.Requests;
 using Jubilee.Domain;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Jubilee.Application.Accounts;
 
@@ -35,9 +36,11 @@ public sealed class GetDeletionSummaryQueryHandler(IAppDbContext db) : IRequestH
 /// the saved list and searches go, a confirmation is mailed and the audit log records it. The rest of the personal data
 /// is erased 30 days later by <see cref="AccountErasure"/>.
 /// </summary>
-public sealed record DeleteAccountCommand(Guid MemberId, string? Confirmation) : IRequest;
+public sealed record DeleteAccountCommand(Guid MemberId, string? Confirmation, string? Address = null) : IRequest;
 
-public sealed class DeleteAccountCommandHandler(IAppDbContext db, TimeProvider clock, AccountSettings settings, IDirectoryReadCache directory)
+public sealed class DeleteAccountCommandHandler(
+    IAppDbContext db, TimeProvider clock, AccountSettings settings, IDirectoryReadCache directory, IDeletionLedger ledger,
+    IExportStore exports, ILogger<DeleteAccountCommandHandler> logger)
     : IRequestHandler<DeleteAccountCommand>
 {
     public const string Phrase = "DELETE";
@@ -47,6 +50,7 @@ public sealed class DeleteAccountCommandHandler(IAppDbContext db, TimeProvider c
         // Exactly the word, in capitals: "delete" or "DELETE " are not it (L2-017 AC2).
         if (!string.Equals(command.Confirmation, Phrase, StringComparison.Ordinal))
         {
+            SecurityLog.Credential(logger, "AccountDeletion", "refused", command.MemberId, command.Address);
             throw new ValidationFailedException(new Dictionary<string, string> { ["confirmation"] = "CONFIRMATION_MISMATCH" });
         }
 
@@ -55,6 +59,7 @@ public sealed class DeleteAccountCommandHandler(IAppDbContext db, TimeProvider c
         var subject = member.Id.ToString();
         var now = clock.GetUtcNow();
 
+        // The businesses of the open requests are told now; a deletion re-applied after a restore does not tell them again.
         var open = await db.Requests.Include(r => r.Transitions)
             .Where(r => r.MemberSubject == subject && (r.Status == RequestStatus.New || r.Status == RequestStatus.Confirmed))
             .ToListAsync(cancellationToken);
@@ -69,10 +74,58 @@ public sealed class DeleteAccountCommandHandler(IAppDbContext db, TimeProvider c
                 cancellationToken);
         }
 
-        var owned = await db.Listings.Where(l => l.OwnerId == subject && l.DeletedAt == null).ToListAsync(cancellationToken);
-        foreach (var listing in owned)
+        var archives = await AccountDeletion.ApplyAsync(db, member, now, now, "account.deleted", cancellationToken);
+        db.OutboxMessages.Add(OutboxMessage.Email(
+            member.Id,
+            member.Email,
+            "Your Jubilee account was deleted",
+            $"Hi {member.FirstName},\n\nYour Jubilee account is deleted. You are signed out everywhere, your open requests are cancelled and the businesses have been told. Your personal data is erased within 30 days.\n\nIf you didn't do this, write to help@jubilee.example at once.\n\nJubilee · Toronto's Christian marketplace\n",
+            now));
+        await db.SaveChangesAsync(cancellationToken);
+        directory.Invalidate();
+        SecurityLog.Credential(logger, "AccountDeletion", "succeeded", member.Id, command.Address);
+        await AccountDeletion.DeleteArchivesAsync(exports, archives, logger, cancellationToken);
+
+        // Outside the database, so a restore deletes the account again (L2-017 AC7). A write that fails is made by the
+        // worker's next pass, from the database.
+        try
         {
-            listing.Delete(now);
+            await ledger.Record(new DeletedAccount(member.Id, now), cancellationToken);
+        }
+        catch (Exception exception) when (exception is not OperationCanceledException)
+        {
+            logger.LogError(exception, "The deletion of member {MemberId} could not be written to the deletion ledger. The worker will write it.", member.Id);
+        }
+    }
+}
+
+/// <summary>
+/// What deleting an account changes, in the caller's unit of work (L2-017 AC3, AC4): open requests are cancelled, the
+/// member's listings are deleted, what is the member's alone goes, every session ends, nothing can sign in again and the
+/// audit log records it. Shared by the deletion and by its re-application after a restore (ADR 0069); telling others is
+/// the caller's. It answers the keys of the archives to delete from the export store once the unit of work is committed,
+/// so a deletion that fails removes nothing.
+/// </summary>
+public static class AccountDeletion
+{
+    public static async Task<IReadOnlyList<string>> ApplyAsync(
+        IAppDbContext db, Member member, DateTimeOffset deletedAt, DateTimeOffset now, string auditAction, CancellationToken cancellationToken)
+    {
+        var subject = member.Id.ToString();
+        foreach (var request in await db.Requests.Include(r => r.Transitions)
+            .Where(r => r.MemberSubject == subject && (r.Status == RequestStatus.New || r.Status == RequestStatus.Confirmed))
+            .ToListAsync(cancellationToken))
+        {
+            // The query reads the store; a request the caller cancelled in this unit of work is not cancelled twice.
+            if (request.Status is RequestStatus.New or RequestStatus.Confirmed)
+            {
+                request.Cancel(subject, now);
+            }
+        }
+
+        foreach (var listing in await db.Listings.Where(l => l.OwnerId == subject && l.DeletedAt == null).ToListAsync(cancellationToken))
+        {
+            listing.Delete(deletedAt);
         }
 
         // Feedback is the member's own and leaves with them, screenshots first (L2-214 AC12).
@@ -88,11 +141,19 @@ public sealed class DeleteAccountCommandHandler(IAppDbContext db, TimeProvider c
         }
 
         db.SavedItems.RemoveRange(await db.SavedItems.Where(s => s.MemberSubject == subject).ToListAsync(cancellationToken));
+        db.StockAlerts.RemoveRange(await db.StockAlerts.Where(s => s.MemberSubject == subject).ToListAsync(cancellationToken));
+        db.ListingDrafts.RemoveRange(await db.ListingDrafts.Where(d => d.OwnerSubject == subject).ToListAsync(cancellationToken));
         db.RecentSearches.RemoveRange(await db.RecentSearches.Where(s => s.MemberSubject == subject).ToListAsync(cancellationToken));
         db.Notifications.RemoveRange(await db.Notifications.Where(n => n.MemberSubject == subject).ToListAsync(cancellationToken));
         db.LinkTokens.RemoveRange(await db.LinkTokens.Where(t => t.MemberId == member.Id).ToListAsync(cancellationToken));
+        var archives = new List<string>();
         foreach (var export in await db.DataExports.Where(e => e.MemberId == member.Id).ToListAsync(cancellationToken))
         {
+            if (export.ArchiveKey is { } key)
+            {
+                archives.Add(key);
+            }
+
             export.Expire();
         }
 
@@ -101,16 +162,25 @@ public sealed class DeleteAccountCommandHandler(IAppDbContext db, TimeProvider c
             session.End(now);
         }
 
-        member.Delete(now);
-        AuditLog.Record(db, new Reviewer(subject, "Member"), "account.deleted", "member", subject, null, null, null, now);
-        db.OutboxMessages.Add(OutboxMessage.Email(
-            member.Id,
-            member.Email,
-            "Your Jubilee account was deleted",
-            $"Hi {member.FirstName},\n\nYour Jubilee account is deleted. You are signed out everywhere, your open requests are cancelled and the businesses have been told. Your personal data is erased within 30 days.\n\nIf you didn't do this, write to help@jubilee.example at once.\n\nJubilee · Toronto's Christian marketplace\n",
-            now));
-        await db.SaveChangesAsync(cancellationToken);
-        directory.Invalidate();
+        member.Delete(deletedAt);
+        AuditLog.Record(db, new Reviewer(subject, "Member"), auditAction, "member", subject, null, null, null, now);
+        return archives;
+    }
+
+    /// <summary>Deletes the archives once the deletion is committed; one that cannot be deleted is deleted at erasure.</summary>
+    public static async Task DeleteArchivesAsync(IExportStore exports, IReadOnlyList<string> keys, ILogger logger, CancellationToken cancellationToken)
+    {
+        foreach (var key in keys)
+        {
+            try
+            {
+                await exports.Delete(key, cancellationToken);
+            }
+            catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+            {
+                logger.LogError(exception, "An archive of a deleted account could not be deleted yet.");
+            }
+        }
     }
 }
 
@@ -118,7 +188,7 @@ public sealed class DeleteAccountCommandHandler(IAppDbContext db, TimeProvider c
 /// The worker's side of deletion: 30 days after an account was deleted its personal data is erased. What the member wrote
 /// stays for the business, from a "Former member" (L2-017 AC6, L2-148).
 /// </summary>
-public sealed class AccountErasure(IAppDbContext db, TimeProvider clock)
+public sealed class AccountErasure(IAppDbContext db, IExportStore exports, IMediaStore media, TimeProvider clock)
 {
     public async Task<int> EraseDueAsync(CancellationToken cancellationToken)
     {
@@ -143,7 +213,20 @@ public sealed class AccountErasure(IAppDbContext db, TimeProvider clock)
                 request.ForgetMember();
             }
 
-            db.DataExports.RemoveRange(await db.DataExports.Where(e => e.MemberId == member.Id).ToListAsync(cancellationToken));
+            foreach (var report in await db.ListingReports.Where(r => r.ReporterSubject == subject).ToListAsync(cancellationToken))
+            {
+                report.ForgetReporter();
+            }
+
+            await ErasePhotosAsync(subject, cancellationToken);
+            db.Sessions.RemoveRange(await db.Sessions.Where(s => s.MemberId == member.Id).ToListAsync(cancellationToken));
+            db.StatementAgreements.RemoveRange(await db.StatementAgreements.Where(a => a.OwnerSubject == subject).ToListAsync(cancellationToken));
+
+            foreach (var export in await db.DataExports.Where(e => e.MemberId == member.Id).ToListAsync(cancellationToken))
+            {
+                await ExportFiles.DeleteAsync(exports, export, cancellationToken);
+                db.DataExports.Remove(export);
+            }
             db.Notifications.RemoveRange(await db.Notifications.Where(n => n.MemberSubject == subject).ToListAsync(cancellationToken));
             db.ConsentRecords.RemoveRange(await db.ConsentRecords.Where(c => c.MemberId == member.Id).ToListAsync(cancellationToken));
             db.PasswordResetRequests.RemoveRange(await db.PasswordResetRequests.Where(r => r.EmailKey == member.EmailKey).ToListAsync(cancellationToken));
@@ -153,5 +236,33 @@ public sealed class AccountErasure(IAppDbContext db, TimeProvider clock)
         }
 
         return due.Count;
+    }
+
+    /// <summary>
+    /// The photos of the member's listings and products leave the media store (ADR 0069). A photo sent in a message stays
+    /// with the message for the business, as the words do.
+    /// </summary>
+    private async Task ErasePhotosAsync(string subject, CancellationToken cancellationToken)
+    {
+        var listings = await db.Listings.Where(l => l.OwnerId == subject).Select(l => l.Id).ToListAsync(cancellationToken);
+        if (listings.Count == 0)
+        {
+            return;
+        }
+
+        foreach (var product in await db.Products.Where(p => listings.Contains(p.ListingId) && p.PhotoId != null).ToListAsync(cancellationToken))
+        {
+            product.ShowPhoto(null);
+        }
+
+        var productPhotos = await db.ProductPhotos.Where(p => listings.Contains(p.ListingId)).ToListAsync(cancellationToken);
+        var listingPhotos = await db.ListingPhotos.Where(p => listings.Contains(p.ListingId)).ToListAsync(cancellationToken);
+        foreach (var key in productPhotos.Select(p => p.Key).Concat(listingPhotos.Select(p => p.Key)))
+        {
+            await media.Delete(key, cancellationToken);
+        }
+
+        db.ProductPhotos.RemoveRange(productPhotos);
+        db.ListingPhotos.RemoveRange(listingPhotos);
     }
 }

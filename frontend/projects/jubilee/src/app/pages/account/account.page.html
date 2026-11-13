@@ -325,6 +325,14 @@
             <div>Nothing was changed. Try again, or write to help&#64;jubilee.example.</div>
           </div>
         }
+        @if (exportBuildFailed()) {
+          <div jb-alert tone="danger" heading="We couldn’t prepare your data" role="alert">
+            <div>
+              Something went wrong while we put your file together, and the Jubilee team has been
+              told. Ask again, or write to help&#64;jubilee.example.
+            </div>
+          </div>
+        }
         @if (exportWaiting()) {
           <div jb-alert heading="We’re preparing your data">
             <div>

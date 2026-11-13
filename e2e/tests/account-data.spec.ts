@@ -1,10 +1,13 @@
 import type { Page } from '@playwright/test';
 import { stubAccountData, type FakeAccountData } from '../fixtures/account-data';
 import { expect, test, type Jb } from '../fixtures/jb-test';
+import { keepOnDevice, savedOnDevice, waitForSnapshot } from '../fixtures/offline';
 import { stubProfile } from '../fixtures/profile';
+import { keepDraft } from '../fixtures/session';
 import { AccountPage } from '../pages/account.page';
 import { DataDownloadPage } from '../pages/data-download.page';
 import { DeleteAccountDialog } from '../pages/delete-account.dialog';
+import { ShellPage } from '../pages/shell.page';
 import { Toasts } from '../pages/toasts';
 
 test.describe('download your data (L2-018)', () => {
@@ -58,6 +61,28 @@ test.describe('download your data (L2-018)', () => {
     fake.request = 'ok';
     await account.downloadData.click();
     await expect(account.dataWaiting).toBeVisible();
+  });
+
+  test('AC7: an archive that could not be built says so, and the member can ask again', async ({
+    page,
+    jb,
+  }) => {
+    const account = new AccountPage(page);
+    await account.setWidth(1280);
+    await jb.signInAs('member');
+    await stubProfile(page);
+    const fake = await stubAccountData(page, { exportState: 'failed' });
+    await jb.goto('/account');
+
+    await expect(account.dataFailed).toContainText('We couldn’t prepare your data');
+    await expect(account.dataFailed).toContainText(
+      'Something went wrong while we put your file together, and the Jubilee team has been told. Ask again, or write to help@jubilee.example.',
+    );
+    await account.downloadData.click();
+
+    await expect(account.dataWaiting).toContainText('We’re preparing your data');
+    await expect(account.dataFailed).toHaveCount(0);
+    expect(fake.exportRequests).toBe(1);
   });
 
   test('AC2: the e-mailed link downloads the file and takes the token off the address', async ({
@@ -116,6 +141,16 @@ test.describe('delete your account (L2-017)', () => {
     await expect(dialog.consequences.nth(2)).toHaveText('This can’t be undone.');
   });
 
+  test('L2-129 AC1: the safe choice, Keep my account, has the focus when the dialog opens', async ({
+    page,
+    jb,
+  }) => {
+    const { dialog } = await open(page, jb);
+
+    await expect(dialog.consequences.nth(0)).toBeVisible();
+    await expect(dialog.keep).toBeFocused();
+  });
+
   test('AC1: one conversation and one request are written in the singular', async ({
     page,
     jb,
@@ -169,6 +204,32 @@ test.describe('delete your account (L2-017)', () => {
     expect(fake.deletions).toEqual(['DELETE']);
   });
 
+  test('AC3: nothing the member saw or wrote stays on the device: saved pages and drafts are cleared', async ({
+    page,
+    jb,
+  }) => {
+    // A draft of a message the member left, kept for them on this device (ADR 0046).
+    await keepDraft(page, {
+      email: 'Joanna Adeyemi',
+      address: '/messages/c-legacy',
+      key: 'composer',
+      values: { body: 'See you on Tuesday' },
+    });
+    const { dialog } = await open(page, jb);
+    await waitForSnapshot(page, 'session');
+    // A conversation the member opened, saved for reading offline (ADR 0032).
+    await keepOnDevice(page, 'conversation:c-legacy', { id: 'c-legacy', messages: [] });
+    expect((await savedOnDevice(page)).pages).toBe(2);
+    expect(await new ShellPage(page).keptDrafts()).toHaveLength(1);
+
+    await dialog.confirmation.fill('DELETE');
+    await dialog.delete.click();
+
+    await expect(page).toHaveURL(/\/welcome$/);
+    await expect.poll(() => savedOnDevice(page)).toEqual({ pages: 0, queued: 0 });
+    await expect.poll(() => new ShellPage(page).keptDrafts()).toEqual([]);
+  });
+
   test('AC5: a failed deletion says nothing was removed and keeps what was typed', async ({
     page,
     jb,
@@ -180,6 +241,23 @@ test.describe('delete your account (L2-017)', () => {
 
     await expect(dialog.alert).toContainText('We couldn’t delete your account');
     await expect(dialog.alert).toContainText('Nothing was removed');
+    await expect(dialog.confirmation).toHaveValue('DELETE');
+    await expect(dialog.delete).toBeEnabled();
+  });
+
+  test('L2-128 AC2: a dropped connection says nothing was sent and keeps what was typed', async ({
+    page,
+    jb,
+  }) => {
+    const { dialog } = await open(page, jb, { deletion: 'offline' });
+
+    await dialog.confirmation.fill('DELETE');
+    await dialog.delete.click();
+
+    await expect(dialog.alert).toContainText('We couldn’t delete your account');
+    await expect(dialog.alert).toContainText(
+      'Your connection dropped before it reached us. Nothing was sent and what you typed is still here. Try again.',
+    );
     await expect(dialog.confirmation).toHaveValue('DELETE');
     await expect(dialog.delete).toBeEnabled();
   });

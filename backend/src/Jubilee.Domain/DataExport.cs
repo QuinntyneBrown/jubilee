@@ -38,11 +38,14 @@ public sealed class DataExport
 
     public int Attempts { get; private set; }
 
+    /// <summary>After a failed build, when it is tried again: 1, 2, 4 and 8 minutes later (L2-182 AC2).</summary>
+    public DateTimeOffset? NextAttemptAt { get; private set; }
+
     /// <summary>The hash of the e-mailed link's token (L2-140): the link is found by it.</summary>
     public string? TokenHash { get; private set; }
 
-    /// <summary>The archive, a JSON document. Kept in a private column that no endpoint serves except the download.</summary>
-    public string? ArchiveJson { get; private set; }
+    /// <summary>The key of the archive in the export store (ADR 0069).</summary>
+    public string? ArchiveKey { get; private set; }
 
     public static DataExport Request(Guid memberId, DateTimeOffset now) => new()
     {
@@ -52,33 +55,44 @@ public sealed class DataExport
         RequestedAt = now,
     };
 
-    public void MarkReady(string archiveJson, string tokenHash, DateTimeOffset now)
+    public void MarkReady(string archiveKey, string tokenHash, DateTimeOffset now)
     {
         Status = DataExportStatus.Ready;
-        ArchiveJson = archiveJson;
+        ArchiveKey = archiveKey;
         TokenHash = tokenHash;
         ReadyAt = now;
         ExpiresAt = now + LinkToken.DataDownloadLifetime;
     }
 
-    /// <summary>A build that failed: tried again until the attempts are used up.</summary>
-    public void RecordFailedAttempt()
+    /// <summary>A waiting export whose back-off, if any, has passed.</summary>
+    public bool IsDue(DateTimeOffset now) => Status == DataExportStatus.Requested && (NextAttemptAt is null || now >= NextAttemptAt);
+
+    /// <summary>
+    /// A build that failed: tried again after 1, 2, 4 and 8 minutes, and marked failed after the fifth (L2-182 AC2). True
+    /// when this failure made the export its dead letter.
+    /// </summary>
+    public bool RecordFailedAttempt(DateTimeOffset now)
     {
         Attempts++;
         if (Attempts >= MaxAttempts)
         {
             Status = DataExportStatus.Failed;
+            NextAttemptAt = null;
+            return true;
         }
+
+        NextAttemptAt = now + TimeSpan.FromMinutes(1 << (Attempts - 1));
+        return false;
     }
 
     public void Expire()
     {
         Status = DataExportStatus.Expired;
-        ArchiveJson = null;
+        ArchiveKey = null;
         TokenHash = null;
     }
 
     /// <summary>The link works for the member who asked, until it expires (L2-018 AC2).</summary>
     public bool IsDownloadableBy(Guid memberId, DateTimeOffset now) =>
-        Status == DataExportStatus.Ready && MemberId == memberId && ExpiresAt is { } until && now < until && ArchiveJson is not null;
+        Status == DataExportStatus.Ready && MemberId == memberId && ExpiresAt is { } until && now < until && ArchiveKey is not null;
 }

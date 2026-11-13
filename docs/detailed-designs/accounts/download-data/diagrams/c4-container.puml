@@ -3,22 +3,21 @@
 LAYOUT_WITH_LEGEND()
 title Containers — Download data
 
-
 Person(member, "Member", "Requests and downloads the archive")
 System_Boundary(jubilee, "Jubilee") {
   Container(web, "Jubilee Web", "Angular single-page application", "Account page and download page")
   Container(api, "Jubilee API", "ASP.NET Core", "Data export endpoints under /api/account/data-exports")
-  Container(worker, "Jubilee Worker", ".NET worker service", "Builds archives and deletes expired files")
-  ContainerDb(db, "Jubilee database", "SQL Server", "Member data and exports and link tokens")
-  ContainerDb(storage, "Media storage", "Object storage", "Private export area not served by the CDN")
+  Container(worker, "Jubilee Worker", ".NET worker service", "Builds archives, alerts on-call, deletes expired archives")
+  ContainerDb(db, "Jubilee database", "Azure SQL", "Member data and exports with their token hashes")
+  ContainerDb(store, "Export store", "Private folder of persistent storage", "Archives by random key, served by no address")
 }
-System_Ext(email, "E-mail provider", "Transactional e-mail. Vendor <TO SUPPLY>")
+System_Ext(email, "E-mail provider", "Azure Communication Services e-mail")
 
 Rel(member, web, "Uses", "HTTPS")
 Rel(web, api, "POST and GET data-exports", "JSON/HTTPS")
 Rel(api, db, "Records the export and checks the token", "EF Core")
-Rel(api, storage, "Reads the archive to stream it")
-Rel(worker, db, "Reads the member's data", "EF Core")
-Rel(worker, storage, "Writes and deletes archives")
-Rel(worker, email, "Sends the link", "HTTPS")
+Rel(api, store, "Reads the archive for its member")
+Rel(worker, db, "Reads the member's data and the outbox", "EF Core")
+Rel(worker, store, "Writes and deletes archives")
+Rel(worker, email, "Sends the link and the alert", "HTTPS")
 @enduml

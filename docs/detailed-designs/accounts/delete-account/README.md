@@ -16,73 +16,111 @@ letters.
 
 Deletion happens in two stages. The first stage is immediate: the account is
 closed, every session ends, open requests are cancelled and their businesses are
-told, an owned listing is unpublished and removed from browse and search, and a
-confirmation e-mail is sent. The second stage is *erasure* — permanent removal
-of the account's personal data from primary storage — which runs 30 days after
-deletion; backups no longer hold the data within 35 days of deletion. Messages
-the member sent stay visible to the business, attributed to "Former member".
+told, an owned listing is unpublished and leaves browse and search, a
+confirmation e-mail is sent, and nothing the member saw or wrote stays on the
+device. The deletion is also written to the *deletion ledger*, a record kept
+outside the database of which accounts were deleted and when. The second stage
+is *erasure* — permanent removal of the account's personal data from primary
+storage — which runs 30 days after deletion. Backups of the database are kept
+35 days or less, and a database restored from a backup re-applies the deletions
+in the ledger, so a deleted account stays deleted and no backup holds its data
+later than 35 days after deletion. Messages the member sent stay visible to the
+business, attributed to "Former member".
 
 ## Description
 
 The feature is a vertical slice from a dialog in `Jubilee Web` through
 `Jubilee API` to the `Jubilee database`, with follow-up work in
-`Jubilee Worker`. Nothing is built yet; the names below are the names the design
-introduces.
+`Jubilee Worker`. The names below are the names of the code (ADR 0034,
+ADR 0069).
 
 - **`AccountPage`** — Angular page at `/account`. Its "Delete account" section
-  carries the action "Delete my account", which opens the dialog.
+  carries the action "Delete my account", which opens the dialog. After a
+  deletion it asks `SessionService` to forget the account on the device,
+  navigates to `/welcome` and shows the toast "Your account was deleted" with
+  "We sent you an e-mail to confirm. Your personal data is erased within 30
+  days."
 - **`DeleteAccountDialog`** — Angular dialog titled "Delete your account?". It
-  shows the member's name and e-mail, the lines "Your profile, saved list and
-  {n} conversations are deleted. Your {n} open requests are cancelled and the
-  businesses are told. This can't be undone.", the field "Type DELETE to
-  confirm", and the buttons "Keep my account" and "Delete account". "Keep my
-  account" has the initial focus (L2-129). A value other than exactly `DELETE`
-  shows "Type DELETE in capital letters to confirm." and sends nothing. A failed
-  submission shows "We couldn't delete your account. Nothing was removed. Try
-  again, or write to help@jubilee.example." and keeps the typed confirmation
-  (L2-128).
-- **`AccountApi`** — typed Angular HTTP client. `getDeletionImpact()` calls
-  `GET /api/account/deletion-impact`; `deleteAccount(confirmation)` calls
-  `POST /api/account/deletion`.
-- **`SessionService`** — Angular service. After a successful deletion it clears
-  the signed-in state, navigates to `/welcome`, and asks `ToastService` for the
-  confirmation toast.
+  loads the summary, shows the member's name and e-mail, the lines "Your
+  profile, saved list and {n} conversations are deleted.", "Your {n} open
+  requests are cancelled and the businesses are told." and "This can’t be
+  undone.", the field "Type DELETE to confirm", and the buttons "Keep my
+  account" and "Delete account". "Keep my account" has the initial focus
+  (L2-129). A value other than exactly `DELETE` shows "Type DELETE in capital
+  letters to confirm." and sends nothing. A failed submission shows "We couldn’t
+  delete your account" with "Nothing was removed. Try again, or write to
+  help@jubilee.example."; a dropped connection shows "Your connection dropped
+  before it reached us. Nothing was sent and what you typed is still here. Try
+  again." (L2-128, mock `dialogs/delete-account`, states `failed` and
+  `offline`). Both keep the typed confirmation.
+- **`AccountDataApi`** (`ACCOUNT_DATA_API`) — typed Angular HTTP client.
+  `deletionSummary()` calls `GET /api/account/deletion-summary`;
+  `deleteAccount(confirmation)` calls `DELETE /api/account` with
+  `{confirmation}`.
+- **`SessionService`** — Angular service. `accountDeleted()` makes the user a
+  visitor and clears the device as a sign-out does (ADR 0068) — the saved pages
+  and the outgoing queue — and, because the account is gone, the member's drafts
+  (`DraftStore.forget`).
 - **`AccountController`** — ASP.NET Core controller in `Jubilee.Api`. Both
-  endpoints act on the member of the current session only.
-- **`GetDeletionImpactQuery`** and its handler — count the member's
-  conversations and open requests and return a `DeletionImpactDto` for the
+  endpoints act on the member of the current session only. After the deletion it
+  signs the session cookie out.
+- **`GetDeletionSummaryQuery`** and its handler — count the member's
+  conversations and open requests and return a `DeletionSummaryDto` for the
   dialog copy.
-- **`DeleteAccountCommand`** and **`DeleteAccountCommandValidator`** — carry the
-  typed confirmation. The validator repeats the browser rule: any value other
-  than exactly `DELETE` returns HTTP `422` with code `CONFIRMATION_MISMATCH`.
-- **`DeleteAccountCommandHandler`** — MediatR handler. In one unit of work it
-  calls `Member.Delete(now)`, cancels each open `Request`, calls
-  `Listing.Unpublish()` on each listing the member owns, removes the member's
-  saved list and conversation access, writes an `AuditEntry` (L2-180), and
-  writes outbox messages for the business notifications, the search-index
-  removal and the confirmation e-mail. After the commit it ends every session of
-  the member through `ISessionStore.EndAll()`. Any failure rolls the whole unit
-  of work back, so nothing is removed.
-- **`Member`** — domain entity. `Delete(now)` sets `Status` to `Deleted`,
-  records `DeletedAt` and sets `EraseAfter` to 30 days later. A deleted member
-  cannot sign in. `Erase()` clears every personal field and sets `Status` to
-  `Erased`.
-- **`Request`** — domain entity. `CancelForAccountDeletion()` moves a `new` or
-  `confirmed` request to `cancelled` and records the transition; the business
-  is notified through the outbox.
-- **`Listing`** — domain entity. `Unpublish()` takes the listing out of every
-  public list in the same transaction; the outbox message removes it from the
-  `Search index`.
-- **`AccountErasureJob`** — hosted job in `Jubilee.Worker` that runs daily. It
-  loads each `Member` whose `EraseAfter` has passed, calls `Erase()`, deletes
-  the remaining personal rows, and keeps sent `Message` rows with the sender
-  shown as "Former member". The job is idempotent and logs counts only.
+- **`DeleteAccountCommand`** and its handler — carry the typed confirmation and
+  the caller's address. Any value other than exactly `DELETE` returns HTTP `422`
+  with `CONFIRMATION_MISMATCH` and deletes nothing. In one unit of work the
+  handler cancels each open `Request` and tells its business by notification and
+  e-mail, and `AccountDeletion` then deletes the member's listings, feedback,
+  reviews, saved list, recent searches, notifications, link tokens, listing
+  drafts and back-in-stock alerts, expires the exports and deletes their archives
+  from `IExportStore`, ends every `MemberSession` and calls
+  `Member.Delete(now)`. It writes the audit record `account.deleted` (L2-180)
+  and queues the confirmation e-mail "Your Jubilee account was deleted", which
+  is sent whatever the notification settings say and carries no unsubscribe
+  link. After the commit it writes the deletion to `IDeletionLedger` and the
+  security event "AccountDeletion succeeded for member {id} from {address}"
+  (L2-143); a mismatch is logged as "refused". Any failure before the commit
+  rolls the whole unit of work back, so nothing is removed.
+- **`Member`** — domain entity. `Delete(now)` records `DeletedAt` and clears the
+  password and the Google link, so nothing can sign in. `Erase(now)` clears
+  every personal field and records `ErasedAt`.
+- **`Request`** — domain entity. `Cancel(actor, now)` moves a `new` or
+  `confirmed` request to `cancelled` and records the transition.
+  `ForgetMember()` names the member "Former member" and clears the phone and the
+  delivery address.
+- **`Listing`** — domain entity. `Delete(now)` takes the listing out of every
+  public list in the same transaction. Search reads the listings themselves
+  (L2-182, ADR 0011), so the listing leaves search at once; there is no index to
+  update.
+- **`IDeletionLedger`** — the deletion ledger, outside the database. Each entry
+  is a `DeletedAccount`: the account's id and the time of deletion, nothing
+  else. `FileDeletionLedger` appends one JSON line per entry to
+  `Deletions:LedgerPath` on the app's persistent storage, which a database
+  restore does not touch.
+- **`DeletionLedgerReplay`** — application service. For each ledger entry whose
+  account the database holds and does not show as deleted, it deletes the
+  account again with the original time, through `AccountDeletion`, without
+  telling the businesses or e-mailing the member again, and writes the audit
+  record `account.deletion-reapplied`. A deleted account the ledger is missing
+  is written to it.
+- **`AccountErasure`** — application service. For each member deleted 30 days
+  ago or more it forgets the member in conversations, messages, requests and
+  listing reports ("Former member"), deletes the exports and their archives, the
+  notifications, consents, statement-of-faith agreements, sessions,
+  password-reset requests and queued e-mails, removes the photos of the member's
+  listings and products from the media store, and calls `Member.Erase(now)`.
+  Messages, and the photos sent in them, stay for the business.
+- **`AccountErasureJob`** — hosted job in `Jubilee.Worker` that runs when the
+  worker starts and every hour: first `DeletionLedgerReplay`, then
+  `AccountErasure`. Both are idempotent and log counts only.
 - **`OutboxDispatcherJob`** — hosted job in `Jubilee.Worker` that delivers the
-  business notifications, the search-index removal and the confirmation e-mail.
+  business e-mails and the confirmation e-mail.
 
-The backup rotation that removes the data from backups within 35 days of
-deletion is an operations task outside this repository (ADR 0034). The confirmation toast on
-`/welcome` reads "Your account was deleted" with "We sent you an e-mail to confirm. Your personal data is erased within 30 days."
+The database's backups are kept 7 days (Azure SQL point-in-time restore on the
+Basic tier) with no long-term retention; keeping them at 35 days or less is the
+owner's (`eng/azure/README.md`). The re-application of the ledger is code and is
+tested.
 
 ## Requirements
 
@@ -91,9 +129,9 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 
 | L2 ID | Refines (L1) | Requirement |
 |-------|--------------|-------------|
-| `L2-017` | `L1-002` | The system shall let a member permanently delete their account after typing DELETE. |
+| `L2-017` | `L1-002` | The system shall let a member permanently delete their account after typing DELETE, erase its personal data after 30 days, and re-apply the deletion after a restore from backup. |
 | `L2-129` | `L1-018` | An action that deletes data or notifies another person shall be confirmed in a dialog that states the consequence with real counts and names, with the safe choice as the default focused button. The dialog for an irreversible action shall say "This can't be undone." |
-| `L2-128` | `L1-018` | A failed dialog submission shall show an error alert at the top of the dialog that says what did not happen, and shall keep everything typed. |
+| `L2-128` | `L1-018` | A failed dialog submission shall show an error alert at the top of the dialog that says what did not happen, shall keep everything typed, and shall tell a dropped connection apart. |
 | `L2-180` | `L1-025` | The system shall store an append-only audit record of actor, action, target, time, before and after values, and reason for each sensitive action, including account deletions. |
 | `L2-143` | `L1-019` | The system shall log each account deletion with time, actor, IP and outcome. |
 
@@ -109,26 +147,27 @@ cancelled requests and sends the confirmation e-mail through the
 
 ### Containers
 
-`Jubilee API` closes the account in the `Jubilee database` and ends sessions in
-the `Cache`. `Jubilee Worker` dispatches the notifications, removes the listing
-from the `Search index`, and later erases the personal data.
+`Jubilee API` closes the account in the `Jubilee database` and writes the
+deletion to the `Deletion ledger`. `Jubilee Worker` dispatches the e-mails,
+re-applies the ledger after a restore, and erases the personal data after 30
+days.
 
 ![C4 container view for deleting an account](diagrams/c4-container.png)
 
 ### Components
 
-`DeleteAccountDialog` calls `AccountApi`. `AccountController` dispatches the
-impact query and the delete command; the handler changes `Member`, `Request` and
-`Listing` together. `AccountErasureJob` and `OutboxDispatcherJob` complete the
-work in `Jubilee Worker`.
+`DeleteAccountDialog` calls `AccountDataApi`. `AccountController` sends the
+summary query and the delete command; the handler changes `Member`, `Request`
+and `Listing` together through `AccountDeletion`. `AccountErasureJob` runs
+`DeletionLedgerReplay` and `AccountErasure` in `Jubilee Worker`.
 
 ![C4 component view for deleting an account](diagrams/c4-component.png)
 
 ### Class structure
 
-`DeleteAccountCommandHandler` mutates `Member`, its open `Request` rows and its
-`Listing` rows, and writes an `AuditEntry`. `MemberStatus` records the two
-stages `Deleted` and `Erased`.
+`DeleteAccountCommandHandler` and `DeletionLedgerReplay` share
+`AccountDeletion`, which changes `Member`, its open `Request` rows and its
+`Listing` rows. `IDeletionLedger` keeps a `DeletedAccount` per deletion.
 
 ![Class diagram for deleting an account](diagrams/class-structure.png)
 
@@ -140,9 +179,10 @@ the dialog keeps the typed confirmation.
 
 ![Sequence diagram for deleting the account](diagrams/sequence-delete-account.png)
 
-### Behaviour — erase personal data after 30 days
+### Behaviour — erase personal data after 30 days, and after a restore
 
-`AccountErasureJob` runs daily, erases each account deleted 30 days earlier, and
-leaves the member's sent messages attributed to "Former member".
+`AccountErasureJob` re-applies the ledger, so a restored database deletes the
+account again with its original time, then erases each account deleted 30 days
+earlier, leaving the member's sent messages attributed to "Former member".
 
 ![Sequence diagram for erasing personal data](diagrams/sequence-erase-personal-data.png)

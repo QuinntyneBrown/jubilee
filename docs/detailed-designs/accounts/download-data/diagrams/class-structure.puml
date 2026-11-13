@@ -13,7 +13,6 @@ skinparam class {
 ' --------------------------
 title Class structure — Download data
 
-
 enum DataExportStatus {
   Requested
   Ready
@@ -25,79 +24,71 @@ class DataExport {
   +Guid Id
   +Guid MemberId
   +DataExportStatus Status
-  +DateTime RequestedAt
-  +DateTime? ReadyAt
-  +DateTime? ExpiresAt
-  +string? StorageKey
-  +MarkReady(storageKey: string, now: DateTime): void
-  +MarkFailed(now: DateTime): void
-  +Expire(now: DateTime): void
-  +IsDownloadableBy(memberId: Guid, now: DateTime): bool
-}
-
-class LinkToken {
-  +Guid Id
-  +Guid MemberId
-  +LinkTokenPurpose Purpose
-  +string TokenHash
-  +Guid? DataExportId
-  +DateTime ExpiresAt
-  +IsUsable(now: DateTime): bool
+  +DateTimeOffset RequestedAt
+  +DateTimeOffset? ReadyAt
+  +DateTimeOffset? ExpiresAt
+  +int Attempts
+  +DateTimeOffset? NextAttemptAt
+  +string? TokenHash
+  +string? ArchiveKey
+  +{static} Request(memberId, now): DataExport
+  +IsDue(now): bool
+  +MarkReady(archiveKey, tokenHash, now): void
+  +RecordFailedAttempt(now): bool
+  +Expire(): void
+  +IsDownloadableBy(memberId, now): bool
 }
 
 class Member {
   +Guid Id
   +string Email
-  +bool OwnsListing
+  +DateTimeOffset? DeletedAt
 }
 
 class RequestDataExportCommandHandler {
-  +Handle(command: RequestDataExportCommand): Task<Guid>
+  +Handle(command): Task<DataExportStatusDto>
+}
+
+class GetDataExportStatusQueryHandler {
+  +Handle(query): Task<DataExportStatusDto>
 }
 
 class DownloadDataExportQueryHandler {
-  +Handle(query: DownloadDataExportQuery): Task<Stream>
+  +Handle(query): Task<string>
 }
 
-class DataExportJob {
-  +RunAsync(dataExportId: Guid): Task
+class DataExportBuilder {
+  +BuildDueAsync(ct): Task<int>
+  +ExpireAsync(ct): Task<int>
 }
 
-class DataArchiveBuilder {
-  +BuildAsync(memberId: Guid): Task<Stream>
+class DataArchive <<static>> {
+  +BuildAsync(db, member, now, ct): Task<string>
 }
-
-interface IArchiveSection {
-  +string Name
-  +AppliesTo(member: Member): bool
-  +WriteAsync(memberId: Guid, writer: Utf8JsonWriter): Task
-}
-
-class ProfileSection
-class MessagesSection
-class ListingSection <<owner only>>
-class IncomingRequestsSection <<owner only>>
 
 interface IExportStore {
-  +SaveAsync(key: string, content: Stream): Task
-  +OpenAsync(key: string): Task<Stream>
-  +DeleteAsync(key: string): Task
+  +Save(key, archive, ct): Task
+  +Read(key, ct): Task<string?>
+  +Delete(key, ct): Task
+}
+
+class FileExportStore {
+  -string root
+}
+
+class SecuritySettings {
+  +string? OnCallEmail
 }
 
 RequestDataExportCommandHandler --> DataExport : creates
-DownloadDataExportQueryHandler --> LinkToken : loads by hash
-DownloadDataExportQueryHandler --> DataExport : checks
-DownloadDataExportQueryHandler ..> IExportStore : opens
-DataExportJob --> DataExport : marks ready
-DataExportJob ..> DataArchiveBuilder : uses
-DataExportJob ..> IExportStore : saves
-DataExportJob --> LinkToken : creates
-DataArchiveBuilder "1" o-- "9" IArchiveSection
-IArchiveSection <|.. ProfileSection
-IArchiveSection <|.. MessagesSection
-IArchiveSection <|.. ListingSection
-IArchiveSection <|.. IncomingRequestsSection
+GetDataExportStatusQueryHandler --> DataExport : reads latest
+DownloadDataExportQueryHandler --> DataExport : finds by token hash
+DownloadDataExportQueryHandler ..> IExportStore : reads
+DataExportBuilder --> DataExport : marks ready or failed
+DataExportBuilder ..> DataArchive : builds with
+DataExportBuilder ..> IExportStore : saves and deletes
+DataExportBuilder ..> SecuritySettings : alerts on-call
+IExportStore <|.. FileExportStore
 Member "1" --> "*" DataExport : requests
-DataExport "1" <-- "0..1" LinkToken : opens
 DataExport --> DataExportStatus : has
 @enduml

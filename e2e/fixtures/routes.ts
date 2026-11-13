@@ -189,6 +189,7 @@ export type StubName =
   | 'moderation-featured'
   | 'moderation-featured-error'
   | 'account-data-requested'
+  | 'account-data-build-failed'
   | 'data-download-done'
   | 'data-download-unavailable'
   | 'staff-signed-out'
@@ -1216,6 +1217,12 @@ export const routes = {
     mock: 'pages/account/data-requested.html',
     who: 'member',
     stub: 'account-data-requested',
+  },
+  'account.data-build-failed': {
+    app: '/account',
+    mock: 'pages/account/data-build-failed.html',
+    who: 'member',
+    stub: 'account-data-build-failed',
   },
   'data-download.done': {
     app: '/account/data/e2e-token',

@@ -500,6 +500,7 @@ public sealed class DataExportConfiguration : IEntityTypeConfiguration<DataExpor
         builder.Property(e => e.Id).ValueGeneratedNever();
         builder.Property(e => e.Status).HasConversion<string>().HasMaxLength(16);
         builder.Property(e => e.TokenHash).HasMaxLength(64);
+        builder.Property(e => e.ArchiveKey).HasMaxLength(32);
         builder.HasIndex(e => e.MemberId);
         builder.HasIndex(e => e.TokenHash);
     }

@@ -2,6 +2,8 @@ import { DOCUMENT } from '@angular/common';
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { Member, SESSION_API, SessionDto, SignInRequest } from 'api';
 import { catchError, from, map, switchMap, tap, Observable } from 'rxjs';
+import { draftOwner } from '../drafts/draft-owner';
+import { DraftStore } from '../drafts/draft-store';
 import { isNoAnswer } from './offline/connection.interceptor';
 import { OfflineSnapshotStore } from './offline/offline-snapshot.store';
 import { OutgoingMessageQueue } from './offline/outgoing-message.queue';
@@ -37,6 +39,7 @@ export class SessionService {
   private readonly api = inject(SESSION_API);
   private readonly saved = inject(OfflineSnapshotStore);
   private readonly queue = inject(OutgoingMessageQueue);
+  private readonly drafts = inject(DraftStore);
   private readonly current = signal<SessionState>({ status: 'resolving' });
   private readonly google = signal(false);
   private readonly challengeKey = signal<string | null>(null);
@@ -156,6 +159,20 @@ export class SessionService {
       // Nothing the member saw or wrote stays on the device: the saved pages and the outgoing
       // queue are cleared (L2-119 AC3, ADR 0068). Drafts stay, kept for this member (L2-011 AC3).
       switchMap(() => Promise.all([this.saved.clear(), this.queue.clear().catch(() => undefined)])),
+      map(() => undefined),
+    );
+  }
+
+  /**
+   * The account was deleted (L2-017 AC3, ADR 0069): the user is a visitor, and nothing the member saw
+   * or wrote stays on the device. The saved pages and the outgoing queue go, as at sign-out (ADR
+   * 0068), and so do the member's drafts, since the account they were kept for is gone.
+   */
+  accountDeleted(): Observable<void> {
+    const member = this.member();
+    this.current.set({ status: 'visitor' });
+    if (member) this.drafts.forget(draftOwner(member));
+    return from(Promise.all([this.saved.clear(), this.queue.clear().catch(() => undefined)])).pipe(
       map(() => undefined),
     );
   }

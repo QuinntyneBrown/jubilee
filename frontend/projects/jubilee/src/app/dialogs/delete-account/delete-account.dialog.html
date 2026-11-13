@@ -25,7 +25,14 @@
       @default {
         @if (view() === 'failed') {
           <div jb-alert tone="danger" heading="We couldn’t delete your account" role="alert">
-            <div>Nothing was removed. Try again, or write to help&#64;jubilee.example.</div>
+            @if (dropped()) {
+              <div>
+                Your connection dropped before it reached us. Nothing was sent and what you typed is
+                still here. Try again.
+              </div>
+            } @else {
+              <div>Nothing was removed. Try again, or write to help&#64;jubilee.example.</div>
+            }
           </div>
         }
         @if (summary(); as account) {
@@ -63,7 +70,9 @@
     }
   </form>
   <div jb-dialog-footer>
-    <button jb-button type="button" [disabled]="busy()" (click)="close()">Keep my account</button>
+    <button jb-button type="button" cdkFocusInitial [disabled]="busy()" (click)="close()">
+      Keep my account
+    </button>
     <button
       jb-button
       variant="danger"

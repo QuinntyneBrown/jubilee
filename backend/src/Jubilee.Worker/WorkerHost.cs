@@ -412,7 +412,11 @@ public sealed class DataExportJob(IServiceScopeFactory scopes, ILogger<DataExpor
     }
 }
 
-/// <summary>Once an hour: erases the personal data of the accounts deleted 30 days ago (L2-017 AC6, L2-148).</summary>
+/// <summary>
+/// When the worker starts and once an hour: re-applies the deletion ledger, so a database restored from a backup deletes
+/// its deleted accounts again (L2-017 AC7, ADR 0069), then erases the personal data of the accounts deleted 30 days ago
+/// (L2-017 AC6, L2-148).
+/// </summary>
 public sealed class AccountErasureJob(IServiceScopeFactory scopes, ILogger<AccountErasureJob> logger) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -424,6 +428,11 @@ public sealed class AccountErasureJob(IServiceScopeFactory scopes, ILogger<Accou
             {
                 try
                 {
+                    await using (var replay = scopes.CreateAsyncScope())
+                    {
+                        await replay.ServiceProvider.GetRequiredService<DeletionLedgerReplay>().ReapplyAsync(stoppingToken);
+                    }
+
                     await using var scope = scopes.CreateAsyncScope();
                     var erased = await scope.ServiceProvider.GetRequiredService<AccountErasure>().EraseDueAsync(stoppingToken);
                     if (erased > 0)

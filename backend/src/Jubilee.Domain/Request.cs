@@ -399,8 +399,16 @@ public sealed class Request
     }
 
     /// <summary>Records that the owner was reminded of a request nobody answered (L2-043 AC8).</summary>
-    /// <summary>The member's account was erased: the business sees a former member (L2-017 AC6).</summary>
-    public void ForgetMember() => MemberName = "Former member";
+    /// <summary>
+    /// The member's account was erased: the business sees a former member, and the member's phone and delivery address
+    /// are gone (L2-017 AC6).
+    /// </summary>
+    public void ForgetMember()
+    {
+        MemberName = "Former member";
+        Phone = null;
+        ShippingAddress = null;
+    }
 
     public void Nudge(DateTimeOffset now) => NudgedAt ??= now;
 

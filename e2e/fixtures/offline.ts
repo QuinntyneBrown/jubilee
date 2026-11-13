@@ -184,3 +184,28 @@ export async function deviceOnline(page: Page): Promise<void> {
   await page.unroute('**/api/**', cut);
   await page.context().setOffline(false);
 }
+
+/** Keeps a page on the device as the app does when a member opens it (ADR 0032): `key` in the saved pages. */
+export async function keepOnDevice(page: Page, key: string, data: unknown): Promise<void> {
+  await page.evaluate(
+    ({ key, data }) =>
+      new Promise<void>((resolve, reject) => {
+        const open = indexedDB.open('jubilee-offline', 1);
+        open.onerror = () => reject(open.error);
+        open.onsuccess = () => {
+          const db = open.result;
+          const now = new Date();
+          const put = db
+            .transaction('snapshots', 'readwrite')
+            .objectStore('snapshots')
+            .put({ key, savedAt: now.toISOString(), touchedAt: now.getTime(), data });
+          put.onsuccess = () => {
+            db.close();
+            resolve();
+          };
+          put.onerror = () => reject(put.error);
+        };
+      }),
+    { key, data },
+  );
+}

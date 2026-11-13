@@ -176,7 +176,7 @@ public sealed class AccountController(ISender sender, IBotChallengeVerifier bot)
     [ErrorReference("JB-ACC-525")]
     public async Task<IActionResult> DeleteAccount(DeleteAccountBody request, CancellationToken cancellationToken)
     {
-        await sender.Send(new DeleteAccountCommand(MemberId(), request.Confirmation), cancellationToken);
+        await sender.Send(new DeleteAccountCommand(MemberId(), request.Confirmation, RemoteAddress()), cancellationToken);
         await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
         return NoContent();
     }

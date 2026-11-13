@@ -36,6 +36,8 @@ export class DeleteAccountDialog implements OnInit {
   protected readonly summary = signal<DeletionSummary | null>(null);
   protected readonly typed = signal('');
   protected readonly problem = signal(false);
+  /** The deletion never reached Jubilee: the words say so (L2-128 AC2). */
+  protected readonly dropped = signal(false);
   protected readonly busy = computed(() => this.view() === 'busy');
 
   ngOnInit(): void {
@@ -70,6 +72,7 @@ export class DeleteAccountDialog implements OnInit {
           this.view.set('form');
           return;
         }
+        this.dropped.set(error instanceof HttpErrorResponse && error.status === 0);
         this.view.set('failed');
       },
     });

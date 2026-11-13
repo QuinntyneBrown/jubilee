@@ -153,6 +153,8 @@ export class AccountPage implements OnInit, HasUnsavedChanges {
   protected readonly exportWaiting = signal(false);
   protected readonly exportBusy = signal(false);
   protected readonly exportFailed = signal(false);
+  /** The latest archive could not be built after its 5 attempts (L2-018 AC7). */
+  protected readonly exportBuildFailed = signal(false);
 
   private readonly saved = signal<ProfileForm | null>(null);
   protected readonly account = computed(() => {
@@ -188,9 +190,13 @@ export class AccountPage implements OnInit, HasUnsavedChanges {
   ngOnInit(): void {
     this.load();
     this.loadSessions();
-    // A request still waiting is shown as such after a reload; nothing else about it needs saying here.
+    // A request still waiting is shown as such after a reload, and an archive that could not be built is
+    // said to have failed (L2-018 AC7); nothing else about it needs saying here.
     this.dataApi.currentDataExport().subscribe({
-      next: (current) => this.exportWaiting.set(current.status === 'requested'),
+      next: (current) => {
+        this.exportWaiting.set(current.status === 'requested');
+        this.exportBuildFailed.set(current.status === 'failed');
+      },
       error: () => undefined,
     });
   }
@@ -248,6 +254,7 @@ export class AccountPage implements OnInit, HasUnsavedChanges {
     this.dataApi.requestDataExport().subscribe({
       next: () => {
         this.exportBusy.set(false);
+        this.exportBuildFailed.set(false);
         this.exportWaiting.set(true);
       },
       error: () => {
@@ -268,8 +275,9 @@ export class AccountPage implements OnInit, HasUnsavedChanges {
       })
       .closed.subscribe((deleted) => {
         if (!deleted) return;
-        // The session is over: becoming a visitor first keeps the welcome page from sending the member back.
-        this.session.resolve().subscribe(() => {
+        // The session is over: becoming a visitor first keeps the welcome page from sending the member
+        // back, and the device forgets the account (L2-017 AC3).
+        this.session.accountDeleted().subscribe(() => {
           void this.router.navigateByUrl('/welcome').then(() =>
             this.toasts.show({
               tone: 'success',

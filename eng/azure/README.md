@@ -66,6 +66,8 @@ certificates for the four host names.
 | `StaffAccess__AllowedNetworks`, `StaffAccess__ProxyKey` | the networks the staff endpoints answer, and the key of the admin host's and the marketing host's proxy; without the first, every staff endpoint is refused |
 | `Launch__TeamEmail` | where each pre-registration and each new launch sign-up is e-mailed; set by `deploy.sh` (see "The launching-soon forms" below) |
 | `Security__OnCallEmail` | the on-call security contact, e-mailed "Security alert: a burst of password reset requests" when more than 100 reset requests arrive in 5 minutes (L2-143 AC4, ADR 0064); without it the Jubilee team's address (`Moderation__TeamEmail`, else `Launch__TeamEmail`) is e-mailed. **Set** on `jubilee-to-app` by the owner on 13 November 2026. Change it with `az webapp config appsettings set -g "$G" -n "$APP" -o none --settings Security__OnCallEmail=<address>` |
+| `Deletions__LedgerPath` | `/home/data/deletions/ledger.jsonl`: the deletion ledger, outside the database (L2-017 AC7, ADR 0069); set by `deploy.sh` |
+| `Exports__Root` | `/home/data/exports`: the export store, where data archives are kept for the 7 days their link works (L2-018 AC5, ADR 0069); set by `deploy.sh` |
 
 Not configured yet, so this feature is off: the bot challenge of the join form (Cloudflare
 Turnstile). It needs a Turnstile widget for `app.jubilee.to` and two settings: `BotChallenge__SiteKey`
@@ -354,6 +356,37 @@ To take the worker off every device, deploy a build whose `jubilee-sw.js` is a c
 the placeholder `https://status.jubilee.example`. Host a status page apart from `jubilee-to-app`
 (so it answers while the app's host is down: a hosted status service, or a static page on another
 host), put its address there and deploy.
+
+## Deleted accounts, backups and data archives
+
+A deleted account must stay deleted, also after the database is restored from a backup, and no
+backup may hold its personal data later than 35 days after the deletion (L2-017 AC6 and AC7,
+ADR 0069). Three things make that so:
+
+- **The deletion ledger.** Every deletion is appended to `/home/data/deletions/ledger.jsonl`
+  (`Deletions__LedgerPath`): one JSON line with the account's id and the time, nothing else. It
+  is on the app's persistent storage, so restoring the database does not touch it. The worker
+  re-applies it when it starts and every hour: an account the ledger names that the database holds
+  as not deleted is deleted again with its original time, telling no one again, and its erasure
+  follows 30 days after that time. Nothing needs doing after a restore; the worker starts with the
+  app. Never delete or edit the ledger.
+- **The database's backups are kept 35 days or less.** Azure SQL keeps point-in-time restore
+  backups 7 days on the Basic tier, and no long-term retention is set. **Owner step:** keep it so.
+  Check it with
+
+  ```bash
+  az sql db str-policy show -g rg-jubilee-prod -s <server> -n jubilee --query retentionDays
+  az sql db ltr-policy show -g rg-jubilee-prod -s <server> -n jubilee
+  ```
+
+  The first must say 35 or less, and the second must show no weekly, monthly or yearly retention
+  (`PT0S`). A longer retention, or long-term backups, would keep deleted accounts' data past 35
+  days.
+- **Data archives live in the export store** (`/home/data/exports`, `Exports__Root`), a private
+  folder that no address serves. Each archive is deleted when its link expires after 7 days, when
+  the account is deleted, and at the latest at erasure. Azure encrypts the storage at rest.
+  **Owner step, only if wanted:** a private blob container can replace the folder; it needs a
+  blob store written behind `IExportStore` first.
 
 ## DNS (Namecheap, Advanced DNS of `jubilee.to`)
 

@@ -3,12 +3,13 @@
 LAYOUT_WITH_LEGEND()
 title System Context — Download data
 
-
 Person(member, "Member", "Account holder who asks for a copy of their data")
+Person(oncall, "On-call contact", "Hears of an archive that could not be built")
 System(jubilee, "Jubilee", "Toronto's Christian marketplace")
-System_Ext(email, "E-mail provider", "Delivers the download link. Vendor <TO SUPPLY>")
+System_Ext(email, "E-mail provider", "Azure Communication Services e-mail")
 
 Rel(member, jubilee, "Requests the archive and opens the download link in")
-Rel(jubilee, email, "Sends the 7-day download link via")
-Rel(email, member, "Delivers e-mail to")
+Rel(jubilee, email, "Sends the 7-day download link and the dead-letter alert via")
+Rel(email, member, "Delivers the link to")
+Rel(email, oncall, "Delivers the alert to")
 @enduml

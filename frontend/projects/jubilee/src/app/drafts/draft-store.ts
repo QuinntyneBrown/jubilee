@@ -42,6 +42,13 @@ export class DraftStore {
     return found.values;
   }
 
+  /** Removes every draft of this member: their account is deleted (L2-017 AC3). */
+  forget(owner: string): void {
+    const drafts = this.read();
+    const others = drafts.filter((draft) => draft.owner !== owner);
+    if (others.length !== drafts.length) this.write(others);
+  }
+
   /** Removes every draft that is not this member's: another member is using the device. */
   keepOnly(owner: string): void {
     const drafts = this.read();

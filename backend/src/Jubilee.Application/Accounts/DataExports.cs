@@ -86,21 +86,25 @@ public sealed class GetDataExportStatusQueryHandler(IAppDbContext db, TimeProvid
 /// </summary>
 public sealed record DownloadDataExportQuery(Guid MemberId, string Token) : IRequest<string>;
 
-public sealed class DownloadDataExportQueryHandler(IAppDbContext db, TimeProvider clock, ILogger<DownloadDataExportQueryHandler> logger)
+public sealed class DownloadDataExportQueryHandler(
+    IAppDbContext db, IExportStore exports, TimeProvider clock, ILogger<DownloadDataExportQueryHandler> logger)
     : IRequestHandler<DownloadDataExportQuery, string>
 {
     public async Task<string> Handle(DownloadDataExportQuery request, CancellationToken cancellationToken)
     {
         var hash = LinkTokens.Hash(request.Token);
         var export = await db.DataExports.AsNoTracking().SingleOrDefaultAsync(e => e.TokenHash == hash, cancellationToken);
-        if (export is null || !export.IsDownloadableBy(request.MemberId, clock.GetUtcNow()))
+        var archive = export is not null && export.IsDownloadableBy(request.MemberId, clock.GetUtcNow())
+            ? await exports.Read(export.ArchiveKey!, cancellationToken)
+            : null;
+        if (archive is null)
         {
             logger.LogWarning("Security event: DataDownload refused");
             throw new NotFoundException("DATA_LINK_UNAVAILABLE", "This link has expired or isn’t yours.");
         }
 
         logger.LogInformation("Security event: DataDownload served");
-        return export.ArchiveJson!;
+        return archive;
     }
 }
 
@@ -108,23 +112,29 @@ public sealed class DownloadDataExportQueryHandler(IAppDbContext db, TimeProvide
 /// The worker's side of "Download my data": builds each waiting archive, stores it, mails the link, and later deletes
 /// the files whose link has expired (L2-018, L2-182). A build that fails is tried again, up to 5 times.
 /// </summary>
-public sealed class DataExportBuilder(IAppDbContext db, AccountSettings settings, TimeProvider clock, ILogger<DataExportBuilder> logger)
+public sealed class DataExportBuilder(
+    IAppDbContext db, IExportStore exports, AccountSettings settings, SecuritySettings security, TimeProvider clock, ILogger<DataExportBuilder> logger)
 {
     public async Task<int> BuildDueAsync(CancellationToken cancellationToken)
     {
+        var due = clock.GetUtcNow();
         var waiting = (await db.DataExports.Where(e => e.Status == DataExportStatus.Requested).ToListAsync(cancellationToken))
-            .OrderBy(e => e.RequestedAt).ToList();
+            .Where(e => e.IsDue(due)).OrderBy(e => e.RequestedAt).ToList();
         var built = 0;
         foreach (var export in waiting)
         {
+            string? stored = null;
             try
             {
                 var now = clock.GetUtcNow();
                 var member = await db.Members.AsNoTracking().SingleOrDefaultAsync(m => m.Id == export.MemberId && m.DeletedAt == null, cancellationToken)
                     ?? throw new InvalidOperationException("The member of the export is gone.");
                 var archive = await DataArchive.BuildAsync(db, member, now, cancellationToken);
+                var key = Convert.ToHexStringLower(System.Security.Cryptography.RandomNumberGenerator.GetBytes(16));
+                await exports.Save(key, archive, cancellationToken);
+                stored = key;
                 var token = LinkTokens.NewValue();
-                export.MarkReady(archive, LinkTokens.Hash(token), now);
+                export.MarkReady(key, LinkTokens.Hash(token), now);
                 db.OutboxMessages.Add(OutboxMessage.Email(
                     member.Id,
                     member.Email,
@@ -137,12 +147,43 @@ public sealed class DataExportBuilder(IAppDbContext db, AccountSettings settings
             catch (Exception exception) when (exception is not OperationCanceledException)
             {
                 logger.LogError(exception, "The data export {ExportId} could not be built.", export.Id);
-                export.RecordFailedAttempt();
+                if (stored is not null)
+                {
+                    // An archive whose export was not recorded as ready is never served: it is not kept either.
+                    await exports.Delete(stored, cancellationToken);
+                }
+
+                if (export.RecordFailedAttempt(clock.GetUtcNow()))
+                {
+                    DeadLetter(export);
+                }
+
                 await db.SaveChangesAsync(cancellationToken);
             }
         }
 
         return built;
+    }
+
+    /// <summary>
+    /// The export that failed 5 times is its dead letter (L2-182 AC2, ADR 0069): logged, and the on-call contact is
+    /// e-mailed at once with its reference and the number of attempts, never whose it is. The member sees it failed on
+    /// the account page and can ask again (L2-018 AC7).
+    /// </summary>
+    private void DeadLetter(DataExport export)
+    {
+        logger.LogError("Dead letter: DataExport {ExportId}", export.Id);
+        if (string.IsNullOrWhiteSpace(security.OnCallEmail))
+        {
+            return;
+        }
+
+        db.OutboxMessages.Add(OutboxMessage.Email(
+            null,
+            security.OnCallEmail.Trim(),
+            "Job alert: a data export failed",
+            $"The data export {export.Id} could not be built after {export.Attempts} attempts, so it is marked failed and will not be tried again. The member is told on the account page and can ask again.\n\nLook at the worker's log for \"The data export {export.Id} could not be built\" to see why.\n\nJubilee · Toronto's Christian marketplace\n",
+            clock.GetUtcNow()));
     }
 
     /// <summary>Deletes the archive of every export whose link no longer works (L2-018 AC2).</summary>
@@ -153,11 +194,24 @@ public sealed class DataExportBuilder(IAppDbContext db, AccountSettings settings
             .Where(e => e.ExpiresAt is { } until && now >= until).ToList();
         foreach (var export in stale)
         {
+            await ExportFiles.DeleteAsync(exports, export, cancellationToken);
             export.Expire();
         }
 
         await db.SaveChangesAsync(cancellationToken);
         return stale.Count;
+    }
+}
+
+/// <summary>Deletes an export's archive from the export store, once (ADR 0069).</summary>
+internal static class ExportFiles
+{
+    public static async Task DeleteAsync(IExportStore exports, DataExport export, CancellationToken cancellationToken)
+    {
+        if (export.ArchiveKey is { } key)
+        {
+            await exports.Delete(key, cancellationToken);
+        }
     }
 }
 
@@ -201,6 +255,13 @@ internal static class DataArchive
             ["feedback"] = await FeedbackOf(db, subject, cancellationToken),
             ["reviews"] = await ReviewsOf(db, r => r.AuthorSubject == subject, cancellationToken),
             ["reviewReports"] = await ReviewReportsOf(db, subject, cancellationToken),
+            ["sessions"] = (await db.Sessions.AsNoTracking().Where(s => s.MemberId == member.Id).ToListAsync(cancellationToken))
+                .OrderBy(s => s.CreatedAt)
+                .Select(s => new { s.Device, s.Network, started = s.CreatedAt, lastActive = s.LastActivityAt, ended = s.EndedAt })
+                .ToList(),
+            ["statementAgreements"] = (await db.StatementAgreements.AsNoTracking().Where(a => a.OwnerSubject == subject).ToListAsync(cancellationToken))
+                .OrderBy(a => a.AgreedAt).Select(a => new { a.Version, agreed = a.AgreedAt }).ToList(),
+            ["stockAlerts"] = await StockAlertsOf(db, subject, cancellationToken),
         };
 
         var owned = await db.Listings.AsNoTracking().Where(l => l.OwnerId == subject && l.DeletedAt == null).ToListAsync(cancellationToken);
@@ -208,10 +269,13 @@ internal static class DataArchive
         {
             var ids = owned.Select(l => l.Id).ToList();
             var names = owned.ToDictionary(l => l.Id, l => l.Name);
+            var photos = (await db.ListingPhotos.AsNoTracking().Where(p => ids.Contains(p.ListingId)).Select(p => p.ListingId).ToListAsync(cancellationToken))
+                .GroupBy(id => id).ToDictionary(g => g.Key, g => g.Count());
             document["listings"] = owned.OrderBy(l => l.SortName).Select(l => new
             {
                 l.Name,
                 l.Slug,
+                photos = photos.GetValueOrDefault(l.Id),
                 l.Tagline,
                 l.About,
                 category = l.CategorySlug,
@@ -223,7 +287,7 @@ internal static class DataArchive
                 paused = l.IsPaused,
             }).ToList();
             document["products"] = (await db.Products.AsNoTracking().Where(p => ids.Contains(p.ListingId) && !p.IsDeleted).ToListAsync(cancellationToken))
-                .OrderBy(p => p.Position).Select(p => new { business = names[p.ListingId], p.Name, p.PriceCents, p.Description }).ToList();
+                .OrderBy(p => p.Position).Select(p => new { business = names[p.ListingId], p.Name, p.PriceCents, p.Description, photo = p.PhotoId != null }).ToList();
             document["services"] = (await db.Services.AsNoTracking().Where(s => ids.Contains(s.ListingId)).ToListAsync(cancellationToken))
                 .OrderBy(s => s.Position).Select(s => new { business = names[s.ListingId], s.Name, s.Detail, s.PriceCents, s.DurationMinutes }).ToList();
             document["incomingRequests"] = (await db.Requests.AsNoTracking().Where(r => ids.Contains(r.ListingId)).ToListAsync(cancellationToken))
@@ -263,6 +327,21 @@ internal static class DataArchive
             reply = r.ReplyText,
             takenDown = r.TakenDownAt,
             takenDownReason = r.TakeDownReason,
+        }).ToList();
+    }
+
+    /// <summary>The products the member asked to be told about when they are back in stock (ADR 0069).</summary>
+    private static async Task<object> StockAlertsOf(IAppDbContext db, string subject, CancellationToken cancellationToken)
+    {
+        var alerts = (await db.StockAlerts.AsNoTracking().Where(a => a.MemberSubject == subject).ToListAsync(cancellationToken))
+            .OrderBy(a => a.RequestedAt).ToList();
+        var ids = alerts.Select(a => a.ProductId).ToList();
+        var names = await db.Products.AsNoTracking().Where(p => ids.Contains(p.Id)).ToDictionaryAsync(p => p.Id, p => p.Name, cancellationToken);
+        return alerts.Select(a => new
+        {
+            product = names.GetValueOrDefault(a.ProductId) ?? "(no longer listed)",
+            asked = a.RequestedAt,
+            told = a.NotifiedAt,
         }).ToList();
     }
 
@@ -356,7 +435,8 @@ internal static class DataArchive
         {
             business = names.GetValueOrDefault(c.ListingId),
             started = c.CreatedAt,
-            messages = messages.Where(m => m.ConversationId == c.Id).Select(m => new { from = m.SenderName, fromBusiness = m.FromOwner, m.Body, at = m.CreatedAt }).ToList(),
+            messages = messages.Where(m => m.ConversationId == c.Id)
+                .Select(m => new { from = m.SenderName, fromBusiness = m.FromOwner, m.Body, photo = m.AttachmentId != null, at = m.CreatedAt }).ToList(),
         }).ToList();
     }
 }

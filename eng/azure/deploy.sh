@@ -161,6 +161,9 @@ fi
 ensure_settings "$WWW_APP" "API_ORIGIN=$API_URL" "API_PATHS=/api/launch" "KEEP_DIR=/home/data/launch-kept" "PROXY_KEY=$key"
 unset key
 ensure_settings "$APP_APP" "Launch__TeamEmail=$LAUNCH_TEAM_EMAIL"
+# The deletion ledger and the export store live on the app's persistent storage, outside the database and
+# outside the deployed folder, so a restore of the database or a new deployment keeps them (L2-017 AC7, ADR 0069).
+ensure_settings "$APP_APP" "Deletions__LedgerPath=/home/data/deletions/ledger.jsonl" "Exports__Root=/home/data/exports"
 
 az webapp restart -g "$GROUP" -n "$APP_APP"
 

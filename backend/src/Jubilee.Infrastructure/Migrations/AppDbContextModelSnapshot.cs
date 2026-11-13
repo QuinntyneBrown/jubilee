@@ -343,8 +343,9 @@ namespace Jubilee.Infrastructure.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("ArchiveJson")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<string>("ArchiveKey")
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)");
 
                     b.Property<int>("Attempts")
                         .HasColumnType("int");
@@ -354,6 +355,9 @@ namespace Jubilee.Infrastructure.Migrations
 
                     b.Property<Guid>("MemberId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("NextAttemptAt")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<DateTimeOffset?>("ReadyAt")
                         .HasColumnType("datetimeoffset");
