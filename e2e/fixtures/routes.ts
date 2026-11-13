@@ -96,9 +96,11 @@ export type StubName =
   | 'request-detail-declined'
   | 'request-detail-cancelled'
   | 'request-detail-error'
+  | 'request-detail-unanswered'
   | 'incoming'
   | 'incoming-empty'
   | 'incoming-error'
+  | 'incoming-confirmed'
   | 'business'
   | 'business-away'
   | 'business-switcher'
@@ -869,6 +871,12 @@ export const routes = {
     who: 'member',
     stub: 'request-detail-error',
   },
+  'request-detail.unanswered': {
+    app: '/requests/7a1e0000-0000-4000-8000-000000000002',
+    mock: 'pages/request-detail/unanswered.html',
+    who: 'member',
+    stub: 'request-detail-unanswered',
+  },
   'incoming-requests': {
     app: '/my-business/requests',
     mock: 'pages/incoming-requests/default.html',
@@ -886,6 +894,13 @@ export const routes = {
     mock: 'pages/incoming-requests/error.html',
     who: 'member',
     stub: 'incoming-error',
+  },
+  // The page object chooses the Confirmed tab before the state is read (L2-225).
+  'incoming-requests.confirmed': {
+    app: '/my-business/requests',
+    mock: 'pages/incoming-requests/confirmed.html',
+    who: 'member',
+    stub: 'incoming-confirmed',
   },
   'my-business': {
     app: '/my-business',

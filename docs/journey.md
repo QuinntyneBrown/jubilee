@@ -29,7 +29,7 @@ journey that is implemented: the effort-weighted average of its feature designs 
 | 11 | Removed: answer a church reference | Jubilee no longer asks for a church reference (ADR 0041). The number is not reused. | 0 | n/a |
 | 12 | Keep listings honest | The Jubilee team looks through published listings and takes down one that misrepresents a business. | 10 | 100% |
 | 13 | Respond to customer requests | See incoming requests and confirm or decline each one. | 6 | 100% |
-| 14 | Track and cancel requests | Follow each request's progress and cancel an open one. | 6 | 89% |
+| 14 | Track and cancel requests | Follow each request's progress and cancel an open one. | 6 | 100% |
 | 15 | Run a business listing | Monitor the listing, edit its details, pause or resume it. | 9 | 100% |
 | 16 | Manage products and services | Add, edit, reorder and delete products and services. | 8 | 90% |
 | 17 | Stay notified | Receive events through the notification centre, toasts, banners and e-mail. | 9 | 100% |

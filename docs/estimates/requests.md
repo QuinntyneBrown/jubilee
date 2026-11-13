@@ -3,14 +3,14 @@
 | Design | Effort | Complete |
 |---|---|---|
 | book-meeting | 4 days | 100% |
-| cancel-request | 4 days | 95% |
+| cancel-request | 4 days | 100% |
 | confirm-request | 4 days | 100% |
 | decline-request | 4 days | 100% |
 | handle-incoming-requests | 5 days | 100% |
 | request-item | 4 days | 100% |
 | request-quote | 4 days | 100% |
 | request-space | 5 days | 100% |
-| track-requests | 5 days | 85% |
+| track-requests | 5 days | 100% |
 
 book-meeting (ADR 0015, ADR 0048): requests, availability, idempotent booking, the calendar file, the booking dialog, the calendar link on the request page and the meeting reminders are done with tests. Meeting hours the owner sets (`L2-220`: days, one window a day in Toronto time and a slot length, from My services) are built with tests, and a member is offered only the times inside them (`BookingTests`, `MeetingHoursTests`, `book-meeting.spec.ts`, `meeting-hours.spec.ts`). Nothing is left. Out of scope (ADR 0048): different hours per day, breaks, calendars and double booking.
 
@@ -18,7 +18,7 @@ request-quote (ADR 0016): the quote request (validation, idempotency, owner e-ma
 
 handle-incoming-requests, confirm-request, decline-request (ADR 0021, ADR 0050): the owner's list with tabs, confirm with stock reduction and an 8-second undo, decline with a reason and note, the confirmation card, the in-app notifications and the Requests counts were done with tests. Journey 13 is now finished: the page listens to the event stream and asks on a timer only while the stream cannot connect (`incoming-requests.spec.ts`); a business that replies fast carries the "Replies fast" badge on its listing page and its business card (`IncomingRequestTests`, `business.spec.ts`, the parity specs of `badge` and `business-card`); the response-time job runs once per hour across instances and records its success through `JobRun` (`ResponseTimeJobTests`); a confirmation that answers after its dialog was closed is reported in a toast, with "Try again" on a failure; a decline of a request that is no longer new closes the dialog and says why; the customer's in-app notification on confirm and on decline is asserted. Nothing is left. Out of scope here: the retries and the dead-letter queue of `L2-182` AC2 (operations, run-background-jobs), and the badge on a space, a directory row or a search result (ADR 0050).
 
-track-requests, cancel-request (ADR 0022): the member's list and detail with the timeline, cancel with an 8-second undo, the booking completion and unanswered-request jobs, and polling for status changes are done with tests. The cancellation card, the owner notification and "Your requests" in the account menu have landed since. Deferred: the real-time channel in place of polling (L2-070), the owner's "Mark fulfilled" control (L2-043 AC5).
+track-requests, cancel-request (ADR 0022, ADR 0061): the member's list and detail with the timeline, cancel with an 8-second undo, the booking completion and unanswered-request jobs, the cancellation card and "Your requests" in the account menu were done with tests. Journey 14 is now finished: both pages read again when a request notification arrives over the event stream, read once when it connects again and when an owner takes back a confirmation, and ask every 5 seconds only while it cannot connect (`L2-070` AC6; `member-requests.spec.ts`); the owner marks a confirmed order fulfilled from Incoming requests through its dialog, and the customer is told in the app and by e-mail and reads "Completed" (`L2-225`; `IncomingRequestTests`, `fulfil-request.spec.ts`); "Cancel or ask again" on a request nobody answered for a week is proved in the browser (`L2-043` AC8); the owner's in-app notification of a cancel and of its withdrawal is asserted (`L2-049` AC2, AC3; `MemberRequestTests`); the two jobs run once per schedule across instances and record their success through `JobRun` (`RequestJobTests`). Nothing is left. Out of scope: the retries and the dead-letter queue of `L2-182` AC2 (operations), and the fulfilment of a space request (journey 28, ADR 0042).
 
 request-item (ADR 0017): the order request (delivery methods, free shipping, server-computed amounts, stock check at send, owner e-mail, idempotency) and its dialog on the product page are done with tests. The owner's in-app notification, its real-time event on the open page, the request under "New" in Incoming requests, the order card in the conversation, and the customer's notification and the stock reduction on confirm are now asserted for an order sent through the API (`OrderRequestTests`, `EventStreamTests`), and the dialog is proved by keyboard, with the focus on "View request" after sending (`request-item.spec.ts`). Nothing is left. Out of scope (ADR 0017): tax, shown as "+ tax" and never calculated; carts, checkout and payment, never.
 

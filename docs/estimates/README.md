@@ -15,7 +15,7 @@
 | [accounts](accounts.md) | 50 days | 93% |
 | [security](security.md) | 34 days | 32% |
 | [messaging](messaging.md) | 17 days | 98% |
-| [requests](requests.md) | 39 days | 98% |
+| [requests](requests.md) | 39 days | 100% |
 | [notifications](notifications.md) | 16 days | 100% |
 | [onboarding](onboarding.md) | 17 days | 100% |
 | [admin](admin.md) | 7 days | 90% |

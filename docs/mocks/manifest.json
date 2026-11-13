@@ -468,7 +468,8 @@
         "declined",
         "cancelled",
         "space-awaiting",
-        "space-confirmed"
+        "space-confirmed",
+        "unanswered"
       ],
       "not_applicable": {
         "empty": "A request page shows one request; it has no collection that could be empty."
@@ -667,7 +668,8 @@
         "empty",
         "error",
         "no-results",
-        "space"
+        "space",
+        "confirmed"
       ]
     },
     {
@@ -1008,6 +1010,20 @@
         "invalid",
         "failed"
       ]
+    },
+    {
+      "id": "fulfil-request",
+      "kind": "dialog",
+      "title": "Fulfil request",
+      "opens_from": "incoming-requests",
+      "states": [
+        "default",
+        "busy",
+        "failed"
+      ],
+      "not_applicable": {
+        "invalid": "This dialog has no inputs to validate."
+      }
     },
     {
       "id": "product-editor",

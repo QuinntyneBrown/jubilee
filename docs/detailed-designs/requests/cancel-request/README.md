@@ -24,47 +24,47 @@ consider messaging {owner} too."
 The feature is a vertical slice from the cancel dialog in `Jubilee Web` to `Jubilee database`, with side effects
 dispatched by `Jubilee Worker`.
 
-- **`RequestDetailPage`** — Angular page at `/requests/:id`. It offers "Cancel request" while the request is
-  open and reflects the new status after a cancel or an undo.
-- **`CancelRequestDialog`** — Angular dialog built on `DialogShell`, with "Keep request" (default focus) and
-  "Cancel request". It adds the short-notice line when the request is a `Confirmed` booking whose `StartsAt` is
-  less than 24 hours away. On failure it keeps the dialog open and shows "We couldn't cancel it. The request is
-  still open. Check your connection and try again." with "Try again" (`L2-128`).
+- **`RequestDetailPage`** — Angular page at `/requests/:id`. It offers "Cancel request" ("Cancel booking" for a
+  confirmed booking) while the request is open and reflects the new status after a cancel or an undo.
+- **`CancelRequestDialog`** — Angular dialog built on `jb-dialog`, with "Keep request" (default focus) and
+  "Cancel request". It adds the short-notice line when the detail says `shortNotice` (a `Confirmed` booking
+  whose `StartsAt` is less than 24 hours away). On failure it keeps the dialog open and shows "We couldn't
+  cancel it. The request is still open. Check your connection and try again." with "Try again" (`L2-128`).
+  A 409 (the owner answered a moment ago) closes it and the page reads the request again.
 - **`ToastService`** — shows "Request cancelled. {Business} has been told." with "Undo" for 8 seconds. Pressing
-  "Undo" calls `RequestsApi.undoCancel`.
-- **`RequestsApi`** — typed Angular HTTP client. `cancel` calls `POST /api/requests/{id}/cancel`; `undoCancel`
-  calls `POST /api/requests/{id}/cancel/undo`.
-- **`RequestsController`** — ASP.NET Core controller in `Jubilee.Api`. It authenticates the session cookie,
-  applies the endpoint policy and sends the command through MediatR. Neither endpoint accepts a body, so the
-  client cannot set `status` (`L2-133`).
+  "Undo" calls `RequestsApi.undoCancel`; a late Undo says so in a danger toast.
+- **`REQUESTS_API`** — the injection token of `RequestsApi`, the typed Angular HTTP client. `cancel` calls
+  `POST /api/requests/{id}/cancel`; `undoCancel` calls `POST /api/requests/{id}/cancel/undo`.
+- **`RequestsController`** — ASP.NET Core controller in `Jubilee.Api`. It authenticates the session cookie and
+  sends the command through MediatR. Neither endpoint accepts a body, so the client cannot set `status`
+  (`L2-133`).
 - **`CancelRequestCommand`** and **`CancelRequestCommandHandler`** — the handler loads the request where
-  `MemberId` is the caller (HTTP 404 otherwise), calls `Request.Cancel`, appends a cancellation card to the
-  `Conversation`, and writes the business's notification and real-time event to the outbox in one unit of work.
-  The notification is dispatched straight away; it does not wait for the undo window.
+  `MemberSubject` is the caller (HTTP 404 otherwise, the attempt logged), calls `Request.Cancel`, and through
+  `MemberRequestMail.TellOwner` writes the owner's in-app notification ("{member} cancelled a {noun}", target
+  `/my-business/requests`) and the e-mail to the outbox in one unit of work. The e-mail is due at once; it does
+  not wait for the undo window. The notification reaches the owner's open page over the event stream, and the
+  request's card in the conversation shows "Cancelled" because it reads the request's status.
 - **`UndoCancelRequestCommand`** and **`UndoCancelRequestCommandHandler`** — the handler calls
-  `Request.UndoLastTransition`, which restores the status held before the cancel (`New` or `Confirmed`), and
-  writes a "cancellation withdrawn" notification for the business to the outbox.
+  `Request.UndoCancel`, which restores the status held before the cancel (`New` or `Confirmed`), and tells the
+  owner in the app and by e-mail that "{member} withdrew the cancellation".
 - **`Request`** — domain entity in `Jubilee.Domain` that owns the request lifecycle (`L2-043`). `RequestStatus`
   holds `New`, `Confirmed`, `Declined`, `Cancelled` and `Completed`. The allowed transitions are `New` →
   `Confirmed` (the owner confirms), `New` → `Declined` (the owner declines), `New` or `Confirmed` → `Cancelled`
   (the member cancels) and `Confirmed` → `Completed` (a booking's meeting end time passes, or the owner marks an
-  order fulfilled). `UndoLastTransition` returns a request to its previous status within 8 seconds of a cancel
-  or a confirm. Each other transition throws `InvalidTransitionException`; the API maps it to HTTP 409 with code
-  `INVALID_TRANSITION` and leaves the request unchanged.
-- **`RequestTransition`** — child entity of `Request` that records each transition with actor, time and previous
-  status. The progress timeline reads these records.
-- **Undo rule** — `Request.Cancel` sets `UndoableUntil` on its `RequestTransition` to 8 seconds after
-  `OccurredAt`. `UndoLastTransition` succeeds only for the actor of that transition and only before
-  `UndoableUntil`; later calls return HTTP 409 with code `INVALID_TRANSITION`. No allowance is made for network delay (ADR 0022).
+  order fulfilled). Each other transition throws `InvalidTransitionException`.
+- **`RequestTransition`** — child entity of `Request` that records each transition with `From`, `To`, `Actor`,
+  `At` and `UndoableUntil`. The progress timeline reads these records and leaves out a cancel the member took
+  back.
+- **Undo rule** — `Request.Cancel` sets `UndoableUntil` on its `RequestTransition` to `At` plus `UndoWindow`
+  (8 seconds). `UndoCancel` succeeds only for the actor of that transition and only before `UndoableUntil`;
+  later calls return HTTP 409 with code `INVALID_TRANSITION`. No allowance is made for network delay (ADR 0022).
 - **`InvalidTransitionException`** — raised when the request is already `Declined`, `Cancelled` or `Completed`.
-  `ProblemDetailsMiddleware` returns HTTP 409 with code `INVALID_TRANSITION` and the current status, and the
-  page reloads the request.
-- **`RequestCancelledEvent`** and **`RequestCancellationWithdrawnEvent`** — outbox payloads. Downstream slices
-  read the request status when they act: the calendar link returns `STATUS:CANCELLED` (`L2-050`) and no meeting
-  reminder is sent for a cancelled booking.
-- **`OutboxDispatcherJob`** — hosted job in `Jubilee Worker`. It reads the `OutboxMessage` rows written in the
-  same transaction, stores the in-app `Notification`, sends the e-mail through `IEmailSender` and pushes the
-  real-time event through `EventsHub`.
+  `MemberRequestMail.Invalid` turns it into a `ConflictException`, answered with HTTP 409, code
+  `INVALID_TRANSITION` and the current status, and the page reads the request again.
+- **Calendar** — the calendar link reads the request status when it is opened: a cancelled booking returns
+  `STATUS:CANCELLED` (`L2-050`) and no meeting reminder is sent for it.
+- **`OutboxDispatcherJob`** — hosted job in `Jubilee Worker`. It sends the e-mails in the outbox through
+  `IEmailSender`. The in-app notification is a `Notification` row the event stream (`GET /api/events`) reads.
 
 ## Requirements
 
@@ -98,7 +98,7 @@ The cancel travels from `Jubilee Web` to `Jubilee API`, which changes the reques
 ### Components
 
 `CancelRequestDialog` and the "Undo" action of `ToastService` call `RequestsController` through `RequestsApi`.
-The two handlers call `Cancel` and `UndoLastTransition` on `Request`.
+The two handlers call `Cancel` and `UndoCancel` on `Request`.
 
 ![C4 component view for cancelling a request](diagrams/c4-component.png)
 

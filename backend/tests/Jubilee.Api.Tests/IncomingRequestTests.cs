@@ -314,6 +314,76 @@ public sealed class IncomingRequestTests : IClassFixture<JubileeApiFactory>, IAs
         });
     }
 
+    private Task<HttpResponseMessage> Fulfil(HttpClient client, Request request) =>
+        client.PostAsync($"/api/my-business/requests/{request.Id}/fulfil", null);
+
+    // L2-225 AC3, L2-043 AC5
+    [Fact]
+    public async Task L2_225_AC3_marking_a_confirmed_order_fulfilled_completes_it_and_tells_the_customer_in_the_app_and_by_e_mail()
+    {
+        Assert.Equal(HttpStatusCode.OK, (await Confirm(Naomi(), _samuelsOrder)).StatusCode);
+        _factory.Clock.Advance(TimeSpan.FromDays(1));
+
+        var response = await Fulfil(Naomi(), _samuelsOrder);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var body = await Json(response);
+        Assert.Equal("completed", body.GetProperty("status").GetString());
+        Assert.Equal("Samuel", body.GetProperty("customerFirstName").GetString());
+        var saved = await Reload(_samuelsOrder);
+        Assert.Equal(RequestStatus.Completed, saved.Status);
+        var last = saved.Transitions.OrderBy(t => t.At).Last();
+        Assert.Equal((RequestStatus.Confirmed, RequestStatus.Completed, NaomiId), (last.From, last.To, last.Actor));
+        var told = (await NotificationsOf(Samuel())).Single(n => n.GetProperty("title").GetString() == "Luzandre.com marked your order fulfilled");
+        Assert.Equal("request", told.GetProperty("kind").GetString());
+        Assert.Equal("Custom church team tee × 24", told.GetProperty("detail").GetString());
+        Assert.Equal($"/requests/{_samuelsOrder.Id}", told.GetProperty("target").GetString());
+        Assert.Empty(await NotificationsOf(Naomi()));
+        await _factory.WithDb(async db =>
+        {
+            var mail = await db.OutboxMessages.AsNoTracking().SingleAsync(m => m.ToAddress == "samuel@example.com" && m.Subject.Contains("fulfilled"));
+            Assert.Equal("Luzandre.com marked your order fulfilled", mail.Subject);
+            Assert.Contains($"/requests/{_samuelsOrder.Id}", mail.TextBody);
+        });
+        var detail = await _factory.GetJson($"/api/requests/{_samuelsOrder.Id}", Samuel());
+        Assert.Equal("Completed", detail.GetProperty("statusLabel").GetString());
+        Assert.Equal("Luzandre.com marked this order as fulfilled.", detail.GetProperty("callout").GetProperty("text").GetString());
+        var step = detail.GetProperty("timeline").EnumerateArray().Last();
+        Assert.Equal(("Completed", "complete"), (step.GetProperty("title").GetString(), step.GetProperty("state").GetString()));
+    }
+
+    // L2-225 AC5, L2-043 AC6
+    [Fact]
+    public async Task L2_225_AC5_an_order_the_customer_cancelled_is_not_fulfilled_and_nobody_is_told()
+    {
+        await Confirm(Naomi(), _samuelsOrder);
+        _factory.Clock.Advance(TimeSpan.FromMinutes(1));
+        await Samuel().PostAsync($"/api/requests/{_samuelsOrder.Id}/cancel", null);
+        var before = (await NotificationsOf(Samuel())).Count;
+
+        var response = await Fulfil(Naomi(), _samuelsOrder);
+
+        Assert.Equal(HttpStatusCode.Conflict, response.StatusCode);
+        var body = await Json(response);
+        Assert.Equal("INVALID_TRANSITION", body.GetProperty("code").GetString());
+        Assert.Equal("Samuel Park cancelled this request.", body.GetProperty("detail").GetString());
+        Assert.Equal(RequestStatus.Cancelled, (await Reload(_samuelsOrder)).Status);
+        Assert.Equal(before, (await NotificationsOf(Samuel())).Count);
+    }
+
+    // L2-225 AC5: only an order is fulfilled
+    [Fact]
+    public async Task L2_225_AC5_a_confirmed_quote_is_not_fulfilled()
+    {
+        await Confirm(Naomi(), _davidsQuote);
+
+        var response = await Fulfil(Naomi(), _davidsQuote);
+
+        Assert.Equal(HttpStatusCode.Conflict, response.StatusCode);
+        Assert.Equal("INVALID_TRANSITION", (await Json(response)).GetProperty("code").GetString());
+        Assert.Equal(RequestStatus.Confirmed, (await Reload(_davidsQuote)).Status);
+    }
+
     // L2-052 AC4
     [Fact]
     public async Task L2_052_AC4_confirming_an_order_reduces_the_stock_by_the_quantity()

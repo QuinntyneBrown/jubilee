@@ -39,12 +39,12 @@ toast -> client : undoCancel(requestId)
 client -> controller : POST /api/requests/{id}/cancel/undo
 controller -> controller : Authenticate and apply endpoint policy
 controller -> handler : Send UndoCancelRequestCommand
-handler -> db : Load request and last transition where MemberId is the caller (L2-133)
+handler -> db : Load request and last transition where MemberSubject is the caller (L2-133)
 db --> handler : Current state
-handler -> entity : UndoLastTransition(actor, now) (L2-049)
+handler -> entity : UndoCancel(actor, now) (L2-049)
 alt same actor and before UndoableUntil
   entity --> handler : Previous status restored, RequestTransition recorded
-  handler -> db : Save request and "cancellation withdrawn" outbox message in one unit of work
+  handler -> db : Save request, the owner's "withdrew the cancellation" notification and e-mail in one unit of work
   db --> handler : Commit result
   handler --> controller : Restored status
   controller --> client : 200 OK
