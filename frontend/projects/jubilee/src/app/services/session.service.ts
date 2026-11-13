@@ -2,6 +2,7 @@ import { DOCUMENT } from '@angular/common';
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { Member, SESSION_API, SessionDto, SignInRequest } from 'api';
 import { catchError, map, of, switchMap, tap, Observable } from 'rxjs';
+import { timings } from './offline/timings';
 
 export type SessionState =
   { status: 'resolving' } | { status: 'visitor' } | { status: 'member'; member: Member };
@@ -32,6 +33,9 @@ export class SessionService {
   private readonly google = signal(false);
   private readonly challengeKey = signal<string | null>(null);
   private readonly others = signal(0);
+  /** The wait before the session is asked for again, and how many requests in a row went unanswered (L2-003 AC9). */
+  private askingAgain?: ReturnType<typeof setTimeout>;
+  private unanswered = 0;
 
   readonly state = this.current.asReadonly();
   readonly member = computed(() => {
@@ -59,18 +63,53 @@ export class SessionService {
     });
   }
 
-  /** Resolves the session; a failed request leaves the user a visitor. */
+  /**
+   * Resolves the session. A failed request leaves the user a visitor for now, and the session is
+   * asked for again until Jubilee answers (L2-003 AC9).
+   */
   resolve(): Observable<SessionState> {
     return this.api.getSession().pipe(
-      tap((dto) => {
-        this.google.set(dto.googleSignIn === true);
-        this.challengeKey.set((!dto.signedIn && dto.botChallengeSiteKey) || null);
-        this.others.set((dto.signedIn && dto.otherSessionCount) || 0);
-      }),
+      tap((dto) => this.answered(dto)),
       map(toState),
-      catchError(() => of<SessionState>({ status: 'visitor' })),
+      catchError(() => {
+        this.askAgain();
+        return of<SessionState>({ status: 'visitor' });
+      }),
       tap((state) => this.current.set(state)),
     );
+  }
+
+  /** What every answer of `GET /api/session` says beside who is signed in. */
+  private answered(dto: SessionDto): void {
+    clearTimeout(this.askingAgain);
+    this.askingAgain = undefined;
+    this.unanswered = 0;
+    this.google.set(dto.googleSignIn === true);
+    this.challengeKey.set((!dto.signedIn && dto.botChallengeSiteKey) || null);
+    this.others.set((dto.signedIn && dto.otherSessionCount) || 0);
+  }
+
+  /**
+   * The session request failed, as it does while Jubilee starts after a deployment. Until it is
+   * answered the app cannot know whether Google sign-in is configured, so it asks again after the
+   * waits of the connection check (5, 10, 20, 40, then 60 seconds). A request that fails again
+   * changes nothing the user sees; the first answer sets the session and the Google buttons.
+   */
+  private askAgain(): void {
+    if (this.askingAgain !== undefined) return;
+    const { backoff } = timings();
+    const wait = backoff[Math.min(this.unanswered, backoff.length - 1)];
+    this.unanswered++;
+    this.askingAgain = setTimeout(() => {
+      this.askingAgain = undefined;
+      this.api.getSession().subscribe({
+        next: (dto) => {
+          this.answered(dto);
+          this.current.set(toState(dto));
+        },
+        error: () => this.askAgain(),
+      });
+    }, wait);
   }
 
   /** Signs in (L2-006). Errors reach the caller: the page words them. */

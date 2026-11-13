@@ -1,6 +1,7 @@
 import type { Page } from '@playwright/test';
 import { stubChallenge } from '../fixtures/bot-challenge';
 import { expect, test } from '../fixtures/jb-test';
+import { stubStarting } from '../fixtures/session';
 import {
   stubConfirmation,
   stubResend,
@@ -865,6 +866,28 @@ test.describe('join with Google: off, cancelled or refused (L2-003)', () => {
     await expect(join.createAccount).toBeVisible();
     await expect(join.google).toHaveCount(0);
     await expect(join.divider).toHaveCount(0);
+  });
+
+  test('AC9: a page opened while Jubilee is starting shows the Google button once Jubilee answers', async ({
+    page,
+    jb,
+  }) => {
+    // The session is asked for again after 200 ms here, not 5 seconds.
+    await page.addInitScript(() => {
+      Object.assign((globalThis as { __jbTimings?: object }).__jbTimings ?? {}, { backoff: [200] });
+    });
+    const jubilee = await stubStarting(page);
+    const join = new JoinPage(page);
+    await jb.goto('/join');
+    await expect(join.createAccount).toBeVisible();
+    await expect(join.google).toHaveCount(0);
+    await join.firstName.fill('Joanna');
+
+    await jubilee.ready();
+
+    await expect(join.google).toBeVisible();
+    await expect(join.divider).toHaveText('or use email');
+    await expect(join.firstName).toHaveValue('Joanna');
   });
 
   test('AC6: a visitor who cancelled at Google is back on the join page and keeps their place', async ({
