@@ -31,10 +31,12 @@ import {
   Alert,
   BackLink,
   Button,
+  Checkbox,
   ChipOption,
   ChipRow,
   EmptyState,
   Field,
+  FieldError,
   ReviewPosted,
   ReviewSubject,
   Skeleton,
@@ -44,7 +46,7 @@ import {
 import { Subscription, timeout } from 'rxjs';
 import { RequiresConnection } from '../../directives/requires-connection';
 
-type FieldName = 'rating' | 'itemId' | 'text';
+type FieldName = 'rating' | 'itemId' | 'text' | 'usedIt';
 
 /** A post that takes longer than this fails instead of spinning (L2-228 AC6). */
 const SUBMIT_TIMEOUT_MS = 10_000;
@@ -52,6 +54,8 @@ const SUBMIT_TIMEOUT_MS = 10_000;
 const PROMPT =
   'What did they do, and how did it go? Was the price what they quoted? Would you hire them again?';
 const PROMPT_SPACE = 'Was it as described? How was the host? Would you stay again?';
+const PROMPT_PLATFORM =
+  'What did you use it for, and how did it go? Was the price what the site said? Would you use it again?';
 
 /** Why the screen cannot show the form: the member may not write (L2-226 AC2). */
 interface Refused {
@@ -62,6 +66,8 @@ interface Refused {
 /**
  * The Write a review screen at /b/:slug/review (L2-227, L2-228): the stars, the item, the text and
  * the notes; checked before it is sent, sent once with an idempotency key, and confirmed in place.
+ * A platform takes no requests, so its review rests on the member's own statement that they used
+ * it, which the screen asks and Jubilee does not check (L2-258, L2-259).
  * A member who may not write is told when they can; one who already wrote is sent to the listing.
  */
 @Component({
@@ -72,10 +78,12 @@ interface Refused {
     Alert,
     BackLink,
     Button,
+    Checkbox,
     ChipOption,
     ChipRow,
     EmptyState,
     Field,
+    FieldError,
     ReviewPosted,
     ReviewSubject,
     Skeleton,
@@ -107,6 +115,8 @@ export class WriteReviewPage {
   protected readonly rating = signal<number | null>(null);
   protected readonly itemId = signal<string | null>(null);
   protected readonly text = signal('');
+  /** The statement of use of a platform: unticked until the member ticks it (L2-258 AC2). */
+  protected readonly usedIt = signal(false);
   protected readonly problems = signal<Partial<Record<FieldName, string>>>({});
   protected readonly failure = signal<{ title: string; text: string; reason: string } | null>(null);
   protected readonly busy = signal(false);
@@ -118,7 +128,10 @@ export class WriteReviewPage {
   });
 
   protected readonly space = computed(() => this.form()?.listing.kind === 'space');
-  protected readonly prompt = computed(() => (this.space() ? PROMPT_SPACE : PROMPT));
+  protected readonly platform = computed(() => this.form()?.listing.kind === 'platform');
+  protected readonly prompt = computed(() =>
+    this.space() ? PROMPT_SPACE : this.platform() ? PROMPT_PLATFORM : PROMPT,
+  );
   protected readonly back = computed(() =>
     this.space() ? 'Back to listing' : `Back to ${this.form()?.listing.name ?? ''}`,
   );
@@ -197,6 +210,11 @@ export class WriteReviewPage {
     this.clear('rating');
   }
 
+  protected stateUse(used: boolean): void {
+    this.usedIt.set(used);
+    this.clear('usedIt');
+  }
+
   protected chooseItem(id: string): void {
     this.itemId.set(id);
     this.clear('itemId');
@@ -209,6 +227,9 @@ export class WriteReviewPage {
     if (!this.rating()) found.rating = this.message('rating', 'RATING_REQUIRED');
     if (this.length() < REVIEW_MIN_LENGTH) found.text = this.message('text', 'TOO_SHORT');
     else if (this.length() > REVIEW_MAX_LENGTH) found.text = this.message('text', 'TOO_LONG');
+    if (this.platform() && !this.usedIt()) {
+      found.usedIt = this.message('usedIt', 'STATEMENT_REQUIRED');
+    }
     this.problems.set(found);
     if (Object.keys(found).length > 0) {
       this.focusFirstInvalid();
@@ -219,7 +240,12 @@ export class WriteReviewPage {
     this.api
       .write(
         this.slug,
-        { rating: this.rating(), itemId: this.itemId(), text: this.text() },
+        {
+          rating: this.rating(),
+          itemId: this.itemId(),
+          text: this.text(),
+          ...(this.platform() ? { usedIt: this.usedIt() } : {}),
+        },
         this.key,
       )
       .pipe(timeout(SUBMIT_TIMEOUT_MS))
@@ -245,7 +271,7 @@ export class WriteReviewPage {
     if (error instanceof HttpErrorResponse && error.status === 422) {
       const errors = (error.error as { errors?: Record<string, string> } | null)?.errors ?? {};
       const found: Partial<Record<FieldName, string>> = {};
-      for (const field of ['rating', 'itemId', 'text'] as FieldName[]) {
+      for (const field of ['rating', 'itemId', 'text', 'usedIt'] as FieldName[]) {
         if (errors[field]) found[field] = this.message(field, errors[field]);
       }
       if (Object.keys(found).length > 0) {
@@ -281,6 +307,8 @@ export class WriteReviewPage {
         return `Write at least ${REVIEW_MIN_LENGTH} characters. This has ${this.length()}.`;
       case 'text:TOO_LONG':
         return 'Use 2,000 characters or fewer.';
+      case 'usedIt:STATEMENT_REQUIRED':
+        return `Tick the box to say you have used ${this.form()?.listing.name ?? 'it'}.`;
       default:
         return 'Check this field.';
     }
@@ -302,7 +330,8 @@ export class WriteReviewPage {
             this.host.querySelector<HTMLElement>('#rv-item input:checked') ??
             this.host.querySelector<HTMLElement>('#rv-item input')
           )?.focus();
-        else this.host.querySelector<HTMLElement>('#rv-text')?.focus();
+        else if (found.text) this.host.querySelector<HTMLElement>('#rv-text')?.focus();
+        else this.host.querySelector<HTMLElement>('#rv-used')?.focus();
       },
       { injector: this.injector },
     );

@@ -1,6 +1,7 @@
 import type { Locator, Page } from '@playwright/test';
 import type { Region, Screen } from '../fixtures/visual';
 import { BusinessCard } from './business-card';
+import { ReviewsRegion } from './reviews.region';
 import { ShellPage } from './shell.page';
 
 /** The page of a software platform at /b/:slug (L2-254). */
@@ -30,6 +31,8 @@ export class PlatformPage extends ShellPage implements Screen {
   /** The "Website" row of Details: the same link out. */
   readonly websiteLink: Locator;
   readonly reviews: Locator;
+  /** The "Reviews" section and its parts (L2-260). */
+  readonly reviewsSection: ReviewsRegion;
   readonly more: Locator;
   readonly moreCards: Locator;
   readonly seeAll: Locator;
@@ -69,6 +72,7 @@ export class PlatformPage extends ShellPage implements Screen {
     this.detailTerms = this.details.locator('dt');
     this.websiteLink = this.details.getByRole('link');
     this.reviews = this.main.locator('section.reviews');
+    this.reviewsSection = new ReviewsRegion(page);
     this.more = this.main.getByRole('region', { name: 'More in Software platforms' });
     this.moreCards = this.more.locator('a.biz-card');
     this.seeAll = this.more.getByRole('link', { name: 'See all' });

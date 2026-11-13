@@ -40,6 +40,18 @@ test.describe('software platforms: the category (L2-252)', () => {
     await expect(category.sort).toBeVisible();
   });
 
+  test('L2-260 AC3: a platform with three reviews shows its rating on its card, and one with fewer shows none', async ({
+    page,
+    jb,
+  }) => {
+    const category = new CategoryPage(page);
+    await jb.open('category.software-platforms');
+
+    await expect(category.cardNamed('Lanternread').rating).toHaveText(/4\.3\s*\(4\)/);
+    await expect(category.cardNamed('Ledgerleaf').rating).toHaveCount(0);
+    await expect(category.cardNamed('Gatherboard').rating).toHaveCount(0);
+  });
+
   test('AC2: the sort orders the platforms by name', async ({ page, jb }) => {
     const category = new CategoryPage(page);
     await jb.open('category.software-platforms');

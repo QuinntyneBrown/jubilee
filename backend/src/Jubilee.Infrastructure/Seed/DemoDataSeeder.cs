@@ -191,7 +191,8 @@ public sealed class DemoDataSeeder(AppDbContext db, TimeProvider clock)
             var service = await db.Services.FirstOrDefaultAsync(s => s.ListingId == listing.Id && s.Name == demo.Item, cancellationToken);
             var product = await db.Products.FirstOrDefaultAsync(p => p.ListingId == listing.Id && p.Name == demo.Item, cancellationToken);
             var subject = $"demo|reviewer-{demo.Author.ToLowerInvariant().Replace(' ', '-')}";
-            var review = Review.Write(listing.Id, new ReviewItem(service?.Id, product?.Id, demo.Item), subject, demo.Author, demo.Rating, demo.Text, key, demo.At);
+            var review = Review.Write(listing.Id, new ReviewItem(service?.Id, product?.Id, demo.Item), subject, demo.Author, demo.Rating, demo.Text, key, demo.At,
+                statedUse: listing.Kind == ListingKind.Platform);
             if (demo.Reply is { } reply)
             {
                 review.ReplyWith(ReviewReplyName(listing), reply.Text, reply.At);

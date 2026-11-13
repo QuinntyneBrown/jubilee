@@ -68,6 +68,8 @@ export class ReviewsRegion {
   readonly showAll: Locator;
   readonly status: Locator;
   readonly empty: Locator;
+  /** The lines of the empty state: the invitation, then any notice (L2-260 AC2). */
+  readonly emptyTexts: Locator;
   readonly loadingStatus: Locator;
   readonly skeletons: Locator;
   readonly error: Locator;
@@ -97,6 +99,7 @@ export class ReviewsRegion {
     this.showAll = this.root.getByRole('button', { name: /^Show all \d+ reviews$/ });
     this.status = this.root.locator('.reviews__main [role="status"]');
     this.empty = this.root.locator('.reviews__empty');
+    this.emptyTexts = this.root.locator('.reviews__empty-text');
     this.loadingStatus = this.root.getByRole('status').filter({ hasText: 'Loading the reviews' });
     this.skeletons = this.root.locator('.skeleton');
     this.error = this.root.getByRole('alert');

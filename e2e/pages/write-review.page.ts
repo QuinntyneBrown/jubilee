@@ -21,6 +21,11 @@ export class WriteReviewPage extends ShellPage implements Screen {
   readonly counter: Locator;
   readonly textError: Locator;
   readonly notes: Locator;
+  /** The statement of use of a platform (L2-258 AC2). */
+  readonly usedIt: Locator;
+  readonly usedItLabel: Locator;
+  readonly usedItHint: Locator;
+  readonly usedItError: Locator;
   readonly post: Locator;
   readonly alert: Locator;
   /** The page of a member who may not write: "You can review … after …". */
@@ -54,6 +59,10 @@ export class WriteReviewPage extends ShellPage implements Screen {
     this.counter = this.main.locator('#rv-text-count');
     this.textError = this.main.locator('#rv-text-error');
     this.notes = this.main.locator('form .text-muted');
+    this.usedIt = this.main.locator('#rv-used');
+    this.usedItLabel = this.main.locator('.choice', { has: page.locator('#rv-used') });
+    this.usedItHint = this.usedItLabel.locator('small');
+    this.usedItError = this.main.locator('#rv-used-error');
     this.post = this.main.getByRole('button', { name: /^(Post review|Posting…)$/ });
     this.alert = this.main.getByRole('alert');
     this.notEligible = this.main.locator('.empty');

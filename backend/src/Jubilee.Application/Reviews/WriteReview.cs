@@ -21,9 +21,16 @@ public sealed record ReviewItems(IReadOnlyList<ReviewItemOptionDto> Options, str
 {
     public const string ServiceLegend = "service";
     public const string ProductLegend = "product";
+    public const string PlatformItem = "Their platform";
 
     public static async Task<ReviewItems> OfAsync(IAppDbContext db, Listing listing, CancellationToken cancellationToken)
     {
+        if (listing.Kind == ListingKind.Platform)
+        {
+            // A platform has nothing to choose between: the review is about the platform itself (L2-259 AC1).
+            return new([], null, new ReviewItem(null, null, PlatformItem));
+        }
+
         if (listing.Kind == ListingKind.Space)
         {
             var stay = listing.Space?.Term is SpaceTerm.ShortStay or null ? "My stay" : "Renting here";
@@ -89,7 +96,8 @@ public sealed class GetReviewFormQueryHandler(IAppDbContext db) : IRequestHandle
 }
 
 /// <summary>An eligible member posts a review (L2-228, L2-238 AC3, AC4, AC6).</summary>
-public sealed record WriteReviewCommand(string Slug, string Subject, string MemberName, int? Rating, Guid? ItemId, string? Text, string? IdempotencyKey)
+public sealed record WriteReviewCommand(
+    string Slug, string Subject, string MemberName, int? Rating, Guid? ItemId, string? Text, string? IdempotencyKey, bool UsedIt = false)
     : IRequest<ReviewDto>;
 
 public sealed class WriteReviewCommandHandler(IAppDbContext db, TimeProvider clock, IDirectoryReadCache cache, AccountSettings settings)
@@ -111,7 +119,8 @@ public sealed class WriteReviewCommandHandler(IAppDbContext db, TimeProvider clo
         await ReviewRules.EnsureMayWriteAsync(db, listing, request.Subject, cancellationToken);
         var items = await ReviewItems.OfAsync(db, listing, cancellationToken);
         var item = await items.ResolveAsync(db, request.ItemId, cancellationToken);
-        var text = ReviewRules.Validate(request.Rating, request.Text, item is null);
+        var isPlatform = listing.Kind == ListingKind.Platform;
+        var text = ReviewRules.Validate(request.Rating, request.Text, item is null, isPlatform && !request.UsedIt);
 
         var now = clock.GetUtcNow();
         var today = (await db.Reviews.AsNoTracking().Where(r => r.AuthorSubject == request.Subject).Select(r => r.CreatedAt).ToListAsync(cancellationToken))
@@ -121,7 +130,7 @@ public sealed class WriteReviewCommandHandler(IAppDbContext db, TimeProvider clo
             throw new RateLimitedException("rate_limited", today[today.Count - PerDay] + TimeSpan.FromDays(1) - now);
         }
 
-        var review = Review.Write(listing.Id, item!, request.Subject, request.MemberName, request.Rating!.Value, text, key, now);
+        var review = Review.Write(listing.Id, item!, request.Subject, request.MemberName, request.Rating!.Value, text, key, now, isPlatform);
         db.Reviews.Add(review);
         await ReviewRules.RecountAsync(db, review, gone: false, productBefore: null, cancellationToken);
         await ReviewNotices.NewReviewAsync(db, settings, listing, review, now, cancellationToken);

@@ -93,7 +93,8 @@ public sealed class Review
     }
 
     public static Review Write(
-        Guid listingId, ReviewItem item, string authorSubject, string authorFullName, int rating, string text, string idempotencyKey, DateTimeOffset now) => new()
+        Guid listingId, ReviewItem item, string authorSubject, string authorFullName, int rating, string text, string idempotencyKey, DateTimeOffset now,
+        bool statedUse = false) => new()
     {
         Id = Guid.NewGuid(),
         ListingId = listingId,
@@ -105,6 +106,9 @@ public sealed class Review
         Rating = rating,
         Text = text.Trim(),
         CreatedAt = now,
+
+        // The author's own word that they used a platform; only its time is kept (L2-258 AC3, L2-261 AC4).
+        StatedUseAt = statedUse ? now : null,
         IdempotencyKey = idempotencyKey,
     };
 

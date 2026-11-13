@@ -1603,7 +1603,10 @@
           "categorySlug": "software-platforms",
           "coverPhoto": null,
           "repliesFast": false,
-          "rating": null
+          "rating": {
+            "average": 4.3,
+            "count": 4
+          }
         },
         {
           "slug": "ledgerleaf",
@@ -1648,7 +1651,10 @@
           "categorySlug": "software-platforms",
           "coverPhoto": null,
           "repliesFast": false,
-          "rating": null
+          "rating": {
+            "average": 4.3,
+            "count": 4
+          }
         },
         {
           "slug": "ledgerleaf",
@@ -2457,7 +2463,7 @@
     "body": {
       "title": "Sign in to continue.",
       "status": 401,
-      "correlationId": "68ae089dc8ff4a3fa1cb96ed9f05e727",
+      "correlationId": "7d31f5ccac9d4012a89a96b554ce8ad0",
       "code": "sign_in_required"
     }
   },
@@ -2880,7 +2886,7 @@
         "languages": null,
         "delivery": null,
         "madeToOrder": null,
-        "onJubileeSince": "2026-09-12T18:22:08.4331869+00:00",
+        "onJubileeSince": "2026-09-12T19:21:59.0647701+00:00",
         "replies": null
       },
       "services": [],
@@ -2926,19 +2932,77 @@
     "status": 200,
     "body": {
       "summary": {
-        "average": 0,
-        "count": 0,
+        "average": 4.3,
+        "count": 4,
         "breakdown": [
-          0,
-          0,
-          0,
+          2,
+          1,
+          1,
           0,
           0
         ]
       },
       "viewer": "visitor",
       "writing": "sign-in",
-      "items": []
+      "items": [
+        {
+          "id": "502f5972-e8b7-4d6b-95cd-af3354a6d010",
+          "author": "Grace A.",
+          "initials": "GA",
+          "rating": 5,
+          "itemId": null,
+          "itemName": "Their platform",
+          "text": "We have used Lanternread since September. My two boys log their books before bed and the weekly goal has them asking for one more chapter. It has stayed free for us, as the site says.",
+          "createdAt": "2026-11-02T17:00:00+00:00",
+          "editedAt": null,
+          "mine": false,
+          "reply": null
+        },
+        {
+          "id": "b7a0b543-1f5d-4e5b-a8ed-3c929ff3be46",
+          "author": "Samuel P.",
+          "initials": "SP",
+          "rating": 5,
+          "itemId": null,
+          "itemName": "Their platform",
+          "text": "Simple and calm. I set it up in ten minutes and my daughter's grandmother cheers her on from Lagos. Nothing to pay as a family.",
+          "createdAt": "2026-10-28T17:00:00+00:00",
+          "editedAt": null,
+          "mine": false,
+          "reply": null
+        },
+        {
+          "id": "26f20b79-56f8-4401-ae30-7b31427b2090",
+          "author": "Ruth M.",
+          "initials": "RM",
+          "rating": 4,
+          "itemId": null,
+          "itemName": "Their platform",
+          "text": "Good for our family reading night. I would like a way to log audiobooks, but the streak keeps the children keen and the price was what the site said.",
+          "createdAt": "2026-10-19T17:00:00+00:00",
+          "editedAt": null,
+          "mine": false,
+          "reply": {
+            "from": "Abigail Thornton",
+            "text": "Thank you, Ruth. Audiobooks are on our list for the new year.",
+            "at": "2026-10-20T17:00:00+00:00",
+            "editedAt": null
+          }
+        },
+        {
+          "id": "3047d9b4-0465-4c2e-9c4f-eaa19556f768",
+          "author": "David C.",
+          "initials": "DC",
+          "rating": 3,
+          "itemId": null,
+          "itemName": "Their platform",
+          "text": "It does what it says, though the school side confused our teacher at first. Support answered in a day. We will keep using it for the summer.",
+          "createdAt": "2026-10-06T17:00:00+00:00",
+          "editedAt": null,
+          "mine": false,
+          "reply": null
+        }
+      ]
     }
   },
   "GET /api/listings/legacy-financial": {
@@ -4117,7 +4181,7 @@
     "body": {
       "title": "Sign in to continue.",
       "status": 401,
-      "correlationId": "9adefb56726b4213849ab92deb314358",
+      "correlationId": "dd3e9476d90e4e089c602a23abacedf1",
       "code": "sign_in_required"
     }
   },

@@ -46,6 +46,7 @@ export type StubName =
   | 'write-review'
   | 'write-review-single-item'
   | 'write-review-space'
+  | 'write-review-platform'
   | 'write-review-not-eligible'
   | 'shop-loading'
   | 'shop-error'
@@ -765,6 +766,13 @@ export const routes = {
     mock: 'pages/write-review/space.html',
     who: 'member',
     stub: 'write-review-space',
+  },
+  // The statement of use; its invalid, busy, failed and posted states are reached by using it (L2-259).
+  'write-review.platform': {
+    app: '/b/lanternread/review',
+    mock: 'pages/write-review/platform.html',
+    who: 'member',
+    stub: 'write-review-platform',
   },
   'write-review.not-eligible': {
     app: '/b/luzandre/review',

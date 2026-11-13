@@ -225,8 +225,15 @@
         <jb-listing-reviews
           [slug]="listing.slug"
           [name]="listing.name"
-          [invite]="listing.space ? 'Stayed with this host?' : null"
+          [invite]="
+            listing.space
+              ? 'Stayed with this host?'
+              : listing.platform
+                ? 'Used ' + listing.name + '?'
+                : null
+          "
           [space]="!!listing.space"
+          [platform]="!!listing.platform"
           [items]="reviewItems(listing)"
           itemLegend="service"
         />
@@ -533,8 +540,15 @@
         <jb-listing-reviews
           [slug]="listing.slug"
           [name]="listing.name"
-          [invite]="listing.space ? 'Stayed with this host?' : null"
+          [invite]="
+            listing.space
+              ? 'Stayed with this host?'
+              : listing.platform
+                ? 'Used ' + listing.name + '?'
+                : null
+          "
           [space]="!!listing.space"
+          [platform]="!!listing.platform"
           [items]="reviewItems(listing)"
           itemLegend="service"
         />

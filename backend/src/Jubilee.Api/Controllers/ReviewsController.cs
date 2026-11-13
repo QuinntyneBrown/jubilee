@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.RateLimiting;
 namespace Jubilee.Api.Controllers;
 
 [JsonUnmappedMemberHandling(JsonUnmappedMemberHandling.Disallow)]
-public sealed record ReviewBody(int? Rating, Guid? ItemId, string? Text);
+public sealed record ReviewBody(int? Rating, Guid? ItemId, string? Text, bool? UsedIt = null);
 
 /// <summary>
 /// The reviews of one listing (L2-238). Reading is open to anyone on purpose; the session, when there
@@ -36,7 +36,8 @@ public sealed class ListingReviewsController(ISender sender) : ControllerBase
     public async Task<IActionResult> Write(string slug, ReviewBody body, CancellationToken cancellationToken)
     {
         var review = await sender.Send(
-            new WriteReviewCommand(slug, User.ToViewer().Subject!, MemberName, body.Rating, body.ItemId, body.Text, Request.Headers["Idempotency-Key"].ToString()),
+            new WriteReviewCommand(slug, User.ToViewer().Subject!, MemberName, body.Rating, body.ItemId, body.Text, Request.Headers["Idempotency-Key"].ToString(),
+                body.UsedIt == true),
             cancellationToken);
         return StatusCode(StatusCodes.Status201Created, review);
     }

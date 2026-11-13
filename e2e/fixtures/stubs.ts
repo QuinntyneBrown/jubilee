@@ -30,6 +30,7 @@ import {
   stubReviewForm,
   stubReviews,
   suiteForm,
+  lanternreadForm,
 } from './reviews';
 import type { StubName } from './routes';
 import { STATEMENT_LAPSED, naomiOwing, stubStatementAgreement } from './statement-of-faith';
@@ -464,6 +465,8 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
       return stubReviewForm(page, 'deeks-insurance', { form: deeksForm() });
     case 'write-review-space':
       return stubReviewForm(page, 'roncesvalles-guest-suite', { form: suiteForm() });
+    case 'write-review-platform':
+      return stubReviewForm(page, 'lanternread', { form: lanternreadForm() });
     case 'write-review-not-eligible':
       return stubReviewForm(page, 'luzandre', { refusal: { status: 403, code: 'NOT_ELIGIBLE' } });
     case 'business-replies-fast':
