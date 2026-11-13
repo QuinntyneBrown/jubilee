@@ -13,95 +13,98 @@ skinparam class {
 ' --------------------------
 title Class structure — Queue messages offline
 
-enum QueuedMessageState {
-  WaitingToSend
-  Sending
-  Sent
-  NotSent
-}
-
 class QueuedMessage {
-  +id: string
+  +sequence: number
   +conversationId: string
   +body: string
   +idempotencyKey: string
-  +sequence: number
-  +queuedAt: Date
-  +state: QueuedMessageState
+  +queuedAt: string
+  +state: 'waiting' | 'not-sent'
 }
 
 class OutgoingMessageQueue {
-  +enqueue(message: QueuedMessage): Promise<void>
-  +nextWaiting(): Promise<QueuedMessage>
-  +markSent(id: string): Promise<void>
-  +markNotSent(id: string): Promise<void>
-  +retry(id: string): Promise<void>
-  +remove(id: string): Promise<void>
+  +items: Signal<QueuedMessage[]>
+  +ready: Promise<void>
+  +enqueue(conversationId: string, body: string, idempotencyKey: string): Promise<void>
+  +nextWaiting(): QueuedMessage | undefined
+  +markSent(message: QueuedMessage): Promise<void>
+  +markNotSent(message: QueuedMessage): Promise<void>
+  +retry(message: QueuedMessage): Promise<void>
+  +remove(message: QueuedMessage): Promise<void>
+  +expire(now: Date): Promise<number>
+  +clear(): Promise<void>
 }
 
 class QueueDrainer {
-  +drain(): Promise<number>
+  +delivered: Signal<number>
+  +start(): void
+  +drain(announce: boolean): Promise<void>
 }
 
-class QueueExpiryMonitor {
-  +maxAgeHours: number = 24
-  +sweep(now: Date): Promise<void>
+class ConnectionService {
+  +cannotDeliver: Signal<boolean>
+  +returned: Signal<number>
+  +backOnline: Signal<number | null>
+  +announceSent(count: number): void
 }
 
-class ConversationStore {
-  +thread: Signal<ThreadItem[]>
-  +send(body: string): Promise<void>
-  +retry(id: string): Promise<void>
-  +delete(id: string): Promise<void>
+class ConversationPage {
+  #send(): void
+  #retryQueued(queued: QueuedMessage): void
+  #discardQueued(queued: QueuedMessage): void
 }
 
-class IdempotencyKeyFactory {
-  +create(): string
+class HttpMessagesApi {
+  +send(id: string, body: string, idempotencyKey: string, attachmentId?: string): Observable<ChatMessage>
 }
 
-class SendMessageCommand {
-  +Guid ConversationId
-  +Guid SenderId
-  +string Body
-  +string IdempotencyKey
+class "jubilee-sw.js sync handler" as SyncHandler <<service worker>> {
+  +tag: 'jubilee-outbox'
+}
+
+class SendMessageCommand <<record>> {
+  +ConversationId: Guid
+  +Subject: string
+  +Name: string
+  +Body: string?
+  +IdempotencyKey: string?
+  +AttachmentId: Guid?
 }
 
 class SendMessageCommandHandler {
-  +Handle(command: SendMessageCommand, ct: CancellationToken): Task<MessageDto>
+  +Handle(request: SendMessageCommand, ct: CancellationToken): Task<MessageDto>
 }
 
 class Conversation {
-  +Guid Id
-  +Guid MemberId
-  +Guid ListingId
-  +AddMessage(senderId: Guid, body: string, sentAt: DateTime): Message
+  +Id: Guid
+  +LastMessageAt: DateTimeOffset
+  +NextMessageTime(now: DateTimeOffset): DateTimeOffset
+  +Touch(now: DateTimeOffset): void
 }
 
 class Message {
-  +Guid Id
-  +Guid ConversationId
-  +Guid SenderId
-  +string Body
-  +DateTime SentAtUtc
-}
-
-class IdempotencyRecord {
-  +string Key
-  +Guid MemberId
-  +int StatusCode
-  +string ResponseBody
-  +DateTime ExpiresAtUtc
+  +Id: Guid
+  +ConversationId: Guid
+  +SenderSubject: string
+  +Body: string
+  +IdempotencyKey: string
+  +CreatedAt: DateTimeOffset
+  +{static} Send(...): Message
 }
 
 OutgoingMessageQueue "1" *-- "*" QueuedMessage : stores
-QueuedMessage --> QueuedMessageState : has
-ConversationStore ..> IdempotencyKeyFactory : gets key
-ConversationStore ..> OutgoingMessageQueue : enqueues
-QueueDrainer ..> OutgoingMessageQueue : reads / marks
-QueueExpiryMonitor ..> OutgoingMessageQueue : marks NotSent
-QueueDrainer ..> SendMessageCommand : posts as request
+ConversationPage ..> OutgoingMessageQueue : enqueues / retries / removes
+ConversationPage ..> HttpMessagesApi : sends
+ConversationPage ..> ConnectionService : reads cannotDeliver
+ConversationPage ..> QueueDrainer : refreshes on delivered
+QueueDrainer ..> OutgoingMessageQueue : reads / removes / marks
+QueueDrainer ..> HttpMessagesApi : posts
+QueueDrainer ..> ConnectionService : drains on returned, announces
+SyncHandler ..> QueuedMessage : sends / removes / marks
+SyncHandler ..> QueueDrainer : posts jubilee-outbox-sent
+HttpMessagesApi ..> SendMessageCommand : request becomes
 SendMessageCommandHandler ..> SendMessageCommand : handles
-SendMessageCommandHandler --> Conversation : loads / mutates
-Conversation "1" *-- "*" Message : contains
-IdempotencyRecord "1" --> "1" Message : replays result for
+SendMessageCommandHandler ..> Conversation : loads / touches
+SendMessageCommandHandler ..> Message : finds by key or creates
+Conversation "1" -- "*" Message : contains
 @enduml

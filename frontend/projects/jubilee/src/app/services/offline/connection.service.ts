@@ -1,11 +1,12 @@
 import { Injectable, NgZone, computed, inject, signal } from '@angular/core';
+import { environment } from '../../../environments/environment';
 import { timings } from './timings';
 
 /** What the app knows about its connection to Jubilee (L2-121). */
 export type ConnectionState = 'online' | 'offline' | 'unreachable' | 'slow';
 
-/** Where "Check status" goes; the status page is hosted apart from the API so it survives an outage (ADR 0032). */
-export const STATUS_URL = 'https://status.jubilee.example';
+/** Where "Check status" goes: the status page set for this build (ADR 0032, ADR 0068). */
+export const STATUS_URL = environment.statusUrl;
 
 /**
  * ConnectionService: the connection state machine behind the connection banner.

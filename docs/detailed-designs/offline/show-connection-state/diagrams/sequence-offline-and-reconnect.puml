@@ -19,36 +19,33 @@ participant "Browser" as browser
 box "Frontend — Jubilee Web" #E0F2FE
   participant "ConnectionBanner" as banner
   participant "ConnectionService" as conn
-  participant "BackoffSchedule" as backoff
-  participant "ReachabilityProbe" as probe
+  participant "QueueDrainer" as drainer
+  participant "SseEventsApi" as sse
 end box
 box "Backend — Jubilee API" #D1FADF
   participant "HealthController" as health
+  participant "EventsController" as events
 end box
 browser -> conn : offline event
-conn -> conn : Set state Offline
-conn --> banner : Offline
-banner --> actor : Persistent banner "You're offline." within 2 seconds (L2-121)
+conn -> conn : state offline, stop waiting, forget latencies
+conn --> banner : offline
+banner --> actor : Persistent banner "You're offline." with "Try again", at once (L2-121 AC1)
 browser -> conn : online event
-loop Until a probe succeeds
-  conn -> probe : check()
-  probe -> health : GET /api/health/ping
-  alt Probe fails
-    health --> probe : No response
-    probe --> conn : ServiceUnreachable or NoNetwork
-    conn -> backoff : nextDelaySeconds()
-    backoff --> conn : 5 s, then 10 s, 20 s, 40 s, 60 s (L2-121)
-    conn -> conn : Set state Reconnecting, count down each second
-    conn --> banner : Reconnecting, seconds to retry
-    banner --> actor : "Reconnecting… Trying again in {n} seconds."
-  else Probe succeeds
-    health --> probe : 204 No Content
-    probe --> conn : Reachable
-    conn -> backoff : reset()
-    backoff --> conn : Schedule reset
-    conn -> conn : Set state Online
-    conn --> banner : Online
-    banner --> actor : Dismissible success banner "You're back online." (L2-067)
-  end
+conn -> health : GET /api/health/ping (5 s timeout)
+alt Probe answers
+  health --> conn : 204 No Content
+  conn -> conn : state online, reset back-off, backOnline = 0, returned + 1
+  conn --> banner : back-online
+  banner --> actor : Dismissible success banner "You're back online." (L2-067 AC2)
+  conn --> drainer : returned changed
+  drainer -> drainer : drain(true), see the queue messages offline design
+else Probe fails
+  health --> conn : No answer, 502, 503 or 504
+  conn -> conn : state unreachable, see "Detect an unreachable API"
+end
+browser -> sse : online event
+opt The EventSource was closed
+  sse -> events : GET /api/events?lastEventId={id} (ADR 0053)
+  events --> sse : Stream open, missed events sent
 end
 @enduml

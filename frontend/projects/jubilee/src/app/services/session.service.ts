@@ -1,8 +1,14 @@
 import { DOCUMENT } from '@angular/common';
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { Member, SESSION_API, SessionDto, SignInRequest } from 'api';
-import { catchError, map, of, switchMap, tap, Observable } from 'rxjs';
+import { catchError, from, map, switchMap, tap, Observable } from 'rxjs';
+import { isNoAnswer } from './offline/connection.interceptor';
+import { OfflineSnapshotStore } from './offline/offline-snapshot.store';
+import { OutgoingMessageQueue } from './offline/outgoing-message.queue';
 import { timings } from './offline/timings';
+
+/** The key of the session saved on the device, for opening Jubilee with no connection (ADR 0068). */
+const SAVED_SESSION = 'session';
 
 export type SessionState =
   { status: 'resolving' } | { status: 'visitor' } | { status: 'member'; member: Member };
@@ -29,6 +35,8 @@ function toState(dto: SessionDto): SessionState {
 @Injectable({ providedIn: 'root' })
 export class SessionService {
   private readonly api = inject(SESSION_API);
+  private readonly saved = inject(OfflineSnapshotStore);
+  private readonly queue = inject(OutgoingMessageQueue);
   private readonly current = signal<SessionState>({ status: 'resolving' });
   private readonly google = signal(false);
   private readonly challengeKey = signal<string | null>(null);
@@ -71,9 +79,14 @@ export class SessionService {
     return this.api.getSession().pipe(
       tap((dto) => this.answered(dto)),
       map(toState),
-      catchError(() => {
+      catchError((error: unknown) => {
         this.askAgain();
-        return of<SessionState>({ status: 'visitor' });
+        // With no answer at all, the member last signed in on this device is still signed in, so
+        // the pages saved for them open with no connection (L2-119 AC4). Any other failure leaves
+        // the user a visitor until Jubilee answers.
+        return from(isNoAnswer(error) ? this.lastSession() : Promise.resolve(null)).pipe(
+          map((saved): SessionState => saved ?? { status: 'visitor' }),
+        );
       }),
       tap((state) => this.current.set(state)),
     );
@@ -87,6 +100,18 @@ export class SessionService {
     this.google.set(dto.googleSignIn === true);
     this.challengeKey.set((!dto.signedIn && dto.botChallengeSiteKey) || null);
     this.others.set((dto.signedIn && dto.otherSessionCount) || 0);
+    this.remember(dto);
+  }
+
+  /** Keeps the member's session on the device, or forgets it when no one is signed in. */
+  private remember(dto: SessionDto): void {
+    if (dto.signedIn) void this.saved.save(SAVED_SESSION, dto);
+    else void this.saved.remove(SAVED_SESSION);
+  }
+
+  private async lastSession(): Promise<SessionState | null> {
+    const saved = await this.saved.read<SessionDto>(SAVED_SESSION);
+    return saved?.data.signedIn ? toState(saved.data) : null;
   }
 
   /**
@@ -115,7 +140,10 @@ export class SessionService {
   /** Signs in (L2-006). Errors reach the caller: the page words them. */
   signIn(request: SignInRequest): Observable<SessionState> {
     return this.api.signIn(request).pipe(
-      tap((dto) => this.others.set((dto.signedIn && dto.otherSessionCount) || 0)),
+      tap((dto) => {
+        this.others.set((dto.signedIn && dto.otherSessionCount) || 0);
+        this.remember(dto);
+      }),
       map(toState),
       tap((state) => this.current.set(state)),
     );
@@ -123,7 +151,13 @@ export class SessionService {
 
   /** Signs out of this session only (L2-011 AC2). */
   signOut(): Observable<void> {
-    return this.api.signOut().pipe(tap(() => this.current.set({ status: 'visitor' })));
+    return this.api.signOut().pipe(
+      tap(() => this.current.set({ status: 'visitor' })),
+      // Nothing the member saw or wrote stays on the device: the saved pages and the outgoing
+      // queue are cleared (L2-119 AC3, ADR 0068). Drafts stay, kept for this member (L2-011 AC3).
+      switchMap(() => Promise.all([this.saved.clear(), this.queue.clear().catch(() => undefined)])),
+      map(() => undefined),
+    );
   }
 
   /**
@@ -149,5 +183,6 @@ export class SessionService {
   /** The server ended the session (L2-116): the app no longer treats the user as a member. */
   expire(): void {
     this.current.set({ status: 'visitor' });
+    void this.saved.remove(SAVED_SESSION);
   }
 }

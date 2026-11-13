@@ -1,5 +1,5 @@
 @startuml
-title UML sequence behaviour — Open the cached directory
+title UML sequence behaviour — Open the saved directory
 skinparam backgroundColor #FFFFFF
 skinparam shadowing false
 skinparam roundcorner 12
@@ -15,14 +15,16 @@ skinparam package {
   BackgroundColor #F9FAFB
 }
 actor "Member" as actor
+box "Frontend — Jubilee service worker" #E0F2FE
+  participant "jubilee-sw.js and ngsw-worker.js" as sw
+end box
 box "Frontend — Jubilee Web" #E0F2FE
   participant "BrowsePage" as page
-  participant "BrowseStore" as store
-  participant "DirectoryApi" as client
+  participant "DirectoryStore" as store
+  participant "HttpDirectoryApi" as client
   participant "OfflineSnapshotStore" as snap
-end box
-box "Frontend — Jubilee service worker" #E0F2FE
-  participant "browse-home data group" as sw
+  participant "ConnectionService" as conn
+  participant "ConnectionBanner" as banner
 end box
 box "Backend — Jubilee API" #D1FADF
   participant "DirectoryController" as controller
@@ -33,33 +35,40 @@ end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
   database "Jubilee database" as db
 end box
-actor -> page : Open /browse
+actor -> sw : Open /browse
+sw -> sw : Navigation request, freshness: network first
+alt Network answers
+  sw --> page : index.html from the network
+else Network fails
+  sw --> page : Cached index.html, Jubilee opens with no connection (L2-119)
+end
 page -> store : load()
 store -> client : getHome()
-client -> sw : GET /api/directory/home
+note right of client : The service worker leaves /api/ requests to the network and caches no answer
 alt Device is online
-  sw -> controller : Forward request
+  client -> controller : GET /api/directory/home
   controller -> handler : Send GetBrowseHomeQuery
-  handler -> db : Read featured listings and categories
+  handler -> db : Read listings and categories
   db --> handler : Rows
   handler --> controller : BrowseHomeDto
-  controller --> sw : 200 OK
-  sw -> sw : Store response in browse-home cache (L2-119)
-  sw --> client : Fresh response
-  client --> store : BrowseHomeDto
-  store -> snap : stamp("browse-home", now in UTC)
-  snap --> store : Stamp saved
-  store --> page : Directory, fromCache = false
+  controller --> client : 200 OK
+  client --> store : BrowseHome
+  store -> snap : save("browse-home", value), savedAt in UTC
+  store -> store : savedAt = null
+  store --> page : Directory
   page --> actor : Show the directory
 else Device is offline and the browse home was opened before
-  sw -> sw : Network fails, read browse-home cache
-  sw --> client : Cached response
-  client --> store : BrowseHomeDto
+  client --> store : No answer (status 0)
   store -> snap : read("browse-home")
-  snap --> store : SnapshotStamp with savedAt
-  store --> page : Directory, fromCache = true, savedAt
-  page -> page : Show persistent banner "You're offline. Showing the directory saved at {time}." (L2-119)
-  page -> page : Disable search, save and request controls with an explanation (L2-119)
-  page --> actor : Show the cached directory
+  snap --> store : Snapshot with data and savedAt
+  store -> store : savedAt = snapshot.savedAt
+  store --> page : Saved directory
+  page -> conn : detail = "Showing the directory saved at {time}. ..." (America/Toronto, L2-131)
+  conn --> banner : offline with detail
+  banner --> actor : Persistent banner "You're offline. Showing the directory saved at {time}. Search and messages will work again when you're connected." with "Try again" (L2-119)
+  page --> actor : Saved directory, search disabled with "Needs a connection. It works again when you're back online."
+else Device is offline and nothing is saved
+  snap --> store : null
+  store -> store : OfflineNavigation.show() (L2-122)
 end
 @enduml

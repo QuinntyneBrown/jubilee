@@ -100,6 +100,8 @@ const types = {
 const compressible = /^(text\/|application\/(json|manifest\+json|xml)|image\/svg\+xml)/;
 // Angular names built files `name-HASH.ext`; those never change, so a browser may keep them.
 const hashed = /-[A-Za-z0-9_-]{8}\.[a-z0-9]+$/;
+// The service worker's script and manifest are asked for again each time, so a deploy is seen at once (ADR 0068).
+const worker = /[\\/](jubilee-sw\.js|ngsw-worker\.js|safety-worker\.js|ngsw\.json)$/;
 const gzipped = new Map();
 
 function secure(req, res) {
@@ -630,7 +632,7 @@ function serve(req, res) {
   res.setHeader('Last-Modified', found.mtime.toUTCString());
   res.setHeader(
     'Cache-Control',
-    ext === '.html' ? 'no-cache' : hashed.test(file) ? 'public, max-age=31536000, immutable' : 'public, max-age=3600',
+    ext === '.html' || worker.test(file) ? 'no-cache' : hashed.test(file) ? 'public, max-age=31536000, immutable' : 'public, max-age=3600',
   );
   if (req.headers['if-none-match'] === etag) {
     res.writeHead(304);

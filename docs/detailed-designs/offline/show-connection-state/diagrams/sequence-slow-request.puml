@@ -16,9 +16,8 @@ skinparam package {
 }
 actor "Member" as actor
 box "Frontend — Jubilee Web" #E0F2FE
-  participant "BookMeetingDialog" as dialog
-  participant "SlowRequestInterceptor" as slow
-  participant "LatencyMonitor" as latency
+  participant "Request dialog" as dialog
+  participant "connectionInterceptor" as icpt
   participant "ToastService" as toast
   participant "ConnectionService" as conn
   participant "ConnectionBanner" as banner
@@ -27,26 +26,27 @@ box "Backend — Jubilee API" #D1FADF
   participant "Jubilee API" as api
 end box
 actor -> dialog : Submit a request
-dialog -> slow : POST with Idempotency-Key
-slow -> api : First attempt
-slow -> slow : 5 seconds pass without a response
-slow -> toast : Show warning toast (L2-121)
+dialog -> icpt : POST with its idempotency key, not OWN_RETRY
+icpt -> api : First attempt
+icpt -> icpt : 5 seconds pass without a response
+icpt -> toast : show warning (L2-121 AC5)
 toast --> actor : "Still sending your request. Your connection is slow. We'll keep trying for a minute."
-loop Attempt fails on the network and less than 60 seconds have passed
-  slow -> api : Retry with the same Idempotency-Key (L2-132)
+loop No answer and less than 60 seconds since the first attempt
+  icpt -> icpt : Wait 2 seconds
+  icpt -> api : Same request, same idempotency key (L2-132 AC2)
 end
 alt Response arrives within 60 seconds
-  api --> slow : 201 Created
-  slow -> latency : record(durationMs)
-  slow --> dialog : Response
+  api --> icpt : 201 Created
+  icpt -> conn : recordLatency(ms), reportSuccess()
+  icpt --> dialog : Response
   dialog --> actor : Show success state
-else No response after 60 seconds
-  slow -> conn : reportNetworkFailure()
-  slow --> dialog : Connection error
-  dialog --> actor : Show failed state with input kept (L2-128)
+else No answer after 60 seconds
+  icpt -> conn : reportNetworkFailure()
+  icpt --> dialog : Error
+  dialog --> actor : Show failed state with input kept
 end
-latency -> latency : Mean over the last 30 seconds exceeds 3 seconds
-latency -> conn : reportSlow(true)
-conn --> banner : Slow
-banner --> actor : Warning banner "Your connection is slow. Pages may take longer to load." (L2-121)
+conn -> conn : Mean over the last 30 seconds above 3 seconds
+conn -> conn : state slow
+conn --> banner : slow
+banner --> actor : Warning banner "Your connection is slow. Pages may take longer to load." (L2-121 AC4)
 @enduml

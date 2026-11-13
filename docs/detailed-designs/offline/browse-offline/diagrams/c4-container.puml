@@ -5,13 +5,15 @@ title Containers — Browse offline
 
 Person(member, "Member", "Browses the directory with or without a connection")
 System_Boundary(jubilee, "Jubilee") {
-  Container(web, "Jubilee Web", "Angular single-page application", "Browse home and offline page. Disables server-dependent controls offline")
-  Container(sw, "Jubilee service worker", "Angular service worker", "Caches the app shell and the browse home data and the last 20 opened conversations")
+  Container(sw, "Jubilee service worker", "Angular service worker and jubilee-sw.js", "Caches the app shell. Answers a page load from the cache when the network fails. Leaves every /api/ request to the network")
+  Container(web, "Jubilee Web", "Angular single-page application", "Browse home, conversations and the offline page. Disables server-dependent controls offline")
+  ContainerDb(idb, "jubilee-offline", "IndexedDB on the device", "The browse home and the last 20 opened conversations, each with the time it was saved")
   Container(api, "Jubilee API", "ASP.NET Core", "Serves the browse home and conversations as JSON under /api")
-  ContainerDb(db, "Jubilee database", "SQL Server", "Listings and categories and conversations")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Listings, categories and conversations")
 }
-Rel(member, web, "Uses", "HTTPS")
-Rel(web, sw, "Sends every request through", "Fetch")
-Rel(sw, api, "Forwards requests when online", "JSON/HTTPS")
+Rel(member, sw, "Opens Jubilee through", "HTTPS")
+Rel(sw, web, "Starts from the network or the cached app shell")
+Rel(web, api, "Reads the browse home and conversations from", "JSON/HTTPS, never cached by the service worker")
+Rel(web, idb, "Saves each answer and reads it back offline", "IndexedDB")
 Rel(api, db, "Reads", "EF Core")
 @enduml

@@ -64,6 +64,16 @@ const appServers = [
   },
 ];
 
+// The production build of the app, with its service worker (ADR 0068), served by the host's own
+// server as on Azure. Only the service worker spec opens it; every other spec uses `ng serve`.
+const installedAppServer = {
+  command: 'npm run build:app --prefix ../frontend && node ../eng/azure/server.js',
+  url: 'http://localhost:4203',
+  env: { PORT: '4203', STATIC_ROOT: '../frontend/dist/jubilee/browser' },
+  reuseExistingServer: !ci,
+  timeout: 400_000,
+};
+
 export default defineConfig({
   testDir: './tests',
   // Baseline runs only render the mocks; behaviour specs need the app.
@@ -99,6 +109,12 @@ export default defineConfig({
       },
     },
   ],
-  webServer: mocks ? [mocksServer] : recording ? [apiServer, ...appServers] : appServers,
+  webServer: mocks
+    ? [mocksServer]
+    : recording
+      ? [apiServer, ...appServers, installedAppServer]
+      : parity
+        ? appServers
+        : [...appServers, installedAppServer],
   globalTeardown: recording ? './fixtures/record-api-teardown.ts' : undefined,
 });

@@ -20,51 +20,54 @@ box "Frontend — Jubilee Web" #E0F2FE
   participant "ConnectionService" as conn
   participant "QueueDrainer" as drainer
   participant "OutgoingMessageQueue" as queue
-  participant "MessagesApi" as client
+  participant "HttpMessagesApi" as client
 end box
 box "Backend — Jubilee API" #D1FADF
-  participant "IdempotencyMiddleware" as idem
   participant "ConversationsController" as controller
 end box
 box "Backend — Jubilee Application and Domain" #ECFDF3
   participant "SendMessageCommandHandler" as handler
-  participant "Conversation" as entity
 end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
-  database "Cache" as cache
   database "Jubilee database" as db
 end box
-conn -> drainer : state becomes Online
-drainer -> drainer : Acquire Web Lock jubilee-outbox
-loop Each waiting message in sequence order (L2-120)
+conn -> drainer : returned + 1 (the connection came back)
+drainer -> queue : expire(now)
+drainer -> conn : cannotDeliver()
+conn --> drainer : false
+drainer -> drainer : Acquire Web Lock jubilee-outbox-drain
+drainer -> queue : Re-read the queue from IndexedDB
+loop Each waiting message in sequence order (L2-120 AC1)
   drainer -> queue : nextWaiting()
   queue --> drainer : QueuedMessage
   drainer -> client : send(conversationId, body, idempotencyKey)
-  client -> idem : POST /api/conversations/{conversationId}/messages
-  idem -> cache : Look up Idempotency-Key (L2-132)
-  alt Key not seen in the last 24 hours
-    cache --> idem : No record
-    idem -> controller : Pass request
-    controller -> controller : Authenticate and apply participant policy
-    controller -> handler : Send SendMessageCommand
-    handler -> db : Load conversation
-    db --> handler : Conversation
-    handler -> entity : AddMessage(senderId, body, sentAt)
-    entity --> handler : Message
-    handler -> db : Save message and outbox entry in one unit of work
-    db --> handler : Commit result
-    handler --> controller : MessageDto
-    controller --> idem : 201 Created
-    idem -> cache : Store response under the key for 24 hours
-    cache --> idem : Stored
-  else Key already completed
-    cache --> idem : Stored response
+  client -> controller : POST /api/conversations/{conversationId}/messages { body, idempotencyKey }
+  controller -> handler : Send SendMessageCommand
+  handler -> db : Find the conversation of the caller
+  handler -> db : Find a Message of this sender with this IdempotencyKey (L2-132)
+  alt Key not used before
+    db --> handler : None
+    handler -> handler : Message.Send, notification, e-mail queued
+    handler -> db : Save in one unit of work
+    db --> handler : Saved
+  else Key already used
+    db --> handler : Earlier Message
   end
-  idem --> client : 201 Created with the original result
-  client --> drainer : MessageDto
-  drainer -> queue : markSent(id)
-  queue --> drainer : Updated
+  handler --> controller : MessageDto
+  controller --> client : 201 Created
+  alt Delivered
+    client --> drainer : ChatMessage
+    drainer -> queue : markSent(message), removed from the queue
+    drainer -> drainer : sent + 1, delivered + 1
+  else Refused (4xx other than 408 and 429)
+    client --> drainer : Error
+    drainer -> queue : markNotSent(message)
+  else No answer, 5xx, 408 or 429
+    client --> drainer : Error
+    drainer -> drainer : Stop the pass; the message keeps waiting
+  end
 end
-drainer -> banner : showBackOnline(sentCount)
-banner --> actor : "You're back online. {n} saved message(s) was/were sent." (L2-120)
+drainer -> conn : announceSent(sent)
+conn --> banner : back-online with the count
+banner --> actor : "You're back online. {n} saved message(s) was/were sent." (L2-120 AC2)
 @enduml

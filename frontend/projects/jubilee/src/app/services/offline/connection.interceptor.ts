@@ -76,7 +76,7 @@ export const connectionInterceptor: HttpInterceptorFn = (request, next) => {
 };
 
 /** No answer at all: the status is 0, or a gateway or an outage that has nothing behind it (not maintenance). */
-function isNoAnswer(error: unknown): boolean {
+export function isNoAnswer(error: unknown): boolean {
   if (!(error instanceof HttpErrorResponse)) return false;
   if (error.status === 0 || error.status === 502 || error.status === 504) return true;
   return error.status === 503 && (error.error as { code?: string } | null)?.code !== 'MAINTENANCE';

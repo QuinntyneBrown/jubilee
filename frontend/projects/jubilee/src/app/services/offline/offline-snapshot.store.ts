@@ -58,6 +58,16 @@ export class OfflineSnapshotStore {
     }
   }
 
+  /** Forgets one saved copy. */
+  async remove(key: string): Promise<void> {
+    try {
+      const db = await this.open();
+      await inStore(db, STORE, 'readwrite', (store) => store.delete(key));
+    } catch {
+      // Nothing to forget.
+    }
+  }
+
   /** Forgets every saved page; called when the member signs out so personal data does not stay. */
   async clear(): Promise<void> {
     try {

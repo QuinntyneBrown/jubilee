@@ -2,10 +2,12 @@ import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import {
   ApplicationConfig,
   inject,
+  isDevMode,
   provideAppInitializer,
   provideBrowserGlobalErrorListeners,
 } from '@angular/core';
 import { provideRouter, withInMemoryScrolling } from '@angular/router';
+import { provideServiceWorker } from '@angular/service-worker';
 import {
   ACCOUNT_API,
   HELP_API,
@@ -80,6 +82,12 @@ export const appConfig: ApplicationConfig = {
     }),
     // "Shop products" scrolls to the products (L2-034 AC1).
     provideRouter(routes, withInMemoryScrolling({ anchorScrolling: 'enabled' })),
+    // The app shell is kept on the device so Jubilee opens with no connection (L2-119 AC3, ADR 0068);
+    // production builds only, so `ng serve` and the specs that run against it have no worker.
+    provideServiceWorker('jubilee-sw.js', {
+      enabled: !isDevMode(),
+      registrationStrategy: 'registerWhenStable:30000',
+    }),
     { provide: ADMIN_URL, useValue: environment.adminUrl },
     { provide: APP_VERSION, useValue: environment.version },
     { provide: ACCOUNT_API, useClass: HttpAccountApi },

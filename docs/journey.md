@@ -39,7 +39,7 @@ journey that is implemented: the effort-weighted average of its feature designs 
 | 21 | Share or report a listing | Share a listing's link or report a problem with it. | 3 | 100% |
 | 22 | Read policies and get help | Read the statement of faith, terms, privacy notice and help; an administrator publishes a new version of each from the admin application. | 4 | 98% |
 | 23 | Recover from errors | See clear pages for missing, forbidden, failed or maintenance states. | 3 | 100% |
-| 24 | Use Jubilee offline | Browse cached pages and queue messages on poor connections. | 7 | 83% |
+| 24 | Use Jubilee offline | Browse cached pages and queue messages on poor connections. | 7 | 99% |
 | 25 | Moderate reports and feature businesses | Staff handle reports and choose the featured businesses. | 5 | 100% |
 | 26 | Download data and delete account | Export personal data or permanently delete the account. | 5 | 83% |
 | 27 | Meet Jubilee on the marketing site | Read the marketing page and watch the pitch film, by pointer or keyboard, with its captions in the picture. Its links to the app and to listing (L2-185) are suspended while Jubilee is launching soon and wait on the owner's decision to open it; journey 31 takes their place until launch. | 4 | 95% |

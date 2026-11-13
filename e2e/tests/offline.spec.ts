@@ -1,11 +1,21 @@
 import { expect, test } from '../fixtures/jb-test';
 import { nextInboxRead, stubMessaging } from '../fixtures/messaging';
 import { smallJpeg } from '../fixtures/photos';
-import { goOffline, goOnline, restoreJubilee, waitForSnapshot } from '../fixtures/offline';
+import { stubSaved } from '../fixtures/saved';
+import {
+  goOffline,
+  goOnline,
+  restoreJubilee,
+  savedOnDevice,
+  waitForSnapshot,
+} from '../fixtures/offline';
 import { BrowsePage } from '../pages/browse.page';
+import { BusinessPage } from '../pages/business.page';
 import { ConnectionBannerRegion } from '../pages/connection-banner';
 import { ConversationPage, MessagesPage } from '../pages/messages.page';
 import { OfflinePage } from '../pages/offline.page';
+import { AccountMenuRegion, SignInPage } from '../pages/sign-in.page';
+import { Toasts } from '../pages/toasts';
 
 // Use Jubilee offline: L2-119 to L2-122. The network is cut at the page's edge (fixtures/offline.ts);
 // the API is answered by Playwright mocking (ADR 0009) and the requests it receives are kept.
@@ -69,6 +79,131 @@ test.describe('the connection banner (L2-121)', () => {
   });
 });
 
+test.describe('the connection banner, waiting and announcing (L2-121 AC3, L2-067 AC3)', () => {
+  test('L2-121 AC3: while Jubilee cannot be reached, it is tried again after 5, 10, 20, 40 and then 60 seconds', async ({
+    page,
+    jb,
+  }) => {
+    const banner = new ConnectionBannerRegion(page);
+    await jb.open('messages');
+    await page.clock.install();
+    await goOffline(page);
+    await goOnline(page, 'down');
+
+    for (const wait of [5, 10, 20, 40, 60, 60]) {
+      await expect(banner.root).toContainText(`Reconnecting… Trying again in ${wait} seconds.`);
+      await page.clock.runFor(wait * 1_000);
+    }
+  });
+
+  test('L2-067 AC3: the banner is announced in a polite live region and does not move the focus', async ({
+    page,
+    jb,
+  }) => {
+    const conversation = new ConversationPage(page);
+    const banner = new ConnectionBannerRegion(page);
+    await jb.signInAs('member');
+    await stubMessaging(page);
+    await jb.goto('/messages/c-legacy');
+    await conversation.ready();
+    await conversation.composer.focus();
+
+    await goOffline(page);
+
+    await expect(banner.root).toContainText('You’re offline.');
+    await expect(banner.root).toHaveAttribute('role', 'status');
+    await expect(conversation.composer).toBeFocused();
+  });
+});
+
+test.describe('a slow connection (L2-121 AC4, AC5)', () => {
+  test('AC4: when requests take long on average, a warning says the connection is slow', async ({
+    page,
+    jb,
+  }) => {
+    const banner = new ConnectionBannerRegion(page);
+    // Slow here means a mean above 300 ms, not 3 seconds; the 30 seconds it is taken over stay.
+    await page.addInitScript(() => {
+      Object.assign((globalThis as { __jbTimings?: object }).__jbTimings ?? {}, { slowMean: 300 });
+    });
+    await jb.signInAs('member');
+    await stubMessaging(page);
+    // Every answer of Jubilee takes a second and a half.
+    await page.route('**/api/**', async (route) => {
+      await new Promise((resolve) => setTimeout(resolve, 1_500));
+      await route.fallback();
+    });
+
+    await jb.goto('/messages');
+
+    await expect(banner.root).toContainText(
+      'Your connection is slow. Pages may take longer to load.',
+    );
+    await expect(banner.dismiss).toHaveCount(0);
+  });
+
+  test('AC5: a request still sending warns that the connection is slow, and is tried again until it is answered', async ({
+    page,
+    jb,
+  }) => {
+    const business = new BusinessPage(page);
+    const toasts = new Toasts(page);
+    // The warning comes after half a second, not 5; the request is tried every 300 ms for 10 seconds.
+    await page.addInitScript(() => {
+      Object.assign((globalThis as { __jbTimings?: object }).__jbTimings ?? {}, {
+        slowRequest: 500,
+        retryWindow: 10_000,
+        retryEvery: 300,
+      });
+    });
+    await business.setWidth(1280);
+    await jb.signInAs('member');
+    const fake = await stubSaved(page, { items: [], save: 'offline' });
+    await jb.goto('/b/luzandre');
+
+    await business.saveButton.click();
+
+    const still = toasts.warning('Still sending your request');
+    await expect(still).toBeVisible();
+    await expect(still).toContainText('Your connection is slow. We’ll keep trying for a minute.');
+    await expect.poll(() => fake.calls.length).toBeGreaterThanOrEqual(3);
+    fake.save = 'ok';
+    await expect(
+      toasts.withTitle('Saved Luzandre.com. Find it any time under Saved.'),
+    ).toBeVisible();
+    expect(new Set(fake.calls)).toEqual(new Set(['PUT businesses/luzandre']));
+  });
+
+  test('AC5: a request that is never answered fails when the minute of trying is over', async ({
+    page,
+    jb,
+  }) => {
+    const business = new BusinessPage(page);
+    const toasts = new Toasts(page);
+    // A minute and a try every 2 seconds, scaled down to 1.5 seconds and a try every 300 ms.
+    await page.addInitScript(() => {
+      Object.assign((globalThis as { __jbTimings?: object }).__jbTimings ?? {}, {
+        retryWindow: 1_500,
+        retryEvery: 300,
+      });
+    });
+    await business.setWidth(1280);
+    await jb.signInAs('member');
+    const fake = await stubSaved(page, { items: [], save: 'offline' });
+    await jb.goto('/b/luzandre');
+
+    await business.saveButton.click();
+
+    await expect(
+      toasts.withTitle(
+        'Couldn’t save Luzandre.com. You’re offline. Reconnect and tap the heart again.',
+      ),
+    ).toBeVisible();
+    expect(fake.calls.length).toBeGreaterThan(2);
+    await expect(business.saveButton).toHaveAttribute('aria-pressed', 'false');
+  });
+});
+
 test.describe('pages offline (L2-119, L2-122)', () => {
   test('L2-119 AC1: the directory last loaded is shown, and the banner says when it was saved', async ({
     page,
@@ -89,6 +224,8 @@ test.describe('pages offline (L2-119, L2-122)', () => {
 
     await expect(browse.featuredCards.first()).toBeVisible();
     await expect(banner.root).toContainText(/Showing the directory saved at \d+:\d\d [ap]\.m\./);
+    // The time ends its own sentence: "9:00 a.m. Search…", as the mock has it, never "a.m..".
+    await expect(banner.root).toContainText(/saved at \d+:\d\d [ap]\.m\. Search and messages/);
     await expect(browse.searchBox).toBeDisabled();
   });
 
@@ -327,5 +464,46 @@ test.describe('messages written offline (L2-120)', () => {
 
     await expect(conversation.heading).toHaveText('Legacy Financial');
     await expect(conversation.bubbles).toHaveCount(3);
+  });
+});
+
+test.describe('signing out (L2-119 AC3)', () => {
+  test('the saved pages and the outgoing queue leave the device when the member signs out', async ({
+    page,
+    jb,
+  }) => {
+    const conversation = new ConversationPage(page);
+    const menu = new AccountMenuRegion(page);
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await jb.signInAs('member');
+    await stubMessaging(page);
+    await jb.goto('/messages/c-legacy');
+    await conversation.ready();
+    await waitForSnapshot(page, 'conversation:c-legacy');
+    // A message written offline that the server then refuses stays on the device as "Not sent".
+    await goOffline(page);
+    await conversation.composer.fill('See you on Tuesday');
+    await conversation.send.click();
+    await page.route('**/api/conversations/c-legacy/messages', (route) =>
+      route.fulfill({
+        status: 422,
+        contentType: 'application/problem+json',
+        body: JSON.stringify({ title: 'Problem', status: 422, code: 'invalid' }),
+      }),
+    );
+    await goOnline(page);
+    await expect(conversation.bubble('See you on Tuesday').time).toContainText('Not sent.');
+    expect((await savedOnDevice(page)).queued).toBe(1);
+    expect((await savedOnDevice(page)).pages).toBeGreaterThan(0);
+    await page.route('**/api/session', (route) =>
+      route.request().method() === 'DELETE' ? route.fulfill({ status: 204 }) : route.fallback(),
+    );
+
+    await new SignInPage(page).avatar.click();
+    await menu.signOut.click();
+    await menu.confirmSignOut.click();
+
+    await expect.poll(() => new SignInPage(page).dataPage()).toBe('welcome');
+    await expect.poll(() => savedOnDevice(page)).toEqual({ pages: 0, queued: 0 });
   });
 });

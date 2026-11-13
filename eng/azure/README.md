@@ -340,6 +340,21 @@ deploying fails unless `GET /api/session` reports `"googleSignIn": true`, so the
 disappear unnoticed. `SKIP_GOOGLE_CHECK=1 bash eng/azure/deploy.sh` deploys without Google sign-in
 on purpose.
 
+## The app offline: service worker and status page
+
+The app's production build carries the Angular service worker (ADR 0068): `jubilee-sw.js`,
+`ngsw-worker.js`, `safety-worker.js` and `ngsw.json` beside `index.html`. `server.js` serves those
+four with `Cache-Control: no-cache`, so a deploy is seen the next time a member opens Jubilee. The
+worker keeps the app shell only; it never answers or keeps an `/api` request. Nothing has to be set.
+To take the worker off every device, deploy a build whose `jubilee-sw.js` is a copy of
+`safety-worker.js`.
+
+**Owner step: the status page.** When Jubilee cannot be reached, the banner's "Check status" opens
+`statusUrl` of `frontend/projects/jubilee/src/environments/environment.ts` (L2-121 AC2). It is still
+the placeholder `https://status.jubilee.example`. Host a status page apart from `jubilee-to-app`
+(so it answers while the app's host is down: a hosted status service, or a static page on another
+host), put its address there and deploy.
+
 ## DNS (Namecheap, Advanced DNS of `jubilee.to`)
 
 | Type | Host | Value |

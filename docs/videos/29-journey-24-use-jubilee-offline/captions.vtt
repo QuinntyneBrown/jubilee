@@ -1,0 +1,67 @@
+WEBVTT
+
+00:00:00.650 --> 00:00:03.613
+Journey twenty-four: use Jubilee offline.
+
+00:00:03.613 --> 00:00:08.311
+New in this run: Jubilee opens with no connection, sends what was
+
+00:00:08.311 --> 00:00:13.370
+written even when it is closed, and leaves nothing behind at sign-out.
+
+00:00:14.251 --> 00:00:18.095
+The service worker keeps the app shell on the device.
+
+00:00:18.095 --> 00:00:23.246
+With the connection gone, the page loads again: Jubilee opens, with the
+
+00:00:23.246 --> 00:00:27.235
+directory saved at nine. Search waits for a connection.
+
+00:00:28.124 --> 00:00:31.699
+A conversation already opened is still readable.
+
+00:00:31.699 --> 00:00:36.764
+A message written now is kept on the device, marked Waiting to send.
+
+00:00:39.048 --> 00:00:43.661
+When the connection returns, it is sent with its idempotency key, and
+
+00:00:43.661 --> 00:00:46.536
+the banner says one saved message was sent.
+
+00:00:47.582 --> 00:00:52.260
+If Jubilee is closed by then, Background Sync wakes the service worker,
+
+00:00:52.260 --> 00:00:54.302
+which sends the queue in order.
+
+00:00:58.638 --> 00:01:01.681
+On a slow connection, a warning says so.
+
+00:01:01.681 --> 00:01:07.005
+A save still sending is tried again, for up to a minute, until it goes
+
+00:01:07.005 --> 00:01:07.614
+through.
+
+00:01:10.263 --> 00:01:15.028
+Signing out removes the saved pages and any message still waiting, so
+
+00:01:15.028 --> 00:01:17.583
+nothing personal stays on the device.
+
+00:01:18.638 --> 00:01:23.044
+The tests also prove that the service worker never keeps an answer of
+
+00:01:23.044 --> 00:01:27.578
+the API, that nothing it sent is sent twice, and that a message waiting
+
+00:01:27.578 --> 00:01:29.174
+a day is marked Not sent.
+
+00:01:30.030 --> 00:01:35.158
+What is left is the owner's: the address of a status page for Check
+
+00:01:35.158 --> 00:01:35.694
+status.

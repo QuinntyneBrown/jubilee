@@ -1,5 +1,5 @@
 @startuml
-title UML sequence behaviour — Clear cached personal data on sign-out
+title UML sequence behaviour — Clear the device on sign-out
 skinparam backgroundColor #FFFFFF
 skinparam shadowing false
 skinparam roundcorner 12
@@ -17,32 +17,30 @@ skinparam package {
 actor "Member" as actor
 box "Frontend — Jubilee Web" #E0F2FE
   participant "SignOutDialog" as dialog
+  participant "DraftRegistry" as drafts
   participant "SessionService" as session
-  participant "OfflineDataCleaner" as cleaner
   participant "OfflineSnapshotStore" as snap
-end box
-box "Frontend — Jubilee service worker" #E0F2FE
-  participant "Cache Storage" as caches
+  participant "OutgoingMessageQueue" as queue
 end box
 box "Backend — Jubilee API" #D1FADF
-  participant "SessionsController" as controller
+  participant "SessionController" as controller
 end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
-  database "Cache" as redis
+  database "Jubilee database" as db
 end box
 actor -> dialog : Confirm sign out
+dialog -> drafts : saveAll(), drafts stay keyed by member (L2-011 AC3)
 dialog -> session : signOut()
 session -> controller : DELETE /api/session
-controller -> redis : Remove the session
-redis --> controller : Removed
+controller -> db : End the session (DatabaseTicketStore)
+db --> controller : Removed
 controller --> session : 204 No Content
-session -> cleaner : clearPersonalData() (L2-119)
-cleaner -> caches : Delete conversations data-group caches
-caches --> cleaner : Deleted
-cleaner -> snap : clear()
-snap --> cleaner : jubilee-offline database emptied
-cleaner -> cleaner : Empty the outgoing message queue
-cleaner --> session : Personal data cleared
+session -> session : Member becomes a visitor
+session -> snap : clear() (L2-119)
+snap --> session : jubilee-offline emptied
+session -> queue : clear() (L2-119)
+queue --> session : jubilee-outbox emptied
+note over session : The service worker's caches hold only the public app shell and are kept
 session --> dialog : Signed out
-dialog --> actor : Show the signed-out welcome page
+dialog --> actor : Show /welcome
 @enduml

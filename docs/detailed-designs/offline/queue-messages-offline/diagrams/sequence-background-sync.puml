@@ -1,0 +1,68 @@
+@startuml
+title UML sequence behaviour — Send queued messages with Background Sync
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+participant "Browser" as browser
+box "Frontend — Jubilee service worker" #E0F2FE
+  participant "jubilee-sw.js sync handler" as sync
+end box
+box "Frontend — Device" #E0F2FE
+  database "jubilee-outbox" as idb
+end box
+box "Frontend — Jubilee Web (when a page is open)" #E0F2FE
+  participant "QueueDrainer" as drainer
+  participant "ConnectionService" as conn
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "ConversationsController" as controller
+end box
+browser -> browser : Device online again, Jubilee may be closed
+browser -> sync : sync event, tag jubilee-outbox (L2-120 AC5)
+sync -> sync : Acquire Web Lock jubilee-outbox-drain
+sync -> idb : Read waiting messages, oldest first
+idb --> sync : QueuedMessage list
+loop Each waiting message in sequence order
+  alt Waited more than 24 hours
+    sync -> idb : Mark 'not-sent' (L2-120 AC3)
+  else Waited 24 hours or less
+    sync -> controller : POST /api/conversations/{conversationId}/messages { body, idempotencyKey }
+    alt 201 Created
+      controller --> sync : MessageDto (the original one for a repeated key, L2-132)
+      sync -> idb : Remove the message, count + 1
+    else Refused (4xx other than 408 and 429)
+      controller --> sync : Error
+      sync -> idb : Mark 'not-sent'
+    else No answer, 5xx, 408 or 429
+      sync -> sync : Stop at this message
+    end
+  end
+end
+sync -> sync : Release the lock
+opt Pages are open
+  sync -> drainer : postMessage { type: 'jubilee-outbox-sent', count }
+  drainer -> idb : Reload the queue
+  drainer -> drainer : delivered + count
+  drainer -> conn : announceSent(count)
+  conn --> actor : "You're back online. {n} saved message(s) was/were sent."
+end
+alt A message could not be delivered
+  sync --> browser : Reject the sync
+  browser -> browser : Try the sync again later
+else Every waiting message was handled
+  sync --> browser : Resolve the sync
+end
+note over browser, drainer : Where the browser has no SyncManager, QueueDrainer drains the queue when Jubilee starts and when the connection returns
+@enduml

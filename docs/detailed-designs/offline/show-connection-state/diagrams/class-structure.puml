@@ -14,72 +14,73 @@ skinparam class {
 title Class structure — Show connection state
 
 enum ConnectionState {
-  Online
-  Offline
-  ServiceUnreachable
-  Reconnecting
-  Slow
+  online
+  offline
+  unreachable
+  slow
 }
 
-enum BannerVariant {
-  Persistent
-  Danger
-  Info
-  Warning
-  Success
+enum ConnectionBannerKind {
+  offline
+  unreachable
+  slow
+  back-online
 }
 
 class ConnectionService {
   +state: Signal<ConnectionState>
-  +secondsToRetry: Signal<number>
-  +isOffline(): boolean
-  +retryNow(): void
+  +isOffline: Signal<boolean>
+  +cannotDeliver: Signal<boolean>
+  +countdown: Signal<number | null>
+  +detail: Signal<string | null>
+  +backOnline: Signal<number | null>
+  +returned: Signal<number>
+  +check(): Promise<void>
   +reportNetworkFailure(): void
-  +reportSlow(isSlow: boolean): void
-  -scheduleProbe(): void
+  +reportSuccess(): void
+  +recordLatency(ms: number): void
+  +announceSent(count: number): void
+  +dismissBackOnline(): void
+  -probe(): Promise<'reached' | 'unreachable' | 'no-network'>
+  -goOffline(): void
+  -unreachable(): void
+  -reached(): void
 }
 
-class BackoffSchedule {
-  +initialSeconds: number = 5
-  +maxSeconds: number = 60
-  +nextDelaySeconds(): number
-  +reset(): void
+class Timings <<interface>> {
+  +probeTimeout: number
+  +backoff: number[]
+  +latencyWindow: number
+  +slowMean: number
+  +slowRequest: number
+  +retryWindow: number
+  +retryEvery: number
+  +expiryEvery: number
+  +queueLifetime: number
 }
 
-class ReachabilityProbe {
-  +check(): Promise<ProbeResult>
-}
-
-enum ProbeResult {
-  Reachable
-  NoNetwork
-  ServiceUnreachable
-}
-
-class LatencyMonitor {
-  +windowSeconds: number = 30
-  +thresholdSeconds: number = 3
-  +record(durationMs: number): void
-  +meanSeconds(): number
-}
-
-class SlowRequestInterceptor {
-  +toastAfterSeconds: number = 5
-  +retryForSeconds: number = 60
-  +intercept(request: HttpRequest): Observable<HttpEvent>
-}
-
-class BannerContent {
-  +variant: BannerVariant
-  +title: string
-  +body: string
-  +actionLabel: string
-  +dismissible: boolean
+class connectionInterceptor <<HttpInterceptorFn>> {
+  -isNoAnswer(error: unknown): boolean
 }
 
 class ConnectionBanner {
-  +content: Signal<BannerContent>
-  +onAction(): void
+  +kind: InputSignal<ConnectionBannerKind>
+  +detail: InputSignal<string | null>
+  +countdown: InputSignal<number | null>
+  +sent: InputSignal<number>
+  +statusUrl: InputSignal<string>
+  +retry: OutputEmitterRef<void>
+  +dismiss: OutputEmitterRef<void>
+}
+
+class App {
+  #connection: ConnectionService
+  #statusUrl: string
+  #banner: Signal<ConnectionBannerKind | null>
+}
+
+class ToastService {
+  +show(toast): void
 }
 
 class HealthController {
@@ -87,13 +88,12 @@ class HealthController {
 }
 
 ConnectionService --> ConnectionState : holds
-ConnectionService "1" *-- "1" BackoffSchedule : owns
-ConnectionService ..> ReachabilityProbe : runs
-ReachabilityProbe ..> ProbeResult : returns
-ReachabilityProbe ..> HealthController : calls
-LatencyMonitor ..> ConnectionService : reports slow
-SlowRequestInterceptor ..> ConnectionService : reports failure
-ConnectionBanner ..> ConnectionService : reads
-ConnectionBanner "1" --> "0..1" BannerContent : shows
-BannerContent --> BannerVariant : has
+ConnectionService ..> Timings : reads
+ConnectionService ..> HealthController : probes
+connectionInterceptor ..> ConnectionService : reports
+connectionInterceptor ..> ToastService : warns
+connectionInterceptor ..> Timings : reads
+App ..> ConnectionService : reads
+App "1" --> "0..1" ConnectionBanner : renders
+ConnectionBanner --> ConnectionBannerKind : shows
 @enduml

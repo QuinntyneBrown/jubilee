@@ -3,7 +3,7 @@
 // the environment, against a stand-in for the Jubilee API. Nothing but Node's standard library.
 //
 // Traces to: L2-218 (AC8, AC9), L2-216 (AC6, AC10), L2-217 (AC6), L2-186, L2-038 (AC4), L2-113 (AC1 to AC3),
-// L2-114 (AC1), L2-115 (AC3), L2-117 (AC1); ADR 0040, ADR 0044, ADR 0047, ADR 0055, ADR 0056.
+// L2-114 (AC1), L2-115 (AC3), L2-117 (AC1), L2-119 (AC3); ADR 0040, ADR 0044, ADR 0047, ADR 0055, ADR 0056, ADR 0068.
 'use strict';
 
 const { test, after } = require('node:test');
@@ -272,6 +272,24 @@ test('Given the app\'s public folder, when og-image.png is asked for, then it is
 
   assert.equal(answer.status, 200);
   assert.equal(answer.headers['content-type'], 'image/png');
+});
+
+// ---- The service worker (L2-119 AC3, ADR 0068) ----
+
+test('Given the app\'s service worker files, when they are asked for, then they are never served from a cache without asking', async () => {
+  const site = await host({});
+  for (const name of ['jubilee-sw.js', 'ngsw-worker.js', 'safety-worker.js', 'ngsw.json']) {
+    fs.writeFileSync(path.join(site.root, name), name.endsWith('.json') ? '{}' : '// worker');
+  }
+  fs.writeFileSync(path.join(site.root, 'main-ABCDEFGH.js'), '// app');
+
+  for (const name of ['jubilee-sw.js', 'ngsw-worker.js', 'safety-worker.js', 'ngsw.json']) {
+    const answer = await call(site, { path: `/${name}` });
+    assert.equal(answer.status, 200, name);
+    assert.equal(answer.headers['cache-control'], 'no-cache', name);
+  }
+  const hashedFile = await call(site, { path: '/main-ABCDEFGH.js' });
+  assert.equal(hashedFile.headers['cache-control'], 'public, max-age=31536000, immutable');
 });
 
 // ---- The status of a page load (L2-113, L2-114 AC1, L2-115 AC3, L2-117 AC1, ADR 0056) ----
