@@ -128,6 +128,7 @@ type Entry =
     InboxLayout,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: { class: 'jb-page container page' },
   templateUrl: './conversation.page.html',
 })
 export class ConversationPage implements OnInit {

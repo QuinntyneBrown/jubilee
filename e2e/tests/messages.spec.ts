@@ -87,6 +87,42 @@ test.describe('the inbox (L2-056)', () => {
     await expect(messages.list.rows).toHaveCount(4);
   });
 
+  test('L2-171 AC2: the page keeps the page margin on a phone and the container on a wide screen', async ({
+    page,
+    jb,
+  }) => {
+    const messages = new MessagesPage(page);
+    await messages.setWidth(360);
+    await jb.signInAs('member');
+    await stubMessaging(page);
+    await jb.goto('/messages');
+    await expect(messages.list.rows).toHaveCount(4);
+
+    // 16 px between the edge of a phone and the content, on both sides.
+    expect(await messages.leftEdge(messages.heading)).toBe(16);
+    expect(await messages.leftEdge(messages.inbox)).toBe(16);
+    expect(await messages.rightEdge(messages.inbox)).toBe(344);
+
+    // Wider than the container (1280 px with 48 px margins) the content is centred.
+    await messages.setWidth(1600);
+    await expect.poll(() => messages.leftEdge(messages.heading)).toBe(208);
+    expect(await messages.leftEdge(messages.inbox)).toBe(208);
+    expect(await messages.rightEdge(messages.inbox)).toBe(1392);
+  });
+
+  test('L2-171 AC2: the empty Messages page keeps the page margin', async ({ page, jb }) => {
+    const messages = new MessagesPage(page);
+    await messages.setWidth(360);
+    await jb.signInAs('member');
+    await stubMessaging(page, { inbox: 'empty' });
+    await jb.goto('/messages');
+    await expect(messages.emptyState).toBeVisible();
+
+    expect(await messages.leftEdge(messages.heading)).toBe(16);
+    expect(await messages.leftEdge(messages.emptyBlock)).toBeGreaterThanOrEqual(16);
+    expect(await messages.rightEdge(messages.emptyBlock)).toBeLessThanOrEqual(344);
+  });
+
   test('AC6: an owner’s conversations with members are named with the member and the business', async ({
     page,
     jb,
@@ -388,6 +424,25 @@ test.describe('a conversation (L2-057)', () => {
     await expect(conversation.bubbles.nth(1)).toContainText('You: Thank you!');
     await expect(conversation.bubble('Thursday at 10:00').time).toHaveText('9:14 a.m.');
     await expect(conversation.list.row('Legacy Financial')).toHaveAttribute('aria-current', 'page');
+  });
+
+  test('L2-171 AC2: an open conversation keeps the page margin and the container', async ({
+    page,
+    jb,
+  }) => {
+    const conversation = new ConversationPage(page);
+    await conversation.setWidth(360);
+    await jb.signInAs('member');
+    await stubMessaging(page);
+    await jb.goto('/messages/c-legacy');
+    await expect(conversation.heading).toHaveText('Legacy Financial');
+
+    expect(await conversation.leftEdge(conversation.inbox)).toBe(16);
+    expect(await conversation.rightEdge(conversation.inbox)).toBe(344);
+
+    await conversation.setWidth(1600);
+    await expect.poll(() => conversation.leftEdge(conversation.inbox)).toBe(208);
+    expect(await conversation.rightEdge(conversation.inbox)).toBe(1392);
   });
 
   test('AC6: a conversation that is not yours is not found', async ({ page, jb }) => {

@@ -66,6 +66,8 @@ export class MessagesPage extends ShellPage implements Screen {
   readonly pickPrompt: Locator;
   /** The whole "Pick a conversation" block of the right pane: its heading and what it says. */
   readonly pickBlock: Locator;
+  /** The frame that holds the list and the open conversation. */
+  readonly inbox: Locator;
   readonly emptyState: Locator;
   /** The whole "Start a conversation" block: its heading, what it says and its action. */
   readonly emptyBlock: Locator;
@@ -79,6 +81,7 @@ export class MessagesPage extends ShellPage implements Screen {
     this.heading = this.main.getByRole('heading', { level: 1 });
     this.subtitle = this.main.locator('.subtitle');
     this.list = new InboxListRegion(page);
+    this.inbox = this.main.locator('.inbox');
     this.pickPrompt = this.main.getByRole('heading', { name: 'Pick a conversation' });
     this.pickBlock = this.main
       .locator('.empty')
@@ -143,6 +146,8 @@ export class RequestCardRegion {
 /** A conversation at /messages/:id. */
 export class ConversationPage extends ShellPage implements Screen {
   readonly list: InboxListRegion;
+  /** The frame that holds the list and the open conversation. */
+  readonly inbox: Locator;
   readonly heading: Locator;
   readonly caption: Locator;
   readonly listingLink: Locator;
@@ -182,6 +187,7 @@ export class ConversationPage extends ShellPage implements Screen {
   constructor(page: Page) {
     super(page);
     this.list = new InboxListRegion(page);
+    this.inbox = this.main.locator('.inbox');
     this.heading = this.main.getByRole('heading', { level: 1 });
     this.chatHead = this.main.locator('.chat__head');
     this.caption = this.chatHead.locator('.text-caption');
