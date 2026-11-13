@@ -1,0 +1,68 @@
+@startuml
+title UML sequence behaviour — Sign one device out
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+
+
+actor "Member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "AccountPage" as page
+  participant "ProfileApi\n(HttpProfileApi)" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "ExceptionHandlingMiddleware" as middleware
+  participant "AccountController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "EndMemberSessionCommandHandler" as handler
+  participant "MemberSession" as session
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+page -> client : getSessions()
+client -> controller : GET /api/account/sessions
+controller -> db : ListMemberSessionsQuery: live MemberSession rows of the member
+db --> controller : MemberSessionDto list, this device first
+controller --> client : 200 sessions
+client --> page : Rows of "Where you're signed in" (L2-143 AC3)
+actor -> page : Press "Sign out" on another device's row
+page -> client : endSession(id)
+client -> middleware : DELETE /api/account/sessions/{id}
+middleware -> controller : Pass the request on
+controller -> controller : Authenticate session and check CSRF token
+controller -> handler : Send EndMemberSessionCommand (MemberId, SessionId, Address)
+handler -> db : Load the MemberSession with this id, of this member, of kind Member
+db --> handler : MemberSession or none
+alt Session found
+  handler -> session : End(now)
+  session --> handler : EndedAt set (already ended changes nothing)
+  handler -> db : SaveChanges
+  db --> handler : Commit result
+  handler -> handler : Log "Security event: SessionEnded" with member and address
+  handler --> controller : Done
+  controller --> middleware : 204 No Content
+  middleware --> client : 204 No Content
+  client --> page : Ended
+  page --> actor : Remove the row and show toast "Signed out of {device}"
+else Another member's session, a staff session or an unknown id
+  handler --> controller : NotFoundException session_not_found
+  controller --> middleware : NotFoundException
+  middleware -> middleware : Log the refused attempt with actor, address, method and path (L2-133 AC2)
+  middleware --> client : 404 ProblemDetails session_not_found
+  client --> page : Failed
+  page --> actor : Keep the row and say "We couldn't sign out {device}. Try again."
+end
+@enduml

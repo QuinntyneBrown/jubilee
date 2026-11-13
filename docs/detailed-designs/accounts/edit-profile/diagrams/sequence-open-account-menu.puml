@@ -18,8 +18,8 @@ skinparam package {
 
 actor "Member" as actor
 box "Frontend — Jubilee Web" #E0F2FE
-  participant "TopBar" as bar
-  participant "AccountMenu" as menu
+  participant "App (top bar)" as bar
+  participant "AccountMenuDialog" as menu
   participant "SessionService" as session
   participant "Router" as router
 end box
@@ -27,16 +27,16 @@ box "Backend — Jubilee API" #D1FADF
   participant "SessionController" as controller
 end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
-  database "Cache" as cache
+  database "Jubilee database" as db
 end box
 session -> controller : GET /api/session at application start
-controller -> cache : Resolve the session cookie
-cache --> controller : Session and member
-controller --> session : SessionMember (name, e-mail, role, ownsListing)
+controller -> db : Resolve the session cookie to its MemberSession (ADR 0046)
+db --> controller : Session and member
+controller --> session : Signed-in member (name, initials, e-mail, other session count)
 actor -> bar : Press the avatar
-bar -> menu : Open (L2-019)
-menu -> session : Read SessionMember
-session --> menu : Initials, full name, e-mail, role
+bar -> session : Read the signed-in member
+session --> bar : Initials, full name, e-mail
+bar -> menu : Open as CDK dialog with AccountMenuData and ownsListing (L2-019)
 menu -> menu : Build links: "My business" for an owner, no admin link for anyone (L2-194)
 alt Viewport 640 px or wider
   menu --> actor : Show the menu anchored under the avatar
