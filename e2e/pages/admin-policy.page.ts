@@ -4,7 +4,7 @@ import { AdminShellPage } from './admin-shell.page';
 
 /**
  * `/policies/:slug` of the admin application: the editor of one policy page, its preview and its
- * kept versions (L2-226).
+ * kept versions (L2-241).
  */
 export class AdminPolicyPage extends AdminShellPage implements Screen {
   readonly heading: Locator;

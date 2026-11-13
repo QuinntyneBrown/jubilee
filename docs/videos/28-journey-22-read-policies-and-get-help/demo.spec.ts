@@ -5,7 +5,7 @@ import { AdminPolicyPage } from "../../../e2e/pages/admin-policy.page";
 import { PolicyPage } from "../../../e2e/pages/policy.page";
 import { PublishPolicyDialog } from "../../../e2e/pages/publish-policy.dialog";
 
-// Video 28: journey 22, read policies and get help (L2-226). An administrator lists the policy
+// Video 28: journey 22, read policies and get help (L2-241). An administrator lists the policy
 // pages, edits the privacy notice with its preview beside the fields, publishes version 3, and a
 // member reads it. The admin application is answered by the stand-in of the behaviour specs
 // (`e2e/fixtures/policies.ts`, ADR 0009); the member's read of `/api/content/privacy` is answered
@@ -98,10 +98,10 @@ test("journey 22: read policies and get help", async ({ demo }) => {
 
   await park();
   await demo.card("Behind the screen", [
-    "A publish started from an older version answers 409 and publishes nothing (PolicyEditorTests, L2-226 AC7).",
-    "Each publish is stored with the administrator’s name and audited as content.published (L2-226 AC6).",
-    "A moderator or a member is refused every policy endpoint (L2-226 AC10).",
-    "Pages are read through a cache the publish clears, which answers while the database is down (L2-226 AC11).",
+    "A publish started from an older version answers 409 and publishes nothing (PolicyEditorTests, L2-241 AC7).",
+    "Each publish is stored with the administrator’s name and audited as content.published (L2-241 AC6).",
+    "A moderator or a member is refused every policy endpoint (L2-241 AC10).",
+    "Pages are read through a cache the publish clears, which answers while the database is down (L2-241 AC11).",
   ]);
   await demo.scene("behind");
 

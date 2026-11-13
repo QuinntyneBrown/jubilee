@@ -24,7 +24,7 @@ public sealed class ContentController(ISender sender) : ControllerBase
 }
 
 /// <summary>
-/// The policies screens of the admin application (L2-226): only an admin lists the pages, reads one with its kept
+/// The policies screens of the admin application (L2-241): only an admin lists the pages, reads one with its kept
 /// versions and publishes a new version (L2-133).
 /// </summary>
 [ApiController]

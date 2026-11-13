@@ -53,12 +53,12 @@ import {
 export interface DraftSection {
   key: number;
   heading: string;
-  /** Kept from the published section so links to it keep working; empty for a new one (ADR 0066). */
+  /** Kept from the published section so links to it keep working; empty for a new one (ADR 0067). */
   anchor: string;
   body: string;
 }
 
-/** The text being edited. It lives here until it is published; it is never stored (ADR 0066). */
+/** The text being edited. It lives here until it is published; it is never stored (ADR 0067). */
 export interface Draft {
   title: string;
   lead: string;
@@ -66,7 +66,7 @@ export interface Draft {
 }
 
 /**
- * `/policies/:slug`: the editor of one policy page, for an administrator (L2-226). The fields hold
+ * `/policies/:slug`: the editor of one policy page, for an administrator (L2-241). The fields hold
  * the draft, the preview beside them shows it as members will read it, and the kept versions list
  * every version, newest first.
  */

@@ -17,7 +17,7 @@ one business day." with "E-mail help@jubilee.example".
 The text of a policy page is *versioned content*: text stored as numbered,
 immutable versions, of which the highest is published. An administrator changes
 the text from the admin application without a code deployment, and every
-earlier version is kept (ADR 0030, ADR 0066). The version number matters beyond
+earlier version is kept (ADR 0030, ADR 0067). The version number matters beyond
 display: when a visitor agrees to the terms, Jubilee records which version of
 the terms they agreed to; the agreement says "I am 18 or older and I agree to…".
 
@@ -46,7 +46,7 @@ screens of the admin application to the `ContentVersions` table.
     rights", which names the privacy contact and explains how to request access
     or correction, as PIPEDA requires. The contact is the placeholder
     `privacy@jubilee.example` until the owner publishes the real one (owner
-    step, ADR 0066).
+    step, ADR 0067).
 - **`HelpPage`** — Angular page at `/help`. It shows the questions "How does
   Jubilee keep listings honest?", "Does Jubilee take payment?", "Is it free?",
   "Who can see my messages?" and "How do I report a listing?" as
@@ -60,14 +60,14 @@ screens of the admin application to the `ContentVersions` table.
 - **`jb-policy-document`** (`PolicyDocument`, `components`) — renders a policy
   page: title, lead, each section's heading (with its anchor as id) and body
   blocks, and "Last updated {d MMMM y}" in Toronto time. The same component is
-  the preview of the admin application's editor (ADR 0066).
+  the preview of the admin application's editor (ADR 0067).
 - **`HttpContentApi`** (`CONTENT_API`) — `GET /api/content/{slug}`, where
   `slug` is `statement-of-faith`, `terms`, `privacy` or `help`. `parseBody`
   splits a body into paragraphs and "- " bullet lists, and keeps only
   `[text](/path)` links to Jubilee pages and `mailto:` links; it never renders
   markup.
 
-### The admin application (L2-226)
+### The admin application (L2-241)
 
 - **`AdminPoliciesPage`** — `/policies`, for the `admin` role only. It lists the
   four pages with the published version, when and by whom ("Version 2 ·
@@ -80,7 +80,7 @@ screens of the admin application to the `ContentVersions` table.
   "Preview" card renders the draft with `jb-policy-document`, dated today,
   under "Preview of version {n}. Not published yet.", and follows every change.
   Below the fields, "Kept versions" lists every version newest first.
-  The draft is not stored (ADR 0066). A draft without a title, or a section
+  The draft is not stored (ADR 0067). A draft without a title, or a section
   without a heading or text, is refused in the fields before anything is sent.
   The error "We couldn’t load this policy" carries `JB-ADM-522`.
 - **`PublishPolicyDialog`** — CDK dialog "Publish version {n} of {title}?" with
@@ -153,7 +153,7 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 | `L2-109` | `L1-015` | The system shall show the privacy notice at `/privacy` with "What we keep", "Your choices" and "Last updated {date}". The notice shall name the privacy contact and explain how to request access or correction, as PIPEDA requires. |
 | `L2-110` | `L1-015` | The system shall show the help page at `/help` with its five questions and answers and the contact line with "E-mail help@jubilee.example". Each question shall be a disclosure with `aria-expanded` that opens by keyboard and has an anchor for direct links. |
 | `L2-133` | `L1-019` | The server shall check the caller's role on every API endpoint before doing anything; only an admin shall publish a content version. |
-| `L2-226` | `L1-015` | An administrator shall edit, preview and publish a version of a policy page from the admin application; a stale publish shall be refused; the publish shall be audited; members shall read the new version on their next request through a read cache the publish clears. |
+| `L2-241` | `L1-015` | An administrator shall edit, preview and publish a version of a policy page from the admin application; a stale publish shall be refused; the publish shall be audited; members shall read the new version on their next request through a read cache the publish clears. |
 
 ## Diagrams
 

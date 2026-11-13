@@ -12,53 +12,53 @@ help. New in this run: an administrator publishes a new version of each
 00:00:14.301 --> 00:00:17.714
 from the admin application, with no deployment.
 
-00:00:18.578 --> 00:00:23.471
+00:00:18.574 --> 00:00:23.467
 Policies lists the four pages, each with its published version, and when
 
-00:00:23.471 --> 00:00:25.442
+00:00:23.467 --> 00:00:25.438
 and by whom it was published.
 
-00:00:26.143 --> 00:00:28.969
+00:00:26.150 --> 00:00:28.976
 Edit opens the published text in fields.
 
-00:00:28.969 --> 00:00:33.913
+00:00:28.976 --> 00:00:33.920
 The preview beside them shows the draft as members will read it, dated
 
-00:00:33.913 --> 00:00:36.103
+00:00:33.920 --> 00:00:36.110
 today, and follows each change.
 
-00:00:38.746 --> 00:00:44.105
+00:00:38.834 --> 00:00:44.193
 Publish asks first. Members read it at once, version two is kept, and
 
-00:00:44.105 --> 00:00:47.290
+00:00:44.193 --> 00:00:47.378
 the publish is recorded in the audit log.
 
-00:00:47.992 --> 00:00:53.388
+00:00:48.084 --> 00:00:53.480
 Version three is published. The editor now starts from it, and every
 
-00:00:53.388 --> 00:00:55.768
+00:00:53.480 --> 00:00:55.860
 earlier version is kept below.
 
-00:00:57.147 --> 00:01:01.875
+00:00:57.122 --> 00:01:01.850
 A member opening the privacy notice reads the new version straight away.
 
-00:01:02.925 --> 00:01:06.866
+00:01:02.888 --> 00:01:06.829
 Behind the screen, the tests prove that a publish started from an older
 
-00:01:06.866 --> 00:01:10.863
+00:01:06.829 --> 00:01:10.826
 version is refused and nothing is published; that each publish is stored
 
-00:01:10.863 --> 00:01:14.694
+00:01:10.826 --> 00:01:14.657
 with the administrator's name and audited; that only an administrator
 
-00:01:14.694 --> 00:01:18.635
+00:01:14.657 --> 00:01:18.598
 reaches these screens; and that members read the pages from a cache the
 
-00:01:18.635 --> 00:01:22.077
+00:01:18.598 --> 00:01:22.040
 publish clears, which still answers when the database is down.
 
-00:01:22.939 --> 00:01:27.457
+00:01:22.902 --> 00:01:27.420
 What is left is the owner's: the real privacy contact and the final
 
-00:01:27.457 --> 00:01:31.435
+00:01:27.420 --> 00:01:31.398
 legal wording, published from Policies, with no deployment.

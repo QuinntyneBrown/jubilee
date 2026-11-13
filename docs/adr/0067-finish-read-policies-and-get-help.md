@@ -1,4 +1,4 @@
-# 0066. Finish read policies and get help
+# 0067. Finish read policies and get help
 
 ## Status
 
@@ -21,7 +21,7 @@ so this journey changes neither.
 
 ## Decision
 
-### The policies screens of the admin application (L2-226)
+### The policies screens of the admin application (L2-241)
 
 - **`/policies`** lists the four pages with the published version, when and by whom ("Version 2
   · published 13 Nov 2026 by Daniel Osei", "Version 1 · built in · 2 Nov 2026"), each with

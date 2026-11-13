@@ -14,7 +14,7 @@ const BARE: AdminRouteData = { shell: 'bare', page: '' };
  * The root of the admin application (L2-188): the skip link, the admin bar and the routed screen
  * in `main`. A screen shows "Nothing here for your role" in its place to a staff member without
  * the role it needs, and is never loaded for them: the moderator role for the Jubilee team's
- * screens (L2-188 AC4), the admin role for the policies (L2-226 AC10).
+ * screens (L2-188 AC4), the admin role for the policies (L2-241 AC10).
  */
 @Component({
   selector: 'jb-root',

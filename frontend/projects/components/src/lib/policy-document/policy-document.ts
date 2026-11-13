@@ -28,7 +28,7 @@ const DAY = new Intl.DateTimeFormat('en-CA', {
 /**
  * A policy page as members read it (L2-107 to L2-109): title, lead, sections and "Last updated
  * {date}" in Toronto time. The app's statement of faith, terms and privacy pages render it, and
- * the admin application's editor previews a draft in it (L2-226, ADR 0066):
+ * the admin application's editor previews a draft in it (L2-241, ADR 0067):
  *
  *     <article jb-policy-document [heading]="page.title" [lead]="page.lead"
  *       [sections]="sections" [updated]="page.publishedAt"></article>

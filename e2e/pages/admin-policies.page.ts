@@ -2,7 +2,7 @@ import type { Locator, Page } from '@playwright/test';
 import type { Region, Screen } from '../fixtures/visual';
 import { AdminShellPage } from './admin-shell.page';
 
-/** `/policies` of the admin application: the four policy pages and their published version (L2-226). */
+/** `/policies` of the admin application: the four policy pages and their published version (L2-241). */
 export class AdminPoliciesPage extends AdminShellPage implements Screen {
   readonly heading: Locator;
   readonly rows: Locator;
