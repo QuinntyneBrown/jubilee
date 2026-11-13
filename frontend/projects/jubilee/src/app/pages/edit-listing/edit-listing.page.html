@@ -197,7 +197,8 @@
 
           <div
             jb-field
-            [label]="isSpace() ? 'Listing title' : 'Business name'"
+            [label]="isSpace() ? 'Listing title' : isPlatform() ? 'Platform name' : 'Business name'"
+            [hint]="isPlatform() ? 'The name people know it by.' : null"
             controlId="name"
             required
             [error]="errors().name"
@@ -222,7 +223,13 @@
           </div>
           <div
             jb-field
-            [label]="isSpace() ? 'One line renters should know' : 'One line on what you do'"
+            [label]="
+              isSpace()
+                ? 'One line renters should know'
+                : isPlatform()
+                  ? 'One line on what it does'
+                  : 'One line on what you do'
+            "
             controlId="tagline"
             required
             [counter]="draft().tagline.trim().length + ' / ' + maxTagline"
@@ -238,27 +245,112 @@
               [readOnly]="busy()"
             />
           </div>
-          <div
-            jb-field
-            label="About"
-            controlId="about"
-            [hint]="
-              isSpace()
-                ? 'A few sentences on who you are and who you host.'
-                : 'A few sentences on who you are and who you serve.'
-            "
-          >
-            <textarea
-              jb-textarea
-              name="about"
-              rows="4"
-              [attr.maxlength]="maxAbout"
-              [ngModel]="draft().about"
-              (ngModelChange)="set('about', $event)"
-              [readOnly]="busy()"
-            ></textarea>
-          </div>
-          @if (isSpace()) {
+          @if (!isPlatform()) {
+            <div
+              jb-field
+              label="About"
+              controlId="about"
+              [hint]="
+                isSpace()
+                  ? 'A few sentences on who you are and who you host.'
+                  : 'A few sentences on who you are and who you serve.'
+              "
+            >
+              <textarea
+                jb-textarea
+                name="about"
+                rows="4"
+                [attr.maxlength]="maxAbout"
+                [ngModel]="draft().about"
+                (ngModelChange)="set('about', $event)"
+                [readOnly]="busy()"
+              ></textarea>
+            </div>
+          }
+          @if (isPlatform()) {
+            <div
+              jb-field
+              label="Web address"
+              hint="Where people use it. It starts with https://."
+              controlId="website"
+              required
+              [error]="errors().website"
+            >
+              <input
+                jb-input
+                name="platformWebsite"
+                type="url"
+                inputmode="url"
+                autocomplete="url"
+                [attr.maxlength]="maxWebsite"
+                required
+                [ngModel]="draft().website"
+                (ngModelChange)="setPlatform('website', $event)"
+                [readOnly]="busy()"
+              />
+            </div>
+            <div
+              jb-field
+              label="What it does"
+              hint="A few plain lines. What can someone do with it?"
+              controlId="does"
+              required
+              [counter]="draft().does.length + ' / ' + maxDoes"
+              [error]="errors().does"
+            >
+              <textarea
+                jb-textarea
+                name="does"
+                rows="4"
+                [attr.maxlength]="maxDoes"
+                required
+                [ngModel]="draft().does"
+                (ngModelChange)="setPlatform('does', $event)"
+                [readOnly]="busy()"
+              ></textarea>
+            </div>
+            <div
+              jb-field
+              label="Who it is for"
+              hint="Like “Families with children aged 4 to 12”."
+              controlId="for"
+              required
+              [counter]="draft().for.length + ' / ' + maxFor"
+              [error]="errors().for"
+            >
+              <input
+                jb-input
+                name="for"
+                type="text"
+                [attr.maxlength]="maxFor"
+                required
+                [ngModel]="draft().for"
+                (ngModelChange)="setPlatform('for', $event)"
+                [readOnly]="busy()"
+              />
+            </div>
+            <div
+              jb-field
+              label="Pricing"
+              hint="In your own words, like “Free for families. Schools pay per classroom.”"
+              controlId="pricing"
+              required
+              [counter]="draft().pricing.length + ' / ' + maxPricing"
+              [error]="errors().pricing"
+            >
+              <input
+                jb-input
+                name="pricing"
+                type="text"
+                [attr.maxlength]="maxPricing"
+                required
+                [ngModel]="draft().pricing"
+                (ngModelChange)="setPlatform('pricing', $event)"
+                [readOnly]="busy()"
+              />
+            </div>
+            <ng-container [ngTemplateOutlet]="highlightField" />
+          } @else if (isSpace()) {
             <fieldset [disabled]="busy()">
               <legend>How are you renting it?</legend>
               <jb-choice-cards>
@@ -490,23 +582,7 @@
                 />
               </div>
             </div>
-            <div
-              jb-field
-              label="Highlight"
-              controlId="perk"
-              optional
-              hint="A short green line on your card, like “Free first meeting”. 30 characters at most."
-            >
-              <input
-                jb-input
-                name="highlight"
-                type="text"
-                [attr.maxlength]="maxHighlight"
-                [ngModel]="draft().highlight"
-                (ngModelChange)="set('highlight', $event)"
-                [readOnly]="busy()"
-              />
-            </div>
+            <ng-container [ngTemplateOutlet]="highlightField" />
           }
           <div class="form-actions">
             <span jb-inline-status>{{
@@ -524,7 +600,13 @@
             class="text-caption"
             style="font-weight: var(--font-weight-semibold); margin-bottom: var(--space-3)"
           >
-            {{ isSpace() ? 'How renters see it' : 'How members see you' }}
+            {{
+              isSpace()
+                ? 'How renters see it'
+                : isPlatform()
+                  ? 'How members see it'
+                  : 'How members see you'
+            }}
           </h2>
           @if (isSpace()) {
             <div
@@ -540,3 +622,22 @@
     </div>
   }
 }
+<ng-template #highlightField>
+  <div
+    jb-field
+    label="Highlight"
+    controlId="perk"
+    optional
+    hint="A short green line on your card, like “Free first meeting”. 30 characters at most."
+  >
+    <input
+      jb-input
+      name="highlight"
+      type="text"
+      [attr.maxlength]="maxHighlight"
+      [ngModel]="draft().highlight"
+      (ngModelChange)="set('highlight', $event)"
+      [readOnly]="busy()"
+    />
+  </div>
+</ng-template>

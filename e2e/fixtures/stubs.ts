@@ -4,7 +4,7 @@ import { browseHomeFromMock, categoryPageFromMock, listingFromMock } from './moc
 import { fulfil, recordedAnswer } from './mock-api';
 import { legacyMessages, ownerRows, photoMessages, requestCards, stubMessaging } from './messaging';
 import { stubAccountData } from './account-data';
-import { SPACE_LISTING, stubAdmin } from './admin';
+import { PLATFORM_LISTING, SPACE_LISTING, stubAdmin } from './admin';
 import { daniel, miriam, stubStaff } from './staff';
 import { stubModeration } from './moderation';
 import { defaultVersions, stubPolicies } from './policies';
@@ -17,7 +17,7 @@ import { stubPasswordReset } from './password-reset';
 import { BACK_IN_STOCK, NOTIFICATIONS, stubNotifications } from './notifications';
 import { stubUnsubscribe } from './unsubscribe';
 import { LISTING_PHOTOS, stubListingMedia } from './photos';
-import { OTHER_BUSINESSES, SUITE, stubMyBusiness } from './my-business';
+import { LANTERNREAD, OTHER_BUSINESSES, SUITE, stubMyBusiness } from './my-business';
 import { DRAIN, stubMemberRequests } from './member-requests';
 import { stubListingDrafts } from './listing-drafts';
 import { stubOrder } from './order';
@@ -630,6 +630,8 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
       });
     case 'editor-space':
       return ownerWorkspace(page, { listing: SUITE, slug: 'guest-suite-near-roncesvalles' });
+    case 'editor-platform':
+      return ownerWorkspace(page, { listing: LANTERNREAD, slug: 'lanternread' });
     case 'editor-error':
       return ownerWorkspace(page, { editor: 'fails' });
     case 'profile':
@@ -764,6 +766,8 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
       });
     case 'admin-listing-space':
       return stubAdmin(page, { fields: SPACE_LISTING });
+    case 'admin-listing-platform':
+      return stubAdmin(page, { fields: PLATFORM_LISTING });
     case 'admin-listing-error':
       return stubAdmin(page, { listing: 'fails' });
     case 'moderation-reports':

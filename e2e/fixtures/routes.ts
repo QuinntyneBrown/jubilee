@@ -137,6 +137,7 @@ export type StubName =
   | 'listing-draft'
   | 'editor-error'
   | 'editor-space'
+  | 'editor-platform'
   | 'notifications'
   | 'notifications-read'
   | 'notifications-empty'
@@ -184,6 +185,7 @@ export type StubName =
   | 'admin-listing-taken-down'
   | 'admin-listing-error'
   | 'admin-listing-space'
+  | 'admin-listing-platform'
   | 'moderation-reports'
   | 'moderation-reports-empty'
   | 'moderation-reports-error'
@@ -1167,6 +1169,12 @@ export const routes = {
     who: 'member',
     stub: 'editor-space',
   },
+  'edit-listing.platform': {
+    app: '/my-business/listing',
+    mock: 'pages/edit-listing/platform.html',
+    who: 'member',
+    stub: 'editor-platform',
+  },
   'edit-listing.error': {
     app: '/my-business/listing',
     mock: 'pages/edit-listing/error.html',
@@ -1650,6 +1658,13 @@ export const routes = {
     who: 'visitor',
     site: 'admin',
     stub: 'admin-listing-space',
+  },
+  'admin-listing.platform': {
+    app: '/listings/3f1d2c4e-7a55-4c0e-9d3a-0a1b2c3d4e5f',
+    mock: 'pages/admin-listing/platform.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'admin-listing-platform',
   },
   'admin-listing.error': {
     app: '/listings/3f1d2c4e-7a55-4c0e-9d3a-0a1b2c3d4e5f',

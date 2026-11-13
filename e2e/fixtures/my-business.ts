@@ -95,7 +95,11 @@ export interface FakeBusiness {
     highlight: string;
     /** A space's own fields (L2-209); absent for a business. */
     space?: Record<string, unknown> | null;
+    /** A platform's web address and its founder's words (L2-256); absent for a business. */
+    platform?: Record<string, unknown> | null;
   };
+  /** The field codes a save is refused with (HTTP 422), when there are any. */
+  saveErrors?: Record<string, string>;
   saves: Record<string, unknown>[];
   pauses: number;
   resumes: number;
@@ -145,6 +149,24 @@ export const SUITE: FakeBusiness['listing'] = {
     included: ['Wi-Fi', 'Furnished', 'Parking', 'Private bath'],
     household: null,
     rules: ['Check-in after 3 pm', 'No parties', 'No smoking'],
+  },
+};
+
+/** Lanternread, an invented platform, as its founder's editor opens it (L2-256). */
+export const LANTERNREAD: FakeBusiness['listing'] = {
+  name: 'Lanternread',
+  tagline: 'A reading log families keep together',
+  categorySlug: 'software-platforms',
+  about: '',
+  where: '',
+  hours: '',
+  website: 'https://lanternread.example',
+  highlight: 'Free for families',
+  platform: {
+    website: 'https://lanternread.example',
+    does: 'Families log the books their children read, set a weekly reading goal together and see the streak grow.',
+    for: 'Families with children aged 4 to 12, and the teachers who cheer them on.',
+    pricing: 'Free for families. Schools pay per classroom.',
   },
 };
 
@@ -267,7 +289,12 @@ export async function stubMyBusiness(
       address: address(),
       tagline: fake.listing.tagline,
       categorySlug: fake.listing.categorySlug,
-      categoryName: fake.listing.categorySlug === 'rooms-rentals' ? 'Rooms & rentals' : 'Shops',
+      categoryName:
+        fake.listing.categorySlug === 'rooms-rentals'
+          ? 'Rooms & rentals'
+          : fake.listing.categorySlug === 'software-platforms'
+            ? 'Software platforms'
+            : 'Shops',
       subtitle: fake.paused
         ? 'Paused · not public'
         : live
@@ -369,6 +396,9 @@ export async function stubMyBusiness(
           }),
         );
       }
+      if (fake.saveErrors) {
+        return route.fulfill(problem(422, { code: 'validation_failed', errors: fake.saveErrors }));
+      }
       fake.version += 1;
       // The slug follows a new name, as the API's does (L2-245 AC1).
       if (String(body['name']) !== fake.listing.name) {
@@ -387,6 +417,7 @@ export async function stubMyBusiness(
         website: String(body['website']),
         highlight: String(body['highlight']),
         space: (body['space'] as unknown as Record<string, unknown> | undefined) ?? null,
+        platform: (body['platform'] as unknown as Record<string, unknown> | undefined) ?? null,
       };
       return route.fulfill({ json: editor() });
     }

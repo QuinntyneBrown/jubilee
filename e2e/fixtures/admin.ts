@@ -65,6 +65,33 @@ export const SPACE_LISTING = {
   },
 };
 
+/** A published software platform (L2-257 AC2): the fields that replace the business of the default listing. */
+export const PLATFORM_LISTING = {
+  name: 'Lanternread',
+  tagline: 'A reading log families keep together',
+  kind: 'platform',
+  categorySlug: 'software-platforms',
+  categoryName: 'Software platforms',
+  publishedAt: '2026-10-01T09:00:00-04:00',
+  highlight: 'Free for families',
+  flags: [],
+  owner: {
+    name: 'Abigail Thornton',
+    email: 'abigail@lanternread.example',
+    emailConfirmed: true,
+    memberSince: '2026-09-01T00:00:00Z',
+    otherListings: [],
+    pronouns: null,
+  },
+  platform: {
+    address: 'https://lanternread.example',
+    website: 'https://lanternread.example',
+    does: 'Families log the books their children read, set a weekly reading goal together and see the streak grow. Grandparents and teachers can cheer from their own accounts.',
+    for: 'Families with children aged 4 to 12, and the teachers who cheer them on.',
+    pricing: 'Free for families. Schools pay per classroom.',
+  },
+};
+
 const problem = (status: number, body: object) => ({
   status,
   contentType: 'application/problem+json',
@@ -177,6 +204,7 @@ export async function stubAdmin(
     isOwnListing: fake.isOwnListing,
     takenDown: fake.takenDown,
     space: null,
+    platform: null,
     ...fake.fields,
   });
 

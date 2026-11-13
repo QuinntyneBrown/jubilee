@@ -74,7 +74,8 @@ public sealed record ListingEditorDto(
     IReadOnlyList<CategoryOptionDto> Categories,
     IReadOnlyList<ListingPhotoDto> Photos,
     Onboarding.SpaceDraftDto? Space = null,
-    string Subtitle = "") : Listings.IAddressed
+    string Subtitle = "",
+    Onboarding.PlatformDraftDto? Platform = null) : Listings.IAddressed
 {
     /// <summary>The listing's address, written by <see cref="Listings.AddressBehavior{TRequest, TResponse}"/> (L2-244).</summary>
     public string? Address { get; set; }
@@ -166,12 +167,25 @@ internal static class Workspace
             listing.Hours,
             listing.Website,
             listing.Highlight,
-            [.. Category.All.Where(c => (c.Slug == Category.RoomsSlug) == (listing.Kind == ListingKind.Space))
-                .Select(c => new CategoryOptionDto(c.Slug, c.Name))],
+            [.. Category.All.Where(c => Offered(c.Slug, listing.Kind)).Select(c => new CategoryOptionDto(c.Slug, c.Name))],
             [.. photos.Select((p, i) => new ListingPhotoDto(p.Id, p.Key, i + 1, p.Alt ?? DefaultAlt(listing.Name, i + 1), p.Alt, p.Width, p.Height))],
             listing.Space is null ? null : Onboarding.SpaceDraftDto.From(listing.Space),
-            Subtitle(listing, listing.PublishedAt ?? listing.CreatedAt));
+            Subtitle(listing, listing.PublishedAt ?? listing.CreatedAt),
+            listing.Platform is null
+                ? null
+                : new Onboarding.PlatformDraftDto(listing.Website ?? string.Empty, listing.Platform.Does, listing.Platform.For, listing.Platform.Pricing));
     }
+
+    /// <summary>
+    /// The categories a listing may sit in: a space only in Rooms &amp; rentals, a platform only in Software
+    /// platforms, a business in any other (L2-209 AC1, L2-256 AC3).
+    /// </summary>
+    public static bool Offered(string categorySlug, ListingKind kind) => kind switch
+    {
+        ListingKind.Space => categorySlug == Category.RoomsSlug,
+        ListingKind.Platform => categorySlug == Category.PlatformsSlug,
+        _ => categorySlug is not (Category.RoomsSlug or Category.PlatformsSlug),
+    };
 }
 
 public sealed record GetMyBusinessQuery(string Subject) : IRequest<MyBusinessDto>;
@@ -301,7 +315,8 @@ public sealed class GetListingEditorQueryHandler(IAppDbContext db) : IRequestHan
 
 public sealed record SaveListingCommand(
     string Subject, int Version, string? Name, string? Tagline, string? CategorySlug, string? About, string? Where,
-    string? Hours, string? Website, string? Highlight, Onboarding.SpaceInput? Space = null, Guid? ListingId = null) : IRequest<ListingEditorDto>;
+    string? Hours, string? Website, string? Highlight, Onboarding.SpaceInput? Space = null, Guid? ListingId = null,
+    Onboarding.PlatformInput? Platform = null) : IRequest<ListingEditorDto>;
 
 public sealed partial class SaveListingCommandHandler(IAppDbContext db, TimeProvider clock, AddressSettings addresses)
     : IRequestHandler<SaveListingCommand, ListingEditorDto>
@@ -333,7 +348,20 @@ public sealed partial class SaveListingCommandHandler(IAppDbContext db, TimeProv
         }
 
         var isSpace = listing.Kind == ListingKind.Space;
-        if (isSpace)
+        var isPlatform = listing.Kind == ListingKind.Platform;
+        if (isPlatform)
+        {
+            // A platform stays in Software platforms and has no hours; its address and the founder's words are
+            // checked as when it was listed (L2-256 AC2, AC3).
+            if (request.CategorySlug != Category.PlatformsSlug)
+            {
+                errors["category"] = "CATEGORY_LOCKED";
+            }
+
+            Onboarding.Drafts.ValidatePlatform(request.Platform, errors);
+            website = string.Empty;
+        }
+        else if (isSpace)
         {
             // A space stays in Rooms & rentals and has no hours; its own fields are checked as when it was listed (L2-209).
             if (request.CategorySlug != Category.RoomsSlug)
@@ -349,7 +377,7 @@ public sealed partial class SaveListingCommandHandler(IAppDbContext db, TimeProv
             {
                 errors["category"] = "INVALID";
             }
-            else if (request.CategorySlug == Category.RoomsSlug)
+            else if (request.CategorySlug is Category.RoomsSlug or Category.PlatformsSlug)
             {
                 errors["category"] = "CATEGORY_LOCKED";
             }
@@ -407,6 +435,11 @@ public sealed partial class SaveListingCommandHandler(IAppDbContext db, TimeProv
         if (space is not null)
         {
             listing.DescribeSpace(space);
+        }
+
+        if (isPlatform)
+        {
+            listing.DescribePlatform(Onboarding.Drafts.PlatformFrom(request.Platform), request.Platform!.Website);
         }
 
         // A new name or category is live at once and tells nobody; the audit log keeps it (L2-087 AC6, ADR 0057).

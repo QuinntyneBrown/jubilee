@@ -75,7 +75,26 @@ public sealed record AdminListingDto(
     IReadOnlyList<string> Flags,
     bool IsOwnListing,
     AdminTakedownDto? TakenDown,
-    AdminListingSpace? Space = null);
+    AdminListingSpace? Space = null,
+    AdminListingPlatform? Platform = null,
+    string? Highlight = null);
+
+/// <summary>
+/// What the Jubilee team reads of a software platform (L2-257 AC2): the address as its founder typed it, the same
+/// address as a link only when it passes the rule of L2-250, and the founder's words. Nothing here requests it.
+/// </summary>
+public sealed record AdminListingPlatform(string Address, string? Website, string Does, string For, string Pricing)
+{
+    public static AdminListingPlatform? From(Listing listing) =>
+        listing.Kind != ListingKind.Platform || listing.Platform is not { } platform
+            ? null
+            : new AdminListingPlatform(
+                listing.Website ?? string.Empty,
+                PlatformRules.IsWebAddress(listing.Website) ? listing.Website!.Trim() : null,
+                platform.Does,
+                platform.For,
+                platform.Pricing);
+}
 
 /// <summary>What the Jubilee team reads of a space: every field but its exact address (L2-200 AC3).</summary>
 public sealed record AdminListingSpace(
@@ -180,7 +199,9 @@ internal static class AdminListings
             flags,
             listing.OwnerId == reviewer.Subject,
             listing.TakenDownAt is { } at ? new AdminTakedownDto(at, listing.TakenDownByName ?? "The Jubilee team", listing.TakedownReason ?? string.Empty) : null,
-            listing.Space is null ? null : AdminListingSpace.From(listing.Space));
+            listing.Space is null ? null : AdminListingSpace.From(listing.Space),
+            AdminListingPlatform.From(listing),
+            listing.Highlight);
     }
 }
 

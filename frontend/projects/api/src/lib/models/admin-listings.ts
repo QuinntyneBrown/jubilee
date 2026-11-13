@@ -39,6 +39,19 @@ export interface AdminTakedown {
   reason: string;
 }
 
+/**
+ * What the team reads of a software platform (L2-257 AC2): the address as its founder typed it,
+ * the same address as a link only when it is an https address, and the founder's words.
+ */
+export interface AdminListingPlatform {
+  address: string;
+  /** The address to link to; null when the stored address fails the rule, and nothing links. */
+  website: string | null;
+  does: string;
+  for: string;
+  pricing: string;
+}
+
 /** What the team reads of a space: every field but its exact address (L2-200 AC3). */
 export interface AdminListingSpace {
   term: 'short-stay' | 'long-term' | 'room' | 'roommate';
@@ -73,6 +86,10 @@ export interface AdminListing {
   takenDown: AdminTakedown | null;
   /** A space's details; null for a business (L2-200 AC3). */
   space?: AdminListingSpace | null;
+  /** A platform's address and words; null for every other listing (L2-257 AC2). */
+  platform?: AdminListingPlatform | null;
+  /** The green line of the listing's card, when it has one. */
+  highlight?: string | null;
 }
 
 /** What each flag of L2-072 AC6 asks the team to check. */

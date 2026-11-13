@@ -12,6 +12,16 @@ import {
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Observable, switchMap, of, timeout } from 'rxjs';
 import {
+  DOES_MAX,
+  FOR_MAX,
+  PLATFORM_FIELDS,
+  PRICING_MAX,
+  WEBSITE_MAX,
+  checkPlatform,
+  platformMessage,
+  platformSummary,
+} from '../../services/platform-form';
+import {
   CATEGORIES,
   DraftItem,
   LISTING_DRAFTS_API,
@@ -124,45 +134,6 @@ const SUBMIT_TIMEOUT_MS = 10_000;
 const TAGLINE_MAX = 90;
 /** The green line of the card, as in the listing editor (L2-072 AC7, L2-087). */
 const HIGHLIGHT_MAX = 30;
-/** The limits of a platform's fields (L2-250 AC2). */
-const WEBSITE_MAX = 200;
-const DOES_MAX = 600;
-const FOR_MAX = 300;
-const PRICING_MAX = 120;
-
-/** The server's names of the platform fields, by the form's (L2-250 AC6). */
-const PLATFORM_FIELDS: Record<string, FieldName> = {
-  'platform.website': 'website',
-  'platform.does': 'does',
-  'platform.for': 'for',
-  'platform.pricing': 'pricing',
-};
-
-/**
- * True for an absolute https address with a dotted host and no user or password, 200 characters
- * at most: the rule the API applies (L2-250 AC4). The address is only read as text.
- */
-export function isWebAddress(value: string): boolean {
-  const text = value.trim();
-  if (!text || text.length > WEBSITE_MAX || /\s/.test(text)) return false;
-  if (!/^https:\/\//i.test(text)) return false;
-  let url: URL;
-  try {
-    url = new URL(text);
-  } catch {
-    return false;
-  }
-  const host = url.hostname;
-  return (
-    url.protocol === 'https:' &&
-    !url.username &&
-    !url.password &&
-    host.includes('.') &&
-    !host.startsWith('.') &&
-    !host.endsWith('.')
-  );
-}
-
 /** FieldName-level wording (L2-071 to L2-079). Codes come from the server or from the same checks here. */
 export function messageFor(field: FieldName, code: string, space = false): string {
   if (code.startsWith('TOO_LONG')) {
@@ -177,15 +148,10 @@ export function messageFor(field: FieldName, code: string, space = false): strin
     case 'tagline':
       return space ? 'Enter one line renters should know.' : 'Enter one line on what you do.';
     case 'website':
-      return code === 'REQUIRED'
-        ? 'Enter the web address where people use your platform.'
-        : 'Enter a web address starting with https://';
     case 'does':
-      return 'Say what your platform does in a few lines.';
     case 'for':
-      return 'Say who your platform is for.';
     case 'pricing':
-      return 'Say how it is priced, like “Free” or “$8 a month”.';
+      return platformMessage(field, code);
     case 'rent':
     case 'available':
     case 'neighbourhood':
@@ -209,11 +175,10 @@ function summaryFor(field: FieldName, code: string, space: boolean): string {
     case 'name':
       return space ? 'Enter a listing title' : 'Enter your business name';
     case 'website':
-      return code === 'REQUIRED' ? 'Enter the web address' : text;
     case 'does':
-      return 'Say what your platform does';
+    case 'for':
     case 'pricing':
-      return 'Say how it is priced';
+      return platformSummary(field, code);
     case 'agreed':
       return space
         ? 'Agree to the statement of faith and the rental terms'
@@ -535,12 +500,15 @@ export class ListBusinessPage {
     else if (tagline.length > TAGLINE_MAX) codes.tagline = `TOO_LONG:${tagline.length}`;
     if (this.isSpace()) Object.assign(codes, this.space.check());
     else if (this.isPlatform()) {
-      const website = this.website().trim();
-      if (!website) codes.website = 'REQUIRED';
-      else if (!isWebAddress(website)) codes.website = 'INVALID';
-      if (!this.does().trim()) codes.does = 'REQUIRED';
-      if (!this.forWhom().trim()) codes.for = 'REQUIRED';
-      if (!this.pricing().trim()) codes.pricing = 'REQUIRED';
+      Object.assign(
+        codes,
+        checkPlatform({
+          website: this.website(),
+          does: this.does(),
+          for: this.forWhom(),
+          pricing: this.pricing(),
+        }),
+      );
     } else if (!this.categorySlug()) codes.categorySlug = 'REQUIRED';
     if (!this.agreed()) codes.agreed = 'REQUIRED';
     return codes;
