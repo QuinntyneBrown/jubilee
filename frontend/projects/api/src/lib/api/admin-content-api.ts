@@ -3,7 +3,7 @@ import { Injectable, InjectionToken, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ContentPage, ContentSection, ContentSlug } from './content-api';
 
-/** One policy page in the admin application's list (L2-241 AC1). */
+/** One policy page in the admin application's list (L2-247 AC1). */
 export interface AdminContentRow {
   slug: ContentSlug;
   title: string;
@@ -23,7 +23,7 @@ export interface ContentVersionRow {
   published: boolean;
 }
 
-/** The published text of one page with its kept versions, for the editor (L2-241 AC2). */
+/** The published text of one page with its kept versions, for the editor (L2-247 AC2). */
 export interface AdminContent {
   published: ContentPage;
   publishedBy: string;
@@ -38,7 +38,7 @@ export interface PublishContent {
   basedOn: number;
 }
 
-/** Contract of the policies screens of the admin application (L2-241). */
+/** Contract of the policies screens of the admin application (L2-247). */
 export interface AdminContentApi {
   list(): Observable<AdminContentRow[]>;
   get(slug: ContentSlug): Observable<AdminContent>;

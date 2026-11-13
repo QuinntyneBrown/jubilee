@@ -1,5 +1,5 @@
 // Acceptance Test
-// Traces to: L2-241, L2-188
+// Traces to: L2-247, L2-188
 // Description: the policies screens of the admin application: the four pages with their published
 // version, the editor with its preview and kept versions, the publish and its failures, and the
 // screens refused to a staff member without the admin role.
@@ -11,7 +11,7 @@ import { AdminPolicyPage } from '../pages/admin-policy.page';
 import { PublishPolicyDialog } from '../pages/publish-policy.dialog';
 import { Toasts } from '../pages/toasts';
 
-test.describe('the policies list (L2-241)', () => {
+test.describe('the policies list (L2-247)', () => {
   test('AC1: an administrator sees the four pages with their published version, and Policies in the admin bar', async ({
     page,
     jb,
@@ -107,7 +107,7 @@ test.describe('the policies list (L2-241)', () => {
   });
 });
 
-test.describe('the policy editor (L2-241)', () => {
+test.describe('the policy editor (L2-247)', () => {
   test('AC2: the editor shows the published text in fields and the kept versions', async ({
     page,
     jb,

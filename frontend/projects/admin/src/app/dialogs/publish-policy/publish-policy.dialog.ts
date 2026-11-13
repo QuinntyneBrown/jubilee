@@ -24,7 +24,7 @@ export type PublishPolicyResult = 'published' | 'reload';
 type View = 'confirm' | 'busy' | 'failed' | 'conflict';
 
 /**
- * PublishPolicyDialog (L2-241 AC5 to AC8): confirms the publish of a policy page's draft as its
+ * PublishPolicyDialog (L2-247 AC5 to AC8): confirms the publish of a policy page's draft as its
  * next version. It sends the version the draft started from, so a version published meanwhile is
  * refused (409 `VERSION_CHANGED`, ADR 0067) rather than overwritten.
  */

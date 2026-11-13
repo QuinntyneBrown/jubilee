@@ -81,7 +81,7 @@ public static class ContentDefaults
 /// <summary>Reads the published version of a page: the highest stored number, or the built-in first version.</summary>
 public sealed class ContentReader(IAppDbContext db, IContentReadCache cache)
 {
-    /// <summary>The published version of a page, through the read cache (L2-241 AC11).</summary>
+    /// <summary>The published version of a page, through the read cache (L2-247 AC11).</summary>
     public async Task<ContentDto?> Published(string slug, CancellationToken cancellationToken)
     {
         if (!ContentVersion.Slugs.Contains(slug))
@@ -140,10 +140,10 @@ public sealed class ListContentVersionsQueryHandler(IAppDbContext db) : IRequest
     }
 }
 
-/// <summary>One policy page in the admin application's list: its published version, when and by whom (L2-241 AC1).</summary>
+/// <summary>One policy page in the admin application's list: its published version, when and by whom (L2-247 AC1).</summary>
 public sealed record AdminContentRow(string Slug, string Title, int Version, DateTimeOffset PublishedAt, string PublishedBy, int KeptVersions);
 
-/// <summary>The four policy pages in the order the app links them (L2-241 AC1).</summary>
+/// <summary>The four policy pages in the order the app links them (L2-247 AC1).</summary>
 public sealed record ListAdminContentQuery : IRequest<IReadOnlyList<AdminContentRow>>;
 
 public sealed class ListAdminContentQueryHandler(ISender sender) : IRequestHandler<ListAdminContentQuery, IReadOnlyList<AdminContentRow>>
@@ -162,7 +162,7 @@ public sealed class ListAdminContentQueryHandler(ISender sender) : IRequestHandl
     }
 }
 
-/// <summary>The published text of one page with its kept versions, for the editor (L2-241 AC2).</summary>
+/// <summary>The published text of one page with its kept versions, for the editor (L2-247 AC2).</summary>
 public sealed record AdminContentDto(ContentDto Published, string PublishedBy, IReadOnlyList<ContentVersionDto> Versions);
 
 public sealed record GetAdminContentQuery(string Slug) : IRequest<AdminContentDto>;
@@ -252,7 +252,7 @@ public sealed partial class PublishContentVersionCommandHandler(
             $"version {current.Version}", $"version {version.Number}", null, version.PublishedAt);
         await db.SaveChangesAsync(cancellationToken);
 
-        // Every instance reads the new version on its next request (L2-241 AC11).
+        // Every instance reads the new version on its next request (L2-247 AC11).
         await cache.RemoveAsync(request.Slug, cancellationToken);
         return ContentReader.ToDto(version);
     }

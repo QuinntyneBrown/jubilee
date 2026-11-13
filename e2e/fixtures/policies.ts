@@ -1,7 +1,7 @@
 import type { Page, Route } from '@playwright/test';
 import { daniel, type FakeStaff, type StaffMember, stubStaff } from './staff';
 
-// A stand-in for the policies endpoints of the admin application (L2-241): the four pages with
+// A stand-in for the policies endpoints of the admin application (L2-247): the four pages with
 // their kept versions, and the publish. The requests the admin application makes are kept so a
 // test can prove what it sent (ADR 0009).
 

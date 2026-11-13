@@ -67,7 +67,7 @@ screens of the admin application to the `ContentVersions` table.
   `[text](/path)` links to Jubilee pages and `mailto:` links; it never renders
   markup.
 
-### The admin application (L2-241)
+### The admin application (L2-247)
 
 - **`AdminPoliciesPage`** — `/policies`, for the `admin` role only. It lists the
   four pages with the published version, when and by whom ("Version 2 ·
@@ -153,7 +153,7 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 | `L2-109` | `L1-015` | The system shall show the privacy notice at `/privacy` with "What we keep", "Your choices" and "Last updated {date}". The notice shall name the privacy contact and explain how to request access or correction, as PIPEDA requires. |
 | `L2-110` | `L1-015` | The system shall show the help page at `/help` with its five questions and answers and the contact line with "E-mail help@jubilee.example". Each question shall be a disclosure with `aria-expanded` that opens by keyboard and has an anchor for direct links. |
 | `L2-133` | `L1-019` | The server shall check the caller's role on every API endpoint before doing anything; only an admin shall publish a content version. |
-| `L2-241` | `L1-015` | An administrator shall edit, preview and publish a version of a policy page from the admin application; a stale publish shall be refused; the publish shall be audited; members shall read the new version on their next request through a read cache the publish clears. |
+| `L2-247` | `L1-015` | An administrator shall edit, preview and publish a version of a policy page from the admin application; a stale publish shall be refused; the publish shall be audited; members shall read the new version on their next request through a read cache the publish clears. |
 
 ## Diagrams
 

@@ -4,7 +4,7 @@ import { AdminListingsPage } from '../../pages/admin-listings.page';
 import { AdminPoliciesPage } from '../../pages/admin-policies.page';
 
 // jb-admin-bar, the top bar of the admin application (L2-188): with the staff navigation for a
-// moderator, and with only "Policies" for a staff member who holds only the admin role (L2-241).
+// moderator, and with only "Policies" for a staff member who holds only the admin role (L2-247).
 parity('admin-bar', {
   cases: [
     {

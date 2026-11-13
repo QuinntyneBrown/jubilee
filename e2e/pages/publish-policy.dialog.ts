@@ -3,7 +3,7 @@ import type { Region, Screen } from '../fixtures/visual';
 import { AdminPolicyPage } from './admin-policy.page';
 import { Toasts } from './toasts';
 
-/** "Publish version {n} of {title}?" (L2-241): confirms the publish of a policy page's draft. */
+/** "Publish version {n} of {title}?" (L2-247): confirms the publish of a policy page's draft. */
 export class PublishPolicyDialog {
   readonly root: Locator;
   readonly title: Locator;

@@ -6,7 +6,7 @@ import { signedOutGuard, staffGuard } from './guards/staff.guard';
  * The data every route of the admin application carries: `shell` picks the chrome (the admin
  * bar, or the sign-in frame), `page` is stamped on `<body data-page>`, `section` marks the current
  * entry of the staff navigation, and `role` is the staff role the screen needs: `moderator` for
- * the Jubilee team's screens (L2-188 AC4), `admin` for the policies (L2-241 AC10).
+ * the Jubilee team's screens (L2-188 AC4), `admin` for the policies (L2-247 AC10).
  */
 export interface AdminRouteData {
   shell: 'admin' | 'bare';

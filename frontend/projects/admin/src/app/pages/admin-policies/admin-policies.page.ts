@@ -20,7 +20,7 @@ import {
   Skeleton,
 } from 'components';
 
-/** `/policies`: the four policy pages with their published version, for an administrator (L2-241). */
+/** `/policies`: the four policy pages with their published version, for an administrator (L2-247). */
 @Component({
   selector: 'jb-admin-policies-page',
   imports: [

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Jubilee.Api.Tests;
 
-// The policies screens of the admin application: L2-241, L2-133.
+// The policies screens of the admin application: L2-247, L2-133.
 public sealed class PolicyEditorTests : IClassFixture<JubileeApiFactory>, IAsyncLifetime
 {
     private readonly JubileeApiFactory _factory;
@@ -31,7 +31,7 @@ public sealed class PolicyEditorTests : IClassFixture<JubileeApiFactory>, IAsync
     };
 
     [Fact]
-    public async Task L2_241_AC1_an_administrator_lists_the_four_pages_with_their_published_version()
+    public async Task L2_247_AC1_an_administrator_lists_the_four_pages_with_their_published_version()
     {
         var admin = AsAdmin();
 
@@ -55,7 +55,7 @@ public sealed class PolicyEditorTests : IClassFixture<JubileeApiFactory>, IAsync
     }
 
     [Fact]
-    public async Task L2_241_AC2_an_administrator_opens_a_page_with_its_text_and_kept_versions()
+    public async Task L2_247_AC2_an_administrator_opens_a_page_with_its_text_and_kept_versions()
     {
         var admin = AsAdmin();
         (await admin.PostAsJsonAsync("/api/admin/content/privacy/versions", Privacy())).EnsureSuccessStatusCode();
@@ -71,13 +71,13 @@ public sealed class PolicyEditorTests : IClassFixture<JubileeApiFactory>, IAsync
     }
 
     [Fact]
-    public async Task L2_241_AC2_an_unknown_page_is_not_found()
+    public async Task L2_247_AC2_an_unknown_page_is_not_found()
     {
         Assert.Equal(HttpStatusCode.NotFound, (await AsAdmin().GetAsync("/api/admin/content/nonsense")).StatusCode);
     }
 
     [Fact]
-    public async Task L2_241_AC10_a_moderator_a_member_and_a_visitor_are_refused_every_policy_endpoint()
+    public async Task L2_247_AC10_a_moderator_a_member_and_a_visitor_are_refused_every_policy_endpoint()
     {
         var moderator = _factory.CreateStaffClient("Miriam Castillo", "staff|miriam", "moderator");
         var member = _factory.CreateMemberClient("Joanna Adeyemi", "member|joanna");
@@ -96,7 +96,7 @@ public sealed class PolicyEditorTests : IClassFixture<JubileeApiFactory>, IAsync
     }
 
     [Fact]
-    public async Task L2_241_AC6_a_publish_is_stored_with_the_administrators_name_read_at_once_and_audited()
+    public async Task L2_247_AC6_a_publish_is_stored_with_the_administrators_name_read_at_once_and_audited()
     {
         var admin = AsAdmin();
 
@@ -118,7 +118,7 @@ public sealed class PolicyEditorTests : IClassFixture<JubileeApiFactory>, IAsync
     }
 
     [Fact]
-    public async Task L2_241_AC7_a_publish_based_on_an_older_version_is_refused_and_nothing_is_published()
+    public async Task L2_247_AC7_a_publish_based_on_an_older_version_is_refused_and_nothing_is_published()
     {
         var admin = AsAdmin();
         (await admin.PostAsJsonAsync("/api/admin/content/privacy/versions", Privacy(basedOn: 1))).EnsureSuccessStatusCode();
@@ -134,7 +134,7 @@ public sealed class PolicyEditorTests : IClassFixture<JubileeApiFactory>, IAsync
     }
 
     [Fact]
-    public async Task L2_241_AC4_an_incomplete_section_is_refused_and_nothing_is_published_or_audited()
+    public async Task L2_247_AC4_an_incomplete_section_is_refused_and_nothing_is_published_or_audited()
     {
         var response = await AsAdmin().PostAsJsonAsync("/api/admin/content/privacy/versions", new
         {
@@ -151,7 +151,7 @@ public sealed class PolicyEditorTests : IClassFixture<JubileeApiFactory>, IAsync
     }
 
     [Fact]
-    public async Task L2_241_AC11_a_page_read_once_is_served_from_the_read_cache_while_the_database_is_down()
+    public async Task L2_247_AC11_a_page_read_once_is_served_from_the_read_cache_while_the_database_is_down()
     {
         var visitor = _factory.CreateClient();
         Assert.Equal(1, (await Json(await visitor.GetAsync("/api/content/privacy"))).GetProperty("version").GetInt32());
@@ -171,7 +171,7 @@ public sealed class PolicyEditorTests : IClassFixture<JubileeApiFactory>, IAsync
     }
 
     [Fact]
-    public async Task L2_241_AC11_the_next_read_after_a_publish_is_the_new_version()
+    public async Task L2_247_AC11_the_next_read_after_a_publish_is_the_new_version()
     {
         var visitor = _factory.CreateClient();
         await visitor.GetAsync("/api/content/privacy");
@@ -184,7 +184,7 @@ public sealed class PolicyEditorTests : IClassFixture<JubileeApiFactory>, IAsync
     }
 
     [Fact]
-    public async Task L2_241_AC11_a_cached_page_is_read_again_from_the_database_after_ten_minutes()
+    public async Task L2_247_AC11_a_cached_page_is_read_again_from_the_database_after_ten_minutes()
     {
         var visitor = _factory.CreateClient();
         await visitor.GetAsync("/api/content/terms");

@@ -4,7 +4,7 @@ import type { StaffRole } from '../../app.routes';
 
 /**
  * A screen shown in place of one the staff member's roles do not reach: the Jubilee team's
- * screens need the moderator role (L2-188 AC4), the policies the admin role (L2-241 AC10).
+ * screens need the moderator role (L2-188 AC4), the policies the admin role (L2-247 AC10).
  */
 @Component({
   selector: 'jb-admin-only-page',

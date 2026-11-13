@@ -7,7 +7,7 @@
 ## What it shows
 
 The run of `docs/prompts/22-read-policies-and-get-help.md`, which took journey 22 from 85% to
-98% (`L2-241`). In the admin application, "Policies" lists "Statement of faith", "Terms of use",
+98% (`L2-247`). In the admin application, "Policies" lists "Statement of faith", "Terms of use",
 "Privacy" and "Help", each with its published version: "Version 2 · published 9 Nov 2026 by
 Daniel Osei" or "Version 1 · built in · 2 Nov 2026" (AC1). "Edit" opens the privacy notice in
 fields. The lead is retyped, and the preview beside the fields, under "Preview of version 3. Not
@@ -30,7 +30,7 @@ versions, and the public page rendering the published text.
 Only the tests prove what the server does:
 
 - that a publish started from an older version answers 409 `VERSION_CHANGED` and publishes
-  nothing (`PolicyEditorTests`, `L2-241` AC7). Said on a card; the dialog's answer to it is
+  nothing (`PolicyEditorTests`, `L2-247` AC7). Said on a card; the dialog's answer to it is
   proved by `admin-policies.spec.ts`;
 - that a publish is stored with the administrator's name and the time, and is audited as
   `content.published` with the page and both version numbers (`PolicyEditorTests`, AC6). Said on

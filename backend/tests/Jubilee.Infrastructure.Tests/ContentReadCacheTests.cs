@@ -9,7 +9,7 @@ using Microsoft.Extensions.Time.Testing;
 
 namespace Jubilee.Infrastructure.Tests;
 
-// The read cache of the published policy pages: L2-241 AC11, ADR 0067.
+// The read cache of the published policy pages: L2-247 AC11, ADR 0067.
 public class ContentReadCacheTests
 {
     private readonly FakeTimeProvider _clock = new(ListingMother.Now);
@@ -28,7 +28,7 @@ public class ContentReadCacheTests
     private Task<ContentDto> Read(string slug = "privacy") => _cache.GetOrCreateAsync(slug, _ => Build(slug), CancellationToken.None);
 
     [Fact]
-    public async Task L2_241_AC11_a_page_is_kept_for_ten_minutes_and_then_read_again()
+    public async Task L2_247_AC11_a_page_is_kept_for_ten_minutes_and_then_read_again()
     {
         await Read();
         _clock.Advance(TimeSpan.FromMinutes(10) - TimeSpan.FromSeconds(1));
@@ -39,7 +39,7 @@ public class ContentReadCacheTests
     }
 
     [Fact]
-    public async Task L2_241_AC11_removing_a_page_drops_only_that_page()
+    public async Task L2_247_AC11_removing_a_page_drops_only_that_page()
     {
         await Read("privacy");
         await Read("terms");
@@ -51,7 +51,7 @@ public class ContentReadCacheTests
     }
 
     [Fact]
-    public async Task L2_241_AC11_a_cache_store_that_is_down_never_fails_a_read_or_a_publish()
+    public async Task L2_247_AC11_a_cache_store_that_is_down_never_fails_a_read_or_a_publish()
     {
         var cache = new DistributedContentReadCache(new BrokenCache(), _clock, NullLogger<DistributedContentReadCache>.Instance);
 

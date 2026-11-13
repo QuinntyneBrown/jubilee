@@ -1236,7 +1236,7 @@ a.rating-link:hover .rating-link__count, a.rating-link[data-state="hover"] .rati
 @media (min-width: 48rem) { .review-posted { padding-block: var(--space-16); } .review-posted__title { font-size: var(--font-size-4xl); } }
 @media (prefers-reduced-motion: reduce) { .review-posted__mark { animation: none; } }
 /* === end: review-posted === */
-/* ---------- Policy document: a policy page and its preview (L2-107 to L2-109, L2-241, ADR 0067) ---------- */
+/* ---------- Policy document: a policy page and its preview (L2-107 to L2-109, L2-247, ADR 0067) ---------- */
 .policy-document { display: block; max-width: var(--layout-measure); }
 .policy-document__title { font: var(--text-h1); font-size: var(--font-size-3xl); letter-spacing: var(--letter-spacing-tight); text-wrap: balance; margin: 0; }
 @media (min-width: 48rem) { .policy-document__title { font-size: var(--font-size-4xl); } }

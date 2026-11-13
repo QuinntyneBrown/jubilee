@@ -3,7 +3,7 @@ import { AdminPolicyPage } from '../../pages/admin-policy.page';
 import { PolicyPage } from '../../pages/policy.page';
 
 // jb-policy-document: a policy page as members read it (L2-107 to L2-109), and the preview of a
-// draft in the admin application's editor (L2-241).
+// draft in the admin application's editor (L2-247).
 parity('policy-document', {
   cases: [
     {

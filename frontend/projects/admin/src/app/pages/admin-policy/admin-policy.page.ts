@@ -66,7 +66,7 @@ export interface Draft {
 }
 
 /**
- * `/policies/:slug`: the editor of one policy page, for an administrator (L2-241). The fields hold
+ * `/policies/:slug`: the editor of one policy page, for an administrator (L2-247). The fields hold
  * the draft, the preview beside them shows it as members will read it, and the kept versions list
  * every version, newest first.
  */
