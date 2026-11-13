@@ -24,7 +24,7 @@ box "Backend — Jubilee API" #D1FADF
   participant "FeedbackController" as controller
 end box
 box "Backend — Jubilee Application and Domain" #ECFDF3
-  participant "Send command handler" as handler
+  participant "SendRatingCommandHandler or SendBugReportCommandHandler or SendKudosCommandHandler" as handler
 end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
   database "Jubilee database" as db
@@ -34,6 +34,7 @@ alt Visitor
   guard --> actor : Send to sign in and return to the page (L2-012)
 else Member
   guard -> page : Activate
+  page -> client : mine() and kudosBusinesses()
   page --> actor : "Help us make Jubilee better" with the tab of the address and its form and "Your feedback"
   opt Choose another tab
     actor -> page : Press a tab
@@ -45,16 +46,16 @@ else Member
     page --> actor : Message under each field and focus on the first invalid one and nothing sent (L2-126)
   else Form valid
     page --> actor : Button "Sending…" busy and fields cannot be changed (L2-127)
-    page -> client : sendRating or sendBugReport or sendKudos(request, key of the tab)
+    page -> client : sendRating or sendBugReport or sendKudos(request, keys[tab]) with a 10-second timeout
     client -> controller : POST /api/feedback/ratings or bug-reports or kudos with Idempotency-Key
-    controller -> handler : Send the command with the member of the session
+    controller -> handler : SendRatingCommand or SendBugReportCommand or SendKudosCommand with the member of the session
     handler -> db : Look up the key then validate and limit and save (L2-214)
     db --> handler : Commit result
     handler --> controller : FeedbackItemDto
     controller --> client : 201 Created with the item
     client --> page : FeedbackItem
     page --> actor : Confirmation for the kind with "Back to Jubilee"
-    page -> page : Put the item at the top of "Your feedback"
+    page -> page : Put the item at the top of "Your feedback" when it has loaded
   end
 end
 opt Submission fails or takes longer than 10 seconds

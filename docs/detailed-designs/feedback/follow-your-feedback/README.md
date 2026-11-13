@@ -18,8 +18,9 @@ The terms below are local to this feature.
 A member sees their own items and nobody else's (`L2-133`). Moment check-ins
 (`L2-211`) are not in the list.
 
-Status and replies are stored and shown; writing them is deferred to the admin
-work (ADR 0043). Until those screens exist every item says "Received" and has no
+Status and replies are stored and shown; writing them is a staff operation of
+the admin application and is not part of this feature (`L2-214` criterion 13,
+ADR 0043). No endpoint sets them yet, so every item says "Received" and has no
 reply. The read side is complete, so the list shows a status or a reply as soon
 as one is set (`L2-214` criterion 13). Telling the member of a change is a later
 change as well.
@@ -29,51 +30,67 @@ change as well.
 The feature is a vertical slice from `FeedbackPage` to the `Feedback` table.
 
 - **`FeedbackPage`** — page of the app at `/feedback/:tab`
-  (`frontend/projects/jubilee/src/app/pages/feedback/`). It loads the list once
-  when the page opens, holds the items and the load state (`loading`, `loaded`,
-  `failed`) as signals and passes them to `jb-feedback-history`. A change of tab
-  does not load the list again. After a successful send the page puts the
-  answered item at the top of the list (`L2-212` criterion 11).
-- **`jb-feedback-history`** — new component of the `components` library
-  (`feedback-history/`). It shows the heading "Your feedback" and one row per
-  item, newest first. A row has an icon for the kind (`star`, `bug`, `users`), a
-  title, the date, the reference of a bug report beside its date, the status in
-  words and the reply under the row when there is one. The status is text; a
-  colour only accompanies it. The component makes no request.
-- **Titles** — a rating reads "Rated Jubilee {n} of 5". A bug report reads its
-  summary, the first line of what happened shortened to 80 characters by the
-  API. Kudos reads "Kudos to the Jubilee team" or "Kudos to {business}".
-- **Dates** — each date is formatted by the date helpers of the `components`
-  library (`format/`), as `L2-131` requires.
+  (`frontend/projects/jubilee/src/app/pages/feedback/`). `loadHistory()` loads
+  the list once, in `ngOnInit`; the page holds the items and the load state
+  `historyState` (`loading`, `loaded`, `error`) as signals. The computed
+  `history` turns each `FeedbackItem` into a `FeedbackHistoryItem` in words:
+  the title from `feedbackTitle`, the date from `threadTime` and the status
+  from `feedbackStatusLabel`, helpers of the `api` library
+  (`models/feedback.ts`, `helpers/message-time.ts`). A change of tab does not
+  load the list again. After a successful send, when the list has loaded, the
+  page puts the answered item at the top of it (`L2-212` criterion 11).
+- **`section[jb-feedback-history]`** — component `FeedbackHistory` of the
+  `components` library (`feedback-history/`), with the inputs `state` and
+  `items` and the output `retry`. It shows the heading "Your feedback" and one
+  row per item in the order given. A row has an icon for the kind (`star`,
+  `bug`, `heart`) with the kind's name for assistive technology, a title, the
+  date in a `time` element, the reference of a bug report beside its date, the
+  status in words and the reply under the row when there is one. The status is
+  text; a colour only accompanies it. The component makes no request.
+- **Titles** — `feedbackTitle` words them. A rating reads "Rated Jubilee {n} of
+  5". A bug report reads its summary, the first line of what happened shortened
+  to 80 characters by the API (`FeedbackWire.Summary`). Kudos reads "Kudos to
+  the Jubilee team" or "Kudos to {business}".
+- **Dates** — each date is formatted by `threadTime` of the `api` library
+  against `ClockService.now()`, as `L2-131` requires.
 - **Empty list** — "Nothing yet. What you send shows up here, with our reply."
-- **Loading** — `jb-feedback-history` shows skeleton rows of the final row
-  layout and the page announces "Loading your feedback…" in a visually hidden
-  live region (`L2-123`). The skeletons do not animate under
+- **Loading** — `jb-feedback-history` shows three `jb-skeleton` rows of the
+  final row layout in a list marked `aria-busy="true"` and named "Loading your
+  feedback" (`L2-123`). The skeletons do not animate under
   `prefers-reduced-motion: reduce`.
-- **Load error** — the region shows "We couldn't load your feedback." with "Try
-  again", which reloads only the list. The tabs and the form stay and still work
-  (`L2-125`). After a successful retry focus moves to the heading "Your
-  feedback".
+- **Load error** — the region shows a `jb-alert` "We couldn't load your
+  feedback." with "Try again", whose `retry` calls `loadHistory()` and reloads
+  only the list. The tabs and the form stay and still work (`L2-125`).
 - **`FeedbackApi.mine`** — method of the `FeedbackApi` contract (`FEEDBACK_API`,
   `HttpFeedbackApi`). It calls `GET /api/feedback` and answers a list of
   `FeedbackItem`.
 - **`FeedbackController`** — ASP.NET Core controller at `api/feedback`. The
   `GET` action takes the member from the session and sends `GetMyFeedbackQuery`.
   A visitor receives 401.
-- **`GetMyFeedbackQuery`** and its handler — MediatR query in
-  `Jubilee.Application/MemberFeedback/`. The handler reads the `Feedback` rows whose
-  `MemberSubject` is the caller's and whose `Kind` is `Rating`, `BugReport` or
-  `Kudos`, newest first. It takes no member or filter from the request, so
+- **`GetMyFeedbackQuery`** and `GetMyFeedbackQueryHandler` — MediatR query in
+  `Jubilee.Application/MemberFeedback/Feedback.cs`. The handler reads the
+  `Feedback` rows whose `MemberSubject` is the caller's and whose `Kind` is not
+  `CheckIn`, newest first, and maps each with `FeedbackWire.ToItem`. It takes no member or filter from the request, so
   another member's items cannot be asked for (`L2-133`).
-- **`FeedbackItemDto`** — answer per item: the id, the kind, the rating of a
-  rating, the summary of a bug report, the business name of kudos for a
-  business, the date, the status, the reference and the reply. The note, the
+- **`FeedbackItemDto`** — answer per item: the id, the kind and the status in
+  the words of `FeedbackWire` (`rating`, `bug-report`, `kudos`; `received`,
+  `read`, `in-progress`, `fixed`), the date, the rating of a rating, the summary
+  of a bug report, the reference, the business name of kudos for a business
+  (`Business`) and the reply. The note, the
   answers of a bug report, the browser and device and the screenshots are not in
   the answer (`L2-214` criterion 10).
 - **`Feedback`** — domain entity. `Status` starts at `Received`. `MarkRead`,
   `StartWork`, `MarkFixed` and `ReplyWith` change the status and the reply; no
-  endpoint of this feature calls them, and the tests use them to show the read
-  side.
+  endpoint calls them, and `FeedbackTests` use them to show the read side.
+- **Tests** — the `your feedback (L2-213)` block of
+  `e2e/tests/feedback-page.spec.ts` drives the list through
+  `e2e/pages/feedback.page.ts`.
+  Each library component has a parity spec in `e2e/tests/parity/` (ADR 0036).
+  The Magic Patterns Feedback frame is not captured, so their specs declare
+  their reference `absent`; `e2e/fixtures/parity.ts` then looks for
+  `docs/design-reference/magic-patterns/components/<component>/<case>-<width>.png`
+  and, once the owner saves one, compares that case with it at 3 % without the
+  spec being edited (ADR 0059). The spec of this feature is `feedback-history`.
 
 ## Requirements
 

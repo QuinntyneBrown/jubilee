@@ -13,10 +13,29 @@ skinparam class {
 ' --------------------------
 title Class structure — Follow your feedback
 
+class FeedbackPage {
+  #historyState: Signal<"loading" | "error" | "loaded">
+  -sentItems: Signal<FeedbackItem[]>
+  #history: Signal<FeedbackHistoryItem[]>
+  #loadHistory(): void
+}
+
 class FeedbackHistory <<jb-feedback-history>> {
-  +items: InputSignal<FeedbackItem[]>
-  +state: InputSignal<"loading" | "loaded" | "failed">
+  +state: InputSignal<"loading" | "error" | "loaded">
+  +items: InputSignal<FeedbackHistoryItem[]>
+  +headingId: InputSignal<string>
   +retry: OutputEmitterRef<void>
+}
+
+class FeedbackHistoryItem {
+  +id: string
+  +kind: FeedbackHistoryKind
+  +title: string
+  +date: string
+  +dateTime: string
+  +reference: string | null
+  +status: string
+  +reply: string | null
 }
 
 interface FeedbackApi {
@@ -25,13 +44,13 @@ interface FeedbackApi {
 
 class FeedbackItem {
   +id: string
-  +kind: string
+  +kind: "rating" | "bug-report" | "kudos"
+  +createdAt: string
+  +status: "received" | "read" | "in-progress" | "fixed"
   +rating: number | null
   +summary: string | null
-  +businessName: string | null
-  +createdAt: string
-  +status: string
   +reference: string | null
+  +business: string | null
   +reply: string | null
 }
 
@@ -40,18 +59,24 @@ class GetMyFeedbackQuery {
 }
 
 class GetMyFeedbackQueryHandler {
-  +Handle(query: GetMyFeedbackQuery): Task<IReadOnlyList<FeedbackItemDto>>
+  +Handle(request: GetMyFeedbackQuery, cancellationToken: CancellationToken): Task<IReadOnlyList<FeedbackItemDto>>
+}
+
+class FeedbackWire <<static>> {
+  +{static} SummaryLength: int = 80
+  +{static} ToItem(feedback: Feedback): FeedbackItemDto
+  +{static} Summary(happened: string?): string?
 }
 
 class FeedbackItemDto {
   +Guid Id
   +string Kind
-  +int? Rating
-  +string? Summary
-  +string? BusinessName
   +DateTimeOffset CreatedAt
   +string Status
+  +int? Rating
+  +string? Summary
   +string? Reference
+  +string? Business
   +string? Reply
 }
 
@@ -75,10 +100,13 @@ class Feedback {
   +ReplyWith(reply: string): void
 }
 
-FeedbackHistory --> "0..*" FeedbackItem : shows
+FeedbackPage --> FeedbackApi : loads through
+FeedbackPage --> FeedbackHistory : passes items and state to
+FeedbackHistory --> "0..*" FeedbackHistoryItem : shows
 FeedbackApi ..> FeedbackItem : answers
 GetMyFeedbackQueryHandler ..> GetMyFeedbackQuery : handles
 GetMyFeedbackQueryHandler ..> FeedbackItemDto : answers
 GetMyFeedbackQueryHandler --> Feedback : reads
+GetMyFeedbackQueryHandler ..> FeedbackWire : maps with
 Feedback --> "1" FeedbackStatus
 @enduml

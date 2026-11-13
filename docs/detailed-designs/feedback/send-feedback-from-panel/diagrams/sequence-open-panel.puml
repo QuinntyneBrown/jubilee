@@ -32,9 +32,10 @@ else Member on an app-shell route
   app -> launcher : Render
   launcher --> actor : Pill "Feedback" from 768 px or round button "Give feedback" above the tab bar
   actor -> launcher : Press by touch or click or Enter or Space
-  launcher -> app : Pressed
-  app -> cdk : open(FeedbackDialog, { page })
-  cdk -> dialog : Create in the corner placement with the scrim
+  launcher -> app : opened(button)
+  app -> app : openFeedback(launcher) loads FeedbackDialog
+  app -> cdk : open(FeedbackDialog, { data: { page }, restoreFocus: launcher })
+  cdk -> dialog : Create in jb-dialog with corner and the scrim
   dialog --> actor : "Tell us how it's going" with "Rate" selected and focus inside (L2-130)
   opt Arrow keys on the tabs
     actor -> dialog : Press Right or Left

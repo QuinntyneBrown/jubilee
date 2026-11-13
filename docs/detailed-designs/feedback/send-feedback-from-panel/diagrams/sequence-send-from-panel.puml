@@ -23,7 +23,7 @@ box "Backend — Jubilee API" #D1FADF
   participant "FeedbackController" as controller
 end box
 box "Backend — Jubilee Application and Domain" #ECFDF3
-  participant "Send command handler" as handler
+  participant "SendRatingCommandHandler or SendBugReportCommandHandler or SendKudosCommandHandler" as handler
 end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
   database "Jubilee database" as db
@@ -33,10 +33,10 @@ actor -> dialog : Choose a star or type what went wrong or press a chip
 dialog --> actor : Send button enabled
 actor -> dialog : Press "Send rating" or "Send report" or "Send kudos"
 dialog --> actor : Button busy with aria-busy and a second press sends nothing (L2-127)
-dialog -> client : sendRating or sendBugReport or sendKudos(request, key of the tab)
+dialog -> client : sendRating or sendBugReport or sendKudos(request, keys[tab]) with a 10-second timeout
 client -> controller : POST /api/feedback/ratings or bug-reports or kudos with Idempotency-Key
 controller -> controller : Take the member from the session (L2-133)
-controller -> handler : Send the command
+controller -> handler : SendRatingCommand or SendBugReportCommand or SendKudosCommand
 handler -> db : Look up the member's feedback with this key (L2-132)
 db --> handler : Feedback or none
 alt Key seen before

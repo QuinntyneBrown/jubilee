@@ -34,22 +34,22 @@ alt Invalid input
 else Valid
   handler -> db : Load Feedback by id
   db --> handler : Feedback or none
-  alt Feedback of another member
-    handler --> controller : NotFoundException
+  alt Feedback of another member or of another kind
+    handler --> controller : NotFoundException check_in_not_found
     controller --> web : 404 (L2-133)
   else Check-in of the caller
-    handler -> entity : Replace the score and the note
+    handler -> entity : Answer(moment, score, note)
     handler -> db : Save
     db --> handler : Commit result
     controller --> web : 204 No Content
   else No feedback with the id
     handler -> db : Count the member's check-ins of the past hour
     db --> handler : Count
-    alt 30 already
+    alt CheckInsPerHour (30) already
       handler --> controller : RateLimitedException
       controller --> web : 429 with Retry-After (L2-137)
     else Under the limit
-      handler -> entity : Create a Feedback of kind CheckIn with the id
+      handler -> entity : Feedback.CheckIn(id, ...) of kind CheckIn
       handler -> db : Save
       db --> handler : Commit result
       controller --> web : 204 No Content
