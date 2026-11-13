@@ -62,6 +62,40 @@ public sealed class StaffCommandTests
         Assert.Null(sessions.Single(s => s.Kind == SessionKind.Member).EndedAt);
     }
 
+    // L2-098 AC4, L2-180 AC1: each role change is audited with the operator who ran the CLI; a command that changes nothing writes nothing
+    [Fact]
+    public async Task L2_098_AC4_granting_and_revoking_a_role_is_audited_with_the_operator_and_the_roles_before_and_after()
+    {
+        Assert.Equal(0, await Run("staff", "grant", "--email", "esther@jubilee.to", "--role", "moderator"));
+        Assert.Equal(0, await Run("staff", "grant", "--email", "esther@jubilee.to", "--role", "moderator"));
+        Assert.Equal(0, await Run("staff", "grant", "--email", "esther@jubilee.to", "--role", "admin"));
+        Assert.Equal(0, await Run("staff", "revoke", "--email", "esther@jubilee.to", "--role", "moderator"));
+
+        var records = (await Query(db => db.AuditRecords.ToListAsync())).OrderBy(a => a.At).ThenBy(a => a.After!.Length).ToList();
+        Assert.Equal(["staff.role-granted", "staff.role-granted", "staff.role-revoked"], records.Select(r => r.Action));
+        Assert.All(records, r =>
+        {
+            Assert.Equal($"cli|{Environment.UserName}", r.Actor);
+            Assert.Equal($"{Environment.UserName} (jubilee CLI)", r.ActorName);
+            Assert.Equal("staff", r.TargetType);
+            Assert.Equal("esther@jubilee.to", r.TargetId);
+            Assert.Equal("jubilee staff", r.Reason);
+        });
+        Assert.Equal(("no roles", "moderator"), (records[0].Before, records[0].After));
+        Assert.Equal(("moderator", "moderator, admin"), (records[1].Before, records[1].After));
+        Assert.Equal(("moderator, admin", "admin"), (records[2].Before, records[2].After));
+    }
+
+    // L2-098 AC4, L2-193 AC4: a refused command writes no audit record
+    [Fact]
+    public async Task L2_098_AC4_a_refused_role_change_is_not_audited()
+    {
+        Assert.Equal(1, await Run("staff", "revoke", "--email", "nobody@jubilee.to", "--role", "moderator"));
+        Assert.Equal(1, await Run("staff", "grant", "--email", "esther@jubilee.to", "--role", "owner"));
+
+        Assert.Equal(0, await Query(db => db.AuditRecords.CountAsync()));
+    }
+
     // L2-193 AC3
     [Fact]
     public async Task L2_193_AC3_list_prints_each_account_and_its_roles()
