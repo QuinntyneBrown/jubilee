@@ -203,6 +203,27 @@ test.describe('saved page (L2-042)', () => {
     expect(fake.calls).toEqual(['DELETE items/a1000000-0000-4000-8000-000000000009']);
   });
 
+  test('L2-092 AC2: a product its shop deleted after it was saved shows as no longer available', async ({
+    page,
+    jb,
+  }) => {
+    const saved = new SavedPage(page);
+    await saved.setWidth(1280);
+    await jb.signInAs('member');
+    // As the API answers a saved product whose owner deleted it: unavailable, with no card.
+    const deleted = { ...SAVED_ITEMS[0], available: false, product: null };
+    const fake = await stubSaved(page, { items: [deleted] });
+    await jb.goto('/saved');
+
+    const card = saved.card('Leather journaling Bible, ESV');
+    await expect(card).toContainText('No longer available');
+    await expect(card.getByRole('link')).toHaveCount(0);
+
+    await saved.remove('Leather journaling Bible, ESV').click();
+    await expect(saved.cards).toHaveCount(0);
+    expect(fake.calls).toEqual([`DELETE items/${deleted.id}`]);
+  });
+
   test('AC5: when the list cannot load the page says so and quotes JB-SAV-503', async ({
     page,
     jb,
