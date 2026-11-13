@@ -127,6 +127,7 @@ export type StubName =
   | 'notifications-error'
   | 'notifications-back-in-stock'
   | 'password-reset'
+  | 'password-reset-rate-limited'
   | 'reset-password'
   | 'reset-password-expired'
   | 'reset-password-error'
@@ -1043,6 +1044,12 @@ export const routes = {
     mock: 'pages/forgot-password/invalid.html',
     who: 'visitor',
     stub: 'password-reset',
+  },
+  'forgot-password.rate-limited': {
+    app: '/forgot-password',
+    mock: 'pages/forgot-password/rate-limited.html',
+    who: 'visitor',
+    stub: 'password-reset-rate-limited',
   },
   'reset-password': {
     app: '/reset-password/e2e-token',

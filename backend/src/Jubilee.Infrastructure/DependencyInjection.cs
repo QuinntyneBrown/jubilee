@@ -79,6 +79,11 @@ public static class DependencyInjection
         services.AddSingleton(new Application.Moderation.TeamSettings(
             configuration["Moderation:TeamEmail"] is { Length: > 0 } team ? team : configuration["Launch:TeamEmail"],
             configuration["StaffSignIn:PublicBaseUrl"] ?? "https://admin.jubilee.to"));
+        // The on-call security contact (ADR 0064): Security:OnCallEmail, else the Jubilee team's address.
+        services.AddSingleton(provider => new Application.Accounts.SecuritySettings(
+            configuration["Security:OnCallEmail"] is { Length: > 0 } onCall
+                ? onCall
+                : provider.GetRequiredService<Application.Moderation.TeamSettings>().TeamEmail));
         services.AddSingleton<Application.Accounts.IPasswordHasher, Accounts.Argon2idPasswordHasher>();
         services.AddHttpClient<Application.Accounts.IBreachedPasswordChecker, Accounts.HaveIBeenPwnedChecker>();
         services.AddHttpClient<Application.Accounts.IBotChallengeVerifier, Accounts.TurnstileBotChallengeVerifier>();

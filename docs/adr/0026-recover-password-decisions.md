@@ -1,6 +1,6 @@
 # 0026. Recover password decisions
 
-Status: accepted
+Status: accepted. Amended by ADR 0064, which ends the deferral of the 429 for reset requests, of the timing test and of an alert on a burst of reset requests, and by ADR 0046, whose server-side sessions end every session on a reset.
 
 ## Context
 

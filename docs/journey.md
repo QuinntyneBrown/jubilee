@@ -33,7 +33,7 @@ journey that is implemented: the effort-weighted average of its feature designs 
 | 15 | Run a business listing | Monitor the listing, edit its details, pause or resume it. | 9 | 100% |
 | 16 | Manage products and services | Add, edit, reorder and delete products and services. | 8 | 100% |
 | 17 | Stay notified | Receive events through the notification centre, toasts, banners and e-mail. | 9 | 100% |
-| 18 | Recover a forgotten password | Request a reset link by e-mail and set a new password. | 3 | 90% |
+| 18 | Recover a forgotten password | Request a reset link by e-mail and set a new password. | 3 | 100% |
 | 19 | Save listings for later | Save businesses and products to a private list. | 3 | 100% |
 | 20 | Manage profile and settings | Edit profile, change e-mail or password, choose which e-mails arrive. | 6 | 93% |
 | 21 | Share or report a listing | Share a listing's link or report a problem with it. | 3 | 100% |

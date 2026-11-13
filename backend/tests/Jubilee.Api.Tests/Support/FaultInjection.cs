@@ -85,6 +85,8 @@ public sealed class OutageAwareDbContext(AppDbContext inner, DatabaseOutage outa
 
     public DbSet<PasswordResetRequest> PasswordResetRequests => Use(inner.PasswordResetRequests);
 
+    public DbSet<SecurityAlert> SecurityAlerts => Use(inner.SecurityAlerts);
+
     public DbSet<OutboxMessage> OutboxMessages => Use(inner.OutboxMessages);
 
     public DbSet<Conversation> Conversations => Use(inner.Conversations);

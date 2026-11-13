@@ -5,12 +5,18 @@
 | assure-security | 4 days | 0% |
 | authorize-requests | 3 days | 10% |
 | authorize-staff-requests | 4 days | 100% |
-| limit-abuse | 5 days | 10% |
+| limit-abuse | 5 days | 20% |
 | protect-credentials-and-sessions | 4 days | 0% |
 | restrict-staff-network | 4 days | 90% |
 | secure-transport-and-tokens | 3 days | 0% |
 | secure-uploads | 4 days | 65% |
 | validate-input | 3 days | 0% |
+
+## limit-abuse
+
+Built: the ASP.NET Core rate limiter policies of `DirectoryRateLimit.cs` (directory reads, search, join, confirmation resend and the launch forms) and the limits counted in their handlers (`RateLimitedException`: password reset, messages, reports, data export, feedback, product photos), each answered 429 with `Retry-After`; the join form’s bot challenge and its existing-address notice (journey 4); the reset request that answers the same for any address, tested by timing, and the burst alert on reset requests to the on-call contact (ADR 0064).
+
+What is left: one policy table for all the limits, the bot challenge on the report forms, the spam suspension (L2-137 AC3), the alerts on failed sign-ins and role changes (L2-143 AC2), and a single interceptor for the 429 message.
 
 ## secure-uploads
 

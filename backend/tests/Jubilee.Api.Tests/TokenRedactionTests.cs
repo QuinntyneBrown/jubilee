@@ -126,6 +126,46 @@ public sealed partial class TokenRedactionTests : IClassFixture<JubileeApiFactor
         Assert.DoesNotContain(Logged, line => line.Contains(token) || line.Contains(session) || line.Contains(secondSession));
     }
 
+    // L2-140 AC3
+    // Given a reset link issued to an account, when the visitor checks it, chooses a new password with it and opens
+    // the link against the API by mistake, then the request log names every request and no line holds the token.
+    [Fact]
+    public async Task L2_140_AC3_asking_for_checking_and_using_a_reset_link_leave_no_token_in_the_log()
+    {
+        await _factory.Arrange(Domain.Member.Join(
+            Domain.EmailAddress.TryParse("joanna.adeyemi@example.com")!, "Joanna", "Adeyemi", null, "hash", _factory.Clock.GetUtcNow()));
+        var asked = await _factory.CreateClient().PostAsJsonAsync(
+            "/api/account/password-reset-requests", new { email = "joanna.adeyemi@example.com" });
+        Assert.Equal(HttpStatusCode.Accepted, asked.StatusCode);
+        using (var scope = _factory.Services.CreateScope())
+        {
+            await scope.ServiceProvider.GetRequiredService<PasswordResetLinks>().IssueAsync(CancellationToken.None);
+            await scope.ServiceProvider.GetRequiredService<OutboxDispatcher>().DispatchDueAsync(CancellationToken.None);
+        }
+
+        var token = ResetTokenInLink().Match(_factory.Emails.Sent.Last().Body).Groups[1].Value;
+        Assert.Equal(43, token.Length);
+
+        var inspected = await _factory.CreateClient().PostAsJsonAsync("/api/account/password-resets/inspect", new { token });
+        Assert.Equal(HttpStatusCode.OK, inspected.StatusCode);
+        var reset = await _factory.CreateClient().PostAsJsonAsync(
+            "/api/account/password-resets", new { token, newPassword = "a brand new password 7", repeatPassword = "a brand new password 7" });
+        Assert.Equal(HttpStatusCode.NoContent, reset.StatusCode);
+        var used = await _factory.CreateClient().PostAsJsonAsync(
+            "/api/account/password-resets", new { token, newPassword = "yet another password 9", repeatPassword = "yet another password 9" });
+        Assert.Equal(HttpStatusCode.Gone, used.StatusCode);
+        await _factory.CreateClient().GetAsync($"/reset-password/{token}");
+
+        // The requests were logged, so the log was being written.
+        Assert.Contains(Logged, line => line.Contains("/api/account/password-resets responded 204"));
+        Assert.Contains(Logged, line => line.Contains("/api/account/password-resets responded 410"));
+        Assert.Contains("[redacted]", RequestLog("GET", "/reset-password/").Message);
+        Assert.DoesNotContain(Logged, line => line.Contains(token));
+    }
+
+    [GeneratedRegex(@"https://jubilee\.test/reset-password/([A-Za-z0-9_-]+)")]
+    private static partial Regex ResetTokenInLink();
+
     /// <summary>The value of the session cookie a response set.</summary>
     private static string SessionValue(HttpResponseMessage response)
     {

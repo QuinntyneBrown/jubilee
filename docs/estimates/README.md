@@ -1,7 +1,7 @@
 # Estimates
 
 - Overall effort: 399 days
-- Complete: 74%
+- Complete: 75%
 
 | Subsystem | Effort | Complete |
 |---|---|---|
@@ -12,8 +12,8 @@
 | [interaction-states](interaction-states.md) | 17 days | 5% |
 | [system-pages](system-pages.md) | 10 days | 100% |
 | [listings](listings.md) | 20 days | 100% |
-| [accounts](accounts.md) | 50 days | 93% |
-| [security](security.md) | 34 days | 32% |
+| [accounts](accounts.md) | 50 days | 94% |
+| [security](security.md) | 34 days | 34% |
 | [messaging](messaging.md) | 17 days | 98% |
 | [requests](requests.md) | 39 days | 100% |
 | [notifications](notifications.md) | 16 days | 100% |

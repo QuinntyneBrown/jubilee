@@ -612,6 +612,8 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
     case 'password-reset':
     case 'reset-password':
       return void (await stubPasswordReset(page));
+    case 'password-reset-rate-limited':
+      return void (await stubPasswordReset(page, { request: 'rate-limited' }));
     case 'reset-password-expired':
       return void (await stubPasswordReset(page, { link: 'expired' }));
     case 'reset-password-error':

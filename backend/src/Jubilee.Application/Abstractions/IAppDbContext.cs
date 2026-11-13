@@ -51,6 +51,8 @@ public interface IAppDbContext
 
     DbSet<PasswordResetRequest> PasswordResetRequests { get; }
 
+    DbSet<SecurityAlert> SecurityAlerts { get; }
+
     DbSet<OutboxMessage> OutboxMessages { get; }
 
     DbSet<Conversation> Conversations { get; }
