@@ -366,10 +366,11 @@ public sealed class GetInboxQueryHandler(IAppDbContext db) : IRequestHandler<Get
                 r.Listing.Name,
                 r.Listing.Slug,
                 r.AsOwner,
-                Last = db.Messages
+                // The id alone: a whole message here needs SQL APPLY, which SQLite does not have.
+                LastId = db.Messages
                     .Where(m => m.ConversationId == r.Conversation.Id && (r.AsOwner || !m.HiddenFromMember))
                     .OrderByDescending(m => m.CreatedAt)
-                    .Select(m => new { m.Body, m.SenderSubject, m.SenderName, m.AttachmentId })
+                    .Select(m => (Guid?)m.Id)
                     .FirstOrDefault(),
                 Unread = db.Messages.Any(m => m.ConversationId == r.Conversation.Id
                     && (r.AsOwner
@@ -379,19 +380,29 @@ public sealed class GetInboxQueryHandler(IAppDbContext db) : IRequestHandler<Get
             })
             .ToListAsync(cancellationToken);
 
-        var conversations = listed.Select(r => new InboxRowDto(
-            r.Id,
-            r.AsOwner ? r.MemberName : r.Name,
-            r.Name,
-            r.Slug,
-            Preview(
-                r.Last is { Body.Length: 0, AttachmentId: not null } ? ConversationRules.PhotoPreview : r.Last?.Body,
-                r.Last?.SenderSubject,
-                r.Last?.SenderName,
-                request.Subject),
-            r.LastMessageAt,
-            r.Unread,
-            r.AsOwner ? r.OwnerMuted : r.MemberMuted)).ToList();
+        var lastIds = listed.Where(r => r.LastId != null).Select(r => r.LastId!.Value).ToList();
+        var last = await db.Messages.AsNoTracking()
+            .Where(m => lastIds.Contains(m.Id))
+            .Select(m => new { m.Id, m.Body, m.SenderSubject, m.SenderName, m.AttachmentId })
+            .ToDictionaryAsync(m => m.Id, cancellationToken);
+
+        var conversations = listed.Select(r =>
+        {
+            var message = r.LastId is { } id ? last.GetValueOrDefault(id) : null;
+            return new InboxRowDto(
+                r.Id,
+                r.AsOwner ? r.MemberName : r.Name,
+                r.Name,
+                r.Slug,
+                Preview(
+                    message is { Body.Length: 0, AttachmentId: not null } ? ConversationRules.PhotoPreview : message?.Body,
+                    message?.SenderSubject,
+                    message?.SenderName,
+                    request.Subject),
+                r.LastMessageAt,
+                r.Unread,
+                r.AsOwner ? r.OwnerMuted : r.MemberMuted);
+        }).ToList();
         return new InboxDto(total, unread, conversations);
     }
 
