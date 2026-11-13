@@ -23,7 +23,7 @@ test.describe('the unresolved reports in the admin bar (L2-105 AC1, L2-188 AC3, 
     await expect(reports.badgeIn(link)).toHaveAccessibleName('3 unresolved');
   });
 
-  test('a report that arrives shows in the count when the verifier moves to another screen', async ({
+  test('a report that arrives shows in the count when the moderator moves to another screen', async ({
     page,
     jb,
   }) => {

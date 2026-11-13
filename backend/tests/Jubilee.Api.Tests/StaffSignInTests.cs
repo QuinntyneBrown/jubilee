@@ -101,7 +101,7 @@ public sealed class StaffSignInTests : IClassFixture<JubileeApiFactory>, IAsyncL
     [InlineData("/account")]
     [InlineData("//evil.example/listings")]
     [InlineData("https://evil.example/listings")]
-    public async Task L2_189_AC7_a_return_address_that_is_not_an_admin_screen_opens_the_queue(string? returnUrl)
+    public async Task L2_189_AC7_a_return_address_that_is_not_an_admin_screen_opens_the_listings(string? returnUrl)
     {
         await Grant("esther@jubilee.to", StaffRoles.Moderator);
 

@@ -105,7 +105,7 @@ public sealed class StaffAccessTests : IClassFixture<JubileeApiFactory>, IAsyncL
 
     // L2-191 AC3
     [Fact]
-    public async Task L2_191_AC3_a_staff_session_with_the_moderator_role_reaches_the_queue()
+    public async Task L2_191_AC3_a_staff_session_with_the_moderator_role_reaches_the_listings()
     {
         var esther = _factory.CreateStaffClient("Esther Mensah", "member|esther", "moderator");
 
