@@ -125,7 +125,12 @@ whose answers are saved.
   has ended the session it clears `OfflineSnapshotStore` and
   `OutgoingMessageQueue`, so nothing personal stays on the device (L2-119). The
   service worker's caches hold only the public app shell and are kept. Drafts
-  (`DraftRegistry`, ADR 0046, L2-011 AC3) are kept, keyed by member.
+  (`DraftRegistry`, ADR 0046, L2-011 AC3) are kept, keyed by member. Each answer
+  of `GET /api/session` that names a member is kept in `OfflineSnapshotStore`
+  under the key `session`; when the session read gets no answer at all (no
+  connection, or Jubilee cannot be reached) the member is still signed in from
+  it, so the saved pages open, until Jubilee answers (L2-119 AC4). It is removed
+  on sign-out, on expiry and when Jubilee answers that no one is signed in.
 - **`DirectoryController`** and **`GetBrowseHomeQueryHandler`** — `Jubilee API`
   endpoint `GET /api/directory/home` and its MediatR handler, which returns a
   `BrowseHomeDto` (`LiveBusinessCount`, `Categories`, `Featured`, `Products`,

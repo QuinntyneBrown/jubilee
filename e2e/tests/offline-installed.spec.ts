@@ -41,6 +41,29 @@ test.describe('the installed app (L2-119 AC3)', () => {
     await expect(browse.featuredCards.first()).toBeVisible();
     await expect(banner.root).toContainText(/Showing the directory saved at \d+:\d\d [ap]\.m\./);
   });
+
+  test('a member who opens Jubilee with no connection is still signed in and reads the conversations saved', async ({
+    page,
+    jb,
+  }) => {
+    const conversation = new ConversationPage(page);
+    const banner = new ConnectionBannerRegion(page);
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await jb.signInAs('member');
+    await stubMessaging(page);
+    await jb.goto(`${INSTALLED_APP_URL}/messages/c-legacy`);
+    await conversation.ready();
+    await expect(conversation.bubbles).toHaveCount(3);
+    await waitForSnapshot(page, 'conversation:c-legacy');
+    await waitForAppShell(page);
+
+    await deviceOffline(page);
+    await page.reload();
+
+    await expect(conversation.heading).toHaveText('Legacy Financial');
+    await expect(conversation.bubbles).toHaveCount(3);
+    await expect(banner.root).toContainText('You’re offline.');
+  });
 });
 
 test.describe('Background Sync (L2-120 AC5)', () => {

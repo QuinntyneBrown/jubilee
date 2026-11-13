@@ -60,6 +60,13 @@ is built again.
   (`jubilee-outbox`). A message still "Not sent" is dropped with it: it belongs to the member
   who signed out. Drafts stay, keyed by member (ADR 0046, `L2-011` AC3). The worker's caches
   hold only the public app shell and are kept.
+- **A member who opens Jubilee with no connection is still signed in (`L2-119` AC4).** The
+  session is resolved by `GET /api/session`, which gets no answer offline; the app then made the
+  user a visitor, and every page saved for the member sent them to sign in. `SessionService` now
+  keeps the last answer that named a member in `jubilee-offline` (key `session`) and, when the
+  session read gets no answer at all, uses it until Jubilee answers. Any other failure still makes
+  the user a visitor. The server decides every request; this only lets the saved pages open. The
+  saved session goes on sign-out, on expiry and when Jubilee says no one is signed in.
 - **The status page's address is set at build time** (`environment.statusUrl`). It stays the
   placeholder `https://status.jubilee.example` until the repository owner hosts a status page
   apart from the API and supplies its address (an owner step, in `eng/azure/README.md`).
