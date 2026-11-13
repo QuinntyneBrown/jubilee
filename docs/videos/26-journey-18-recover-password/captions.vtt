@@ -1,0 +1,61 @@
+WEBVTT
+
+00:00:00.650 --> 00:00:04.198
+Journey eighteen: recover a forgotten password.
+
+00:00:04.198 --> 00:00:09.179
+A member who has lost their password asks for a link by e-mail and
+
+00:00:09.179 --> 00:00:10.538
+chooses a new one.
+
+00:00:11.416 --> 00:00:15.971
+At forgot password, the visitor enters their e-mail and presses Send
+
+00:00:15.971 --> 00:00:20.527
+reset link. The answer is the same whether or not the address has an
+
+00:00:20.527 --> 00:00:23.608
+account, and the link works for sixty minutes.
+
+00:00:24.706 --> 00:00:29.725
+New in this run: a fourth request for one address within an hour is
+
+00:00:29.725 --> 00:00:35.118
+refused. The form stays and says when to try again, and it says the same
+
+00:00:35.118 --> 00:00:36.466
+for every address.
+
+00:00:37.587 --> 00:00:42.161
+The link opens Choose a new password, for the account's address.
+
+00:00:42.161 --> 00:00:47.235
+The page takes the token out of the address bar as soon as it reads it.
+
+00:00:47.946 --> 00:00:52.650
+A password of five characters is refused with the rule it broke.
+
+00:00:54.646 --> 00:00:59.608
+A good password is saved. Every other session ends, and a security
+
+00:00:59.608 --> 00:01:03.142
+e-mail tells the holder their password changed.
+
+00:01:04.187 --> 00:01:08.604
+Behind the screen, the tests prove the limit counts requests and never
+
+00:01:08.604 --> 00:01:12.958
+the account, the answer takes as long for any address, no reset token
+
+00:01:12.958 --> 00:01:17.122
+reaches a log, and a burst of more than a hundred requests in five
+
+00:01:17.122 --> 00:01:19.331
+minutes alerts the on-call contact.
+
+00:01:20.212 --> 00:01:25.892
+Journey eighteen is complete. The owner sets the on-call address; until
+
+00:01:25.892 --> 00:01:29.092
+then, the Jubilee team hears of a burst.
