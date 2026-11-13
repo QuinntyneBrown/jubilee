@@ -326,6 +326,11 @@ export class MarketingHomePage implements Screen {
     );
   }
 
+  /** Turns the film's sound off, as a visitor does in a quiet room. */
+  async muteFilm(): Promise<void> {
+    await this.video.evaluate((video: HTMLVideoElement) => (video.muted = true));
+  }
+
   /** Whether the film is paused. */
   filmPaused(): Promise<boolean> {
     return this.video.evaluate((video: HTMLVideoElement) => video.paused);
