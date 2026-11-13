@@ -667,7 +667,8 @@
         "empty",
         "error",
         "no-results",
-        "space"
+        "space",
+        "confirmed"
       ]
     },
     {
@@ -1008,6 +1009,20 @@
         "invalid",
         "failed"
       ]
+    },
+    {
+      "id": "fulfil-request",
+      "kind": "dialog",
+      "title": "Fulfil request",
+      "opens_from": "incoming-requests",
+      "states": [
+        "default",
+        "busy",
+        "failed"
+      ],
+      "not_applicable": {
+        "invalid": "This dialog has no inputs to validate."
+      }
     },
     {
       "id": "product-editor",
