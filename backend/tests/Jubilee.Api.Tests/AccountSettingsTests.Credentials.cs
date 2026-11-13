@@ -259,4 +259,74 @@ public sealed partial class AccountSettingsTests
         Assert.Equal(HttpStatusCode.Unauthorized, (await ChangePassword(anonymous)).StatusCode);
         Assert.Equal(HttpStatusCode.Unauthorized, (await RequestEmailChange(anonymous)).StatusCode);
     }
+
+    private async Task<string> MemberIdOf(string email)
+    {
+        using var scope = _factory.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<Jubilee.Application.Abstractions.IAppDbContext>();
+        return (await db.Members.SingleAsync(m => m.Email == email)).Id.ToString();
+    }
+
+    private List<string> SecurityEvents(string name) =>
+        [.. _factory.Logs.Entries.Select(e => e.Message).Where(m => m.Contains($"Security event: {name} ", StringComparison.Ordinal))];
+
+    // L2-143 AC1: a password change, and a refused one, are logged with the actor, the address and the outcome.
+    [Fact]
+    public async Task L2_143_AC1_a_password_change_and_a_refused_one_are_logged_with_actor_address_and_outcome()
+    {
+        var client = await Join();
+        client.DefaultRequestHeaders.Add(Support.JubileeApiFactory.RemoteAddressHeader, "203.0.113.18");
+        var id = await MemberIdOf(Email);
+        _factory.Logs.Clear();
+
+        Assert.Equal(HttpStatusCode.UnprocessableEntity, (await ChangePassword(client, current: "not my password 99")).StatusCode);
+        Assert.Equal(HttpStatusCode.NoContent, (await ChangePassword(client)).StatusCode);
+
+        var events = SecurityEvents("PasswordChange");
+        Assert.Equal(2, events.Count);
+        Assert.Contains("refused", events[0], StringComparison.Ordinal);
+        Assert.Contains("succeeded", events[1], StringComparison.Ordinal);
+        Assert.All(events, e =>
+        {
+            Assert.Contains(id, e, StringComparison.Ordinal);
+            Assert.Contains("203.0.113.18", e, StringComparison.Ordinal);
+        });
+        var everything = string.Join(' ', _factory.Logs.Entries.Select(e => e.Message));
+        Assert.DoesNotContain(NewPassword, everything, StringComparison.Ordinal);
+        Assert.DoesNotContain("not my password 99", everything, StringComparison.Ordinal);
+    }
+
+    // L2-143 AC1: an e-mail change, asked for and confirmed, and a refused request are logged; no address or token reaches the log.
+    [Fact]
+    public async Task L2_143_AC1_an_e_mail_change_and_a_refused_one_are_logged_with_actor_address_and_outcome()
+    {
+        var client = await Join();
+        client.DefaultRequestHeaders.Add(Support.JubileeApiFactory.RemoteAddressHeader, "203.0.113.18");
+        var id = await MemberIdOf(Email);
+        _factory.Logs.Clear();
+
+        Assert.Equal(HttpStatusCode.UnprocessableEntity, (await RequestEmailChange(client, password: "not my password 99")).StatusCode);
+        Assert.Equal(HttpStatusCode.Accepted, (await RequestEmailChange(client)).StatusCode);
+        var token = await EmailChangeToken();
+        var opener = _factory.CreateClient();
+        opener.DefaultRequestHeaders.Add(Support.JubileeApiFactory.RemoteAddressHeader, "198.51.100.7");
+        Assert.Equal(HttpStatusCode.OK, (await opener.PostAsJsonAsync("/api/account/email-change/confirm", new { token })).StatusCode);
+
+        var requested = SecurityEvents("EmailChangeRequest");
+        Assert.Equal(2, requested.Count);
+        Assert.Contains("refused", requested[0], StringComparison.Ordinal);
+        Assert.Contains("succeeded", requested[1], StringComparison.Ordinal);
+        Assert.All(requested, e =>
+        {
+            Assert.Contains(id, e, StringComparison.Ordinal);
+            Assert.Contains("203.0.113.18", e, StringComparison.Ordinal);
+        });
+        var changed = Assert.Single(SecurityEvents("EmailChange"));
+        Assert.Contains("succeeded", changed, StringComparison.Ordinal);
+        Assert.Contains(id, changed, StringComparison.Ordinal);
+        Assert.Contains("198.51.100.7", changed, StringComparison.Ordinal);
+        var everything = string.Join(' ', _factory.Logs.Entries.Select(e => e.Message));
+        Assert.DoesNotContain(token, everything, StringComparison.Ordinal);
+        Assert.DoesNotContain(Other, everything, StringComparison.Ordinal);
+    }
 }

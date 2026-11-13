@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 namespace Jubilee.Application.Accounts;
 
 /// <summary>"Change e-mail": the new address and the current password (L2-014). Nothing changes until the link is opened.</summary>
-public sealed record RequestEmailChangeCommand(Guid MemberId, string? Email, string? CurrentPassword) : IRequest;
+public sealed record RequestEmailChangeCommand(Guid MemberId, string? Email, string? CurrentPassword, string? Address = null) : IRequest;
 
 public sealed class RequestEmailChangeCommandHandler(
     IAppDbContext db, IPasswordHasher hasher, AccountSettings settings, TimeProvider clock, ILogger<RequestEmailChangeCommandHandler> logger)
@@ -33,6 +33,7 @@ public sealed class RequestEmailChangeCommandHandler(
         if (member.PasswordHash is not null && !CurrentPassword.Matches(member, request.CurrentPassword, hasher))
         {
             errors["currentPassword"] = "CURRENT_PASSWORD_INCORRECT";
+            SecurityLog.Credential(logger, "EmailChangeRequest", "refused", member.Id, request.Address);
         }
 
         if (errors.Count > 0)
@@ -67,7 +68,7 @@ public sealed class RequestEmailChangeCommandHandler(
             now));
         await db.SaveChangesAsync(cancellationToken);
 
-        logger.LogInformation("Security event: EmailChangeRequested for member {MemberId}", member.Id);
+        SecurityLog.Credential(logger, "EmailChangeRequest", "succeeded", member.Id, request.Address);
     }
 }
 
@@ -79,7 +80,7 @@ public enum EmailChangeOutcome
 }
 
 /// <summary>Opens the link in the e-mail to the new address (L2-014 AC3). The link is the credential, so no session is needed.</summary>
-public sealed record ConfirmEmailChangeCommand(string? Token) : IRequest<EmailChangeOutcome>;
+public sealed record ConfirmEmailChangeCommand(string? Token, string? Address = null) : IRequest<EmailChangeOutcome>;
 
 public sealed class ConfirmEmailChangeCommandHandler(IAppDbContext db, TimeProvider clock, ILogger<ConfirmEmailChangeCommandHandler> logger)
     : IRequestHandler<ConfirmEmailChangeCommand, EmailChangeOutcome>
@@ -109,13 +110,14 @@ public sealed class ConfirmEmailChangeCommandHandler(IAppDbContext db, TimeProvi
         token.Redeem(now);
         await db.SaveChangesAsync(cancellationToken);
 
-        logger.LogInformation("Security event: EmailChanged for member {MemberId}", member.Id);
+        SecurityLog.Credential(logger, "EmailChange", "succeeded", member.Id, request.Address);
         return EmailChangeOutcome.Confirmed;
     }
 }
 
 /// <summary>"Change password" or, for a member who joined with Google, "Set a password" (L2-015).</summary>
-public sealed record ChangePasswordCommand(Guid MemberId, string? CurrentPassword, string? NewPassword, string? RepeatPassword, Guid? KeepSessionId = null) : IRequest<Member>;
+public sealed record ChangePasswordCommand(
+    Guid MemberId, string? CurrentPassword, string? NewPassword, string? RepeatPassword, Guid? KeepSessionId = null, string? Address = null) : IRequest<Member>;
 
 public sealed class ChangePasswordCommandHandler(
     IAppDbContext db, IPasswordHasher hasher, IBreachedPasswordChecker breaches, TimeProvider clock, ILogger<ChangePasswordCommandHandler> logger)
@@ -130,6 +132,7 @@ public sealed class ChangePasswordCommandHandler(
         if (member.PasswordHash is not null && !CurrentPassword.Matches(member, request.CurrentPassword, hasher))
         {
             errors["currentPassword"] = "CURRENT_PASSWORD_INCORRECT";
+            SecurityLog.Credential(logger, "PasswordChange", "refused", member.Id, request.Address);
         }
 
         var password = request.NewPassword ?? string.Empty;
@@ -183,8 +186,27 @@ public sealed class ChangePasswordCommandHandler(
             now));
         await db.SaveChangesAsync(cancellationToken);
 
-        logger.LogInformation("Security event: PasswordChanged for member {MemberId}", member.Id);
+        SecurityLog.Credential(logger, "PasswordChange", "succeeded", member.Id, request.Address);
         return member;
+    }
+}
+
+/// <summary>
+/// A change of credentials in the security log (L2-143 AC1): the event, its outcome, the member and the
+/// caller's address; the time is the log's own. No password, address or token is written.
+/// </summary>
+internal static class SecurityLog
+{
+    public static void Credential(ILogger logger, string name, string outcome, Guid memberId, string? address)
+    {
+        if (outcome == "refused")
+        {
+            logger.LogWarning("Security event: {Event} {Outcome} for member {MemberId} from {Address}", name, outcome, memberId, address ?? "unknown");
+        }
+        else
+        {
+            logger.LogInformation("Security event: {Event} {Outcome} for member {MemberId} from {Address}", name, outcome, memberId, address ?? "unknown");
+        }
     }
 }
 
