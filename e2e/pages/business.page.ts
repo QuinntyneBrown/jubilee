@@ -55,6 +55,8 @@ export class BusinessPage extends ShellPage implements Screen {
   readonly kicker: Locator;
   readonly categoryLink: Locator;
   readonly heading: Locator;
+  /** The canonical link of the listing page in the document head (L2-243 AC7). */
+  readonly canonical: Locator;
   readonly ownerName: Locator;
   readonly tagline: Locator;
   readonly credentialTags: Locator;
@@ -111,6 +113,7 @@ export class BusinessPage extends ShellPage implements Screen {
     this.kicker = this.main.locator('.detail-head__kicker');
     this.categoryLink = this.kicker.getByRole('link').last();
     this.heading = this.main.getByRole('heading', { level: 1 });
+    this.canonical = page.locator('head link[rel="canonical"]');
     this.ownerName = this.main.locator('.detail-head p > strong');
     this.tagline = this.main.locator('.detail-head .lead');
     this.credentialTags = this.main.locator('.detail-head .tag');

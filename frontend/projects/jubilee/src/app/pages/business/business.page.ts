@@ -12,6 +12,7 @@ import {
   signal,
   untracked,
 } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import {
@@ -187,6 +188,9 @@ export class BusinessPage {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly title = inject(Title);
+  private readonly document = inject(DOCUMENT);
+  /** The canonical link in the head while a listing shows (L2-243 AC7). */
+  private canonical: HTMLLinkElement | null = null;
   private readonly hints = inject(ListingHints);
   private request?: Subscription;
   private readonly session = inject(SessionService);
@@ -339,10 +343,24 @@ export class BusinessPage {
     });
     inject(DestroyRef).onDestroy(() => {
       this.left = true;
+      this.canonical?.remove();
       params.unsubscribe();
       urls.unsubscribe();
       this.request?.unsubscribe();
     });
+  }
+
+  /**
+   * Names the listing's page in the app as its canonical link (L2-243 AC7): a crawler that came by
+   * the listing's address, https://{slug}.jubilee.to, indexes the listing once.
+   */
+  private nameCanonical(slug: string): void {
+    if (!this.canonical) {
+      this.canonical = this.document.createElement('link');
+      this.canonical.rel = 'canonical';
+      this.document.head.appendChild(this.canonical);
+    }
+    this.canonical.href = `${this.document.location.origin}/b/${slug}`;
   }
 
   protected load(): void {
@@ -356,6 +374,7 @@ export class BusinessPage {
         this.hints.rememberCategory(listing.related, listing.category.slug);
         this.state.set({ status: 'loaded', value: listing });
         this.title.setTitle(`${listing.name} · Jubilee`);
+        this.nameCanonical(listing.slug);
         // A listing that is not public shows no reviews (L2-226 AC7).
         if (listing.status === 'live') this.reviews.load(listing.slug);
         // A listing view counts for the owner's statistics; their own visits do not (L2-037),

@@ -7,6 +7,31 @@ import { NotFoundPage } from '../pages/not-found.page';
 // "business" is /b/legacy-financial against the recorded answers of the seeded API (ADR 0009).
 
 test.describe('service business page (L2-033)', () => {
+  test('L2-243 AC7: the listing page names its page in the app as its canonical link, and takes it away on leaving', async ({
+    page,
+    jb,
+  }) => {
+    const business = new BusinessPage(page);
+    await business.setWidth(1280);
+    // An address is stated, and the canonical link is still the page in the app.
+    await patchListing(page, '**/api/listings/legacy-financial', (listing) => ({
+      ...listing,
+      address: 'https://legacy-financial.jubilee.to',
+    }));
+    await jb.open('business');
+
+    await expect(business.heading).toHaveText('Legacy Financial');
+    await expect(business.canonical).toHaveCount(1);
+    await expect(business.canonical).toHaveAttribute(
+      'href',
+      /^http:\/\/localhost:\d+\/b\/legacy-financial$/,
+    );
+    await business.backLink.click();
+
+    await expect(page).toHaveURL(/\/$/);
+    await expect(business.canonical).toHaveCount(0);
+  });
+
   test('AC1: it shows the header, actions, highlight, services, About, Details, related and report', async ({
     page,
     jb,
