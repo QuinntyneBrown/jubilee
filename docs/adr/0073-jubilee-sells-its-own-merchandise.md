@@ -117,7 +117,7 @@ the team must configure.
 No publishable key is needed: the app follows the session's URL and loads no Stripe script. None of
 these is committed. Without `Stripe:SecretKey` checkout answers 503 with the code
 `checkout_unavailable` and the page says "Checkout isn't open yet." Without
-`Stripe:WebhookSecret` the webhook answers 401 to everything.
+`Stripe:WebhookSecret` the webhook refuses every event (400 `signature_invalid`).
 
 ### Limits
 

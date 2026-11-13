@@ -40,7 +40,7 @@ Jubilee is a directory of Christian-owned businesses in Toronto. A member finds 
 messages it, books a meeting, asks for a quote or requests a product, and the business confirms or
 declines. An owner agrees to the statement of faith, publishes their listing and is live straight
 away; the Jubilee team looks through listings and takes down any that misrepresent a business.
-Jubilee does not take payment; members pay the business directly.
+Jubilee takes no payment between members and businesses; members pay the business directly. The one thing Jubilee sells is its own merchandise, the Purpose Tee (L1-034, ADR 0073).
 
 ## Contents
 
