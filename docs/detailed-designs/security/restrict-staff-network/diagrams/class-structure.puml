@@ -11,18 +11,17 @@ skinparam class {
 }
 title Class structure — Restrict staff access by network
 
-class StaffAccessOptions {
-  +string[] AllowedNetworks
-  +string? ProxyKey
+class IConfiguration {
+  StaffAccess:AllowedNetworks
+  StaffAccess:ProxyKey
 }
 class StaffNetworks {
   -IPNetwork[] networks
-  +{static} Parse(entries: string[]): StaffNetworks
+  +{static} From(configuration: IConfiguration): StaffNetworks
   +Allows(address: IPAddress?): bool
 }
 class StaffNetworkMiddleware {
   +InvokeAsync(context: HttpContext): Task
-  -IsStaffPath(path: PathString): bool
 }
 class StaffProxyMiddleware {
   +ProxyKeyHeader = "X-Jubilee-Proxy-Key"
@@ -30,8 +29,8 @@ class StaffProxyMiddleware {
   +InvokeAsync(context: HttpContext): Task
 }
 class ForwardedHeadersOptions
-StaffNetworks ..> StaffAccessOptions : built from
+StaffNetworks ..> IConfiguration : reads AllowedNetworks
 StaffNetworkMiddleware --> StaffNetworks : asks
-StaffProxyMiddleware ..> StaffAccessOptions : reads ProxyKey
+StaffProxyMiddleware ..> IConfiguration : reads ProxyKey
 ForwardedHeadersOptions ..> StaffProxyMiddleware : runs before
 @enduml

@@ -17,6 +17,11 @@ export class AdminMovedPage extends ShellPage implements Screen {
     this.backToBrowse = this.statusPage.getByRole('link', { name: 'Back to browse' });
   }
 
+  /** The links inside a part of the app's chrome that lead to an admin screen, in the app or in the admin application. */
+  adminLinksIn(region: Locator): Locator {
+    return region.locator('a[href*="/admin"], a[href*="admin."], a[href*=":4202"]');
+  }
+
   async ready(): Promise<void> {
     await this.heading.waitFor();
   }

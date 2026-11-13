@@ -120,8 +120,8 @@ to `Jubilee API`; `Jubilee Web` keeps only the moved page.
 
 ### Class structure
 
-`StaffSessionService` holds a `StaffMemberView`; the guard and the shell read
-it, and the pages read the API through `AdminApi`.
+`StaffSessionService` holds the `StaffSessionDto` of `GET /api/staff/session`
+in a signal; the guard and the shell read it, and the pages read the API through `AdminApi`.
 
 ![Class diagram for the admin application](diagrams/class-structure.png)
 

@@ -7,10 +7,14 @@
 | authorize-staff-requests | 4 days | 100% |
 | limit-abuse | 5 days | 20% |
 | protect-credentials-and-sessions | 4 days | 0% |
-| restrict-staff-network | 4 days | 90% |
+| restrict-staff-network | 4 days | 95% |
 | secure-transport-and-tokens | 3 days | 0% |
 | secure-uploads | 4 days | 65% |
 | validate-input | 3 days | 0% |
+
+## authorize-staff-requests and restrict-staff-network
+
+Built (ADR 0040, ADR 0070): every admin-only endpoint answers a staff session only, with a test per endpoint that a member session is refused (L2-191 AC5), and the staff endpoints answer the allow-list only, checked before any session, failing closed, and believing a forwarded address from the trusted proxy alone (`StaffAccessTests`, `NetworkRestrictionTests`). Left in restrict-staff-network: the allowed networks on the admin host and the API in production (step 5 of the owner's checklist in `eng/azure/README.md`).
 
 ## limit-abuse
 

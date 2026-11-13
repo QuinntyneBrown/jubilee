@@ -1,15 +1,17 @@
 #!/bin/bash
 # Creates the App Service of the admin application (admin.jubilee.to, frontend/projects/admin,
-# ADR 0040) and binds its host name: step 4 and step 6 of "The admin application" in README.md,
-# and the proxy key of step 5. Run it in Azure Cloud Shell (bash) or anywhere with az signed in:
+# ADR 0040), sets the proxy key, and binds its host name: step 3 of the owner's checklist under
+# "The admin application" in README.md. Given STAFF_NETWORKS it also does step 5, the allowed
+# networks. Run it in Azure Cloud Shell (bash) or anywhere with az signed in:
 #
 #   bash eng/azure/create-admin.sh
+#   STAFF_NETWORKS='203.0.113.0/24, 2001:db8:5::/48' bash eng/azure/create-admin.sh
 #
 # It changes nothing that is already in place, so run it again once the DNS records it names are
 # published. It never prints the proxy key. It does not deploy: the Deploy workflow (or deploy.sh)
-# deploys the admin application once this App Service exists. Staff sign-in and the allowed
-# networks (steps 1 to 3 and the rest of step 5) stay by hand; until they are set the API refuses
-# every staff request.
+# deploys the admin application once this App Service exists. The identity provider's
+# registration and its second factor, and the staff sign-in settings (steps 1, 2 and 4), stay by
+# hand; until the allowed networks are set the API refuses every staff request.
 set -euo pipefail
 
 GROUP=${GROUP:-rg-jubilee-prod}
@@ -43,6 +45,42 @@ if [[ "$has_key" == "0" ]]; then
   unset key
 else
   echo "== The proxy key is already set"
+fi
+
+# The allowed networks (step 5 of the owner's checklist in README.md, L2-192): only when
+# STAFF_NETWORKS names them, as addresses or CIDR ranges separated by commas. The admin App
+# Service answers those networks and denies the rest (AC5), and the API's staff endpoints answer
+# the same list (StaffAccess__AllowedNetworks, AC1). Rules already in place are kept.
+if [[ -n "${STAFF_NETWORKS:-}" ]]; then
+  echo "== Allowing the staff networks on $ADMIN_APP and on the staff endpoints of $APP_APP"
+  IFS=',' read -ra networks <<<"$STAFF_NETWORKS"
+  allowed=$(az webapp config access-restriction show -g "$GROUP" -n "$ADMIN_APP" \
+    --query "ipSecurityRestrictions[?action=='Allow'].ipAddress" -o tsv)
+  # New rules are numbered after the ones already there, so a name or priority is never reused.
+  priority=$((100 + $(grep -c . <<<"$allowed" || true)))
+  list=()
+  for network in "${networks[@]}"; do
+    network=$(xargs <<<"$network")
+    [[ -z "$network" ]] && continue
+    if [[ "$network" != */* && "$network" == *:* ]]; then
+      network="$network/128"
+    elif [[ "$network" != */* ]]; then
+      network="$network/32"
+    fi
+    list+=("$network")
+    priority=$((priority + 1))
+    if grep -qxF "$network" <<<"$allowed"; then
+      echo "   $network is already allowed"
+    else
+      az webapp config access-restriction add -g "$GROUP" -n "$ADMIN_APP" --rule-name "staff-$priority" \
+        --action Allow --ip-address "$network" --priority "$priority" -o none
+    fi
+  done
+  az webapp config access-restriction set -g "$GROUP" -n "$ADMIN_APP" --default-action Deny -o none
+  joined=$(IFS=','; echo "${list[*]}")
+  az webapp config appsettings set -g "$GROUP" -n "$APP_APP" --settings "StaffAccess__AllowedNetworks=$joined" -o none
+else
+  echo "== STAFF_NETWORKS is not given: the allowed networks are left as they are"
 fi
 
 # The host name: needs the CNAME and the asuid TXT record first.

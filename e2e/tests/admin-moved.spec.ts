@@ -3,6 +3,7 @@
 // Description: the app after the Jubilee team's screens moved to the admin application: no
 // admin link in its chrome, and old /admin links say where the screens went.
 import { ADMIN_URL, expect, test } from '../fixtures/jb-test';
+import { AccountMenuDialog } from '../pages/account-menu.dialog';
 import { AdminMovedPage } from '../pages/admin-moved.page';
 
 const LISTING_ID = '3f1d2c4e-7a55-4c0e-9d3a-0a1b2c3d4e5f';
@@ -16,6 +17,22 @@ test.describe('the app after the move (L2-194)', () => {
 
     await expect(moved.primaryNav.getByRole('link', { name: 'Browse' })).toBeVisible();
     await expect(moved.topBarLink(/Verif/)).toHaveCount(0);
+    await expect(moved.topBarLink(/^(Listings|Reports|Featured|Admin)/)).toHaveCount(0);
+    await expect(moved.adminLinksIn(moved.topBar)).toHaveCount(0);
+  });
+
+  test('AC1: the account menu shows no link to an admin screen', async ({ page, jb }) => {
+    const moved = new AdminMovedPage(page);
+    const menu = new AccountMenuDialog(page);
+    await moved.setWidth(1280);
+    await jb.signInAs('member');
+    await jb.goto('/');
+
+    await moved.avatar.click();
+
+    await expect(menu.item('Your account')).toBeVisible();
+    await expect(menu.items).not.toContainText([/Listings|Reports|Featured|Admin/]);
+    await expect(moved.adminLinksIn(menu.root)).toHaveCount(0);
   });
 
   test('AC1: on a phone the tab bar shows no admin entry', async ({ page, jb }) => {
@@ -26,6 +43,7 @@ test.describe('the app after the move (L2-194)', () => {
 
     await expect(moved.tab('Browse')).toBeVisible();
     await expect(moved.tab(/Verif|Listings/)).toHaveCount(0);
+    await expect(moved.adminLinksIn(moved.tabBar)).toHaveCount(0);
   });
 
   const screens = [

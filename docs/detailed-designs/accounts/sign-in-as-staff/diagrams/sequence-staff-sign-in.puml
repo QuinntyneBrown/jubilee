@@ -49,7 +49,7 @@ else token valid
     handler --> ctrl : NotStaff
     ctrl --> actor : 302 to /sign-in?error=not-staff (L2-189)
   else staff account
-    handler -> entity : BindTo(tenant, object) on first sign-in (L2-193)
+    handler -> entity : TryBindTo(tenant, object) on first sign-in (L2-193)
     handler -> db : Save
     handler --> ctrl : SignedIn with roles and matching member
     ctrl -> db : Store a new Staff session - Kind staff (L2-190)

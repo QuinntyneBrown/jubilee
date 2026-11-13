@@ -2,10 +2,10 @@
 // Traces to: L2-188, L2-189, L2-190, L2-192
 // Description: the admin application: its shell and navigation, staff sign-in through single
 // sign-on, signing out and the end of a staff session, and the refused network.
-import { stubAdmin } from '../fixtures/admin';
-import { stubModeration } from '../fixtures/moderation';
+import { LISTING_ID, stubAdmin } from '../fixtures/admin';
+import { REPORT_ID, stubModeration } from '../fixtures/moderation';
 import { ADMIN_URL, expect, test } from '../fixtures/jb-test';
-import { miriam, stubStaff } from '../fixtures/staff';
+import { daniel, miriam, stubStaff } from '../fixtures/staff';
 import { AdminShellPage } from '../pages/admin-shell.page';
 import { AdminSignInPage } from '../pages/admin-sign-in.page';
 import { AdminListingsPage } from '../pages/admin-listings.page';
@@ -47,6 +47,30 @@ test.describe('the admin application (L2-188)', () => {
 
     await expect(shell.staffRole).toHaveText('Moderator · Administrator');
   });
+
+  for (const path of [
+    '/listings',
+    `/listings/${LISTING_ID}`,
+    '/reports',
+    `/reports/${REPORT_ID}`,
+    '/featured',
+  ]) {
+    test(`AC4: ${path} tells a staff member without the moderator role that it is not for them, and the navigation offers only Policies`, async ({
+      page,
+      jb,
+    }) => {
+      const shell = new AdminShellPage(page);
+      await shell.setWidth(1280);
+      await stubStaff(page, daniel);
+      await jb.gotoAdmin(path);
+
+      await expect(shell.statusHeading).toHaveText('Nothing here for your role');
+      await expect(shell.statusText).toHaveText(
+        'These screens are for the Jubilee team. Ask a Jubilee administrator to add the moderator role to your staff account.',
+      );
+      await expect(shell.navLinks).toHaveText(['Policies']);
+    });
+  }
 
   test('AC5: without a staff session a screen sends the browser to sign in, keeping where it was going', async ({
     page,

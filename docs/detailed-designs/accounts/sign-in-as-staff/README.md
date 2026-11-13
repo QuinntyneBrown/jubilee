@@ -60,7 +60,8 @@ session, and never shared with the app (`L2-190`).
   `Moderator`, `Admin`; the `Moderator` flag keeps the stored value of the
   former `verifier` role, so earlier grants carry over, ADR 0057), `TenantId`,
   `ObjectId`, `CreatedAt`. `Grant`, `Revoke`
-  and `BindTo(tenant, object)`; binding twice to different identities is refused.
+  and `TryBindTo(tenant, object)`, which binds the account on first sign-in and
+  answers false for a second, different identity.
 - **`Staff` scheme and `StaffTicketStore`** — the second cookie authentication
   scheme. The cookie is `__Host-jubilee.staff` (HttpOnly, Secure,
   SameSite=Strict, path `/`, no expiry). The ticket is kept in the sessions

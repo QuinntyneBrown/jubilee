@@ -28,6 +28,7 @@ public sealed class StaffAccessTests : IClassFixture<JubileeApiFactory>, IAsyncL
     {
         { "GET", "/api/admin/listings" },
         { "GET", $"/api/admin/listings/{Any}" },
+        { "POST", $"/api/admin/listings/{Any}/take-down" },
         { "GET", "/api/admin/audit" },
         { "GET", "/api/admin/reports" },
         { "POST", $"/api/admin/reports/{Any}/open" },
@@ -35,6 +36,8 @@ public sealed class StaffAccessTests : IClassFixture<JubileeApiFactory>, IAsyncL
         { "GET", "/api/admin/featured" },
         { "GET", "/api/admin/featured/candidates" },
         { "PUT", "/api/admin/featured-weeks/2026-11-16" },
+        { "GET", "/api/admin/content" },
+        { "GET", "/api/admin/content/terms" },
         { "GET", "/api/admin/content/terms/versions" },
         { "POST", "/api/admin/content/terms/versions" },
     };
@@ -102,7 +105,7 @@ public sealed class StaffAccessTests : IClassFixture<JubileeApiFactory>, IAsyncL
 
     // L2-191 AC3
     [Fact]
-    public async Task L2_191_AC3_a_staff_session_with_the_moderator_role_reaches_the_queue()
+    public async Task L2_191_AC3_a_staff_session_with_the_moderator_role_reaches_the_listings()
     {
         var esther = _factory.CreateStaffClient("Esther Mensah", "member|esther", "moderator");
 
@@ -246,7 +249,7 @@ public sealed class StaffAccessTests : IClassFixture<JubileeApiFactory>, IAsyncL
         Assert.DoesNotContain("domain", cookie, StringComparison.OrdinalIgnoreCase);
     }
 
-    // L2-190 AC4, AC5
+    // L2-190 AC4
     [Fact]
     public async Task L2_190_AC4_signing_out_ends_the_staff_session_on_the_server()
     {
@@ -260,5 +263,52 @@ public sealed class StaffAccessTests : IClassFixture<JubileeApiFactory>, IAsyncL
 
         Assert.Equal(HttpStatusCode.NoContent, signOut.StatusCode);
         Assert.Equal(HttpStatusCode.Unauthorized, replayed.StatusCode);
+    }
+
+    /// <summary>Joins Joanna and signs her in to the app in the browser that holds Esther's staff session.</summary>
+    private async Task SignInMember(HttpClient browser)
+    {
+        var joined = await _factory.CreateClient().PostAsJsonAsync("/api/account/join", new
+        {
+            firstName = "Joanna",
+            lastName = "Adeyemi",
+            email = "joanna.adeyemi@example.com",
+            password = "correct horse 13",
+            homeChurch = (string?)null,
+            agreementAccepted = true,
+        });
+        Assert.Equal(HttpStatusCode.Created, joined.StatusCode);
+        var signedIn = await browser.PostAsJsonAsync(
+            "/api/session", new { email = "joanna.adeyemi@example.com", password = "correct horse 13", keepSignedIn = false });
+        Assert.Equal(HttpStatusCode.OK, signedIn.StatusCode);
+    }
+
+    // L2-190 AC5: signing out of the app never ends a staff session
+    [Fact]
+    public async Task L2_190_AC5_signing_out_of_the_app_leaves_the_staff_session_in_the_same_browser()
+    {
+        var browser = _factory.CreateStaffClient("Esther Mensah", "member|esther", "moderator");
+        await SignInMember(browser);
+        Assert.Equal(HttpStatusCode.OK, (await browser.GetAsync("/api/me/navigation")).StatusCode);
+
+        var signOut = await browser.DeleteAsync("/api/session");
+
+        Assert.Equal(HttpStatusCode.NoContent, signOut.StatusCode);
+        Assert.Equal(HttpStatusCode.Unauthorized, (await browser.GetAsync("/api/me/navigation")).StatusCode);
+        Assert.Equal(HttpStatusCode.OK, (await browser.GetAsync("/api/staff/session")).StatusCode);
+    }
+
+    // L2-190 AC5: signing out of the admin application leaves the member session
+    [Fact]
+    public async Task L2_190_AC5_signing_out_of_the_admin_application_leaves_the_member_session_in_the_same_browser()
+    {
+        var browser = _factory.CreateStaffClient("Esther Mensah", "member|esther", "moderator");
+        await SignInMember(browser);
+
+        var signOut = await browser.DeleteAsync("/api/staff/session");
+
+        Assert.Equal(HttpStatusCode.NoContent, signOut.StatusCode);
+        Assert.Equal(HttpStatusCode.Unauthorized, (await browser.GetAsync("/api/staff/session")).StatusCode);
+        Assert.Equal(HttpStatusCode.OK, (await browser.GetAsync("/api/me/navigation")).StatusCode);
     }
 }

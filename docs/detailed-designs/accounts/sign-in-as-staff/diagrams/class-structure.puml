@@ -35,7 +35,7 @@ class StaffMember {
   +{static} Create(email: string, now: DateTimeOffset): StaffMember
   +Grant(role: StaffRoles): void
   +Revoke(role: StaffRoles): void
-  +BindTo(tenant: string, objectId: string): void
+  +TryBindTo(tenantId: string, objectId: string): bool
 }
 class StaffIdentity <<value object>> {
   +string TenantId
