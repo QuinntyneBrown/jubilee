@@ -3,23 +3,24 @@
 LAYOUT_WITH_LEGEND()
 title Containers — Delete account
 
-
 Person(member, "Member", "Deletes the account")
 System_Boundary(jubilee, "Jubilee") {
-  Container(web, "Jubilee Web", "Angular single-page application", "Account page and delete dialog")
+  Container(web, "Jubilee Web", "Angular single-page application", "Account page and delete dialog; clears the device")
   Container(api, "Jubilee API", "ASP.NET Core", "Deletion endpoints under /api/account")
-  Container(worker, "Jubilee Worker", ".NET worker service", "Outbox dispatch and the daily erasure job")
-  ContainerDb(db, "Jubilee database", "SQL Server", "Members and requests and listings and audit log")
-  ContainerDb(cache, "Cache", "Redis", "Server-side sessions")
-  ContainerDb(search, "Search index", "Query-time analysis over SQL Server", "Public listings and products")
+  Container(worker, "Jubilee Worker", ".NET worker service", "Outbox dispatch, ledger re-application and erasure")
+  ContainerDb(db, "Jubilee database", "Azure SQL", "Members, sessions, requests, listings, audit log; backups 35 days or less")
+  ContainerDb(ledger, "Deletion ledger", "File on persistent storage", "Account id and time of each deletion")
+  ContainerDb(media, "Media and export stores", "Persistent storage", "Photos and archives")
 }
-System_Ext(email, "E-mail provider", "Transactional e-mail. Vendor <TO SUPPLY>")
+System_Ext(email, "E-mail provider", "Azure Communication Services e-mail")
 
 Rel(member, web, "Uses", "HTTPS")
-Rel(web, api, "GET deletion-impact and POST deletion", "JSON/HTTPS")
-Rel(api, db, "Closes the account in one transaction", "EF Core")
-Rel(api, cache, "Ends every session", "Redis protocol")
-Rel(worker, db, "Reads the outbox and erases after 30 days", "EF Core")
-Rel(worker, search, "Removes the unpublished listing")
-Rel(worker, email, "Sends the confirmation e-mail", "HTTPS")
+Rel(web, api, "GET deletion-summary and DELETE /api/account", "JSON/HTTPS")
+Rel(api, db, "Closes the account and ends its sessions in one transaction", "EF Core")
+Rel(api, ledger, "Appends the deletion")
+Rel(api, media, "Deletes the archives")
+Rel(worker, ledger, "Reads and completes")
+Rel(worker, db, "Re-applies deletions after a restore and erases after 30 days", "EF Core")
+Rel(worker, media, "Removes the photos of the member's listings")
+Rel(worker, email, "Sends the business e-mails and the confirmation", "HTTPS")
 @enduml

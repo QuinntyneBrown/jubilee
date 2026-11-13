@@ -3,39 +3,39 @@
 LAYOUT_WITH_LEGEND()
 title Components — Download data
 
-
 Container_Boundary(web, "Jubilee Web") {
-  Component(page, "AccountPage", "Angular page", "Download action at /account")
-  Component(dl, "DataDownloadPage", "Angular page", "Opens the e-mailed link behind AuthGuard")
-  Component(client, "AccountApi", "Typed HTTP client", "requestDataExport and downloadDataExport")
+  Component(page, "AccountPage", "Angular page", "Your data card at /account")
+  Component(dl, "DataDownloadPage", "Angular page", "Opens the e-mailed link behind memberGuard")
+  Component(client, "AccountDataApi", "Typed HTTP client", "requestDataExport, currentDataExport, downloadDataExport")
 }
 Container_Boundary(api, "Jubilee API") {
-  Component(ctrl, "DataExportsController", "ASP.NET Core controller", "POST and GET /api/account/data-exports")
-  Component(reqH, "RequestDataExportCommandHandler", "MediatR handler", "Creates the DataExport and outbox message")
-  Component(dlH, "DownloadDataExportQueryHandler", "MediatR handler", "Checks token and member and expiry")
+  Component(ctrl, "AccountController", "ASP.NET Core controller", "POST and GET /api/account/data-exports")
+  Component(reqH, "RequestDataExportCommandHandler", "MediatR handler", "Creates the DataExport, 3 a day")
+  Component(statusH, "GetDataExportStatusQueryHandler", "MediatR handler", "Latest export for the card")
+  Component(dlH, "DownloadDataExportQueryHandler", "MediatR handler", "Checks token, member and expiry")
 }
 Container_Boundary(worker, "Jubilee Worker") {
-  Component(job, "DataExportJob", "Hosted job", "Builds and stores the archive and queues the link")
-  Component(builder, "DataArchiveBuilder", "Application service", "Composes the JSON sections")
-  Component(store, "IExportStore", "Storage adapter", "Private archive files")
-  Component(cleanup, "DataExportCleanupJob", "Hosted job", "Deletes files after 7 days")
+  Component(job, "DataExportJob", "Hosted job", "Every 10 seconds; expiry once an hour")
+  Component(builder, "DataExportBuilder", "Application service", "Builds, retries with back-off, dead-letters")
+  Component(archive, "DataArchive", "Application service", "Composes the JSON sections")
 }
-ContainerDb(db, "Jubilee database", "SQL Server", "DataExport and LinkToken and member data")
-ContainerDb(storage, "Media storage", "Object storage", "Private export area")
-System_Ext(email, "E-mail provider", "Vendor <TO SUPPLY>")
+Component(store, "IExportStore", "FileExportStore", "Archives in Exports:Root")
+ContainerDb(db, "Jubilee database", "Azure SQL", "DataExport and member data and outbox")
+System_Ext(email, "E-mail provider", "Azure Communication Services e-mail")
 
-Rel(page, client, "requestDataExport")
+Rel(page, client, "requestDataExport, currentDataExport")
 Rel(dl, client, "downloadDataExport")
 Rel(client, ctrl, "Calls", "JSON/HTTPS")
 Rel(ctrl, reqH, "Sends RequestDataExportCommand")
+Rel(ctrl, statusH, "Sends GetDataExportStatusQuery")
 Rel(ctrl, dlH, "Sends DownloadDataExportQuery")
 Rel(reqH, db, "Saves", "EF Core")
-Rel(dlH, db, "Reads", "EF Core")
-Rel(dlH, storage, "Opens the file stream")
-Rel(job, builder, "Builds with")
-Rel(job, store, "Stores with")
-Rel(builder, db, "Reads member data", "EF Core")
-Rel(store, storage, "Writes and deletes")
-Rel(cleanup, store, "Deletes expired with")
-Rel(job, email, "Queues the link e-mail for")
+Rel(dlH, db, "Finds the export by token hash", "EF Core")
+Rel(dlH, store, "Reads the archive")
+Rel(job, builder, "Runs")
+Rel(builder, archive, "Builds with")
+Rel(builder, store, "Saves and deletes with")
+Rel(archive, db, "Reads member data", "EF Core")
+Rel(builder, db, "Queues the link e-mail and the alert", "EF Core")
+Rel(db, email, "Outbox delivered by OutboxDispatcherJob to")
 @enduml

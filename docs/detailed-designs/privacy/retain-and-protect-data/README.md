@@ -76,6 +76,17 @@ start-up of `Jubilee API` and `Jubilee Worker`.
   backups, is created in a Canadian region of the hosting provider (region
   `<TO SUPPLY>`). The storage region of the `E-mail provider` and the
   `Observability platform` is `<TO SUPPLY>`.
+- **Backups and deleted accounts** — the `Jubilee database` keeps its
+  point-in-time restore backups 7 days (Azure SQL, Basic tier) with no
+  long-term retention, so no backup is older than 35 days; keeping it so is the
+  owner's (`eng/azure/README.md`). A deleted account is written to the deletion
+  ledger (`IDeletionLedger`), a file outside the database, and the worker
+  re-applies every deletion in the ledger when it starts and every hour, so a
+  restore from a backup taken before a deletion deletes the account again with
+  its original time, and its erasure follows 30 days after that time (`L2-017`
+  AC6 and AC7, ADR 0069). Data archives live in the export store
+  (`IExportStore`), a private folder of the app's persistent storage, and are
+  deleted after 7 days (ADR 0069).
 - **`InfrastructurePolicyCheck`** — step of the deploy pipeline that evaluates
   the infrastructure definition. It stops the deployment when a store lacks
   AES-256 encryption with managed keys, sits outside a Canadian region, or

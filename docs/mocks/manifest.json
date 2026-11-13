@@ -567,6 +567,7 @@
         "success",
         "data-requested",
         "data-failed",
+        "data-build-failed",
         "this-device-only",
         "others-signed-out",
         "sessions-loading",
@@ -1279,7 +1280,8 @@
         "default",
         "busy",
         "invalid",
-        "failed"
+        "failed",
+        "offline"
       ]
     },
     {

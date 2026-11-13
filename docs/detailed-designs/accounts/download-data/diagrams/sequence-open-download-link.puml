@@ -15,17 +15,14 @@ skinparam package {
   BackgroundColor #F9FAFB
 }
 
-
 actor "Member" as actor
 box "Frontend — Jubilee Web" #E0F2FE
-  participant "AuthGuard" as guard
+  participant "memberGuard" as guard
   participant "DataDownloadPage" as page
-  participant "AccountApi" as client
+  participant "AccountDataApi" as client
 end box
 box "Backend — Jubilee API" #D1FADF
-  participant "DataExportsController" as controller
-end box
-box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "AccountController" as controller
   participant "DownloadDataExportQueryHandler" as handler
   participant "DataExport" as export
 end box
@@ -33,32 +30,28 @@ box "Backend — Jubilee Infrastructure" #FFF4E5
   participant "IExportStore" as store
   database "Jubilee database" as db
 end box
-actor -> guard : Open the e-mailed link
+actor -> guard : Open the e-mailed link /account/data/{token}
 alt Not signed in
   guard --> actor : Send to sign-in and return to the same link afterwards
 else Signed in
   guard --> page : Activate
-  page -> page : Read the token and remove it from the address bar
   page -> client : downloadDataExport(token)
+  page -> page : Replace the address with /account/data
   client -> controller : GET /api/account/data-exports/{token}
-  controller -> controller : Authenticate session
   controller -> handler : Send DownloadDataExportQuery
-  handler -> db : Load LinkToken by SHA-256 hash and its DataExport
-  db --> handler : LinkToken and DataExport or none
-  handler -> export : IsDownloadableBy(session member and now)
+  handler -> db : Load the DataExport by the token's SHA-256 hash
+  db --> handler : DataExport or none
+  handler -> export : IsDownloadableBy(session member, now)
   export --> handler : Allowed or refused
-  alt Token unknown or older than 7 days or issued to another member (L2-018)
-    handler --> controller : Not found
-    controller --> client : 404 ProblemDetails and the attempt is logged (L2-133)
-    client --> page : Not available
-    page --> actor : Show that the link no longer works
+  alt Unknown, older than 7 days or another member's (L2-018 AC2)
+    handler --> controller : Not found, logged as a security event (L2-133)
+    controller --> client : 404 DATA_LINK_UNAVAILABLE
+    page --> actor : "This link has expired or isn't yours"
   else Same member within 7 days
-    handler -> store : OpenAsync(storage key)
-    store --> handler : Archive stream
-    handler --> controller : Stream
-    controller --> client : 200 application/json attachment with no-store
-    client --> page : File
-    page --> actor : Save the JSON archive
+    handler -> store : Read(archive key)
+    store --> handler : Archive
+    controller --> client : 200 application/json attachment, no-store, no-referrer
+    page --> actor : Save jubilee-data.json
   end
 end
 @enduml

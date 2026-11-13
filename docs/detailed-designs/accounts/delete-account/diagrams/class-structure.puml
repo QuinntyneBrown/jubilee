@@ -13,105 +13,80 @@ skinparam class {
 ' --------------------------
 title Class structure — Delete account
 
-
-enum MemberStatus {
-  Active
-  Deleted
-  Erased
+class DeleteAccountCommandHandler {
+  +Handle(command: DeleteAccountCommand): Task
 }
 
-enum RequestStatus {
-  New
-  Confirmed
-  Declined
-  Cancelled
-  Completed
+class AccountDeletion <<static>> {
+  +ApplyAsync(db, exports, member, now, ct): Task
+}
+
+class DeletionLedgerReplay {
+  +ReapplyAsync(ct): Task<int>
+}
+
+class AccountErasure {
+  +EraseDueAsync(ct): Task<int>
+}
+
+interface IDeletionLedger {
+  +Record(entry: DeletedAccount, ct): Task
+  +ReadAll(ct): Task<IReadOnlyList<DeletedAccount>>
+}
+
+class FileDeletionLedger {
+  -string path
+}
+
+class DeletedAccount <<record>> {
+  +Guid MemberId
+  +DateTimeOffset DeletedAt
 }
 
 class Member {
   +Guid Id
-  +string FirstName
-  +string LastName
-  +string Email
-  +MemberStatus Status
-  +DateTime? DeletedAt
-  +DateTime? EraseAfter
-  +Delete(now: DateTime): void
-  +Erase(now: DateTime): void
+  +DateTimeOffset? DeletedAt
+  +DateTimeOffset? ErasedAt
+  +Delete(now): void
+  +Erase(now): void
 }
 
 class Request {
-  +Guid Id
-  +Guid MemberId
-  +Guid ListingId
   +RequestStatus Status
-  +bool IsOpen
-  +CancelForAccountDeletion(now: DateTime): void
+  +Cancel(actor, now): void
+  +ForgetMember(): void
 }
 
 class Listing {
-  +Guid Id
-  +Guid OwnerId
-  +bool IsPublic
-  +Unpublish(now: DateTime): void
+  +string? OwnerId
+  +DateTimeOffset? DeletedAt
+  +Delete(now): void
 }
 
-class Message {
-  +Guid Id
-  +Guid ConversationId
-  +Guid? SenderId
-  +string Body
-  +string SenderDisplayName
+class MemberSession {
+  +string? Device
+  +string? Network
+  +End(now): void
 }
 
-class AuditEntry {
-  +Guid Id
-  +Guid ActorId
+class AuditRecord {
   +string Action
-  +string Target
-  +DateTime OccurredAt
-  +string? Reason
+  +string TargetId
+  +DateTimeOffset At
 }
 
-class DeleteAccountCommand {
-  +string Confirmation
-}
-
-class DeleteAccountCommandValidator {
-  +Validate(command: DeleteAccountCommand): ValidationResult
-}
-
-class DeleteAccountCommandHandler {
-  +Handle(command: DeleteAccountCommand): Task<Result>
-}
-
-class DeletionImpactDto {
-  +string FullName
-  +string Email
-  +int ConversationCount
-  +int OpenRequestCount
-}
-
-class AccountErasureJob {
-  +RunAsync(now: DateTime): Task
-}
-
-interface ISessionStore {
-  +EndAll(memberId: Guid): Task
-}
-
-DeleteAccountCommandHandler ..> DeleteAccountCommand : handles
-DeleteAccountCommandValidator ..> DeleteAccountCommand : validates
-DeleteAccountCommandHandler --> Member : deletes
-DeleteAccountCommandHandler --> Request : cancels open
-DeleteAccountCommandHandler --> Listing : unpublishes
-DeleteAccountCommandHandler --> AuditEntry : writes
-DeleteAccountCommandHandler ..> ISessionStore : uses
-AccountErasureJob --> Member : erases
-AccountErasureJob ..> Message : keeps as Former member
-Member --> MemberStatus : has
-Request --> RequestStatus : has
-Member "1" --> "*" Request : sent
-Member "1" --> "*" Listing : owns
-Member "0..1" <-- "*" Message : sender
+DeleteAccountCommandHandler ..> AccountDeletion : deletes with
+DeleteAccountCommandHandler ..> IDeletionLedger : records
+DeleteAccountCommandHandler --> Request : cancels open and tells the business
+DeletionLedgerReplay ..> IDeletionLedger : reads and completes
+DeletionLedgerReplay ..> AccountDeletion : deletes again with
+AccountDeletion --> Member : Delete
+AccountDeletion --> Request : cancels open
+AccountDeletion --> Listing : Delete
+AccountDeletion --> MemberSession : End
+AccountDeletion --> AuditRecord : writes
+AccountErasure --> Member : Erase
+AccountErasure --> Request : ForgetMember
+IDeletionLedger <|.. FileDeletionLedger
+IDeletionLedger "1" o-- "*" DeletedAccount
 @enduml

@@ -15,52 +15,52 @@ skinparam package {
   BackgroundColor #F9FAFB
 }
 
-
 actor "Member" as actor
 box "Frontend — Jubilee Web" #E0F2FE
   participant "AccountPage" as page
-  participant "AccountApi" as client
+  participant "AccountDataApi" as client
 end box
 box "Backend — Jubilee API" #D1FADF
-  participant "DataExportsController" as controller
-end box
-box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "AccountController" as controller
   participant "RequestDataExportCommandHandler" as handler
-  participant "DataArchiveBuilder" as builder
 end box
-box "Backend — Jubilee Worker" #D1FADF
+box "Backend — Jubilee Worker" #ECFDF3
   participant "DataExportJob" as job
+  participant "DataExportBuilder" as builder
+  participant "DataArchive" as archive
 end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
   participant "IExportStore" as store
   database "Jubilee database" as db
 end box
 participant "E-mail provider" as email
-actor -> page : Press the download action
+actor -> page : Press "Download my data"
 page -> client : requestDataExport()
 client -> controller : POST /api/account/data-exports
-controller -> controller : Authenticate session and check CSRF token
 controller -> handler : Send RequestDataExportCommand
-handler -> db : Save DataExport (Requested) and outbox message in one unit of work
-db --> handler : Commit result
-handler --> controller : Export identifier
+handler -> db : The waiting export, or a new DataExport (Requested); 429 after 3 in 24 hours
+db --> handler : Saved
+handler --> controller : DataExportStatusDto
 controller --> client : 202 Accepted
-client --> page : Requested
-page --> actor : Say that the link arrives by e-mail within 24 hours (L2-018)
-job -> db : Receive the outbox message and load the DataExport
-db --> job : DataExport (Requested)
-job -> builder : BuildAsync(member)
-builder -> db : Read profile with home church and its address and saved list and requests and messages and settings
-db --> builder : Member data
-opt Member owns a listing
-  builder -> db : Read listing and products and services and incoming requests
-  db --> builder : Owner data
+client --> page : requested
+page --> actor : "We're preparing your data" (L2-018)
+job -> builder : BuildDueAsync() every 10 seconds
+builder -> db : Exports that are Requested and due
+db --> builder : DataExport
+builder -> archive : BuildAsync(member)
+archive -> db : The member's own rows, section by section
+db --> archive : Member data, and owner data for an owner
+archive --> builder : JSON archive
+alt Built
+  builder -> store : Save(random key, archive)
+  builder -> db : MarkReady(key, SHA-256 of a 256-bit token) and the link e-mail in the outbox (L2-140)
+  db --> builder : Committed
+else Failed (L2-182)
+  builder -> db : RecordFailedAttempt: try again after 1, 2, 4, 8 minutes
+  opt Fifth failure: the dead letter
+    builder -> db : Status Failed and "Job alert: a data export failed" to the on-call contact, no personal data
+  end
 end
-builder --> job : JSON archive stream
-job -> store : SaveAsync(key and archive)
-store --> job : Stored
-job -> db : MarkReady with 7-day expiry and save LinkToken hash and e-mail outbox message (L2-140)
-db --> job : Commit result
-job -> email : Send the download link
-email --> job : Accepted
+db -> email : OutboxDispatcherJob sends the link (and the alert)
+email --> actor : "Your Jubilee data is ready to download", no unsubscribe link (L2-068 AC6)
 @enduml

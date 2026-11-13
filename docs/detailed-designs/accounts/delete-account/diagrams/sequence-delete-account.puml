@@ -15,64 +15,46 @@ skinparam package {
   BackgroundColor #F9FAFB
 }
 
-
 actor "Member" as actor
 box "Frontend — Jubilee Web" #E0F2FE
   participant "DeleteAccountDialog" as dialog
-  participant "AccountApi" as client
+  participant "AccountDataApi" as client
   participant "SessionService" as session
 end box
 box "Backend — Jubilee API" #D1FADF
   participant "AccountController" as controller
-end box
-box "Backend — Jubilee Application and Domain" #ECFDF3
   participant "DeleteAccountCommandHandler" as handler
-  participant "Member" as entity
-  participant "Request" as request
-  participant "Listing" as listing
+  participant "AccountDeletion" as deletion
 end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
-  participant "ISessionStore" as sessions
   database "Jubilee database" as db
+  participant "IDeletionLedger" as ledger
 end box
 actor -> dialog : Press "Delete my account"
-dialog -> client : getDeletionImpact()
-client -> controller : GET /api/account/deletion-impact
-controller --> client : DeletionImpactDto
-client --> dialog : Name and e-mail and counts
-dialog --> actor : Show consequences with live counts. Focus "Keep my account" (L2-129)
-actor -> dialog : Type the confirmation and press "Delete account"
-alt Field is not exactly DELETE
-  dialog --> actor : Show "Type DELETE in capital letters to confirm."
-else Field is DELETE
+dialog -> client : deletionSummary()
+client -> controller : GET /api/account/deletion-summary
+controller --> client : Name, e-mail, conversations, open requests
+dialog --> actor : Counts, "This can't be undone.", focus on "Keep my account"
+actor -> dialog : Type DELETE and press "Delete account"
+alt Not exactly DELETE
+  dialog --> actor : "Type DELETE in capital letters to confirm." Nothing is sent
+else DELETE
   dialog -> client : deleteAccount("DELETE")
-  client -> controller : POST /api/account/deletion
-  controller -> controller : Authenticate session and check CSRF token and validate confirmation
-  controller -> handler : Send DeleteAccountCommand
-  handler -> db : Load Member and open requests and owned listings
-  db --> handler : Current state
-  handler -> entity : Delete(now) (L2-017)
-  entity --> handler : Status Deleted and EraseAfter in 30 days
-  handler -> request : CancelForAccountDeletion() on each open request
-  request --> handler : Status cancelled
-  handler -> listing : Unpublish() on each owned listing
-  listing --> handler : Not public
-  handler -> db : Save changes and AuditEntry and outbox messages in one unit of work (L2-180)
-  alt Commit succeeds
-    db --> handler : Commit result
-    handler -> sessions : EndAll(member)
-    sessions --> handler : Every session ended
-    handler --> controller : Deleted
-    controller --> client : 204 No Content
-    client --> dialog : Deleted
-    dialog -> session : Clear signed-in state
-    session --> actor : Navigate to /welcome and show the confirmation toast
-  else Commit fails
-    db --> handler : Failure and rollback
-    handler --> controller : Error
-    controller --> client : ProblemDetails with error reference
-    client --> dialog : Failed
-    dialog --> actor : Show "We couldn't delete your account. Nothing was removed." and keep the typed value (L2-128)
+  client -> controller : DELETE /api/account
+  controller -> handler : Send DeleteAccountCommand with the caller's address
+  handler -> db : Cancel each open request and queue the business e-mails
+  handler -> deletion : ApplyAsync(member, now)
+  deletion -> db : Listings, saved list, drafts, alerts, sessions ended, Member.Delete, audit record
+  handler -> db : Confirmation e-mail in the outbox; SaveChanges in one unit of work
+  alt Committed
+    handler -> ledger : Record(member id, now)
+    handler -> handler : Security event AccountDeletion succeeded (L2-143)
+    controller --> client : 204, session cookie signed out
+    dialog --> session : accountDeleted(): saved pages, queue and drafts cleared
+    session --> actor : /welcome with "Your account was deleted"
+  else Failed
+    controller --> client : Error, nothing removed
+    dialog --> actor : "We couldn't delete your account", or the dropped-connection copy; DELETE kept (L2-128)
   end
 end
 @enduml

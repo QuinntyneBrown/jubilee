@@ -1,5 +1,5 @@
 @startuml
-title UML sequence behaviour — Erase personal data after 30 days
+title UML sequence behaviour — Erase personal data after 30 days, and after a restore
 skinparam backgroundColor #FFFFFF
 skinparam shadowing false
 skinparam roundcorner 12
@@ -15,50 +15,35 @@ skinparam package {
   BackgroundColor #F9FAFB
 }
 
-
-box "Backend — Jubilee Worker" #D1FADF
-  participant "OutboxDispatcherJob" as outbox
+box "Backend — Jubilee Worker" #ECFDF3
   participant "AccountErasureJob" as job
-end box
-box "Backend — Jubilee Application and Domain" #ECFDF3
-  participant "Member" as entity
-  participant "INotificationPublisher" as notifier
-  participant "ISearchIndex" as index
-  participant "IEmailSender" as sender
+  participant "DeletionLedgerReplay" as replay
+  participant "AccountDeletion" as deletion
+  participant "AccountErasure" as erasure
 end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
+  participant "IDeletionLedger" as ledger
   database "Jubilee database" as db
+  participant "IMediaStore and IExportStore" as stores
 end box
-participant "Search index" as search
-participant "E-mail provider" as email
-== Immediately after deletion ==
-outbox -> db : Read the outbox messages of the deletion
-db --> outbox : Cancelled requests and unpublished listing and confirmation e-mail
-outbox -> notifier : Notify each business of its cancelled request
-notifier --> outbox : Published
-outbox -> index : Remove the unpublished listing
-index -> search : Delete documents
-search --> index : Removed
-index --> outbox : Removed
-outbox -> sender : Send the confirmation e-mail
-sender -> email : Submit message
-email --> sender : Accepted
-sender --> outbox : Sent
-outbox -> db : Mark messages dispatched
-db --> outbox : Commit result
-== Daily run, 30 days after deletion ==
-job -> db : Load members with Status Deleted and EraseAfter passed
-db --> job : Members due for erasure
-loop Each due member
-  job -> entity : Erase(now) (L2-017)
-  entity --> job : Personal fields cleared and Status Erased
-  job -> db : Delete profile rows and saved list and conversation access
-  db --> job : Deleted
-  job -> db : Set sender of the member's messages to "Former member"
-  db --> job : Updated
-  job -> db : Commit the member's erasure
-  db --> job : Commit result
+job -> replay : ReapplyAsync() at start and every hour
+replay -> ledger : ReadAll()
+ledger --> replay : Account ids and deletion times
+replay -> db : Members by id
+loop Each entry whose member is not deleted (a restored backup)
+  replay -> deletion : ApplyAsync(member, original time): no e-mail to anyone
+  deletion -> db : Delete again; audit record account.deletion-reapplied
 end
-job -> db : Record counts and last success
-db --> job : Commit result
+loop Each deleted member missing from the ledger
+  replay -> ledger : Record(member id, deleted at)
+end
+job -> erasure : EraseDueAsync()
+erasure -> db : Members deleted 30 days ago or more, not yet erased
+loop Each due member
+  erasure -> db : "Former member" in conversations, messages, requests and reports; phone and delivery address cleared
+  erasure -> db : Exports, notifications, consents, agreements, sessions, reset requests and queued e-mails removed
+  erasure -> stores : Archives and the photos of the member's listings and products deleted
+  erasure -> db : Member.Erase(now) and SaveChanges
+end
+erasure --> job : Count, logged as a count only
 @enduml
