@@ -1,0 +1,121 @@
+WEBVTT
+
+00:00:00.431 --> 00:00:03.810
+Journey thirty-one: get ready for launch.
+
+00:00:03.810 --> 00:00:09.661
+Before Jubilee opens, a visitor leaves an e-mail address for the launch
+
+00:00:09.661 --> 00:00:15.018
+notice, or sends a business's details to be listed on launch day.
+
+00:00:15.018 --> 00:00:20.375
+This run gave every criterion of L2-215 to L2-218 a passing test.
+
+00:00:21.231 --> 00:00:24.854
+The marketing site says it plainly: launching soon.
+
+00:00:24.854 --> 00:00:29.615
+Tell me when it launches moves the page to the launch notification,
+
+00:00:29.615 --> 00:00:33.807
+clear of the top bar. Nothing on the page links to the app.
+
+00:00:34.509 --> 00:00:40.070
+Sent empty, the form sends nothing. A summary lists what to fix, each a
+
+00:00:40.070 --> 00:00:43.125
+link to its field, and takes the focus.
+
+00:00:43.960 --> 00:00:47.027
+Joanna types her address and ticks the box.
+
+00:00:47.027 --> 00:00:52.091
+While it is sent, the button is busy, the fields cannot be changed, and
+
+00:00:52.091 --> 00:00:54.160
+a second press sends nothing.
+
+00:00:54.959 --> 00:00:58.591
+If Jubilee cannot be reached, she sees no error.
+
+00:00:58.591 --> 00:01:04.039
+The form says it is still sending, and tries again every five seconds; a
+
+00:01:04.039 --> 00:01:07.899
+new test proves it when no answer comes within ten.
+
+00:01:07.899 --> 00:01:09.791
+Then: you're on the list.
+
+00:01:13.105 --> 00:01:17.949
+Past five sign-ups in an hour from one address, the form says when to
+
+00:01:17.949 --> 00:01:20.617
+try again, and keeps everything typed.
+
+00:01:23.514 --> 00:01:28.297
+The business pre-registration asks for the business, its owner and
+
+00:01:28.297 --> 00:01:33.516
+consent. When the server refuses a field the page let through, the field
+
+00:01:33.516 --> 00:01:37.068
+says so, with the summary, and every value stays.
+
+00:01:37.068 --> 00:01:37.938
+That is new.
+
+00:01:40.744 --> 00:01:45.613
+When the bot challenge is not passed, the form says so and keeps every
+
+00:01:45.613 --> 00:01:50.482
+value. New specs prove that each form sends the challenge's token, and
+
+00:01:50.482 --> 00:01:53.056
+asks for a fresh one after a refusal.
+
+00:01:55.869 --> 00:02:00.209
+Sent, the confirmation takes the focus: the Jubilee team will be in
+
+00:02:00.209 --> 00:02:03.837
+touch before launch, and the business is not listed yet.
+
+00:02:04.696 --> 00:02:09.459
+Behind the marketing host, the limits now have tests on both sides of
+
+00:02:09.459 --> 00:02:14.015
+the proxy. Each visitor's address has its own five an hour, and an
+
+00:02:14.015 --> 00:02:17.536
+address a caller states for itself is not believed.
+
+00:02:18.396 --> 00:02:22.779
+The Jubilee team reads the lists with the command line only.
+
+00:02:22.779 --> 00:02:26.725
+Its output is the export, and each reading is audited.
+
+00:02:26.725 --> 00:02:31.986
+A worker test proves the daily job deletes what is twelve months old and
+
+00:02:31.986 --> 00:02:33.228
+logs counts only.
+
+00:02:34.087 --> 00:02:39.486
+The owner now has one ordered checklist in the Azure readme, eight
+
+00:02:39.486 --> 00:02:44.067
+steps, each with its command and how to check it worked.
+
+00:02:44.067 --> 00:02:45.703
+ADR 0061 records it.
+
+00:02:46.562 --> 00:02:51.731
+What is left is the owner's: run the checklist in production, send each
+
+00:02:51.731 --> 00:02:56.755
+form once, and read it back. Journey thirty-one stands at one hundred
+
+00:02:56.755 --> 00:02:57.338
+percent.
