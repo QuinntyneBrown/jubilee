@@ -275,8 +275,9 @@ export class AccountPage implements OnInit, HasUnsavedChanges {
       })
       .closed.subscribe((deleted) => {
         if (!deleted) return;
-        // The session is over: becoming a visitor first keeps the welcome page from sending the member back.
-        this.session.resolve().subscribe(() => {
+        // The session is over: becoming a visitor first keeps the welcome page from sending the member
+        // back, and the device forgets the account (L2-017 AC3).
+        this.session.accountDeleted().subscribe(() => {
           void this.router.navigateByUrl('/welcome').then(() =>
             this.toasts.show({
               tone: 'success',

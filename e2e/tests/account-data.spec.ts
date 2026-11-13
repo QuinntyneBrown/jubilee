@@ -1,10 +1,13 @@
 import type { Page } from '@playwright/test';
 import { stubAccountData, type FakeAccountData } from '../fixtures/account-data';
 import { expect, test, type Jb } from '../fixtures/jb-test';
+import { keepOnDevice, savedOnDevice, waitForSnapshot } from '../fixtures/offline';
 import { stubProfile } from '../fixtures/profile';
+import { keepDraft } from '../fixtures/session';
 import { AccountPage } from '../pages/account.page';
 import { DataDownloadPage } from '../pages/data-download.page';
 import { DeleteAccountDialog } from '../pages/delete-account.dialog';
+import { ShellPage } from '../pages/shell.page';
 import { Toasts } from '../pages/toasts';
 
 test.describe('download your data (L2-018)', () => {
@@ -189,6 +192,32 @@ test.describe('delete your account (L2-017)', () => {
     await expect(page).toHaveURL(/\/welcome$/);
     await expect(toasts.withTitle('Your account was deleted')).toBeVisible();
     expect(fake.deletions).toEqual(['DELETE']);
+  });
+
+  test('AC3: nothing the member saw or wrote stays on the device: saved pages and drafts are cleared', async ({
+    page,
+    jb,
+  }) => {
+    // A draft of a message the member left, kept for them on this device (ADR 0046).
+    await keepDraft(page, {
+      email: 'Joanna Adeyemi',
+      address: '/messages/c-legacy',
+      key: 'composer',
+      values: { body: 'See you on Tuesday' },
+    });
+    const { dialog } = await open(page, jb);
+    await waitForSnapshot(page, 'session');
+    // A conversation the member opened, saved for reading offline (ADR 0032).
+    await keepOnDevice(page, 'conversation:c-legacy', { id: 'c-legacy', messages: [] });
+    expect((await savedOnDevice(page)).pages).toBe(2);
+    expect(await new ShellPage(page).keptDrafts()).toHaveLength(1);
+
+    await dialog.confirmation.fill('DELETE');
+    await dialog.delete.click();
+
+    await expect(page).toHaveURL(/\/welcome$/);
+    await expect.poll(() => savedOnDevice(page)).toEqual({ pages: 0, queued: 0 });
+    await expect.poll(() => new ShellPage(page).keptDrafts()).toEqual([]);
   });
 
   test('AC5: a failed deletion says nothing was removed and keeps what was typed', async ({
