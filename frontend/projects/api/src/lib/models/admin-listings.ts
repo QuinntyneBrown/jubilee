@@ -28,6 +28,8 @@ export interface AdminListingOwner {
   memberSince: string;
   /** The owner's other listings, then their drafts, each with its stage (L2-079 AC3). */
   otherListings: { name: string; stageLabel: string }[];
+  /** The owner's pronouns, for the team's words about them (L2-013 AC8); null when none were set. */
+  pronouns?: string | null;
 }
 
 /** When the Jubilee team took a listing down, who did and why (L2-100 AC5). */

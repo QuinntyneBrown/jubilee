@@ -50,8 +50,12 @@ public sealed record AdminListingsDto(int Total, int PublishedThisWeek, IReadOnl
 /// <summary>Another listing of the owner, or a draft not yet published, with its stage as the switcher words it (L2-079 AC3).</summary>
 public sealed record AdminOtherListing(string Name, string StageLabel);
 
+/// <summary>
+/// The Owner panel. <c>Pronouns</c> are the owner's own, shown to the Jubilee team so it words what it writes about
+/// them (L2-013 AC8, ADR 0065); no other reader is given them. The home church is never here (L2-196 AC7).
+/// </summary>
 public sealed record AdminListingOwner(
-    string Name, string Email, bool EmailConfirmed, DateTimeOffset MemberSince, IReadOnlyList<AdminOtherListing> OtherListings);
+    string Name, string Email, bool EmailConfirmed, DateTimeOffset MemberSince, IReadOnlyList<AdminOtherListing> OtherListings, string? Pronouns = null);
 
 public sealed record AdminTakedownDto(DateTimeOffset At, string ByName, string Reason);
 
@@ -171,7 +175,8 @@ internal static class AdminListings
                 member?.Email ?? string.Empty,
                 member?.EmailStatus == EmailStatus.Confirmed,
                 member?.CreatedAt ?? listing.CreatedAt,
-                otherListings),
+                otherListings,
+                member?.Pronouns),
             flags,
             listing.OwnerId == reviewer.Subject,
             listing.TakenDownAt is { } at ? new AdminTakedownDto(at, listing.TakenDownByName ?? "The Jubilee team", listing.TakedownReason ?? string.Empty) : null,

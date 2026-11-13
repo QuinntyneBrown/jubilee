@@ -30,6 +30,8 @@ export interface FakeAdmin {
   fields: Record<string, unknown>;
   /** The owner's other listings and drafts, each with its stage (L2-079 AC3). */
   otherListings: { name: string; stageLabel: string }[];
+  /** The owner's pronouns, shown to the Jubilee team only (L2-013 AC8); null when none were set. */
+  ownerPronouns: string | null;
 }
 
 /** A published space (L2-200 AC3): the fields that replace the business of the default listing. */
@@ -46,6 +48,7 @@ export const SPACE_LISTING = {
     emailConfirmed: true,
     memberSince: '2026-05-01T00:00:00Z',
     otherListings: [],
+    pronouns: null,
   },
   space: {
     term: 'long-term',
@@ -143,6 +146,7 @@ export async function stubAdmin(
     takedowns: [],
     staff: undefined as unknown as FakeStaff,
     fields: {},
+    ownerPronouns: 'she/her',
     otherListings: [{ name: 'Laurent Photography', stageLabel: 'Draft' }],
     ...initial,
   };
@@ -167,6 +171,7 @@ export async function stubAdmin(
       emailConfirmed: true,
       memberSince: '2026-05-01T00:00:00Z',
       otherListings: fake.otherListings,
+      pronouns: fake.ownerPronouns,
     },
     flags: ['CONTACT_IN_TEXT'],
     isOwnListing: fake.isOwnListing,
