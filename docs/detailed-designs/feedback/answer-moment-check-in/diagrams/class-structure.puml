@@ -15,13 +15,27 @@ title Class structure — Answer a moment check-in
 
 class MomentCheck <<jb-moment-check>> {
   +question: InputSignal<string>
-  +scored: OutputEmitterRef<number>
-  +noted: OutputEmitterRef<string>
+  +score: InputSignal<number | null>
+  +thanked: InputSignal<boolean>
+  +noteMax: InputSignal<number>
+  +scoreChange: OutputEmitterRef<number>
+  +sent: OutputEmitterRef<string>
 }
 
 class ScoreScale <<jb-score-scale>> {
-  +label: InputSignal<string>
-  +value: ModelSignal<number | null>
+  +legend: InputSignal<string>
+  +value: InputSignal<number | null>
+  +wide: InputSignal<boolean>
+  +clearable: InputSignal<boolean>
+  +valueChange: OutputEmitterRef<number | null>
+}
+
+class MomentCheckIn {
+  -id: string
+  +score: WritableSignal<number | null>
+  +thanked: WritableSignal<boolean>
+  +choose(score: number): void
+  +send(note: string): void
 }
 
 interface FeedbackApi {
@@ -31,13 +45,13 @@ interface FeedbackApi {
 class CheckInRequest {
   +moment: "request-sent" | "listing-submitted"
   +score: number
-  +note: string | null
+  +note?: string
 }
 
 class SaveCheckInCommand {
+  +Guid Id
   +string Subject
   +string MemberName
-  +Guid Id
   +string? Moment
   +int? Score
   +string? Note
@@ -45,7 +59,7 @@ class SaveCheckInCommand {
 
 class SaveCheckInCommandHandler {
   +{static} int CheckInsPerHour = 30
-  +Handle(command: SaveCheckInCommand): Task
+  +Handle(request: SaveCheckInCommand, cancellationToken: CancellationToken): Task
 }
 
 enum CheckInMoment {
@@ -68,9 +82,12 @@ class Feedback {
   +int? Rating
   +string? Note
   +DateTimeOffset CreatedAt
+  +{static} CheckIn(id, memberSubject, memberName, moment, score, note, now): Feedback
+  +Answer(moment: CheckInMoment, score: int, note: string?): void
 }
 
 MomentCheck *-- "1" ScoreScale
+MomentCheckIn --> FeedbackApi : saves through
 FeedbackApi ..> CheckInRequest
 SaveCheckInCommandHandler ..> SaveCheckInCommand : handles
 SaveCheckInCommandHandler --> Feedback : creates or replaces

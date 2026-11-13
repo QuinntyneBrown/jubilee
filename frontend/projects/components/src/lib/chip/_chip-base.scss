@@ -36,6 +36,24 @@
     background: var(--color-bg-subtle-hover);
   }
 
+  // On a touch screen a chip is pressed over at least 44 x 44 px (L2-162, ADR 0060) and is still
+  // drawn 32 px tall: an invisible hit area is centred on it.
+  @media (pointer: coarse) {
+    #{$root} {
+      position: relative;
+    }
+
+    #{$root}::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: max(100%, var(--target-comfortable));
+      height: max(100%, var(--target-comfortable));
+      translate: -50% -50%;
+    }
+  }
+
   @media (forced-colors: active) {
     #{$root} {
       forced-color-adjust: none;

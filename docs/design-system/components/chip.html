@@ -261,7 +261,8 @@
       <h3>Motion</h3>
       <p>Background transitions over <code>--duration-fast</code>; reduced motion makes it instant. The chip row scrolls with the page’s smooth scrolling, which is off under reduced motion.</p>
       <h3>Touch</h3>
-      <p>Default chips are 32px with 8px gaps, meeting the 24px target-spacing rule; small chips are 24px and need the same gaps. Remove buttons are 24px. In a scrolling row on phones, chips are spaced <code>--space-2</code>.</p>
+      <p>Default chips are drawn 32px tall with 8px gaps, meeting the 24px target-spacing rule; small chips are 24px and need the same gaps. Remove buttons are 24px. In a scrolling row on phones, chips are spaced <code>--space-2</code>.</p>
+      <p>On a touch screen (<code>pointer: coarse</code>) a default chip is pressed over at least 44 × 44px (<code>--target-comfortable</code>, L2-162): an invisible hit area centred on the chip reaches 6px above and below it, and the chip is still drawn 32px tall. Chips that wrap onto several rows are set in a <code>cluster</code>, whose 12px gap keeps the hit areas of two rows from overlapping. Small chips keep their 24px target. See ADR 0060.</p>
     </section>
     <section class="ds-section" id="content"><h2><a href="#content">Content</a></h2>
       <ul>

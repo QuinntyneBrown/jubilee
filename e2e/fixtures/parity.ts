@@ -1,3 +1,5 @@
+import { existsSync, readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import type { Locator, Page } from '@playwright/test';
 import { BASELINE, expect, test, themes } from './jb-test';
 import type { RouteKey } from './routes';
@@ -22,6 +24,8 @@ const MOCK_THRESHOLD = 0.01;
 const REFERENCE_THRESHOLD = 0.03;
 /** Where the mocks server (`http-server ../docs`) serves the reference images. */
 const REFERENCE_URL = 'http://localhost:4300/design-reference/magic-patterns';
+/** The reference images, on disk. */
+const REFERENCE_DIR = join(__dirname, '..', '..', 'docs', 'design-reference', 'magic-patterns');
 
 /** One variant or state of the component, on the screen state that shows it. */
 export interface ParityCase<T extends Screen = Screen> {
@@ -62,6 +66,12 @@ export interface ReferenceCrop {
 /**
  * What the Magic Patterns design shows of the component: the crops to compare with, or, when
  * the reference does not show the component, why and which frame is nearest.
+ *
+ * A component the captured frames do not show is compared with the reference as soon as the owner
+ * captures it (ADR 0060): an image of one case of the component alone, at one width, in the light
+ * theme, saved as `components/<component>/<case>-<width>.png` under
+ * `docs/design-reference/magic-patterns/`. Each such image is compared whole, with no change to
+ * the spec.
  */
 export type Reference = { crops: ReferenceCrop[] } | { absent: string; nearestFrame: string };
 
@@ -99,6 +109,26 @@ async function centre(region: Locator): Promise<void> {
   });
 }
 
+/** The width and height of a PNG, from its header. */
+function pngSize(file: string): { width: number; height: number } {
+  const header = readFileSync(file).subarray(16, 24);
+  return { width: header.readUInt32BE(0), height: header.readUInt32BE(4) };
+}
+
+/** The captures of the component alone, by the name ADR 0060 gives them, that exist. */
+function capturedCrops(component: string, cases: ParityCase[]): ReferenceCrop[] {
+  const crops: ReferenceCrop[] = [];
+  for (const item of cases) {
+    for (const width of item.widths ?? parityWidths) {
+      const frame = `components/${component}/${item.name}-${width}.png`;
+      const file = join(REFERENCE_DIR, frame);
+      if (!existsSync(file)) continue;
+      crops.push({ case: item.name, width, frame, clip: { x: 0, y: 0, ...pngSize(file) } });
+    }
+  }
+  return crops;
+}
+
 function baselineOf(component: string, file: string): string[] {
   return ['parity', component, file];
 }
@@ -110,7 +140,7 @@ export function parity(component: string, { cases, reference }: ParityOptions): 
       for (const width of item.widths ?? parityWidths) {
         for (const theme of themes) {
           test(`${item.name} matches its mock at ${width} px, ${theme}`, async ({ page, jb }) => {
-            if ('absent' in reference) {
+            if ('absent' in reference && capturedCrops(component, [item]).length === 0) {
               test.info().annotations.push({
                 type: 'magic-patterns',
                 description: `${reference.absent} Nearest frame: ${reference.nearestFrame}. Compared with the mock only.`,
@@ -131,8 +161,8 @@ export function parity(component: string, { cases, reference }: ParityOptions): 
       }
     }
 
-    if ('absent' in reference) return;
-    for (const crop of reference.crops) {
+    const crops = 'absent' in reference ? capturedCrops(component, cases) : reference.crops;
+    for (const crop of crops) {
       const item = cases.find((candidate) => candidate.name === crop.case);
       if (!item) throw new Error(`${component}: no parity case named "${crop.case}"`);
       const file = `${crop.case}-${crop.width}-magic-patterns.png`;

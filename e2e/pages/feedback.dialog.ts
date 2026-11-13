@@ -49,6 +49,60 @@ export class FeedbackDialog {
     );
   }
 
+  /**
+   * The longest time, in ms, the panel takes to arrive: its animations and those of its scrim
+   * (L2-161).
+   */
+  async arrivalMs(): Promise<number> {
+    return this.panel.evaluate((panel) => {
+      const overlay = panel.closest('.cdk-overlay-container') ?? document.body;
+      return Math.max(
+        0,
+        ...overlay
+          .getAnimations({ subtree: true })
+          .map((animation) => Number(animation.effect?.getComputedTiming().duration ?? 0)),
+      );
+    });
+  }
+
+  /**
+   * What a member can press in the panel over less than the target size (L2-162): each by its
+   * text or name, with the size of the area a press reaches. The area is measured by pressing
+   * points out from the middle of the target, so a hit area larger than what is drawn counts and
+   * a neighbour drawn over it does not. A star is pressed through its label.
+   */
+  async targetsSmallerThan(size: number): Promise<string[]> {
+    return this.panel.evaluate((panel, min) => {
+      const targets = panel.querySelectorAll<HTMLElement>(
+        'button, a[href], select, input:not([type="radio"]), label:has(input[type="radio"])',
+      );
+      const reach = (target: HTMLElement, x: number, y: number, dx: number, dy: number) => {
+        let steps = 0;
+        while (steps < min) {
+          const hit = document.elementFromPoint(x + dx * (steps + 1), y + dy * (steps + 1));
+          if (!hit || !target.contains(hit)) break;
+          steps++;
+        }
+        return steps;
+      };
+      const small: string[] = [];
+      for (const target of targets) {
+        if (!target.checkVisibility()) continue;
+        target.scrollIntoView({ block: 'center', behavior: 'instant' });
+        const box = target.getBoundingClientRect();
+        const x = box.x + box.width / 2;
+        const y = box.y + box.height / 2;
+        const width = reach(target, x, y, -1, 0) + reach(target, x, y, 1, 0) + 1;
+        const height = reach(target, x, y, 0, -1) + reach(target, x, y, 0, 1) + 1;
+        if (width < min || height < min) {
+          const name = target.getAttribute('aria-label') ?? target.textContent?.trim();
+          small.push(`${name} ${width}x${height}`);
+        }
+      }
+      return small;
+    }, size);
+  }
+
   /** Presses the scrim, beside the panel. */
   async pressScrim(): Promise<void> {
     await this.page.mouse.click(8, 8);

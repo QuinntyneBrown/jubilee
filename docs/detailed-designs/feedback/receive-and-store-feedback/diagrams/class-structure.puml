@@ -49,6 +49,9 @@ class Feedback {
   +{static} int MaxNoteLength = 1000
   +{static} int MaxAnswerLength = 2000
   +{static} int MaxScreenshots = 3
+  +{static} int MaxScreenLength = 100
+  +{static} int MaxVersionLength = 40
+  +{static} int MaxUserAgentLength = 400
   +{static} string[] KudosChips
   +{static} string[] BugPlaces
   +Guid Id
@@ -67,16 +70,28 @@ class Feedback {
   +int? TrustScore
   +string? Reply
   .. bug report ..
-  what happened, place, expectation
-  BugFrequency?, screen, browser and device
-  version, reference
+  +string? Reference
+  +string? Place
+  +string? Happened
+  +string? Expected
+  +BugFrequency? Frequency
+  +string? Screen
+  +string? UserAgent
+  +string? AppVersion
   .. kudos ..
-  chips, listing id, consent to show
+  +Guid? ListingId
+  +string? BusinessName
+  +string? Chips
+  +bool ShowOnPage
   .. check-in ..
-  CheckInMoment?
+  +CheckInMoment? Moment
   --
   +{static} IsScore(score: int?): bool
   +{static} Rate(...): Feedback
+  +{static} ReportBug(...): Feedback
+  +{static} Thank(...): Feedback
+  +{static} CheckIn(id: Guid, ...): Feedback
+  +Answer(moment: CheckInMoment, score: int, note: string?): void
   +MarkRead(): void
   +StartWork(): void
   +MarkFixed(): void
@@ -85,11 +100,13 @@ class Feedback {
 
 class FeedbackScreenshot {
   +Guid Id
-  +string MemberSubject
+  +Guid? FeedbackId
+  +string UploaderSubject
   +string ContentType
   +byte[] Content
   +DateTimeOffset CreatedAt
-  +Guid? FeedbackId
+  +{static} Store(uploaderSubject, contentType, content, now): FeedbackScreenshot
+  +AttachTo(feedbackId: Guid): void
 }
 
 class Listing {
@@ -100,11 +117,12 @@ class Listing {
 
 class FeedbackController {
   +Mine(): IReadOnlyList<FeedbackItemDto>
-  +Rate(body: SendRatingBody): 201
-  .. one action per further endpoint ..
-  POST bug-reports, POST kudos
-  POST screenshots, PUT check-ins/{id}
-  GET businesses
+  +Businesses(): IReadOnlyList<KudosBusinessDto>
+  +Rate(request: SendRatingBody): 201
+  +ReportBug(request: SendBugReportBody): 201
+  +Thank(request: SendKudosBody): 201
+  +Upload(file: IFormFile?): 201 or 422
+  +CheckIn(id: Guid, request: SaveCheckInBody): 204
 }
 
 class SendRatingCommand
@@ -115,11 +133,27 @@ class UploadFeedbackScreenshotCommand
 class GetMyFeedbackQuery
 class GetKudosBusinessesQuery
 
-class FeedbackRules {
+class FeedbackRules <<static>> {
   +{static} int ItemsPerHour = 10
+  +{static} TimeSpan Window = 1 hour
+  +{static} KeyOf(idempotencyKey: string?): string
+  +{static} Earlier(db, subject, key): Task<Feedback?>
+  +{static} EnsureWithinLimit(db, subject, now): Task
+  +{static} Note(note: string?, errors): string?
 }
 
-class ImageSanitizer <<static>>
+class FeedbackWire <<static>> {
+  +{static} ToItem(feedback: Feedback): FeedbackItemDto
+  +{static} Summary(happened: string?): string?
+}
+
+class KudosBusinesses <<static>> {
+  +{static} For(db, subject): Task<List<Listing>>
+}
+
+class ImageSanitizer <<static>> {
+  +{static} Sanitize(bytes: byte[]): SanitizedImage
+}
 
 Feedback --> "1" FeedbackKind
 Feedback --> "1" FeedbackStatus
@@ -144,4 +178,7 @@ UploadFeedbackScreenshotCommand ..> ImageSanitizer : cleans with
 SendRatingCommand ..> FeedbackRules : limited by
 SendBugReportCommand ..> FeedbackRules : limited by
 SendKudosCommand ..> FeedbackRules : limited by
+SendKudosCommand ..> KudosBusinesses : checks the business with
+GetKudosBusinessesQuery ..> KudosBusinesses : lists
+GetMyFeedbackQuery ..> FeedbackWire : maps with
 @enduml

@@ -175,6 +175,7 @@ test.describe('toasts (L2-066)', () => {
     fake.push(arrival(1));
     const toast = toasts.info('Request update 1');
     await expect(toast).toBeVisible();
+    await toasts.settled(toast);
 
     const onPhone = (await toast.boundingBox())!;
     const tabBar = (await centre.tabBar.boundingBox())!;

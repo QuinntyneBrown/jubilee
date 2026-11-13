@@ -7,10 +7,10 @@ Container_Boundary(web, "Jubilee Web") {
   Component(app, "App", "Angular root container", "Shows the launcher for a member on an app-shell route other than feedback")
   Component(launcher, "jb-feedback-launcher", "Library component", "Pill Feedback from 768 px and round button Give feedback under it")
   Component(dialog, "FeedbackDialog", "CDK dialog", "Tabs and values and view and one idempotency key per tab")
-  Component(frame, "jb-dialog corner placement", "Library component", "Bottom sheet under 640 px and corner card from 640 px")
+  Component(frame, "jb-dialog with corner", "Library component", "Bottom sheet under 640 px and corner card from 640 px")
   Component(tabs, "div[jb-tab-list] segmented look", "Library component", "Rate and Report a bug and Kudos with roving focus")
   Component(stars, "jb-star-scale", "Library component", "Five native radios named n of 5 and a word")
-  Component(chips, "jb-chip", "Library component", "Toggle button with aria-pressed")
+  Component(chips, "jb-chip", "Library component", "Toggle button with aria-pressed and a 44 px hit area on a touch screen")
   Component(session, "SessionService", "Angular service", "Holds the member and the first name")
   Component(client, "FeedbackApi", "Service contract", "FEEDBACK_API implemented by HttpFeedbackApi")
 }

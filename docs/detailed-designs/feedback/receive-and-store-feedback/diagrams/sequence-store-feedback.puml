@@ -19,7 +19,7 @@ box "Backend — Jubilee API" #D1FADF
   participant "FeedbackController" as controller
 end box
 box "Backend — Jubilee Application and Domain" #ECFDF3
-  participant "Send command handler" as handler
+  participant "SendRatingCommandHandler or SendBugReportCommandHandler or SendKudosCommandHandler" as handler
   participant "FeedbackRules" as rules
   participant "Feedback" as entity
 end box
@@ -31,37 +31,42 @@ alt No session
   controller --> web : 401 from the fallback policy (L2-214)
 else Member
   controller -> controller : Bind the body and refuse unknown fields (L2-136)
-  controller -> handler : Send the command with Subject and name from the session (L2-133)
-  handler -> db : Find Feedback by MemberSubject and IdempotencyKey (L2-132)
-  db --> handler : Feedback or none
+  controller -> handler : SendRatingCommand or SendBugReportCommand or SendKudosCommand with Subject and name from the session (L2-133)
+  handler -> rules : Earlier(subject, KeyOf(key))
+  rules -> db : Find Feedback by MemberSubject and IdempotencyKey (L2-132)
+  db --> rules : Feedback or none
+  rules --> handler : Earlier item or none
   alt Key seen before
     handler --> controller : The first item
     controller --> web : 201 Created with the first answer and nothing new stored
   else New key
     handler -> handler : Validate every field and collect one code per field
+    opt Kudos for a business
+      handler -> db : KudosBusinesses.For the caller, matched by slug
+      db --> handler : Listing or none: business: BUSINESS_NOT_CONTACTED
+    end
+    opt Bug report with screenshots
+      handler -> db : Load the named screenshots the caller uploaded that no report uses
+      db --> handler : Screenshots or SCREENSHOT_NOT_FOUND
+    end
     alt Invalid input
       handler --> controller : ValidationFailedException
       controller --> web : 422 ProblemDetails with the codes and nothing stored
     else Valid
-      handler -> rules : Count the member's ratings and bug reports and kudos of the past hour
-      alt 10 already
+      handler -> rules : EnsureWithinLimit(subject, now)
+      rules -> db : Count the member's ratings and bug reports and kudos of the past hour
+      alt ItemsPerHour (10) already
         rules --> controller : RateLimitedException
         controller --> web : 429 with Retry-After (L2-137)
       else Under the limit
-        opt Kudos for a business
-          handler -> db : Load the public listing by slug and the member's Request or Conversation with it
-          db --> handler : Listing and contact, or none: 422 business: BUSINESS_NOT_CONTACTED
-        end
         opt Bug report
-          handler -> db : Load the named screenshots of the caller that no report uses
-          db --> handler : Screenshots, or 422 SCREENSHOT_NOT_FOUND
-          handler -> handler : Draw FB- and six of 31 characters and draw again on a clash
+          handler -> db : Draw FB- and six of the 31 characters of ReferenceAlphabet and draw again on a clash
         end
-        handler -> entity : Create the record of its kind
+        handler -> entity : Feedback.Rate or ReportBug or Thank
         entity --> handler : Feedback with status Received
-        handler -> db : Save the record and, for a bug report, the links of its screenshots
+        handler -> db : Save the record and, for a bug report, AttachTo of its screenshots
         db --> handler : Commit result
-        handler --> controller : FeedbackItemDto
+        handler --> controller : FeedbackItemDto from FeedbackWire.ToItem
         controller --> web : 201 Created with the item
       end
     end

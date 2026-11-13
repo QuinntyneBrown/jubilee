@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
+using Jubilee.Api.Tests.Support;
 using Jubilee.Domain;
 using Jubilee.Tests.Shared;
 using Microsoft.EntityFrameworkCore;
@@ -30,12 +31,12 @@ public sealed partial class FeedbackTests
         0xFF, 0xD9,
     ];
 
-    private static Task<HttpResponseMessage> Upload(HttpClient client, byte[] bytes)
+    private static Task<HttpResponseMessage> Upload(HttpClient client, byte[] bytes, string type = "image/jpeg", string name = "screen.jpg")
     {
         var content = new MultipartFormDataContent();
         var file = new ByteArrayContent(bytes);
-        file.Headers.ContentType = new MediaTypeHeaderValue("image/jpeg");
-        content.Add(file, "file", "screen.jpg");
+        file.Headers.ContentType = new MediaTypeHeaderValue(type);
+        content.Add(file, "file", name);
         return client.PostAsync("/api/feedback/screenshots", content);
     }
 
@@ -54,7 +55,7 @@ public sealed partial class FeedbackTests
 
     // L2-214 AC2
     [Fact]
-    public async Task L2_200_AC2_a_bug_report_is_stored_with_its_context_and_a_reference()
+    public async Task L2_214_AC2_a_bug_report_is_stored_with_its_context_and_a_reference()
     {
         var client = AsJoanna();
         client.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (iPhone) Safari/604.1");
@@ -89,7 +90,7 @@ public sealed partial class FeedbackTests
     }
 
     [Fact]
-    public async Task L2_200_AC2_what_happened_is_enough_and_each_report_has_its_own_reference()
+    public async Task L2_214_AC2_what_happened_is_enough_and_each_report_has_its_own_reference()
     {
         var client = AsJoanna();
 
@@ -101,7 +102,7 @@ public sealed partial class FeedbackTests
     }
 
     [Fact]
-    public async Task L2_199_AC1_a_long_first_line_is_shortened_to_80_characters_in_the_list()
+    public async Task L2_213_AC1_a_long_first_line_is_shortened_to_80_characters_in_the_list()
     {
         var client = AsJoanna();
         await ReportBug(client, new { happened = new string('a', 120) });
@@ -115,7 +116,7 @@ public sealed partial class FeedbackTests
 
     // L2-214 AC5
     [Fact]
-    public async Task L2_200_AC5_a_bug_report_names_each_invalid_field()
+    public async Task L2_214_AC5_a_bug_report_names_each_invalid_field()
     {
         var response = await ReportBug(AsJoanna(), new
         {
@@ -134,7 +135,7 @@ public sealed partial class FeedbackTests
     }
 
     [Fact]
-    public async Task L2_200_AC5_what_happened_is_held_to_2000_characters()
+    public async Task L2_214_AC5_what_happened_is_held_to_2000_characters()
     {
         var tooLong = await ReportBug(AsJoanna(), new { happened = new string('a', 2001) });
         var longest = await ReportBug(AsJoanna(), new { happened = new string('a', 2000) });
@@ -147,7 +148,7 @@ public sealed partial class FeedbackTests
 
     // L2-214 AC6, L2-138
     [Fact]
-    public async Task L2_200_AC6_a_screenshot_is_cleaned_and_stored_and_a_report_carries_it()
+    public async Task L2_214_AC6_a_screenshot_is_cleaned_and_stored_and_a_report_carries_it()
     {
         var client = AsJoanna();
         var upload = await Upload(client, Jpeg());
@@ -164,7 +165,7 @@ public sealed partial class FeedbackTests
     }
 
     [Fact]
-    public async Task L2_200_AC6_a_file_that_is_not_a_picture_or_is_too_large_is_refused()
+    public async Task L2_214_AC6_a_file_that_is_not_a_picture_or_is_too_large_is_refused()
     {
         var client = AsJoanna();
 
@@ -179,7 +180,7 @@ public sealed partial class FeedbackTests
 
     // L2-214 AC5, L2-133
     [Fact]
-    public async Task L2_200_AC5_a_report_takes_three_screenshots_at_most_each_the_members_own_and_unused()
+    public async Task L2_214_AC5_a_report_takes_three_screenshots_at_most_each_the_members_own_and_unused()
     {
         var joanna = AsJoanna();
         var four = new[] { await Uploaded(joanna), await Uploaded(joanna), await Uploaded(joanna), await Uploaded(joanna) };
@@ -198,7 +199,7 @@ public sealed partial class FeedbackTests
     }
 
     [Fact]
-    public async Task L2_200_AC6_no_address_serves_a_screenshot_and_a_visitor_cannot_upload_one()
+    public async Task L2_214_AC6_no_address_serves_a_screenshot_and_a_visitor_cannot_upload_one()
     {
         var joanna = AsJoanna();
         var id = await Uploaded(joanna);
@@ -207,11 +208,80 @@ public sealed partial class FeedbackTests
         Assert.Equal(HttpStatusCode.Unauthorized, (await Upload(_factory.CreateClient(), Jpeg())).StatusCode);
     }
 
+    [Fact]
+    public async Task L2_214_AC6_a_png_of_5_mb_or_less_is_cleaned_and_stored()
+    {
+        var response = await Upload(AsJoanna(), TestImages.Png(), "image/png", "screen.png");
+
+        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+        var screenshot = await _factory.Query(db => db.FeedbackScreenshots.AsNoTracking().SingleAsync());
+        Assert.Equal("image/png", screenshot.ContentType);
+        Assert.DoesNotContain("Secret Photographer"u8.ToArray(), screenshot.Content);
+    }
+
+    // L2-214 AC8, L2-132
+    [Fact]
+    public async Task L2_214_AC8_the_same_key_stores_one_kudos_and_gives_the_same_answer()
+    {
+        var client = AsJoanna();
+
+        var first = await SendKudos(client, key: "kudos-1");
+        var again = await SendKudos(client, new { note = "Something else." }, key: "kudos-1");
+
+        Assert.Equal(HttpStatusCode.Created, again.StatusCode);
+        Assert.Equal((await Json(first)).GetProperty("id").GetGuid(), (await Json(again)).GetProperty("id").GetGuid());
+        Assert.Equal(["trust"], Assert.Single(await Stored()).ChipList);
+    }
+
+    // L2-214 AC10, AC13, L2-213 AC1, AC3
+    [Fact]
+    public async Task L2_214_AC10_the_list_gives_each_kind_its_title_parts_and_status_and_never_what_was_written()
+    {
+        var joanna = AsJoanna();
+        await Contacted(Joanna);
+        var screenshot = await Uploaded(joanna);
+        var bug = await Json(await ReportBug(joanna, new { happened = Happened, expected = "A confirmation.", screenshotIds = new[] { screenshot } }));
+        _factory.Clock.Advance(TimeSpan.FromMinutes(1));
+        await SendKudos(joanna, new { business = "legacy-financial", note = "Patient and kind." });
+        _factory.Clock.Advance(TimeSpan.FromMinutes(1));
+        await SendKudos(joanna, new { chips = new[] { "trust" }, note = "Found a plumber in a day." });
+        await _factory.WithDb(async db =>
+        {
+            var report = await db.Feedback.SingleAsync(f => f.Id == bug.GetProperty("id").GetGuid());
+            report.StartWork();
+            await db.SaveChangesAsync();
+        });
+
+        var list = await _factory.GetJson("/api/feedback", joanna);
+
+        Assert.Equal(["kudos", "kudos", "bug-report"], list.EnumerateArray().Select(i => i.GetProperty("kind").GetString()));
+        Assert.Equal(JsonValueKind.Null, list[0].GetProperty("business").ValueKind);
+        Assert.Equal("Legacy Financial", list[1].GetProperty("business").GetString());
+        var reference = (await Stored()).Single(f => f.Kind == FeedbackKind.BugReport).Reference;
+        Assert.Matches("^FB-", reference);
+        Assert.Equal(reference, list[2].GetProperty("reference").GetString());
+        Assert.Equal("in-progress", list[2].GetProperty("status").GetString());
+        foreach (var item in list.EnumerateArray())
+        {
+            foreach (var hidden in new[] { "note", "chips", "happened", "expected", "userAgent", "screenshots", "screenshotIds", "memberSubject" })
+            {
+                Assert.False(item.TryGetProperty(hidden, out _), $"{hidden} is in the list");
+            }
+        }
+
+        await _factory.WithDb(async db =>
+        {
+            (await db.Feedback.SingleAsync(f => f.Id == bug.GetProperty("id").GetGuid())).MarkFixed();
+            await db.SaveChangesAsync();
+        });
+        Assert.Equal("fixed", (await _factory.GetJson("/api/feedback", joanna))[2].GetProperty("status").GetString());
+    }
+
     // ---- kudos -------------------------------------------------------------------------------
 
     // L2-214 AC3
     [Fact]
-    public async Task L2_200_AC3_kudos_for_the_team_are_stored_with_their_chips_and_note()
+    public async Task L2_214_AC3_kudos_for_the_team_are_stored_with_their_chips_and_note()
     {
         var response = await SendKudos(AsJoanna(), new { chips = new[] { "quick-replies", "trust" }, note = "Found a plumber in a day." });
 
@@ -228,7 +298,7 @@ public sealed partial class FeedbackTests
     }
 
     [Fact]
-    public async Task L2_200_AC3_kudos_for_a_business_keep_the_business_and_the_consent()
+    public async Task L2_214_AC3_kudos_for_a_business_keep_the_business_and_the_consent()
     {
         var listing = await Contacted(Joanna);
 
@@ -243,7 +313,7 @@ public sealed partial class FeedbackTests
     }
 
     [Fact]
-    public async Task L2_200_AC3_the_consent_to_show_kudos_means_nothing_without_a_business()
+    public async Task L2_214_AC3_the_consent_to_show_kudos_means_nothing_without_a_business()
     {
         await SendKudos(AsJoanna(), new { chips = new[] { "trust" }, showOnPage = true });
 
@@ -252,7 +322,7 @@ public sealed partial class FeedbackTests
 
     // L2-214 AC4
     [Fact]
-    public async Task L2_200_AC4_kudos_name_only_a_public_business_the_member_has_contacted()
+    public async Task L2_214_AC4_kudos_name_only_a_public_business_the_member_has_contacted()
     {
         await Contacted(David, "davids-plumber", "WaterWorks Plumbing & Drains");
         var paused = ListingMother.NonPublic(NonPublicState.Paused, "paused-one");
@@ -270,7 +340,7 @@ public sealed partial class FeedbackTests
     }
 
     [Fact]
-    public async Task L2_200_AC4_the_businesses_a_member_may_name_are_those_they_sent_a_request_or_a_message_to()
+    public async Task L2_214_AC4_the_businesses_a_member_may_name_are_those_they_sent_a_request_or_a_message_to()
     {
         var messaged = await Contacted(Joanna, "waterworks", "WaterWorks Plumbing & Drains");
         var asked = ListingMother.Public("legacy-financial", "financial-insurance", "Legacy Financial");
@@ -289,7 +359,7 @@ public sealed partial class FeedbackTests
 
     // L2-214 AC5
     [Fact]
-    public async Task L2_200_AC5_kudos_need_a_chip_or_a_note_and_only_offered_chips()
+    public async Task L2_214_AC5_kudos_need_a_chip_or_a_note_and_only_offered_chips()
     {
         var nothing = await SendKudos(AsJoanna(), new { chips = Array.Empty<string>(), note = " " });
         var unknown = await SendKudos(AsJoanna(), new { chips = new[] { "cheap" } });
@@ -302,7 +372,7 @@ public sealed partial class FeedbackTests
     }
 
     [Fact]
-    public async Task L2_200_AC8_AC9_bug_reports_and_kudos_share_the_key_and_the_hourly_limit_with_ratings()
+    public async Task L2_214_AC8_AC9_bug_reports_and_kudos_share_the_key_and_the_hourly_limit_with_ratings()
     {
         var client = AsJoanna();
         var first = await ReportBug(client, key: "bug-1");
@@ -322,7 +392,7 @@ public sealed partial class FeedbackTests
 
     // L2-214 AC7, L2-211 AC3 to AC5
     [Fact]
-    public async Task L2_200_AC7_a_check_in_is_created_by_its_id_and_replaced_by_the_same_member()
+    public async Task L2_214_AC7_a_check_in_is_created_by_its_id_and_replaced_by_the_same_member()
     {
         var client = AsJoanna();
         var id = Guid.NewGuid();
@@ -342,7 +412,7 @@ public sealed partial class FeedbackTests
     }
 
     [Fact]
-    public async Task L2_200_AC7_a_check_in_of_another_member_is_not_found_and_is_left_alone()
+    public async Task L2_214_AC7_a_check_in_of_another_member_is_not_found_and_is_left_alone()
     {
         var id = Guid.NewGuid();
         await CheckIn(AsJoanna(), id);
@@ -354,7 +424,7 @@ public sealed partial class FeedbackTests
     }
 
     [Fact]
-    public async Task L2_200_AC7_an_id_that_is_other_feedback_of_the_member_is_not_a_check_in()
+    public async Task L2_214_AC7_an_id_that_is_other_feedback_of_the_member_is_not_a_check_in()
     {
         var client = AsJoanna();
         var rating = (await Json(await Rate(client))).GetProperty("id").GetGuid();
@@ -363,7 +433,7 @@ public sealed partial class FeedbackTests
     }
 
     [Fact]
-    public async Task L2_200_AC5_a_check_in_names_each_invalid_field()
+    public async Task L2_214_AC5_a_check_in_names_each_invalid_field()
     {
         var response = await CheckIn(AsJoanna(), Guid.NewGuid(), new { moment = "birthday", score = 6, note = new string('a', 1001) });
 
@@ -376,7 +446,7 @@ public sealed partial class FeedbackTests
 
     // L2-213 AC6, L2-214 AC9
     [Fact]
-    public async Task L2_199_AC6_check_ins_are_not_listed_and_do_not_count_towards_the_hourly_limit_of_feedback()
+    public async Task L2_213_AC6_check_ins_are_not_listed_and_do_not_count_towards_the_hourly_limit_of_feedback()
     {
         var client = AsJoanna();
         for (var i = 0; i < 12; i++)
@@ -389,7 +459,7 @@ public sealed partial class FeedbackTests
     }
 
     [Fact]
-    public async Task L2_200_AC9_more_than_thirty_new_check_ins_or_screenshots_in_an_hour_are_slowed_down()
+    public async Task L2_214_AC9_more_than_thirty_new_check_ins_or_screenshots_in_an_hour_are_slowed_down()
     {
         var client = AsJoanna();
         var last = Guid.Empty;
@@ -406,7 +476,7 @@ public sealed partial class FeedbackTests
     }
 
     [Fact]
-    public async Task L2_200_AC11_a_visitor_reaches_no_feedback_endpoint()
+    public async Task L2_214_AC11_a_visitor_reaches_no_feedback_endpoint()
     {
         var visitor = _factory.CreateClient();
 
