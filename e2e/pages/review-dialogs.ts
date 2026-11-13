@@ -24,10 +24,15 @@ export class EditReviewDialog extends ReviewDialog {
   readonly text: Locator;
   readonly textError: Locator;
   readonly save: Locator;
+  /** The choice of what the review is about; absent when there is nothing to choose (L2-260 AC4). */
+  readonly itemGroup: Locator;
+  readonly checkboxes: Locator;
 
   constructor(page: Page) {
     super(page);
     this.stars = this.root.getByRole('radiogroup', { name: 'Your rating' });
+    this.itemGroup = this.root.getByRole('group', { name: /^Which (service|product)\?$/ });
+    this.checkboxes = this.root.getByRole('checkbox');
     this.ratingError = this.root.locator('.star-scale__error');
     this.text = this.root.getByRole('textbox', { name: 'Tell others about it' });
     this.textError = this.root.locator('#er-text-error');
