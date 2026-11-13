@@ -119,6 +119,13 @@ public sealed partial class RequestQuoteCommandHandler(IAppDbContext db, TimePro
         }
 
         var listing = await Bookable.PublicListing(db, command.ListingSlug, cancellationToken);
+
+        // A software platform takes no requests: people use it on its own website (L2-254 AC3, ADR 0071).
+        if (listing.Kind == ListingKind.Platform)
+        {
+            throw new ConflictException("NOT_OFFERED", "A software platform takes no quote requests.");
+        }
+
         Service? service = null;
         if (command.ServiceId is { } serviceId)
         {

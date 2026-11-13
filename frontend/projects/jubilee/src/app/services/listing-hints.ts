@@ -6,6 +6,12 @@ import { ListingKind } from 'api';
  * name what it is opening while it loads or fails to load (L2-034 AC4, L2-118). A listing in
  * Shops starts as a shop; each page has the last word once it arrives.
  */
+/** The kind a listing of a category has, as the API derives it (L2-248 AC1). */
+function kindIn(categorySlug: string): ListingKind {
+  if (categorySlug === 'shops') return 'shop';
+  return categorySlug === 'software-platforms' ? 'platform' : 'services';
+}
+
 @Injectable({ providedIn: 'root' })
 export class ListingHints {
   private readonly kinds = new Map<string, ListingKind>();
@@ -17,7 +23,7 @@ export class ListingHints {
     categorySlug: string,
   ): void {
     for (const listing of listings) {
-      this.remember(listing.slug, categorySlug === 'shops' ? 'shop' : 'services', listing.name);
+      this.remember(listing.slug, kindIn(categorySlug), listing.name);
     }
   }
 

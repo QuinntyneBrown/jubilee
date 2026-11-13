@@ -61,6 +61,7 @@
     @let isOwner = listing.viewerRelation === 'owner';
     @let preview = listing.status !== 'live';
     @let isMember = !isOwner && !preview;
+    @let platform = listing.platform ?? null;
     @if (preview) {
       <div
         jb-alert
@@ -284,7 +285,9 @@
           }
           @if (listing.ownerName) {
             <p>
-              <strong>{{ listing.ownerName }}</strong>
+              <strong>{{
+                platform ? 'Founded by ' + listing.ownerName : listing.ownerName
+              }}</strong>
             </p>
           }
           <p class="lead">{{ listing.tagline }}</p>
@@ -299,7 +302,33 @@
             </div>
           }
           <div jb-detail-head-actions>
-            @if (isOwner) {
+            <!-- The link out of a platform is the page's main action, for everyone (L2-255). -->
+            @if (platform?.website) {
+              <a
+                jb-button
+                variant="primary"
+                size="lg"
+                [href]="platform!.website"
+                target="_blank"
+                rel="noopener noreferrer nofollow"
+                ><svg jb-icon name="arrow-up-right"></svg>Visit {{ platform!.host
+                }}<span class="visually-hidden"> (opens in a new tab)</span></a
+              >
+            }
+            @if (isOwner && platform) {
+              <a jb-button size="lg" routerLink="/my-business/edit"
+                ><svg jb-icon name="edit"></svg>Edit listing</a
+              >
+              <a
+                jb-button
+                iconOnly
+                size="lg"
+                [routerLink]="link('share')"
+                aria-label="Share"
+                style="width: var(--control-height-lg)"
+                ><svg jb-icon name="share"></svg
+              ></a>
+            } @else if (isOwner) {
               <a jb-button variant="primary" size="lg" routerLink="/my-business/edit"
                 ><svg jb-icon name="edit"></svg>Edit listing</a
               >
@@ -307,7 +336,9 @@
                 ><svg jb-icon name="share"></svg
               ></a>
             } @else if (isMember) {
-              @if (isShop && hasProducts) {
+              @if (platform) {
+                <!-- A platform takes no requests: the link out above is its one action (L2-254 AC3). -->
+              } @else if (isShop && hasProducts) {
                 <a jb-button variant="primary" size="lg" [routerLink]="[]" fragment="products"
                   ><svg jb-icon name="bag"></svg>Shop products</a
                 >
@@ -336,7 +367,7 @@
                 iconOnly
                 size="lg"
                 [routerLink]="link('message')"
-                aria-label="Message"
+                [attr.aria-label]="platform ? 'Message founder' : 'Message'"
                 style="width: var(--control-height-lg)"
                 ><svg jb-icon name="message"></svg
               ></a>
@@ -366,6 +397,12 @@
               ></a>
             }
           </div>
+          @if (platform?.website) {
+            <p class="text-caption">
+              Opens {{ platform!.host }} in a new tab. You sign up and pay there. Jubilee takes no
+              payment and has not checked this platform.
+            </p>
+          }
           @if (listing.highlight) {
             <p jb-perk>{{ listing.highlight }}</p>
           }
@@ -373,7 +410,16 @@
       </div>
       <div class="split">
         <div>
-          @if (isShop) {
+          @if (platform) {
+            <section jb-section labelledBy="does">
+              <h2 id="does">What it does</h2>
+              <p style="margin-top: var(--space-3)">{{ platform.does }}</p>
+            </section>
+            <section jb-section labelledBy="for">
+              <h2 id="for">Who it is for</h2>
+              <p style="margin-top: var(--space-3)">{{ platform.for }}</p>
+            </section>
+          } @else if (isShop) {
             <section jb-section heading="Products" headingId="products">
               @if (hasProducts) {
                 <span slot="action" class="text-caption"
@@ -468,7 +514,16 @@
           <aside jb-card heading="Details" headingId="det">
             <dl jb-description-list style="margin-top: var(--space-4)">
               @for (detail of details(); track detail.term) {
-                <div jb-description-item [term]="detail.term" [value]="detail.value"></div>
+                @if (detail.href) {
+                  <div jb-description-item [term]="detail.term">
+                    <a [href]="detail.href" target="_blank" rel="noopener noreferrer nofollow"
+                      >{{ detail.value
+                      }}<span class="visually-hidden"> (opens in a new tab)</span></a
+                    >
+                  </div>
+                } @else {
+                  <div jb-description-item [term]="detail.term" [value]="detail.value"></div>
+                }
               }
             </dl>
           </aside>

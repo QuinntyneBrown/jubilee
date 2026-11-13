@@ -119,6 +119,8 @@ const MONTH = new Intl.DateTimeFormat('en-CA', {
 interface DetailRow {
   term: string;
   value: string;
+  /** The value is a link that leaves Jubilee: a platform's website (L2-255). */
+  href?: string;
 }
 
 const STATUS_WORDS: Record<ListingStatus, string> = {
@@ -223,11 +225,12 @@ export class BusinessPage {
     return STATUS_WORDS[status];
   }
 
-  /** What the page calls the listing: a shop, a space or a business. Known before it loads when
-   * the listing was reached from a list (L2-034 AC4, L2-205 AC5). */
+  /** What the page calls the listing: a shop, a space, a platform or a business. Known before it
+   * loads when the listing was reached from a list (L2-034 AC4, L2-205 AC5, L2-254 AC8). */
   protected readonly thing = computed(() => {
     const state = this.state();
     const kind = state.status === 'loaded' ? state.value.kind : this.hints.kindOf(this.slugValue());
+    if (kind === 'platform') return 'platform';
     return kind === 'shop' ? 'shop' : kind === 'space' ? 'space' : 'business';
   });
 
@@ -277,7 +280,19 @@ export class BusinessPage {
   protected readonly details = computed<DetailRow[]>(() => {
     const state = this.state();
     if (state.status !== 'loaded') return [];
-    const { details } = state.value;
+    const { details, platform } = state.value;
+    if (platform) {
+      // A platform has no place, hours or languages: its pricing and its website (L2-254 AC1).
+      const rows: (DetailRow | null)[] = [
+        row('Pricing', platform.pricing),
+        platform.website && platform.host
+          ? { term: 'Website', value: platform.host, href: platform.website }
+          : null,
+        row('On Jubilee since', MONTH.format(new Date(details.onJubileeSince))),
+        row('Replies', details.replies ? REPLIES[details.replies] : null),
+      ];
+      return rows.filter((r): r is DetailRow => r !== null);
+    }
     const rows: (DetailRow | null)[] = [
       row('Where', details.where),
       row('Hours', details.hours),

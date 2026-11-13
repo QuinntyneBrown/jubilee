@@ -2457,7 +2457,7 @@
     "body": {
       "title": "Sign in to continue.",
       "status": 401,
-      "correlationId": "fb6915d9c96b489c87f8e445bc68b0e7",
+      "correlationId": "cd882653ae44414ea1a992b7df18a65a",
       "code": "sign_in_required"
     }
   },
@@ -2837,6 +2837,92 @@
     }
   },
   "GET /api/listings/east-york-roommate/reviews": {
+    "status": 200,
+    "body": {
+      "summary": {
+        "average": 0,
+        "count": 0,
+        "breakdown": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "viewer": "visitor",
+      "writing": "sign-in",
+      "items": []
+    }
+  },
+  "GET /api/listings/lanternread": {
+    "status": 200,
+    "body": {
+      "slug": "lanternread",
+      "kind": "platform",
+      "name": "Lanternread",
+      "category": {
+        "slug": "software-platforms",
+        "name": "Software platforms"
+      },
+      "stage": "live",
+      "status": "live",
+      "viewerRelation": "visitor",
+      "ownerName": "Abigail Thornton",
+      "tagline": "A reading log families keep together",
+      "credentials": [],
+      "highlight": "Free for families",
+      "about": null,
+      "coverPhoto": null,
+      "details": {
+        "where": null,
+        "hours": null,
+        "languages": null,
+        "delivery": null,
+        "madeToOrder": null,
+        "onJubileeSince": "2026-09-12T18:22:08.4331869+00:00",
+        "replies": null
+      },
+      "services": [],
+      "productCount": 0,
+      "products": [],
+      "related": [
+        {
+          "slug": "ledgerleaf",
+          "name": "Ledgerleaf",
+          "tagline": "Bookkeeping in plain words for sole traders",
+          "highlight": "30-day free trial",
+          "categorySlug": "software-platforms",
+          "coverPhoto": null,
+          "repliesFast": false,
+          "rating": null
+        },
+        {
+          "slug": "gatherboard",
+          "name": "Gatherboard",
+          "tagline": "Volunteer rosters for small churches",
+          "highlight": null,
+          "categorySlug": "software-platforms",
+          "coverPhoto": null,
+          "repliesFast": false,
+          "rating": null
+        }
+      ],
+      "space": null,
+      "relatedSpaces": [],
+      "openRequestId": null,
+      "repliesFast": false,
+      "photos": [],
+      "platform": {
+        "website": "https://lanternread.example",
+        "host": "lanternread.example",
+        "does": "Families log the books their children read, set a weekly reading goal together and see the streak grow. Grandparents and teachers can cheer from their own accounts.",
+        "for": "Families with children aged 4 to 12, and the teachers who cheer them on.",
+        "pricing": "Free for families. Schools pay per classroom."
+      }
+    }
+  },
+  "GET /api/listings/lanternread/reviews": {
     "status": 200,
     "body": {
       "summary": {
@@ -4031,7 +4117,7 @@
     "body": {
       "title": "Sign in to continue.",
       "status": 401,
-      "correlationId": "31abbda99e81482699e0db8eefeab279",
+      "correlationId": "94ecf1cb6fe247b1ba4e38fb375ab23e",
       "code": "sign_in_required"
     }
   },
@@ -4202,6 +4288,10 @@
     "body": null
   },
   "POST /api/listings/east-york-roommate/views": {
+    "status": 204,
+    "body": null
+  },
+  "POST /api/listings/lanternread/views": {
     "status": 204,
     "body": null
   },

@@ -92,12 +92,31 @@ public sealed record SpacePageDto(
 }
 
 /// <summary>
+/// What the page of a software platform shows (L2-254): the founder's words and the web address the link out
+/// goes to. The address is given only while it passes <see cref="PlatformRules.IsWebAddress"/>; otherwise it
+/// and its host are null and the page links nowhere (L2-255 AC5). Nothing here requests the address.
+/// </summary>
+public sealed record PlatformPageDto(string? Website, string? Host, string Does, string For, string Pricing)
+{
+    public static PlatformPageDto? From(Listing listing)
+    {
+        if (listing.Kind != ListingKind.Platform || listing.Platform is not { } platform)
+        {
+            return null;
+        }
+
+        var website = PlatformRules.IsWebAddress(listing.Website) ? listing.Website!.Trim() : null;
+        return new PlatformPageDto(website, website is null ? null : PlatformRules.Host(website), platform.Does, platform.For, platform.Pricing);
+    }
+}
+
+/// <summary>
 /// One photo of a listing as its public page shows it (L2-221): the key of its renditions under <c>/media</c>, its
 /// alt text, and the size of the original, which says how wide each rendition really is.
 /// </summary>
 public sealed record ListingPagePhotoDto(string Key, string Alt, int Width, int Height);
 
-/// <summary>The listing page of one business (L2-033, L2-034) or space (L2-205).</summary>
+/// <summary>The listing page of one business (L2-033, L2-034), space (L2-205) or software platform (L2-254).</summary>
 public sealed record ListingPageDto(
     string Slug,
     string Kind,
@@ -127,4 +146,7 @@ public sealed record ListingPageDto(
 
     /// <summary>The owner's photos in their order, the cover first; empty when there are none (L2-221).</summary>
     public IReadOnlyList<ListingPagePhotoDto> Photos { get; init; } = [];
+
+    /// <summary>The founder's words and the link out of a software platform; null for every other kind (L2-254 AC9).</summary>
+    public PlatformPageDto? Platform { get; init; }
 }
