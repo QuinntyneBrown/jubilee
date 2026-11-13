@@ -75,7 +75,7 @@ public sealed class ProductConfiguration : IEntityTypeConfiguration<Product>
         });
         builder.OwnsMany(p => p.Attributes, a => a.ToJson());
         builder.HasIndex(p => new { p.ListingId, p.Slug }).IsUnique();
-        // The photo row outlives a product that stops showing it only until the save deletes it (ADR 0062).
+        // The photo row outlives a product that stops showing it only until the save deletes it (ADR 0063).
         builder.HasOne(p => p.Photo).WithMany().HasForeignKey(p => p.PhotoId).OnDelete(DeleteBehavior.ClientSetNull);
         builder.HasOne<Listing>().WithMany().HasForeignKey(p => p.ListingId).OnDelete(DeleteBehavior.Cascade);
     }

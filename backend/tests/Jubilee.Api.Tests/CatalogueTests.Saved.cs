@@ -5,7 +5,7 @@ using Jubilee.Tests.Shared;
 
 namespace Jubilee.Api.Tests;
 
-// A deleted product on members' saved lists: L2-092 AC2 (ADR 0062).
+// A deleted product on members' saved lists: L2-092 AC2 (ADR 0063).
 public sealed partial class CatalogueTests
 {
     [Fact]

@@ -29,7 +29,7 @@ signed link (ADR 0014, ADR 0039, ADR 0051). A listing photo is checked,
 re-encoded into renditions and stored, and is served publicly under its random
 name (journey 15). A product photo is checked and re-encoded as a listing photo
 is, scanned as a message photo is, and only then stored and served publicly
-under its random name (journey 16, ADR 0062). Listing photos are not scanned
+under its random name (journey 16, ADR 0063). Listing photos are not scanned
 yet, and the cookieless media domain is not registered yet. These two are open
 and are named below.
 

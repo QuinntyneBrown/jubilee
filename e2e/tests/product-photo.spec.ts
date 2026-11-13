@@ -6,7 +6,7 @@ import { MyProductsPage } from '../pages/my-products.page';
 import { ProductEditorDialog } from '../pages/product-editor.dialog';
 import { ProductPage } from '../pages/product.page';
 
-// Product photos: L2-091 AC9 and AC10 (ADR 0062). The upload and the save are answered by the stub
+// Product photos: L2-091 AC9 and AC10 (ADR 0063). The upload and the save are answered by the stub
 // of the owner's catalogue; `/media/…` by the mocks' mug.
 
 const PRODUCTS = '/my-business/products';

@@ -5,7 +5,7 @@ import { MyServicesPage } from '../pages/my-services.page';
 import { Toasts } from '../pages/toasts';
 
 // Drag to reorder products and services, the move buttons kept as its keyboard equivalent:
-// L2-090 AC2 (ADR 0062).
+// L2-090 AC2 (ADR 0063).
 
 const PRODUCTS = '/my-business/products';
 const SERVICES = '/my-business/services';

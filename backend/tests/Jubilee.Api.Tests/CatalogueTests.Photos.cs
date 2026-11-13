@@ -9,7 +9,7 @@ using SkiaSharp;
 
 namespace Jubilee.Api.Tests;
 
-// Product photos: L2-091 AC9 and AC10, L2-138 AC1, AC3 and AC6 (ADR 0062).
+// Product photos: L2-091 AC9 and AC10, L2-138 AC1, AC3 and AC6 (ADR 0063).
 public sealed partial class CatalogueTests
 {
     private static byte[] Jpeg(int width = 800, int height = 600)

@@ -3,7 +3,7 @@ import { PRODUCTS as ROWS, stubCatalogue } from '../fixtures/catalogue';
 import { MyProductsPage } from '../pages/my-products.page';
 import { ProductEditorDialog } from '../pages/product-editor.dialog';
 
-// Options and minimum order in the product editor: L2-091 AC8 (ADR 0062).
+// Options and minimum order in the product editor: L2-091 AC8 (ADR 0063).
 
 const PRODUCTS = '/my-business/products';
 const TEAM = 'Custom church team tee';

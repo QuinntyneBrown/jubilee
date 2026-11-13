@@ -56,7 +56,7 @@ export interface ProductInput {
   optionName?: string | null;
   options?: OwnerProductOption[] | null;
   idempotencyKey: string;
-  /** The uploaded photo the product shows; null shows none (ADR 0062). */
+  /** The uploaded photo the product shows; null shows none (ADR 0063). */
   photoId?: string | null;
 }
 

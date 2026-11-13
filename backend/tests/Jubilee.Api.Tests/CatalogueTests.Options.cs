@@ -4,7 +4,7 @@ using System.Text.Json;
 
 namespace Jubilee.Api.Tests;
 
-// Options and minimum order from the product editor: L2-091 AC8 (ADR 0062).
+// Options and minimum order from the product editor: L2-091 AC8 (ADR 0063).
 public sealed partial class CatalogueTests
 {
     [Fact]

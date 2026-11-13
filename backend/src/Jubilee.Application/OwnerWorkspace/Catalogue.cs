@@ -296,7 +296,7 @@ public sealed class SaveProductCommandHandler(IAppDbContext db, TimeProvider clo
         product.ShowPhoto(photo);
         if (replaced is not null)
         {
-            // A photo the product no longer shows is not kept (ADR 0062).
+            // A photo the product no longer shows is not kept (ADR 0063).
             db.ProductPhotos.Remove(replaced);
         }
 
@@ -350,7 +350,7 @@ public sealed class SaveProductCommandHandler(IAppDbContext db, TimeProvider clo
 
 /// <summary>
 /// A product photo, uploaded before the product is saved: checked and re-encoded, scanned for malware,
-/// and only then stored under a random name (L2-091 AC9, L2-138 AC6, ADR 0062).
+/// and only then stored under a random name (L2-091 AC9, L2-138 AC6, ADR 0063).
 /// </summary>
 public sealed record UploadProductPhotoCommand(string Subject, byte[] Content) : IRequest<ProductPhotoDto>;
 
