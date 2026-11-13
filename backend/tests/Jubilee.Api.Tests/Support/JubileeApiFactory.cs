@@ -27,6 +27,15 @@ public class JubileeApiFactory : WebApplicationFactory<Program>
 
     private readonly ResettableClock _clock = new();
 
+    /// <summary>A folder of this fixture for the files the API keeps outside the database: the deletion ledger and the export store.</summary>
+    private readonly string _files = Path.Combine(Path.GetTempPath(), $"jubilee-api-{Guid.NewGuid():N}");
+
+    /// <summary>The deletion ledger (ADR 0069): a file outside the database, kept when the database is restored.</summary>
+    public string DeletionLedgerPath => Path.Combine(_files, "deletions", "ledger.jsonl");
+
+    /// <summary>The export store's folder (ADR 0069).</summary>
+    public string ExportsRoot => Path.Combine(_files, "exports");
+
     /// <summary>The API's clock. Tests advance it; <see cref="Reset"/> puts it back.</summary>
     public FakeTimeProvider Clock => _clock.Current;
 
@@ -74,6 +83,8 @@ public class JubileeApiFactory : WebApplicationFactory<Program>
         builder.UseSetting("StaffSignIn:PublicBaseUrl", "https://admin.jubilee.test");
         builder.UseSetting("StaffAccess:AllowedNetworks", "127.0.0.1, ::1, 10.0.0.0/8, 2001:db8::/32");
         builder.UseSetting("StaffAccess:ProxyKey", StaffProxyKey);
+        builder.UseSetting("Deletions:LedgerPath", DeletionLedgerPath);
+        builder.UseSetting("Exports:Root", ExportsRoot);
         ConfigureSettings(builder);
         builder.ConfigureServices(services =>
         {
@@ -196,6 +207,11 @@ public class JubileeApiFactory : WebApplicationFactory<Program>
         Bot.Passes = true;
         Google.Identity = new("google-1", "g@example.com", true, "Gina", "Gordon");
         Logs.Clear();
+        if (Directory.Exists(_files))
+        {
+            Directory.Delete(_files, true);
+        }
+
         await WithDb(async db =>
         {
             db.RemoveRange(db.FeedbackScreenshots);

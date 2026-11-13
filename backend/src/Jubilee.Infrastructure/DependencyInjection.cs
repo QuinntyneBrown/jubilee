@@ -111,6 +111,9 @@ public static class DependencyInjection
         services.AddSingleton<Application.Notifications.IUnsubscribeLinks>(
             new Application.Notifications.HmacUnsubscribeLinks(configuration["Email:UnsubscribeKey"] ?? "development-only-unsubscribe-key"));
         services.AddSingleton<Application.Accounts.IOidcTransactionStore, Accounts.CacheOidcTransactionStore>();
+        // The deletion ledger, outside the database, so that a restore can delete again (L2-017 AC7, ADR 0069).
+        services.AddSingleton<Application.Accounts.IDeletionLedger>(new Accounts.FileDeletionLedger(
+            configuration["Deletions:LedgerPath"] ?? Path.Combine(AppContext.BaseDirectory, "deletions", "ledger.jsonl")));
         services.AddSingleton<IImageProcessor, Media.SkiaImageProcessor>();
         services.AddSingleton<IMediaStore>(new Media.FileMediaStore(
             configuration["Media:Root"] ?? Path.Combine(AppContext.BaseDirectory, "media")));
