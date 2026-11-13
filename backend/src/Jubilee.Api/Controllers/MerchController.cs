@@ -47,4 +47,32 @@ public sealed class MerchController(ISender sender) : ControllerBase
             cancellationToken);
         return StatusCode(StatusCodes.Status201Created, new CheckoutStartedDto(url));
     }
+
+    /// <summary>
+    /// Stripe's signed events (L2-268). The signature over the raw body is the proof: no session and no
+    /// anti-CSRF token. Neither the body nor the signature is logged (AC7).
+    /// </summary>
+    [HttpPost("webhooks/stripe")]
+    [EnableRateLimiting(MerchRateLimit.Webhooks)]
+    public async Task<IActionResult> StripeEvent(CancellationToken cancellationToken)
+    {
+        using var reader = new StreamReader(Request.Body);
+        var body = await reader.ReadToEndAsync(cancellationToken);
+        try
+        {
+            await sender.Send(new CompleteCheckoutCommand(body, Request.Headers["Stripe-Signature"].ToString()), cancellationToken);
+        }
+        catch (Application.Accounts.ValidationFailedException invalid) when (invalid.Errors.ContainsKey("signature"))
+        {
+            await ProblemWriter.WriteAsync(
+                HttpContext, StatusCodes.Status400BadRequest, "The signature is not valid.", code: "signature_invalid");
+            return new EmptyResult();
+        }
+        catch (System.Text.Json.JsonException)
+        {
+            return BadRequest();
+        }
+
+        return Ok();
+    }
 }
