@@ -17,8 +17,9 @@ interface FeedbackApi {
   +sendRating(request: RatingRequest, idempotencyKey: string): Observable<FeedbackItem>
   +sendBugReport(request: BugReportRequest, idempotencyKey: string): Observable<FeedbackItem>
   +sendKudos(request: KudosRequest, idempotencyKey: string): Observable<FeedbackItem>
-  +uploadScreenshot(picture: Blob): Observable<UploadedScreenshot>
+  +uploadScreenshot(picture: Blob): Observable<StoredScreenshot>
   +kudosBusinesses(): Observable<KudosBusiness[]>
+  +mine(): Observable<FeedbackItem[]>
 }
 
 class HttpFeedbackApi {
@@ -26,58 +27,70 @@ class HttpFeedbackApi {
 }
 
 class FeedbackPage {
-  #tab: Signal<FeedbackTab>
+  #tab: Signal<Tab>
   #view: Signal<View>
-  #problems: Signal<Record<string, string>>
-  #screenshots: Signal<ChosenScreenshot[]>
-  #businesses: Signal<KudosBusiness[]>
-  -keys: Record<FeedbackTab, string>
-  #selectTab(tab: FeedbackTab): void
-  #addScreenshots(files: File[]): void
-  #removeScreenshot(index: number): void
+  #problems: Signal<Partial<Record<FieldName, string>>>
+  #mayContact: Signal<boolean>
+  #rating: Signal<number | null>
+  #scores: Signal<Partial<Record<FeedbackArea, number>>>
+  #where: Signal<BugPlace | "">
+  #frequency: Signal<BugFrequency | null>
+  #screenshots: Signal<Screenshot[]>
+  #forBusiness: Signal<boolean>
+  #businesses: Signal<KudosBusiness[] | null>
+  #showOnPage: Signal<boolean>
+  -keys: Record<Tab, string>
+  #choose(tab: Tab): void
+  #score(area: FeedbackArea, score: number | null): void
+  #often(frequency: BugFrequency): void
+  #toggle(chip: KudosChip): void
+  #addScreenshots(files: File[]): Promise<void>
+  #removeScreenshot(id: string): void
   #submit(): void
+  -uploadScreenshots(): Observable<string[]>
 }
 
 class RatingRequest {
   +rating: number
-  +note: string | null
-  +areas: AreaScores
-  +mayContact: boolean
+  +note?: string
+  +areas?: Partial<Record<FeedbackArea, number>>
+  +mayContact?: boolean
 }
 
-class AreaScores {
-  +finding: number | null
-  +listing: number | null
-  +messaging: number | null
-  +trust: number | null
+enum FeedbackArea {
+  finding
+  listing
+  messaging
+  trust
 }
 
 class BugReportRequest {
-  +place: BugPlace
+  +where?: BugPlace
   +happened: string
-  +expected: string | null
-  +frequency: BugFrequency | null
-  +screen: string
-  +version: string
-  +screenshotIds: string[]
-  +mayContact: boolean
+  +expected?: string
+  +frequency?: BugFrequency
+  +screen?: string
+  +version?: string
+  +screenshotIds?: string[]
+  +mayContact?: boolean
 }
 
 class KudosRequest {
+  +business?: string
   +chips: KudosChip[]
-  +note: string | null
-  +business: string | null
-  +mayShow: boolean
-  +mayContact: boolean
+  +note?: string
+  +showOnPage?: boolean
+  +mayContact?: boolean
 }
 
-class ChosenScreenshot {
+class Screenshot {
+  +id: string
   +name: string
-  +blob: Blob
-  +id: string | null
+  +file: Blob
+  +storedId: string | null
 }
 
-class UploadedScreenshot {
+class StoredScreenshot {
   +id: string
 }
 
@@ -88,27 +101,29 @@ class KudosBusiness {
 
 class FeedbackItem {
   +id: string
-  +kind: string
-  +status: string
-  +reference: string | null
-  +businessName: string | null
+  +kind: FeedbackKind
   +createdAt: string
+  +status: FeedbackStatus
+  +rating: number | null
+  +summary: string | null
+  +reference: string | null
+  +business: string | null
+  +reply: string | null
 }
 
 class PhotoAttachmentService {
   +typeOf(file: Blob): Promise<"image/jpeg" | "image/png" | null>
-  +needsShrinking(file: Blob): boolean
 }
 
 HttpFeedbackApi ..|> FeedbackApi
 FeedbackPage --> FeedbackApi : sends through
 FeedbackPage --> PhotoAttachmentService : checks files with
-FeedbackPage "1" *-- "0..3" ChosenScreenshot
+FeedbackPage "1" *-- "0..3" Screenshot
 FeedbackPage --> "0..*" KudosBusiness
-RatingRequest *-- "1" AreaScores
+RatingRequest ..> FeedbackArea
 FeedbackApi ..> RatingRequest
 FeedbackApi ..> BugReportRequest
 FeedbackApi ..> KudosRequest
-FeedbackApi ..> UploadedScreenshot : answers
+FeedbackApi ..> StoredScreenshot : answers
 FeedbackApi ..> FeedbackItem : answers
 @enduml

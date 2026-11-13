@@ -21,7 +21,6 @@ box "Frontend — Jubilee Web" #E0F2FE
   participant "BusinessCard" as card
   participant "MediaTile" as tile
   participant "CategoryTileMap" as tiles
-  participant "VerifiedBadge" as badge
 end box
 box "Backend — Jubilee API" #D1FADF
   participant "ListingsController" as controller
@@ -38,7 +37,7 @@ actor -> page : Open /c/:category
 page -> client : Load listings
 client -> controller : GET /api/categories/{category}/listings
 controller -> handler : Send GetCategoryListingsQuery
-handler -> db : Read verified listings with cover photo and category
+handler -> db : Read public listings with cover photo and category
 db --> handler : Rows
 handler --> controller : PagedResult of ListingSummary
 controller --> client : 200 listings
@@ -56,10 +55,6 @@ loop each listing
     tile -> tile : Show .media with the tint modifier and the category icon (L2-173)
   end
   tile --> card : Media rendered
-  opt listing is verified
-    card -> badge : Render .verified with icon and text (L2-171)
-    badge --> card : Badge rendered
-  end
   card --> page : Card rendered
 end
 page --> actor : Card grid that matches the mock

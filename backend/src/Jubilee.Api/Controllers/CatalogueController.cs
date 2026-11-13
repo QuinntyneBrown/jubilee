@@ -1,5 +1,7 @@
 using System.Text.Json.Serialization;
 using Jubilee.Api.Errors;
+using Jubilee.Application.Abstractions;
+using Jubilee.Application.Messaging;
 using Jubilee.Application.OwnerWorkspace;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -16,7 +18,8 @@ public sealed record SaveProductBody(
     int? MinimumQuantity,
     string? OptionName,
     List<OwnerProductOptionDto>? Options,
-    string? IdempotencyKey);
+    string? IdempotencyKey,
+    Guid? PhotoId = null);
 
 [JsonUnmappedMemberHandling(JsonUnmappedMemberHandling.Disallow)]
 public sealed record SaveServiceBody(
@@ -60,6 +63,44 @@ public sealed class CatalogueController(ISender sender) : ControllerBase
     public Task<ProductRowDto> ChangeProduct(Guid id, [FromBody] SaveProductBody body, CancellationToken cancellationToken) =>
         sender.Send(Command(id, body), cancellationToken);
 
+    /// <summary>A product photo, before the product is saved: checked, scanned and stored (L2-091 AC9, L2-138 AC6).</summary>
+    [HttpPost("products/photos")]
+    [RequestSizeLimit(6 * 1024 * 1024)]
+    public async Task<IActionResult> UploadProductPhoto(IFormFile? file, CancellationToken cancellationToken)
+    {
+        using var buffer = new MemoryStream();
+        if (file is not null)
+        {
+            await file.CopyToAsync(buffer, cancellationToken);
+        }
+
+        try
+        {
+            var photo = await sender.Send(new UploadProductPhotoCommand(Subject, buffer.ToArray()), cancellationToken);
+            return StatusCode(StatusCodes.Status201Created, photo);
+        }
+        catch (InvalidPhotoException invalid)
+        {
+            return UnprocessableEntity(new ProblemDetails
+            {
+                Status = StatusCodes.Status422UnprocessableEntity,
+                Title = "That photo can't be used.",
+                Detail = invalid.Message,
+                Extensions = { ["code"] = invalid.Code, ["correlationId"] = HttpContext.TraceIdentifier },
+            });
+        }
+        catch (ScanUnavailableException unavailable)
+        {
+            // Nothing was stored: the photo can be added again when the scanner answers (L2-138 AC6).
+            return StatusCode(StatusCodes.Status503ServiceUnavailable, new ProblemDetails
+            {
+                Status = StatusCodes.Status503ServiceUnavailable,
+                Title = unavailable.Message,
+                Extensions = { ["code"] = ScanUnavailableException.Code, ["correlationId"] = HttpContext.TraceIdentifier },
+            });
+        }
+    }
+
     [HttpDelete("products/{id:guid}")]
     public Task<DeletedItemDto> DeleteProduct(Guid id, CancellationToken cancellationToken) =>
         sender.Send(new DeleteProductCommand(Subject, id), cancellationToken);
@@ -96,7 +137,7 @@ public sealed class CatalogueController(ISender sender) : ControllerBase
         sender.Send(new MoveServiceCommand(Subject, id, body.Position), cancellationToken);
 
     private SaveProductCommand Command(Guid? id, SaveProductBody body) => new(
-        Subject, id, body.Name, body.Price, body.Stock, body.Description, body.MinimumQuantity, body.OptionName, body.Options, body.IdempotencyKey);
+        Subject, id, body.Name, body.Price, body.Stock, body.Description, body.MinimumQuantity, body.OptionName, body.Options, body.IdempotencyKey, body.PhotoId);
 
     private SaveServiceCommand Command(Guid? id, SaveServiceBody body) => new(
         Subject, id, body.Name, body.Detail, body.Pricing, body.Price, body.Action, body.DurationMinutes,

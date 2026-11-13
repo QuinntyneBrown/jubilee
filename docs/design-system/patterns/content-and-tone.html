@@ -148,7 +148,7 @@
         <tr><td>Errors</td><td>Reassuring first, then the fix</td><td>"Nothing is lost. Check your connection and try again."</td></tr>
         <tr><td>Bad news from a person (decline)</td><td>Gentle; quote the person; offer a path</td><td>"WaterWorks can’t take this job" + their reason + "See other plumbers"</td></tr>
         <tr><td>Destructive confirmation</td><td>Serious, specific, no softening</td><td>"Your 3 open requests are cancelled and the businesses are told. This can’t be undone."</td></tr>
-        <tr><td>Verification</td><td>Transparent about who and when</td><td>"You submitted it today at 9:40 a.m. We review and publish within two business days."</td></tr>
+        <tr><td>Moderation</td><td>Transparent about who, when and why</td><td>"Taken down. You took down Luzandre.com today at 2:05 p.m. Naomi Laurent has been e-mailed your reason."</td></tr>
       </tbody></table></div>
     </section>
     <section class="ds-section" id="structure"><h2><a href="#structure">Structure</a></h2>
@@ -176,7 +176,7 @@
       <p>The same object is worded differently through its lifecycle. Keep these words fixed so badges, toasts, notifications and e-mail agree.</p>
       <div class="ds-table-wrap"><table class="ds-table"><thead><tr><th scope="col">Object</th><th scope="col">Lifecycle words (in order)</th><th scope="col">Badge colour</th></tr></thead><tbody>
         <tr><td>Request (booking, quote, order)</td><td>Sent · Awaiting reply · Confirmed · Declined · Cancelled · Completed</td><td>warning for awaiting, success for confirmed, danger for declined, neutral for completed and cancelled</td></tr>
-        <tr><td>Listing</td><td>Draft · Pending verification · Changes requested · Verified · Paused</td><td>warning, warning, danger, success, neutral</td></tr>
+        <tr><td>Listing</td><td>Draft · Live · Paused · On hold</td><td>neutral, success, neutral, warning</td></tr>
         <tr><td>Message</td><td>Sending · Sent · Not sent</td><td>bubble states, not badges</td></tr>
         <tr><td>Product</td><td>Listed · Sold out · Hidden</td><td>success, warning, neutral</td></tr>
       </tbody></table></div>
@@ -251,7 +251,7 @@
         <li><a href="../../mocks/pages/list-business/success.html">pages/list-business/success</a> (what happens next)</li>
         <li><a href="../../mocks/dialogs/delete-account/invalid.html">dialogs/delete-account/invalid</a> (destructive specifics)</li>
         <li><a href="../../mocks/pages/browse/error.html">pages/browse/error</a> (error formula with code)</li>
-        <li><a href="../../mocks/notifications/verification-banner/warning.html">notifications/verification-banner/warning</a> (verification transparency)</li>
+        <li><a href="../../mocks/pages/admin-listing/taken-down.html">pages/admin-listing/taken-down</a> (moderation transparency)</li>
         <li><a href="../../mocks/dialogs/book-meeting/default.html">dialogs/book-meeting/default</a> (no payment wording)</li>
       </ul>
       <p>Drift found: dates for the same order read "28 Oct" in Messages and "Wed 28 Oct" in Your requests; prices mix "$528.00 + tax" (confirm dialog) with "$64" elsewhere; the Google button reads "Continue with Google" on Log in and "Sign up with Google" on Sign up (both kept: each says what will happen). Support codes use 502 and 503 for the same areas. The rules above settle each; this page’s own examples follow them ("$528 + tax").</p>

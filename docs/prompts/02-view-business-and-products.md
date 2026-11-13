@@ -9,9 +9,10 @@ Roles: Visitor, Member, Owner. Journey 2 in `docs/journey.md`, recorded at 84% c
 What is left, from an audit of the code and its tests against the acceptance criteria:
 
 - `L2-034` AC3: shop product cards show no "Sold out" badge (`frontend/projects/components/src/lib/product-card/`).
-- `L2-028` AC3: the owner's and the verification team's preview status is served and API-tested, but the page shows no status.
+- `L2-028` AC3: the owner's and the Jubilee team's preview status is served and API-tested, but the page shows no status.
 - `L2-036` AC2: the back-in-stock notice, in the app and by e-mail, sent once. Nothing produces it; there is no notifier for a product returning to stock.
 - `L2-036` AC3: the owner's sold-out toast is absent.
+- ADR 0057: the business page's line above the name gives the category only, "Sold by {Business}" carries no mark, and the API drops `verified`; the preview statuses are "Draft · not published yet", "Paused · not public" and "On hold while we look into a report · not public".
 
 The audit read test titles and spot-checked assertions. Verify each gap against the code before you plan, and treat any other acceptance criterion of the requirements below that has no implementation or no acceptance test as part of this work.
 
@@ -123,7 +124,7 @@ Builds on: journey 17 (Stay notified) for in-app notifications and e-mail, journ
 
 - Plan thin vertical slices. The list is a guide; where its wording and `docs/specs/L2.md` differ, the requirement wins. For example:
   1. "Sold out" badge on shop product cards, said in text and not by colour alone.
-  2. Preview status on the business page for the owner and the verification team.
+  2. Preview status on the business page for the owner and the Jubilee team.
   3. Back-in-stock notice: in-app notification and e-mail, once per alert, respecting the member's e-mail preferences.
   4. The owner's sold-out toast when stock reaches zero.
 - For each slice:

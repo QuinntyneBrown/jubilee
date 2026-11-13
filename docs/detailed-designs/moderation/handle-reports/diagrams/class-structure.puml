@@ -1,0 +1,101 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Handle reports
+enum ReportStatus {
+  Open
+  InReview
+  Resolved
+}
+enum ReportActionKind {
+  Dismiss
+  MessageReporter
+  MessageOwner
+  PlaceOnHold
+  RemoveListing
+  LiftHold
+}
+class ListingReport {
+  +Guid Id
+  +Guid ListingId
+  +string ReporterSubject
+  +string ReporterName
+  +ReportStatus Status
+  +DateTimeOffset CreatedAt
+  +string? ResolutionNote
+  +StartReview(): void
+  +Resolve(note: string, now: DateTimeOffset): void
+}
+class ListingReportEntry {
+  +ReportReason Reason
+  +string Description
+  +string IdempotencyKey
+}
+class ConversationReport {
+  +Guid Id
+  +Guid ConversationId
+  +string ReporterSubject
+  +string Reason
+  +ReportStatus Status
+  +StartReview(): void
+  +Resolve(note: string, now: DateTimeOffset): void
+}
+class ReportAction {
+  +Guid ReportId
+  +ReportActionKind Kind
+  +string ResolutionNote
+  +string? MessageText
+  +string ActorName
+  +DateTimeOffset At
+}
+class Listing {
+  +Guid Id
+  +string OwnerId
+  +bool IsUnderModerationHold
+  +DateTimeOffset? DeletedAt
+  +PlaceModerationHold(): void
+  +LiftModerationHold(): void
+  +Delete(now: DateTimeOffset): void
+}
+class JubileeTeam {
+  +{static} Tell(db, settings, subject, body, now, correlationId): void
+  +{static} AdminLink(settings, path): string
+}
+class ReportSubmitted {
+  +{static} Tell(db, team, listing, report, entry, added, now): void
+}
+class ConversationReportSubmitted {
+  +{static} Tell(db, team, listing, report, now): void
+}
+class ReportListItemDto {
+  +Guid Id
+  +string Type
+  +string Reason
+  +string ReporterName
+  +string Status
+  +bool Overdue
+}
+class StaffSessionView {
+    +int ReportCount
+}
+
+ListingReport "1" *-- "*" ListingReportEntry
+ListingReport "*" --> "1" Listing
+ConversationReport --> ReportStatus
+ListingReport --> ReportStatus
+ReportAction --> ReportActionKind
+ReportSubmitted ..> JubileeTeam : tells through
+ConversationReportSubmitted ..> JubileeTeam : tells through
+ReportListItemDto ..> ListingReport : projects
+ReportListItemDto ..> ConversationReport : projects
+StaffSessionView ..> ListingReport : counts unresolved
+StaffSessionView ..> ConversationReport : counts unresolved
+@enduml

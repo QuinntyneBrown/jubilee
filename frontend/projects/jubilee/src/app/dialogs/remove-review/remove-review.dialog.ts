@@ -14,7 +14,7 @@ type View = 'form' | 'busy' | 'failed';
 /** A removal that takes longer than this fails instead of spinning (L2-127 AC2). */
 const SUBMIT_TIMEOUT_MS = 10_000;
 
-/** RemoveReviewDialog (L2-232 AC4): the author takes their review off the page; closes with `true` once it is. */
+/** RemoveReviewDialog (L2-233 AC4): the author takes their review off the page; closes with `true` once it is. */
 @Component({
   selector: 'jb-remove-review-dialog',
   imports: [Alert, Button, DialogBody, DialogFooter, DialogFrame],

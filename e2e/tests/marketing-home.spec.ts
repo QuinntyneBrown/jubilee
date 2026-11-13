@@ -25,7 +25,7 @@ test.describe('marketing home page (L2-183)', () => {
     await expect(home.heading).toHaveText('Toronto’s Christian businesses, in one place.');
     await expect(home.badge).toHaveText('Launching soon');
     await expect(home.lead).toHaveText(
-      'Jubilee is where Toronto’s Christian community will find shops, advisors and trades it can trust. Every business is verified before it appears. We are launching soon.',
+      'Jubilee is where Toronto’s Christian community will find shops, advisors and trades it can trust. We are launching soon.',
     );
     await expect(home.tellMe).toBeVisible();
     await expect(home.watchTheFilm).toBeVisible();
@@ -54,12 +54,12 @@ test.describe('marketing home page (L2-183)', () => {
     await jb.open('marketing-home');
     await expect(home.glimpseSearch).toHaveText('Home repairs near Leslieville');
     await expect(home.glimpseCaption).toHaveText('Home & property · a preview');
-    // Each name carries the Verified mark as text for assistive technology, not as colour alone
+    // ADR 0057: the names carry no Verified mark
     await expect(home.glimpseNames).toHaveText([
-      'WaterWorks Plumbing & Drains Verified',
-      'Norris Roofing & Contracting Verified',
-      'Moore’s Cleaning Service Verified',
-      'Tony’s Flooring Centre Verified',
+      'WaterWorks Plumbing & Drains',
+      'Norris Roofing & Contracting',
+      'Moore’s Cleaning Service',
+      'Tony’s Flooring Centre',
     ]);
     await expect(home.glimpseTaglines).toHaveText([
       'Treating Every Customer As Family',
@@ -68,7 +68,7 @@ test.describe('marketing home page (L2-183)', () => {
       'Family owned and operated since 1961',
     ]);
     await expect(home.glimpseNotes).toHaveText([
-      'Verified by the Jubilee team',
+      'Every owner agrees to our statement of faith',
       'Message a business directly',
     ]);
   });
@@ -83,7 +83,7 @@ test.describe('marketing home page (L2-183)', () => {
       'The recommendations you already ask your church for, gathered in one place and ready when you need them.',
     );
     await expect(home.benefits).toHaveText([
-      'Know who you’re dealing with. Every business is verified by the Jubilee team before it appears. No more guessing from star ratings.',
+      'Know who you’re dealing with. Every owner agrees to Jubilee’s statement of faith and to deal honestly with every customer. No more guessing from star ratings.',
       'Keep your money in the community. Every purchase supports a family that shares your faith and your city, and helps them build something lasting.',
       'Find it in seconds, not Sundays. A plumber, a lawyer, a study Bible. Look in one place instead of asking around after service.',
     ]);
@@ -97,11 +97,29 @@ test.describe('marketing home page (L2-183)', () => {
       'Reach believers across Toronto who would rather buy from someone who shares their faith.',
     );
     await expect(home.points).toHaveText([
-      'Customers who already trust youThe Verified mark travels with your listing, so first conversations start warm.',
+      'Customers who already trust youBelievers across Toronto look for businesses that share their faith, so first conversations start warm.',
       'A page that sells for youShow your products or services, prices and story. Update it whenever you like.',
       'Free to joinNo listing fees and no cut of your sales. Just honest business, done well.',
     ]);
     await expect(home.sendDetails).toBeVisible();
+  });
+
+  test('AC7: each heading reads as one sentence, its second part in the accent colour', async ({
+    page,
+    jb,
+  }) => {
+    const home = new MarketingHomePage(page);
+    await jb.open('marketing-home');
+    await home.ready();
+    // Assistive technology reads each heading as one sentence
+    await expect(home.heading).toHaveAccessibleName(
+      'Toronto’s Christian businesses, in one place.',
+    );
+    await expect(home.missionHeading).toHaveAccessibleName('Our mission.');
+    // And the second part of every heading is set in a colour of its own
+    const parts = await home.headingParts();
+    expect(parts).toHaveLength(9);
+    expect(parts.filter(({ accented }) => !accented)).toEqual([]);
   });
 
   test('AC8: the page states the mission word for word', async ({ page, jb }) => {
@@ -144,9 +162,8 @@ test.describe('marketing home page (L2-183)', () => {
       'Ships across Canada',
       'Book a consultation',
     ]);
-    // The Verified mark is an icon and the word, never colour alone
-    await expect(home.cardVerified).toHaveText(Array(5).fill('Verified'));
-    await expect(home.cardVerifiedIcons).toHaveCount(5);
+    // ADR 0057: no card calls a business verified
+    await expect(home.cards.filter({ hasText: 'Verified' })).toHaveCount(0);
     await expect(home.featuredCards).toHaveCount(1);
     await expect(home.featuredCards).toContainText('Legacy Financial');
   });
@@ -207,6 +224,59 @@ test.describe('pitch film player (L2-184)', () => {
     await expect.poll(async () => Math.floor(await home.filmTime())).toBeGreaterThanOrEqual(43);
   });
 
+  test('AC6: by keyboard, Enter plays the film, its own controls answer and come before the chapters', async ({
+    page,
+    jb,
+  }) => {
+    const home = new MarketingHomePage(page);
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await jb.open('marketing-home');
+    // Given the visitor reaches the play button by Tab
+    await home.tabTo(home.play);
+    // When they press Enter
+    await page.keyboard.press('Enter');
+    // Then the still gives way to the film, from the start, and the film takes the focus
+    await expect(home.play).toHaveCount(0);
+    await expect(home.video).toHaveAttribute('controls');
+    await expect(home.currentChapter).toHaveText('0:00Why we built Jubilee');
+    expect(await home.filmTime()).toBeLessThan(5);
+    await expect.poll(() => home.filmFocused()).toBe(true);
+    // And the browser's own controls answer the keyboard: Space pauses the film
+    await expect.poll(() => home.filmPaused()).toBe(false);
+    await page.keyboard.press('Space');
+    await expect.poll(() => home.filmPaused()).toBe(true);
+    // And Tab goes through the film's controls before it reaches the chapters
+    await home.tabTo(home.chapter('Finding someone you can trust'));
+    // When the visitor presses Enter on a chapter
+    await page.keyboard.press('Enter');
+    // Then the film plays from that chapter, which is the current one
+    await expect(home.currentChapter).toHaveText('0:21Finding someone you can trust');
+    await expect.poll(async () => Math.floor(await home.filmTime())).toBeGreaterThanOrEqual(21);
+    expect(await home.filmTime()).toBeLessThan(43);
+    // And Space on a chapter does the same
+    await home.tabTo(home.chapter('Growing your business'));
+    await page.keyboard.press('Space');
+    await expect(home.currentChapter).toHaveText('0:43Growing your business');
+    await expect.poll(async () => Math.floor(await home.filmTime())).toBeGreaterThanOrEqual(43);
+  });
+
+  test('AC5: without sound the narration is readable, because the captions are in the picture', async ({
+    page,
+    jb,
+  }) => {
+    const home = new MarketingHomePage(page);
+    await jb.open('marketing-home');
+    await home.play.click();
+    // Given the film without sound, when it stands at a line of narration in each chapter
+    // ("On Sunday, we’re sent out…", "God gives us the power to get wealth.", and 0:44)
+    for (const seconds of [2, 23.6, 44.3]) {
+      const band = await home.captionBand(seconds);
+      // Then the line stands under the picture: light type on the dark caption box
+      expect(band.light, `light type at ${seconds} s`).toBeGreaterThan(0.05);
+      expect(band.dark, `the caption box at ${seconds} s`).toBeGreaterThan(0.3);
+    }
+  });
+
   test('AC4: "Watch the film" moves the page to the film section', async ({ page, jb }) => {
     const home = new MarketingHomePage(page);
     await jb.open('marketing-home');
@@ -256,7 +326,7 @@ test.describe('launching-soon marketing page (L2-215)', () => {
     const home = new MarketingHomePage(page);
     await jb.open('marketing-home');
     await expect(home.preRegister).toContainText(
-      'Send your business’s details now and the Jubilee team will be in touch before launch to prepare your listing. Sending this form does not list or verify your business: every business is verified before it appears.',
+      'Send your business’s details now and the Jubilee team will be in touch before launch to prepare your listing. Sending this form does not list your business yet.',
     );
     await expect(home.notify).toContainText(
       'Leave your e-mail address and we will tell you the day Jubilee opens. One e-mail, and nothing else.',
@@ -277,6 +347,7 @@ test.describe('launching-soon marketing page (L2-215)', () => {
       'See all',
       '47',
       '11 verified',
+      'verified',
       'replied in',
       'open for business',
       'List your business free',
@@ -302,6 +373,35 @@ test.describe('launching-soon marketing page (L2-215)', () => {
       expect(address).toMatch(/^http:\/\/localhost:4201\/#[a-z-]+$/);
     }
   });
+});
+
+test.describe('the launch forms at every width (L2-215 AC8)', () => {
+  for (const width of [360, 576, 768, 992, 1280]) {
+    test(`AC8: at ${width} px the forms fit, every field and button is at least 44 px high, and from 1024 px each form stands beside its heading`, async ({
+      page,
+      jb,
+    }) => {
+      const home = new MarketingHomePage(page);
+      await page.setViewportSize({ width, height: 800 });
+      await jb.open('marketing-home');
+      await home.ready();
+      expect(await home.horizontalOverflow()).toBe(0);
+      for (const [form, heading] of [
+        [home.businessForm, home.preRegisterHeading],
+        [home.notifyForm, home.notifyHeading],
+      ] as const) {
+        const heights = await form.controlHeights();
+        expect(heights.length).toBeGreaterThan(0);
+        for (const height of heights) expect(height).toBeGreaterThanOrEqual(44);
+        if (width >= 1024) {
+          expect(await home.leftOf(form.form)).toBeGreaterThan(await home.leftOf(heading));
+        } else {
+          expect(await home.topOf(form.form)).toBeGreaterThan(await home.topOf(heading));
+          expect(await home.leftOf(form.form)).toBeLessThanOrEqual(await home.leftOf(heading));
+        }
+      }
+    });
+  }
 });
 
 test.describe('in-page links (L2-185 AC3; AC1, AC2 and AC4 are suspended until launch)', () => {
@@ -375,19 +475,21 @@ test.describe('marketing site delivery (L2-186)', () => {
     expect(await home.topOf(home.glimpse)).toBeLessThan(await home.topOf(home.note));
   });
 
-  test('AC3: the page is light on a device set to dark, in Archivo and Inter', async ({
-    page,
-    jb,
-  }) => {
-    const home = new MarketingHomePage(page);
-    await page.emulateMedia({ colorScheme: 'dark' });
-    await jb.open('marketing-home', { theme: 'dark' });
-    expect(await home.theme()).toBe('light');
-    // Cream paper and ink type, whatever the device prefers
-    expect(await home.paperColour()).toBe('rgb(244, 242, 236)');
-    expect(await home.fontOf(home.heading)).toMatch(/^"?Archivo/);
-    expect(await home.fontOf(home.lead)).toMatch(/^"?Inter/);
-  });
+  for (const scheme of ['light', 'dark'] as const) {
+    test(`AC3: on a device set to ${scheme} the page is light, in Archivo and Inter`, async ({
+      page,
+      jb,
+    }) => {
+      const home = new MarketingHomePage(page);
+      await page.emulateMedia({ colorScheme: scheme });
+      await jb.open('marketing-home', { theme: scheme });
+      expect(await home.theme()).toBe('light');
+      // Cream paper and ink type, whatever the device prefers
+      expect(await home.paperColour()).toBe('rgb(244, 242, 236)');
+      expect(await home.fontOf(home.heading)).toMatch(/^"?Archivo/);
+      expect(await home.fontOf(home.lead)).toMatch(/^"?Inter/);
+    });
+  }
 
   test('L2-112 AC4: "Skip to content" moves focus to main', async ({ page, jb }) => {
     const home = new MarketingHomePage(page);
@@ -396,26 +498,46 @@ test.describe('marketing site delivery (L2-186)', () => {
     expect(await home.mainFocused()).toBe(true);
   });
 
-  test('AC4: every action is reached by Tab in reading order, with a focus ring', async ({
+  test('AC4: Tab reaches every link, button and field of the page in reading order, each with a focus ring', async ({
     page,
     jb,
   }) => {
     const home = new MarketingHomePage(page);
     await page.setViewportSize({ width: 1280, height: 800 });
     await jb.open('marketing-home');
-    expect(await home.tabThrough(10)).toEqual([
-      'Skip to content',
-      'Jubilee home',
-      'Why Jubilee',
-      'How it works',
-      'Inside the app',
-      'For businesses',
-      'Launching soon',
-      'Tell me when it launches',
-      'Watch the film',
-      'Play the Jubilee film',
+    await home.ready();
+    const stops = await home.tabOrder();
+    expect(stops.map(({ stop }) => stop)).toEqual([
+      'link Skip to content',
+      'link Jubilee home',
+      'link Why Jubilee',
+      'link How it works',
+      'link Inside the app',
+      'link For businesses',
+      'link Launching soon',
+      'link Tell me when it launches',
+      'link Watch the film',
+      'button Play the Jubilee film',
+      'button 0:00Why we built Jubilee',
+      'button 0:21Finding someone you can trust',
+      'button 0:43Growing your business',
+      'link Send your business’s details',
+      'field Business name (required)',
+      'field Your name (required)',
+      'field Email (required)',
+      'field Phone (optional)',
+      'field Category (required)',
+      'field Area of Toronto (required)',
+      'field Website or social link (optional)',
+      'field About your business (required)',
+      expect.stringMatching(/^field /),
+      'button Send my details',
+      'field Email (required)',
+      'field First name (optional)',
+      expect.stringMatching(/^field /),
+      'button Tell me when it launches',
     ]);
-    expect(await home.focusRingShown()).toBe(true);
+    expect(stops.filter(({ ring }) => !ring)).toEqual([]);
   });
 
   test('AC5: with reduced motion an in-page link jumps instead of scrolling smoothly', async ({
@@ -427,5 +549,23 @@ test.describe('marketing site delivery (L2-186)', () => {
     expect(await home.scrollBehaviour()).toBe('smooth');
     await page.emulateMedia({ reducedMotion: 'reduce' });
     expect(await home.scrollBehaviour()).toBe('auto');
+  });
+
+  test('AC5: with reduced motion pressing play gives way to the film without a zoom', async ({
+    page,
+    jb,
+  }) => {
+    const home = new MarketingHomePage(page);
+    await jb.open('marketing-home');
+    // Without the preference the play button grows and shrinks under the pointer
+    expect(await home.playZoomDuration()).toBeGreaterThan(0);
+    // Given the visitor prefers reduced motion
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    // Then the play button does not zoom
+    expect(await home.playZoomDuration()).toBe(0);
+    // And when they press play, the still gives way to the film at once
+    await home.play.click();
+    await expect(home.play).toHaveCount(0);
+    await expect(home.video).toHaveAttribute('controls');
   });
 });

@@ -28,7 +28,7 @@ class AuditEntry {
 }
 
 enum AuditAction {
-  VerificationDecision
+  ListingTakedown
   ReportResolution
   ListingHold
   ListingRemoval

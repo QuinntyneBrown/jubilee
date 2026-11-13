@@ -17,7 +17,7 @@ class ReviewDialog {
   }
 }
 
-/** "Edit your review" (L2-232 AC1 to AC4). */
+/** "Edit your review" (L2-233 AC1 to AC4). */
 export class EditReviewDialog extends ReviewDialog {
   readonly stars: Locator;
   readonly ratingError: Locator;
@@ -46,7 +46,7 @@ export class EditReviewDialog extends ReviewDialog {
   }
 }
 
-/** "Remove your review?" (L2-232 AC5). */
+/** "Remove your review?" (L2-233 AC5). */
 export class RemoveReviewDialog extends ReviewDialog {
   readonly remove: Locator;
 
@@ -56,7 +56,7 @@ export class RemoveReviewDialog extends ReviewDialog {
   }
 }
 
-/** "Reply to {author}" and "Edit your reply" (L2-233). */
+/** "Reply to {author}" and "Edit your reply" (L2-234). */
 export class ReplyReviewDialog extends ReviewDialog {
   readonly text: Locator;
   readonly error: Locator;
@@ -70,7 +70,7 @@ export class ReplyReviewDialog extends ReviewDialog {
   }
 }
 
-/** "Report this review" (L2-235). */
+/** "Report this review" (L2-236). */
 export class ReportReviewDialog extends ReviewDialog {
   readonly note: Locator;
   readonly reasonError: Locator;

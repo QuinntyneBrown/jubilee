@@ -1,9 +1,9 @@
 import { DOCUMENT } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, effect, inject } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { AdminBar, SkipLink, StaffChromeMember, ToastRegion } from 'components';
-import { filter, map, startWith } from 'rxjs';
+import { filter, map, skip, startWith } from 'rxjs';
 import { AdminRouteData } from './app.routes';
 import { AdminOnlyPage } from './pages/admin-only/admin-only.page';
 import { StaffSessionService } from './services/staff-session.service';
@@ -12,8 +12,8 @@ const BARE: AdminRouteData = { shell: 'bare', page: '' };
 
 /**
  * The root of the admin application (L2-188): the skip link, the admin bar and the routed screen
- * in `main`. A screen of the verification team shows "Nothing here for your role" in its place to
- * a staff member without the verifier role, and is never loaded for them (L2-188 AC4).
+ * in `main`. A screen of the Jubilee team shows "Nothing here for your role" in its place to
+ * a staff member without the moderator role, and is never loaded for them (L2-188 AC4).
  */
 @Component({
   selector: 'jb-root',
@@ -44,17 +44,26 @@ export class App {
 
   protected readonly staff = computed<StaffChromeMember | null>(() => this.session.staff());
 
-  /** A screen of the verification team, opened by a staff member without the verifier role. */
+  /** A screen of the Jubilee team, opened by a staff member without the moderator role. */
   protected readonly notForRole = computed(
     () =>
-      this.routeData().verifier === true &&
-      !(this.session.staff()?.roles.includes('verifier') ?? false),
+      this.routeData().moderator === true &&
+      !(this.session.staff()?.roles.includes('moderator') ?? false),
   );
 
   constructor() {
     effect(() => {
       this.document.body.dataset['page'] = this.notForRole() ? 'admin-only' : this.routeData().page;
     });
+    // Moving between screens reads the staff session again, so the count of the admin bar is
+    // current; the first screen uses the session read at start-up (L2-190 AC7, ADR 0058).
+    this.router.events
+      .pipe(
+        filter((event) => event instanceof NavigationEnd),
+        skip(1),
+        takeUntilDestroyed(),
+      )
+      .subscribe(() => this.session.refresh());
   }
 
   protected signOut(): void {

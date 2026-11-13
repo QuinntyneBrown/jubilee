@@ -27,7 +27,7 @@ public sealed partial class AccountDataTests
     }
 
     [Fact]
-    public async Task L2_200_AC12_The_archive_holds_the_member_s_feedback()
+    public async Task L2_214_AC12_The_archive_holds_the_member_s_feedback()
     {
         var (client, member) = await Joanna();
         await SendFeedback(client);
@@ -48,7 +48,7 @@ public sealed partial class AccountDataTests
     }
 
     [Fact]
-    public async Task L2_200_AC12_Deleting_the_account_deletes_the_member_s_feedback_and_screenshots_and_nobody_elses()
+    public async Task L2_214_AC12_Deleting_the_account_deletes_the_member_s_feedback_and_screenshots_and_nobody_elses()
     {
         var (client, _) = await Joanna();
         var david = await Join("david@example.com", "David", "Chen");

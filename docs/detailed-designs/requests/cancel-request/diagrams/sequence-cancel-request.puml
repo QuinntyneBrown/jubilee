@@ -45,20 +45,21 @@ dialog -> client : cancel(requestId)
 client -> controller : POST /api/requests/{id}/cancel
 controller -> controller : Authenticate and apply endpoint policy
 controller -> handler : Send CancelRequestCommand
-handler -> db : Load request where MemberId is the caller (L2-133)
+handler -> db : Load request where MemberSubject is the caller (L2-133)
 db --> handler : Current state
 handler -> entity : Apply L2-049 cancel rule: New or Confirmed to Cancelled (L2-043)
 alt status is New or Confirmed
   entity --> handler : Status Cancelled, RequestTransition with UndoableUntil
-  handler -> db : Save request, conversation card and outbox messages in one unit of work
+  handler -> db : Save request, the owner's notification and e-mail in one unit of work
   db --> handler : Commit result
-  handler --> controller : CancelResult
+  handler --> controller : MemberRequestDecisionDto
   controller --> client : 200 OK
   client --> dialog : Cancelled
   dialog --> actor : Close and show toast "Request cancelled. {Business} has been told." with "Undo"
   outbox -> db : Read pending outbox messages
   db --> outbox : Messages
-  outbox --> owner : Notification and real-time event straight away
+  db --> owner : Notification over the event stream straight away
+  outbox --> owner : E-mail straight away
 else any other status
   entity --> handler : InvalidTransitionException
   handler --> controller : Conflict

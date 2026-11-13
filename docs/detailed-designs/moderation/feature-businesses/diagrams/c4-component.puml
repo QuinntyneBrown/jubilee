@@ -1,0 +1,35 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Feature businesses
+Container_Boundary(admin, "Admin application") {
+  Component(page, "AdminFeaturedPage", "Angular page", "Picks up to five live listings and a start date")
+  Component(aclient, "AdminApi", "Typed HTTP client", "Calls /api/admin/featured and featured-weeks")
+}
+Container_Boundary(web, "Jubilee app") {
+  Component(pages, "WelcomePage and BrowsePage", "Angular pages", "Render Featured this week")
+  Component(dclient, "DirectoryApi", "Typed HTTP client", "Calls /api/directory/welcome and home")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(actrl, "AdminFeaturedController", "ASP.NET Core controller", "PUT /api/admin/featured-weeks/startDate")
+  Component(dctrl, "DirectoryController", "ASP.NET Core controller", "GET /api/directory/welcome and home")
+  Component(sh, "SetFeaturedWeekCommandHandler", "MediatR handler", "Validates and replaces the week's slots with an audit entry")
+  Component(qh, "GetWelcomeQueryHandler and GetBrowseHomeQueryHandler", "MediatR handlers", "Read through the directory read cache")
+  Component(sel, "FeaturedSelector", "Application service", "Current slots joined to public listings")
+  Component(icpt, "DirectoryCacheInvalidationInterceptor", "EF Core interceptor", "Drops the cache after a save of a slot or a listing")
+}
+ContainerDb(db, "Jubilee database", "SQL Server", "Featured slots and listings")
+ContainerDb(cache, "Cache", "Redis", "Directory read cache")
+
+Rel(page, aclient, "Saves the selection through")
+Rel(pages, dclient, "Load featured businesses through")
+Rel(aclient, actrl, "Calls", "JSON/HTTPS")
+Rel(dclient, dctrl, "Calls", "JSON/HTTPS")
+Rel(actrl, sh, "Sends SetFeaturedWeekCommand")
+Rel(sh, db, "Saves slots and audit entry", "EF Core")
+Rel(icpt, cache, "Drops")
+Rel(dctrl, qh, "Sends the welcome or browse query")
+Rel(qh, cache, "Reads and fills")
+Rel(qh, sel, "Asks for the featured listings")
+Rel(sel, db, "Reads current slots joined to public listings", "EF Core")
+@enduml

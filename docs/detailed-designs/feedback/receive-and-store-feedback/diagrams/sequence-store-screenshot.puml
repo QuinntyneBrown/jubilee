@@ -25,16 +25,16 @@ end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
   database "Jubilee database" as db
 end box
-web -> controller : POST /api/feedback/screenshots with the bytes of a picture
-controller -> handler : Send UploadFeedbackScreenshotCommand with the member of the session
+web -> controller : POST /api/feedback/screenshots with the picture as the form file "file"
+controller -> handler : Send UploadFeedbackScreenshotCommand(Subject, Content) with the member of the session
 handler -> db : Count the member's screenshots of the past hour
 db --> handler : Count
 alt 30 already
   handler --> controller : RateLimitedException
   controller --> web : 429 with Retry-After (L2-137)
 else Under the limit
-  handler -> sanitizer : Clean the bytes
-  sanitizer -> sanitizer : Decide JPEG or PNG from the bytes and check 5 MB and the pixel limit and remove metadata (L2-138)
+  handler -> sanitizer : Sanitize(bytes)
+  sanitizer -> sanitizer : Decide JPEG or PNG from the bytes and check 5 MB and the pixel limit and re-encode without metadata (L2-138)
   sanitizer --> handler : SanitizedImage or a problem
   alt Not a JPEG or PNG
     handler --> controller : InvalidImageException INVALID_IMAGE
@@ -43,7 +43,7 @@ else Under the limit
     handler --> controller : InvalidImageException TOO_LARGE
     controller --> web : 422 and nothing stored
   else Clean picture
-    handler -> db : Save FeedbackScreenshot with MemberSubject and no FeedbackId
+    handler -> db : Save FeedbackScreenshot.Store with UploaderSubject and no FeedbackId
     db --> handler : Commit result
     handler --> controller : Screenshot id
     controller --> web : 201 Created with the id

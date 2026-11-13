@@ -14,7 +14,7 @@ that claim on every staff sign-in and admits it only when it names `mfa`; the
 provider's own policy is not trusted in place of the proof.
 
 A *staff account* links an identity of the staff directory to the roles it
-holds in Jubilee, `verifier` and `admin` (`L2-193`). Staff accounts are managed
+holds in Jubilee, `moderator` and `admin` (`L2-193`). Staff accounts are managed
 only with the Jubilee CLI. A successful sign-in starts a *staff session*: a
 server-side session of its own kind, in its own cookie, shorter than a member
 session, and never shared with the app (`L2-190`).
@@ -57,7 +57,9 @@ session, and never shared with the app (`L2-190`).
   with no role, is `NotStaff`. On `SignedIn` it returns the account, its roles
   and the id of the member whose confirmed e-mail matches, if any.
 - **`StaffMember`** — domain entity: `Id`, `Email`, `Roles` (`StaffRoles` flags:
-  `Verifier`, `Admin`), `TenantId`, `ObjectId`, `CreatedAt`. `Grant`, `Revoke`
+  `Moderator`, `Admin`; the `Moderator` flag keeps the stored value of the
+  former `verifier` role, so earlier grants carry over, ADR 0057), `TenantId`,
+  `ObjectId`, `CreatedAt`. `Grant`, `Revoke`
   and `BindTo(tenant, object)`; binding twice to different identities is refused.
 - **`Staff` scheme and `StaffTicketStore`** — the second cookie authentication
   scheme. The cookie is `__Host-jubilee.staff` (HttpOnly, Secure,
@@ -67,12 +69,12 @@ session, and never shared with the app (`L2-190`).
   request or 8 hours after sign-in (`L2-190`). A new identifier is issued at
   every sign-in.
 - **`StaffSessionController`** — `GET /api/staff/session` answers the display
-  name, initials, e-mail, roles and the number of listings ready to review (401
+  name, initials, e-mail and roles, and counts no queue (ADR 0057) (401
   without a staff session, `SESSION_EXPIRED` when an ended staff cookie came
   with the request). `DELETE /api/staff/session` ends the session and removes
   the cookie.
-- **CLI `jubilee staff`** — `grant --email {address} --role verifier|admin`,
-  `revoke --email {address} --role verifier|admin` and `list`, sent as
+- **CLI `jubilee staff`** — `grant --email {address} --role moderator|admin`,
+  `revoke --email {address} --role moderator|admin` and `list`, sent as
   `GrantStaffRoleCommand`, `RevokeStaffRoleCommand` and `ListStaffQuery`.
   `revoke` ends every staff session of the account. An unknown role or an
   address that is not an e-mail address changes nothing and exits with 1.
@@ -87,7 +89,7 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 | `L2-189` | `L1-027` | Staff shall sign in to the admin application only through single sign-on; the API shall refuse a sign-in whose `amr` claim does not name `mfa`, an identity that is not a staff account or comes from another tenant, and a callback whose state, nonce or provider answer does not check out, each with its own message, and shall reach the sign-in endpoints only from an allowed network. |
 | `L2-190` | `L1-027` | A staff session shall be server-side, in the cookie `__Host-jubilee.staff`, with a new identifier at sign-in, shall end after 30 minutes without a request or 8 hours after sign-in, shall be ended by "Sign out" and by a role revocation, and shall be independent of a member session. |
 | `L2-193` | `L1-027` | Staff accounts and their roles shall be granted, revoked and listed with the CLI only; an account shall be bound to its identity on first sign-in; a staff session's decisions shall respect L2-098 criterion 5 for the member whose confirmed e-mail matches the account. |
-| `L2-098` | `L1-014` | A verifier shall complete a second factor through single sign-on before any admin screen is available. |
+| `L2-098` | `L1-014` | A moderator shall complete a second factor through single sign-on before any admin screen is available. |
 
 ## Diagrams
 

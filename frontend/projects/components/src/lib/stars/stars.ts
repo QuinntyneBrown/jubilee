@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
 
 /**
  * A rating shown, never chosen: five stars filled to the exact value, so 4.6 fills six tenths of
- * the fifth (L2-228 AC2).
+ * the fifth (L2-229 AC2).
  *
  *     <span jb-stars [value]="4.6" label="Rated 4.6 out of 5"></span>
  *

@@ -6,7 +6,7 @@
       ? 'Quote request sent to ' + opts?.business?.name
       : 'Ask ' + (opts ? opts.business.name : 'the business') + ' for a quote'
   "
-  [icon]="view() === 'success' ? 'verified' : 'message'"
+  [icon]="view() === 'success' ? 'check-circle' : 'message'"
   [busy]="busy()"
   (closed)="close()"
   (outsideClick)="close()"

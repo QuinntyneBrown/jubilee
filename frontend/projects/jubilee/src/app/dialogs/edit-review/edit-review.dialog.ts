@@ -54,8 +54,8 @@ const PROMPT =
   'What did they do, and how did it go? Was the price what they quoted? Would you hire them again?';
 
 /**
- * EditReviewDialog (L2-232): the author changes the stars, the item and the text of their review.
- * The rules are those of writing one (L2-227); a refusal sits under its field and focus goes to
+ * EditReviewDialog (L2-233): the author changes the stars, the item and the text of their review.
+ * The rules are those of writing one (L2-228); a refusal sits under its field and focus goes to
  * the first, a failure keeps what was typed and says the review has not changed (L2-128).
  */
 @Component({

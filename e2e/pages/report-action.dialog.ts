@@ -8,7 +8,7 @@ export class ReportActionDialog {
   readonly title: Locator;
   readonly note: Locator;
   readonly message: Locator;
-  /** What the author of a review taken down reads (L2-236 AC3). */
+  /** What the author of a review taken down reads (L2-237 AC3). */
   readonly reason: Locator;
   readonly description: Locator;
   readonly error: Locator;
@@ -32,7 +32,7 @@ export class ReportActionDialog {
   }
 }
 
-/** The report of a review with "Take the review down" opened (L2-236 AC3). */
+/** The report of a review with "Take the review down" opened (L2-237 AC3). */
 export class TakeDownScreen extends ReportActionDialog implements Screen {
   constructor(protected readonly page: Page) {
     super(page);

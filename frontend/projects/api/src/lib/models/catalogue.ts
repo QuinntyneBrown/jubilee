@@ -5,6 +5,14 @@ export interface OwnerProductOption {
   stock: number | null;
 }
 
+/** A product photo the owner uploaded: its id for the save, its key and size for the tile (L2-091 AC9). */
+export interface ProductPhoto {
+  id: string;
+  key: string;
+  width: number;
+  height: number;
+}
+
 export interface OwnerProduct {
   id: string;
   slug: string;
@@ -23,6 +31,8 @@ export interface OwnerProduct {
   requests: number;
   /** What the save that returned this row did to the stock; a listed row says `none` (L2-036 AC3). */
   stockChange: 'none' | 'became-sold-out' | 'back-in-stock';
+  /** The product's photo, or null: its tile shows instead (L2-091 AC10). */
+  photo: ProductPhoto | null;
 }
 
 export interface OwnerProducts {
@@ -46,6 +56,8 @@ export interface ProductInput {
   optionName?: string | null;
   options?: OwnerProductOption[] | null;
   idempotencyKey: string;
+  /** The uploaded photo the product shows; null shows none (ADR 0063). */
+  photoId?: string | null;
 }
 
 export type ServicePricing = 'free' | 'amount' | 'ask';

@@ -25,7 +25,7 @@ internal static class Searcher
 }
 
 // Search shows the listings as they are now: L2-029 AC7, L2-028 AC1 and AC2, L2-181 AC3 (ADR 0011).
-// Naomi owns Luzandre.com, a live shop; Miriam is on the verification team. No time passes between
+// Naomi owns Luzandre.com, a live shop; Miriam is on the Jubilee team. No time passes between
 // a change and the search after it: there is no index to bring up to date and no indexing job.
 public sealed class SearchCurrencyTests : IClassFixture<JubileeApiFactory>, IAsyncLifetime
 {
@@ -53,7 +53,7 @@ public sealed class SearchCurrencyTests : IClassFixture<JubileeApiFactory>, IAsy
 
     private HttpClient Naomi() => _factory.CreateMemberClient("Naomi Laurent", NaomiId);
 
-    private HttpClient Miriam() => _factory.CreateStaffClient("Miriam Castillo", "member|miriam", "verifier");
+    private HttpClient Miriam() => _factory.CreateStaffClient("Miriam Castillo", "member|miriam", "moderator");
 
     private static async Task<JsonElement> Json(HttpResponseMessage response) =>
         JsonDocument.Parse(await response.Content.ReadAsStringAsync()).RootElement;
@@ -153,9 +153,9 @@ public sealed class SearchCurrencyTests : IClassFixture<JubileeApiFactory>, IAsy
         Assert.Empty(await Found("walnut"));
     }
 
-    // L2-029 AC7, L2-028 AC1: a listing is found from the moment the verification team approves it, not before.
+    // L2-029 AC7, L2-028 AC1 and AC4: a listing is found from the moment its owner publishes it, not as a draft (ADR 0057).
     [Fact]
-    public async Task L2_029_AC7_a_listing_a_verifier_approves_is_found_by_the_next_search_and_not_before()
+    public async Task L2_029_AC7_a_listing_its_owner_publishes_is_found_by_the_next_search_and_not_before()
     {
         var owner = Member.Join(EmailAddress.TryParse("ruth@example.com")!, "Ruth", "Boateng", null, "hash", ListingMother.Now);
         owner.ConfirmEmail();
@@ -174,14 +174,11 @@ public sealed class SearchCurrencyTests : IClassFixture<JubileeApiFactory>, IAsy
             ["idempotencyKey"] = Guid.NewGuid().ToString(),
         };
         var draftId = (await Json(await ruth.PostAsJsonAsync("/api/listing-drafts", draft))).GetProperty("id").GetGuid();
-        var id = (await Json(await ruth.PostAsJsonAsync($"/api/listing-drafts/{draftId}/submit", draft))).GetProperty("listingId").GetGuid();
-        var miriam = Miriam();
-        await miriam.PutAsJsonAsync($"/api/admin/verifications/{id}/checklist", new { ticked = ChecklistItems.All.Select(i => i.Key) });
         Assert.Empty(await Found("candles"));
 
-        var approved = await miriam.PostAsJsonAsync($"/api/admin/verifications/{id}/approve", new { });
+        var published = await ruth.PostAsJsonAsync($"/api/listing-drafts/{draftId}/publish", draft);
 
-        Assert.Equal(HttpStatusCode.OK, approved.StatusCode);
+        Assert.Equal(HttpStatusCode.Created, published.StatusCode);
         Assert.Equal(["Olive Branch Candles"], await Found("candles"));
     }
 
@@ -228,8 +225,6 @@ public sealed class SearchCurrencyTests : IClassFixture<JubileeApiFactory>, IAsy
     // L2-028 AC1: no state but live is searchable, by the listing's own words or by its services and products.
     [Theory]
     [InlineData(NonPublicState.Draft)]
-    [InlineData(NonPublicState.ReadyToReview)]
-    [InlineData(NonPublicState.ChangesRequested)]
     [InlineData(NonPublicState.Paused)]
     [InlineData(NonPublicState.Deleted)]
     [InlineData(NonPublicState.UnderModerationHold)]
@@ -280,8 +275,6 @@ public sealed class SearchFallbackCurrencyTests : IClassFixture<BrokenIndexFacto
 
     [Theory]
     [InlineData(NonPublicState.Draft)]
-    [InlineData(NonPublicState.ReadyToReview)]
-    [InlineData(NonPublicState.ChangesRequested)]
     [InlineData(NonPublicState.Paused)]
     [InlineData(NonPublicState.Deleted)]
     [InlineData(NonPublicState.UnderModerationHold)]

@@ -61,16 +61,6 @@ public sealed class OwnerWorkspaceTests : IClassFixture<JubileeApiFactory>, IAsy
     private static Task<HttpResponseMessage> AddPhoto(HttpClient client, ByteArrayContent file) =>
         client.PostAsync("/api/my-business/photos", new MultipartFormDataContent { { file, "file", "front.jpg" } });
 
-    // L2-086 AC4: the banner of a listing just approved names its category.
-    [Fact]
-    public async Task L2_086_AC4_the_overview_names_the_category_members_find_the_business_in()
-    {
-        var overview = await Json(await Naomi().GetAsync("/api/my-business"));
-
-        Assert.True(overview.GetProperty("justApproved").GetBoolean());
-        Assert.Equal("Shops", overview.GetProperty("categoryName").GetString());
-    }
-
     // L2-085
     [Fact]
     public async Task L2_085_the_overview_of_a_live_listing_shows_the_week_in_numbers()
@@ -87,7 +77,7 @@ public sealed class OwnerWorkspaceTests : IClassFixture<JubileeApiFactory>, IAsy
         var overview = await Json(await Naomi().GetAsync("/api/my-business"));
 
         Assert.Equal("live", overview.GetProperty("state").GetString());
-        Assert.Equal("Verified · live since November 2026", overview.GetProperty("subtitle").GetString());
+        Assert.Equal("Live since November 2026", overview.GetProperty("subtitle").GetString());
         var stats = overview.GetProperty("stats");
         Assert.Equal(2, stats.GetProperty("views").GetProperty("value").GetInt32());
         Assert.Equal(1, stats.GetProperty("views").GetProperty("change").GetInt32());
@@ -137,14 +127,14 @@ public sealed class OwnerWorkspaceTests : IClassFixture<JubileeApiFactory>, IAsy
     public async Task L2_086_a_listing_that_is_not_live_shows_where_it_stands_and_no_numbers()
     {
         await _factory.Reset();
-        var waiting = ListingMother.NonPublic(NonPublicState.ReadyToReview, "luzandre-com", "shops");
+        var waiting = ListingMother.NonPublic(NonPublicState.Draft, "luzandre-com", "shops");
         waiting.AssignOwner(NaomiId);
         await _factory.Arrange(waiting);
 
         var overview = await Json(await Naomi().GetAsync("/api/my-business"));
 
-        Assert.Equal("ready-to-review", overview.GetProperty("state").GetString());
-        Assert.StartsWith("Pending verification · submitted", overview.GetProperty("subtitle").GetString());
+        Assert.Equal("draft", overview.GetProperty("state").GetString());
+        Assert.Equal("Draft · not published yet", overview.GetProperty("subtitle").GetString());
         Assert.Equal(JsonValueKind.Null, overview.GetProperty("stats").ValueKind);
     }
 
@@ -159,14 +149,14 @@ public sealed class OwnerWorkspaceTests : IClassFixture<JubileeApiFactory>, IAsy
 
     private async Task<Listing> SecondListing()
     {
-        var second = ListingMother.NonPublic(NonPublicState.ReadyToReview, "laurent-photography", "media");
+        var second = ListingMother.Public("laurent-photography", "media", approvedAt: ListingMother.Now.AddHours(-1));
         second.Reword("Laurent Photography", "Portraits and church events", "media", null);
         second.AssignOwner(NaomiId);
         await _factory.Arrange(second);
         return second;
     }
 
-    // L2-079 AC4: the switcher names each listing with its stage and each draft not yet submitted
+    // L2-079 AC4: the switcher names each listing with its stage and each draft not yet published
     [Fact]
     public async Task L2_079_AC4_the_overview_names_each_of_the_owners_businesses_and_drafts()
     {
@@ -181,7 +171,7 @@ public sealed class OwnerWorkspaceTests : IClassFixture<JubileeApiFactory>, IAsy
         Assert.Equal("Luzandre.com", overview.GetProperty("name").GetString());
         var businesses = overview.GetProperty("businesses").EnumerateArray().ToList();
         Assert.Equal(
-            ["Luzandre.com|listing|Live|True", "Laurent Photography|listing|Pending verification|False", "Laurent Studio|draft|Draft|False"],
+            ["Luzandre.com|listing|Live|True", "Laurent Photography|listing|Live|False", "Laurent Studio|draft|Draft|False"],
             businesses.Select(b => $"{b.GetProperty("name").GetString()}|{b.GetProperty("kind").GetString()}|{b.GetProperty("stageLabel").GetString()}|{b.GetProperty("current").GetBoolean()}"));
         Assert.Equal(_listing.Id, businesses[0].GetProperty("id").GetGuid());
         Assert.Equal(second.Id, businesses[1].GetProperty("id").GetGuid());
@@ -215,7 +205,7 @@ public sealed class OwnerWorkspaceTests : IClassFixture<JubileeApiFactory>, IAsy
         Assert.Equal(HttpStatusCode.NoContent, chosen.StatusCode);
         var overview = await Json(await naomi.GetAsync("/api/my-business"));
         Assert.Equal("Laurent Photography", overview.GetProperty("name").GetString());
-        Assert.Equal("ready-to-review", overview.GetProperty("state").GetString());
+        Assert.Equal("live", overview.GetProperty("state").GetString());
         Assert.Equal(
             ["Luzandre.com|False", "Laurent Photography|True"],
             overview.GetProperty("businesses").EnumerateArray().Select(b => $"{b.GetProperty("name").GetString()}|{b.GetProperty("current").GetBoolean()}"));
@@ -288,6 +278,18 @@ public sealed class OwnerWorkspaceTests : IClassFixture<JubileeApiFactory>, IAsy
     }
 
     // L2-087
+    // L2-097 AC3: the editor heads the workspace with where the listing stands, as every section does
+    [Fact]
+    public async Task L2_097_AC3_the_editor_says_since_when_the_listing_is_live_or_that_it_is_paused()
+    {
+        var naomi = Naomi();
+        Assert.Equal("Live since November 2026", (await Json(await naomi.GetAsync("/api/my-business/listing"))).GetProperty("subtitle").GetString());
+
+        await naomi.PostAsync("/api/my-business/pause", null);
+
+        Assert.Equal("Paused · not public", (await Json(await naomi.GetAsync("/api/my-business/listing"))).GetProperty("subtitle").GetString());
+    }
+
     [Fact]
     public async Task L2_087_the_owner_saves_the_listing_and_the_public_page_shows_it()
     {
@@ -330,14 +332,18 @@ public sealed class OwnerWorkspaceTests : IClassFixture<JubileeApiFactory>, IAsy
     }
 
     [Fact]
-    public async Task L2_087_changing_the_name_of_a_live_listing_asks_the_team_to_look_again_and_keeps_it_public()
+    // L2-087 AC6: a new name or category is live at once, tells nobody and is audited; nothing is re-checked (ADR 0057)
+    public async Task L2_087_AC6_changing_the_name_of_a_live_listing_is_live_at_once_tells_nobody_and_is_audited()
     {
-        var response = await Naomi().PutAsJsonAsync("/api/my-business/listing", Body(0, name: "Luzandre Print Co."));
+        var response = await Naomi().PutAsJsonAsync("/api/my-business/listing", Body(0, name: "Luzandre Print Co.", category: "media"));
 
-        Assert.True((await Json(response)).GetProperty("recheckRequested").GetBoolean());
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.False((await Json(response)).TryGetProperty("recheckRequested", out _));
         await _factory.WithDb(async db =>
         {
-            Assert.Contains(await db.AuditRecords.ToListAsync(), a => a.Action == "listing.recheck-requested" && a.TargetId == _listing.Id.ToString());
+            Assert.Contains(await db.AuditRecords.ToListAsync(), a => a.Action == "listing.renamed" && a.TargetId == _listing.Id.ToString());
+            Assert.Empty(await db.OutboxMessages.AsNoTracking().ToListAsync());
+            Assert.Empty(await db.Notifications.AsNoTracking().ToListAsync());
         });
         Assert.Equal(HttpStatusCode.OK, (await _factory.CreateClient().GetAsync("/api/listings/luzandre-com")).StatusCode);
     }
@@ -518,12 +524,13 @@ public sealed class OwnerWorkspaceTests : IClassFixture<JubileeApiFactory>, IAsy
         var resumed = await Json(await naomi.PostAsync("/api/my-business/resume", null));
 
         Assert.False(resumed.GetProperty("paused").GetBoolean());
-        Assert.False(resumed.GetProperty("needsReview").GetBoolean());
+        Assert.False(resumed.TryGetProperty("needsReview", out _));
         Assert.Equal(HttpStatusCode.OK, (await _factory.CreateClient().GetAsync("/api/listings/luzandre-com")).StatusCode);
     }
 
     [Fact]
-    public async Task L2_096_a_listing_paused_for_a_year_goes_back_to_verification_when_resumed()
+    // L2-096 AC3: however long it was paused, a resumed listing is public again (ADR 0057)
+    public async Task L2_096_AC3_a_listing_paused_for_a_year_is_public_again_when_resumed()
     {
         var naomi = Naomi();
         await naomi.PostAsync("/api/my-business/pause", null);
@@ -531,16 +538,15 @@ public sealed class OwnerWorkspaceTests : IClassFixture<JubileeApiFactory>, IAsy
 
         var resumed = await Json(await naomi.PostAsync("/api/my-business/resume", null));
 
-        Assert.True(resumed.GetProperty("needsReview").GetBoolean());
-        Assert.Equal("ready-to-review", resumed.GetProperty("state").GetString());
-        Assert.Equal(HttpStatusCode.NotFound, (await _factory.CreateClient().GetAsync("/api/listings/luzandre-com")).StatusCode);
+        Assert.Equal("live", resumed.GetProperty("state").GetString());
+        Assert.Equal(HttpStatusCode.OK, (await _factory.CreateClient().GetAsync("/api/listings/luzandre-com")).StatusCode);
     }
 
     [Fact]
     public async Task L2_096_a_listing_that_is_not_live_cannot_be_paused()
     {
         await _factory.Reset();
-        var draft = ListingMother.NonPublic(NonPublicState.ChangesRequested, "luzandre-com", "shops");
+        var draft = ListingMother.NonPublic(NonPublicState.Draft, "luzandre-com", "shops");
         draft.AssignOwner(NaomiId);
         await _factory.Arrange(draft);
 

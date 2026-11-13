@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Jubilee.Api.Tests;
 
 // Manage products and services: L2-089 to L2-095, L2-132 and L2-133. Naomi owns Luzandre.com, a live shop.
-public sealed class CatalogueTests : IClassFixture<JubileeApiFactory>, IAsyncLifetime
+public sealed partial class CatalogueTests : IClassFixture<JubileeApiFactory>, IAsyncLifetime
 {
     private const string NaomiId = "member|naomi";
 

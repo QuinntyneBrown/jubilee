@@ -18,7 +18,7 @@ and start again."
 
 **Kudos, chips "Easy to list" and "Quick replies"** (to the Jubilee team)
 
-"Approved in one day and a real family booked a mini session the week after. I confirmed it from
+"Live the minute I pressed Publish, and a real family booked a mini session the week after. I confirmed it from
 the car at school pickup. That part is lovely."
 
 **Rate, 3 stars, "Okay"** (in November, her busiest month)

@@ -2,7 +2,7 @@
 
 ## Overview
 
-Jubilee is Toronto's Christian marketplace. A member finds a verified business and asks it for something without
+Jubilee is Toronto's Christian marketplace. A member finds a business and asks it for something without
 paying through the platform. A *request* is that ask. It has one of three types (booking, quote, order) and
 follows one lifecycle shared by the member and the owner. This feature defines that lifecycle and the two member
 pages that follow a request through it.
@@ -28,47 +28,61 @@ The feature is a vertical slice from the two request pages in `Jubilee Web` to `
 scheduled lifecycle work in `Jubilee Worker`.
 
 - **`Request`** — domain entity in `Jubilee.Domain` that owns the request lifecycle (`L2-043`). `RequestStatus`
-  holds `New`, `Confirmed`, `Declined`, `Cancelled` and `Completed`. The allowed transitions are `New` →
-  `Confirmed` (the owner confirms), `New` → `Declined` (the owner declines), `New` or `Confirmed` → `Cancelled`
-  (the member cancels) and `Confirmed` → `Completed` (a booking's meeting end time passes, or the owner marks an
-  order fulfilled). `UndoLastTransition` returns a request to its previous status within 8 seconds of a cancel
-  or a confirm. Each other transition throws `InvalidTransitionException`; the API maps it to HTTP 409 with code
-  `INVALID_TRANSITION` and leaves the request unchanged.
-- **`RequestTransition`** — child entity of `Request` that records each transition with actor, time and previous
-  status. The progress timeline reads these records.
-- **`RequestStatusLabels`** — mapping from `RequestStatus` and viewer side to the display label: `New` reads
-  "Awaiting reply" for the member and "New" for the owner; the other statuses read the same on both sides.
-- **`RequestsPage`** — Angular page at `/requests`, behind `AuthGuard`. It shows the summary line, the tabs with
-  counts, and rows of title (service, quote summary or "{product} × {qty}"), "{Type} · {business}", a detail
-  line and a status badge. An empty tab shows its own message with "Show all requests"; no requests at all shows
-  "Book, ask or order to get started" with "Browse businesses". The list loads 20 rows at a time with "Show
-  more".
+  holds `New`, `Confirmed`, `Declined`, `Cancelled` and `Completed`; `RequestKind` holds `Booking`, `Quote`,
+  `Order` and `Space`. The allowed transitions are `Confirm` (`New` → `Confirmed`), `Decline` (`New` →
+  `Declined`), `Cancel` (`New` or `Confirmed` → `Cancelled`) and `Complete` (`Confirmed` → `Completed`: a
+  booking's meeting end time passes, or the owner marks an order fulfilled, `L2-225`). `UndoCancel` and
+  `UndoConfirm` return a request to its previous status within `UndoWindow` (8 seconds) for the actor of that
+  transition. Each other transition throws `InvalidTransitionException`; the handlers turn it into a
+  `ConflictException`, which the API answers with HTTP 409 and code `INVALID_TRANSITION`, and the request is
+  unchanged. `IsUnanswered` holds for a `New` request at least 7 days old; `Nudge` stamps `NudgedAt` once.
+- **`RequestTransition`** — child entity of `Request` that records each transition with `From`, `To`,
+  `Actor`, `At` and, for an undoable one, `UndoableUntil`. The progress timeline reads these records.
+- **`RequestLabels`** — mapping from `RequestStatus` to the wire name and the display label: `New` reads
+  "Awaiting reply" for the member (`ForMember`) and "New" for the owner; the other statuses read the same on
+  both sides.
+- **`RequestsPage`** — Angular page at `/requests`, behind the sign-in guard. It shows the summary line, the
+  tabs with counts, and rows of title (service, quote summary or "{product} × {qty}"), "{Type} · {business}",
+  a detail line and a status badge. An empty tab shows its own message with "Show all requests"; no requests
+  at all shows "Book, ask or order to get started" with "Browse businesses". The list loads 20 rows at a time
+  with "Show more".
 - **`RequestDetailPage`** — Angular page at `/requests/:id`. It shows the title, "{Type} · {business} ·
   {status}", the status callout, "Details", "Message", the actions the status allows and the "Progress"
   timeline. A confirmed booking offers "Add to calendar". A declined request shows the business's message in
-  quotes and "See other {category word}". A cancelled request offers no action except "Message". A load failure
-  shows "We couldn't load this request" with `JB-REQ-502` and "Back to your requests" (`L2-118`).
-- **`RequestsStore`** — signal store that holds the list pages, the tab counts and the open request. It applies
-  request events from `RealtimeClient` so a status change appears without reload.
-- **`RequestsApi`** — typed Angular HTTP client. `list` calls `GET /api/requests?tab=&cursor=`; `get` calls `GET
-  /api/requests/{id}`.
+  quotes and "See other {category word}". A cancelled request offers no action except "Message" and "Ask
+  again". An unanswered request offers "Cancel request" and "Ask again". A load failure shows "We couldn't
+  load this request" with `JB-REQ-502` and "Back to your requests" (`L2-118`).
+- **`RealtimeService`** — the application's one event stream (`EVENTS_API`, `GET /api/events`, ADR 0053). Both
+  pages read again, without a loading state, when a `request` notification for them arrives on `received`
+  (the list for any target under `/requests/`, the detail for its own), when the stream connects again, and
+  when the unread notification count falls (an owner took back a confirmation). While `connected` is false
+  they ask every 5 seconds (`L2-070` AC6, ADR 0061). The page announces a change of status in its own words
+  (`statusChangeToast`), so the service shows no toast of its own for a request notification on the page it
+  concerns.
+- **`REQUESTS_API`** — the injection token of `RequestsApi`, the typed Angular HTTP client. `list` calls
+  `GET /api/requests?tab=&cursor=`; `get` calls `GET /api/requests/{id}`.
 - **`RequestsController`** — ASP.NET Core controller in `Jubilee.Api`. It authenticates the session cookie and
-  sends `ListRequestsQuery` or `GetRequestQuery` through MediatR. `ProblemDetailsMiddleware` maps
-  `InvalidTransitionException` to HTTP 409 with code `INVALID_TRANSITION`.
+  sends `ListRequestsQuery` or `GetRequestQuery` through MediatR.
 - **`ListRequestsQuery`** and **`ListRequestsQueryHandler`** — return the caller's requests for a tab, 20 per
-  page, with the counts per tab. Open requests come first by soonest upcoming date; closed requests follow,
-  newest first.
-- **`GetRequestQuery`** and **`GetRequestQueryHandler`** — return one request with its details and
-  `RequestTransition` records. A request that belongs to another member returns HTTP 404 and the attempt is
-  logged (`L2-133`).
-- **`CompleteRequestCommand`** and **`CompleteRequestCommandHandler`** — apply `Confirmed` → `Completed` when
-  the owner marks an order fulfilled, through `POST /api/my-business/requests/{id}/fulfil`. The owner-side
-  control for this action is deferred to journey 23 (ADR 0022).
-- **`BookingCompletionJob`** — hosted job in `Jubilee Worker`. It finds each `Confirmed` booking whose meeting
-  end time has passed and calls `Complete` with no actor. It runs every 5 minutes (ADR 0022).
-- **`UnansweredRequestJob`** — hosted job in `Jubilee Worker`. For each `New` request with no owner response
-  after 7 days it sets `NudgedAt`, writes one owner reminder to the outbox, and the detail page then offers the
-  member "Cancel or ask again". `NudgedAt` makes the reminder single (`L2-182`).
+  page, with the counts per tab (`MemberRequestsDto`). Open requests come first by soonest upcoming date;
+  closed requests follow, newest first.
+- **`GetRequestQuery`** and **`GetRequestQueryHandler`** — return one request with its callout, details and
+  timeline (`MemberRequestDetailDto`). A request that belongs to another member returns HTTP 404 and the
+  attempt is logged (`L2-133`).
+- **`FulfilRequestCommand`** and **`FulfilRequestCommandHandler`** — apply `Confirmed` → `Completed` when the
+  owner marks an order fulfilled, through `POST /api/my-business/requests/{id}/fulfil` (403 for another
+  business, 409 unless a confirmed order), and tell the customer in the app and by e-mail. The owner's control
+  is "Mark fulfilled" in Incoming requests (`L2-225`, ADR 0061); see
+  [Handle incoming requests](../handle-incoming-requests/README.md).
+- **`BookingCompletionJob`** — hosted job in `Jubilee Worker`. Every minute it sends
+  `RunBookingCompletionJobCommand`, which runs `CompleteFinishedBookingsCommand` once per 5-minute occurrence
+  across instances through `ScheduledJobs` and records its success in `JobRun` (`L2-182` AC1). The command
+  completes each `Confirmed` booking whose meeting end time has passed, with the actor `system`.
+- **`UnansweredRequestJob`** — hosted job in `Jubilee Worker`. Every 10 minutes it sends
+  `RunUnansweredRequestJobCommand`, which runs `RemindUnansweredRequestsCommand` once per hour across
+  instances. For each `New` request with no owner response after 7 days the command sets `NudgedAt` and
+  writes one owner reminder (in the app and by e-mail); the detail page offers the member "Cancel or ask
+  again". `NudgedAt` makes the reminder single (`L2-182`).
 
 ### Space requests
 
@@ -94,6 +108,7 @@ requirement, cited by identifier.
 | `L2-133` | `L1-019` | The server shall return HTTP 404 and log the attempt when a member requests another member's request by ID. |
 | `L2-118` | `L1-016` | Each load-error state shall show a reference the user can quote to support. |
 | `L2-070` | `L1-010` | A notification, message or request event shall reach an open signed-in page within 2 seconds at the 95th percentile over a persistent connection. |
+| `L2-225` | `L1-007` | The owner shall be able to mark a confirmed order fulfilled after a confirmation dialog, and the customer shall be told. |
 | `L2-182` | `L1-025` | Each scheduled job shall be idempotent, shall run at most once per schedule across instances, and shall record its last success. |
 | `L2-207` | `L1-028` | A space request shall be listed in Incoming requests with the call to action and the space, "Space · {customer} · {time}" and its dates or move-in, confirmed through a dialog that warns the address is shared, declined as any request, and shown to the member with the type "Space". |
 | `L2-208` | `L1-028` | The exact address shall reach only the member whose space request is `confirmed` or `completed`, and the owner shall see and change it on Edit listing. |
@@ -109,14 +124,14 @@ reminds the owner of an unanswered request through the external e-mail provider.
 
 ### Containers
 
-`Jubilee Web` reads requests from `Jubilee API` and receives request events over the real-time connection.
+`Jubilee Web` reads requests from `Jubilee API` and receives request notifications over the event stream.
 `Jubilee Worker` runs the lifecycle jobs against `Jubilee database`.
 
 ![C4 container view for tracking requests](diagrams/c4-container.png)
 
 ### Components
 
-`RequestsPage` and `RequestDetailPage` read through `RequestsStore` and `RequestsApi`. In the API the two query
+`RequestsPage` and `RequestDetailPage` read through `RequestsApi` and read again when `RealtimeService` brings a request notification. In the API the two query
 handlers read `Request`; in the worker the two jobs apply the automatic parts of the lifecycle.
 
 ![C4 component view for tracking requests](diagrams/c4-component.png)
@@ -124,7 +139,7 @@ handlers read `Request`; in the worker the two jobs apply the automatic parts of
 ### Class structure
 
 `Request` owns its `RequestTransition` records and exposes one method per transition. The query handlers project
-it to `RequestListItemDto` and `RequestDetailDto`.
+it to `MemberRequestRowDto` and `MemberRequestDetailDto`.
 
 ![Class diagram for tracking requests](diagrams/class-structure.png)
 
@@ -138,13 +153,14 @@ The handler returns the caller's requests ordered open first by soonest upcoming
 ### Behaviour — view a request
 
 The handler returns HTTP 404 for a request of another member (`L2-048`, `L2-133`). A load failure shows
-`JB-REQ-502`. A later status change reaches the open page as a real-time event (`L2-070`).
+`JB-REQ-502`. A later status change reaches the open page as a notification over the event stream (`L2-070`).
 
 ![Sequence diagram for viewing a request](diagrams/sequence-view-request.png)
 
 ### Behaviour — automatic lifecycle steps
 
 `BookingCompletionJob` completes a confirmed booking after its meeting end time, and `UnansweredRequestJob`
-handles a `new` request with no owner response after 7 days (`L2-043`).
+handles a `new` request with no owner response after 7 days (`L2-043`). Each runs once per occurrence across
+instances through `ScheduledJobs` (`L2-182`).
 
 ![Sequence diagram for the automatic lifecycle steps](diagrams/sequence-lifecycle-jobs.png)

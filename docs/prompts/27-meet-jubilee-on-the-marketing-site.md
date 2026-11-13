@@ -2,14 +2,14 @@
 
 ## Goal
 
-A visitor reads the marketing page and watches the pitch film (`frontend/projects/marketing/src/app/`, one page, one folder per section; ADR 0013). While Jubilee is launching soon the page has no link to the app: `L2-185` is suspended and journey 31 takes its place (ADR 0044). **Run this prompt only when the owner has decided to open Jubilee.** Before that day it works against journey 31; if launch has not been decided, do only the second gap below and say so.
+A visitor reads the marketing page and watches the pitch film (`frontend/projects/marketing/src/app/`, one page, one folder per section; ADR 0013). While Jubilee is launching soon the page has no link to the app: `L2-185` is suspended and journey 31 takes its place (ADR 0044). **Run this prompt only when the owner has decided to open Jubilee.** Before that day it works against journey 31; if launch has not been decided, there is nothing left to run.
 
 Roles: Visitor. Journey 27 in `docs/journey.md`, recorded at 95% complete on 12 November 2026. This prompt takes it to 100%.
 
 What is left, from an audit of the code and its tests against the acceptance criteria:
 
 - `L2-185`: at launch, the page's calls to action open the app and start a listing again. ADR 0044 removed the `APP_URL` token, `environment.ts` and its `fileReplacements` entry; bring the address back as one configured value, and decide with the owner's launch decision what becomes of the launch forms (`launch-forms`, `launch-notification`, `business-pre-registration`) and the launching-soon badge.
-- Check every criterion of `L2-183`, `L2-184` and `L2-186` (the film's captions and controls by keyboard, the mission stated word for word after the film, reduced motion, both themes) for a behaviour spec and close what you find.
+- Done before launch (12 November 2026): ADR 0057's copy has left the site, and every criterion of `L2-183`, `L2-184` (now with AC6, the film by keyboard) and `L2-186` has a behaviour spec in `e2e/tests/marketing-home.spec.ts`. Keep them passing.
 
 The audit read test titles and spot-checked assertions. Verify each gap against the code before you plan, and treat any other acceptance criterion of the requirements below that has no implementation or no acceptance test as part of this work.
 

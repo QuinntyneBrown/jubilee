@@ -1,0 +1,45 @@
+{
+  "title": "23 · Journey 14: Track and cancel requests",
+  "scenes": [
+    {
+      "id": "intro",
+      "say": "Journey fourteen: track and cancel requests. A member follows each request and cancels one that is still open."
+    },
+    {
+      "id": "list",
+      "say": "Your requests lists every booking, quote and order, open ones first, with how many are awaiting a reply."
+    },
+    {
+      "id": "live",
+      "say": "The page now listens to Jubilee's event stream. When WaterWorks confirms, the row changes a second later, with one toast."
+    },
+    {
+      "id": "owner",
+      "say": "A confirmed order now offers the owner Mark fulfilled. The dialog names the customer, the order and the total, with Not yet first."
+    },
+    {
+      "id": "fulfilled",
+      "say": "Marking it fulfilled closes the order. The customer is told in the app and by e-mail, and their request reads Completed."
+    },
+    {
+      "id": "completed",
+      "say": "A member watching their order sees it complete the moment the shop marks it, with no reload."
+    },
+    {
+      "id": "unanswered",
+      "say": "A request nobody answered for a week offers cancel or ask again."
+    },
+    {
+      "id": "cancel",
+      "say": "Cancel request asks first. The business is told straight away, and Undo opens the request again."
+    },
+    {
+      "id": "behind",
+      "say": "Behind the screen, the tests prove the owner is told in the app of a cancel and its withdrawal, and the request jobs run once per schedule."
+    },
+    {
+      "id": "close",
+      "say": "Journey fourteen is complete. Jubilee takes no payment: members pay the business directly."
+    }
+  ]
+}

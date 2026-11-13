@@ -4,7 +4,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
  * Questions that open one by one:
  *
  *     <div jb-accordion>
- *       <details jb-accordion-item heading="How is a business verified?">…</details>
+ *       <details jb-accordion-item heading="How does Jubilee keep listings honest?">…</details>
  *     </div>
  */
 @Component({

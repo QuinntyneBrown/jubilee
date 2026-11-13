@@ -8,7 +8,7 @@ export class AdminReportPage extends AdminShellPage implements Screen {
   readonly subtitle: Locator;
   readonly report: Locator;
   readonly conversation: Locator;
-  /** The reported review as it stands (L2-236 AC2). */
+  /** The reported review as it stands (L2-237 AC2). */
   readonly review: Locator;
   /** Every report of the reported review. */
   readonly reviewReports: Locator;

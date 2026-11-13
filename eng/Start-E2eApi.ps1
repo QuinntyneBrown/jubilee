@@ -9,7 +9,7 @@
 
   Staff sign-in uses the development identity (ADR 0040): the admin application on
   http://localhost:4202 signs in StaffSignIn:DevelopmentEmail with a second factor, and the staff
-  endpoints allow the loopback addresses only. -StaffEmail grants that address the verifier and
+  endpoints allow the loopback addresses only. -StaffEmail grants that address the moderator and
   admin roles in the fresh database before the API starts.
 .EXAMPLE
   pwsh eng/Start-E2eApi.ps1 -StaffEmail miriam@jubilee.to
@@ -54,7 +54,7 @@ $env:StaffAccess__AllowedNetworks = '127.0.0.1,::1'
 if ($StaffEmail) {
     $cli = Join-Path $PSScriptRoot '..' 'backend' 'src' 'Jubilee.Cli'
     dotnet run --project $cli -c Release -- migrate
-    foreach ($role in 'verifier', 'admin') {
+    foreach ($role in 'moderator', 'admin') {
         dotnet run --project $cli -c Release -- staff grant --email $StaffEmail --role $role
         if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
     }

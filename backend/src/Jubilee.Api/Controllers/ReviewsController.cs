@@ -13,7 +13,7 @@ namespace Jubilee.Api.Controllers;
 public sealed record ReviewBody(int? Rating, Guid? ItemId, string? Text);
 
 /// <summary>
-/// The reviews of one listing (L2-237). Reading is open to anyone on purpose; the session, when there
+/// The reviews of one listing (L2-238). Reading is open to anyone on purpose; the session, when there
 /// is one, says whether the caller may write and which review is theirs (L2-133). Writing takes the
 /// author from the session, never from the body; a repeated <c>Idempotency-Key</c> answers the first review (L2-132).
 /// </summary>
@@ -48,7 +48,7 @@ public sealed class ListingReviewsController(ISender sender) : ControllerBase
 public sealed record ReplyBody(string? Text);
 
 /// <summary>
-/// One review: its author changes or removes it, the owner of its listing replies (L2-232, L2-233, L2-237 AC5).
+/// One review: its author changes or removes it, the owner of its listing replies (L2-233, L2-234, L2-238 AC5).
 /// Anyone else is answered 404, as if it did not exist (L2-133 AC2); a reply by anyone but the owner is 403 NOT_OWNER.
 /// </summary>
 [ApiController]
@@ -78,7 +78,7 @@ public sealed class ReviewsController(ISender sender) : ControllerBase
 public sealed record ReportReviewBody(string? Reason, string? Note);
 
 /// <summary>
-/// A report of a review, private to the verification team (L2-235). The reporter comes from the session;
+/// A report of a review, private to the Jubilee team (L2-236). The reporter comes from the session;
 /// the author may not report their own (403 OWN_REVIEW). A repeated <c>Idempotency-Key</c> returns the first answer (L2-132).
 /// </summary>
 [ApiController]

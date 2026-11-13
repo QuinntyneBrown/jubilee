@@ -16,7 +16,7 @@ The terms below are local to this feature.
 
 Only the author edits or removes a review; an owner never does
 (`moderate-reviews`). The decisions are recorded in
-[ADR 0058](../../../adr/0058-reviews.md).
+[ADR 0066](../../../adr/0066-reviews.md).
 
 ## Description
 
@@ -33,10 +33,10 @@ Only the author edits or removes a review; an owner never does
   keeps the product it is about (the listing page's product cards carry no
   id), and a space's is about the stay. It
   composes `jb-dialog` titled "Edit your review", `fieldset[jb-star-scale]`
-  "Your rating" (the words of `L2-226`), the `jb-chip` item row when there is
+  "Your rating" (the words of `L2-227`), the `jb-chip` item row when there is
   more than one item, the `jb-field` "Tell others about it" with its counter,
   and "Cancel" and "Save changes".
-  - Validation as `L2-227 AC1, AC2`; nothing is sent while a message shows.
+  - Validation as `L2-228 AC1, AC2`; nothing is sent while a message shows.
   - "Save changes" says "Saving…" and is busy; `ReviewsApi.edit(id, request)`
     puts the change with a 10-second `timeout`.
   - On success the dialog closes with the changed review; the page's
@@ -50,15 +50,15 @@ Only the author edits or removes a review; an owner never does
   You can write a new one later.", "Cancel" and the danger button "Remove
   review" (busy while it runs). On success the page reloads the reviews, "Write
   a review" is offered again, the toast "Review removed" shows and focus moves
-  to the "Reviews" heading (`L2-232 AC5`). This is the confirmation of a
+  to the "Reviews" heading (`L2-233 AC5`). This is the confirmation of a
   consequential action (`L2-129`).
 - **`PUT /api/reviews/{id}`** — `ReviewsController.Edit` sends
   `EditReviewCommand`: the review must be the caller's and live, otherwise 404
   `REVIEW_NOT_FOUND` (`L2-133 AC2`); the fields are validated as for writing
   (422 per field); the limit of 30 edits and replies per member per hour
   applies (429). `Review.Edit(rating, item, text, now)` sets `EditedAt` and
-  keeps the reply (`L2-232 AC7`); `ReviewTally` recounts the listing and both
-  the old and the new product. Nobody is told (`L2-234 AC4`).
+  keeps the reply (`L2-233 AC7`); `ReviewTally` recounts the listing and both
+  the old and the new product. Nobody is told (`L2-235 AC4`).
 - **`DELETE /api/reviews/{id}`** — `RemoveReviewCommand`: the caller's live
   review or 404; it deletes the `Review` and its `ReviewReport`s, recounts
   through `ReviewTally` and answers 204.
@@ -66,7 +66,7 @@ Only the author edits or removes a review; an owner never does
 
 ### Open questions
 
-Every choice below is recorded in [ADR 0058](../../../adr/0058-reviews.md).
+Every choice below is recorded in [ADR 0066](../../../adr/0066-reviews.md).
 
 | Question | Decision | Why |
 |---|---|---|
@@ -84,9 +84,9 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 
 | L2 ID | Refines (L1) | Requirement |
 |-------|--------------|-------------|
-| `L2-232` | `L1-031` | The author shall edit their review in "Edit your review" and remove it in "Remove your review?"; nobody else may change or remove it. |
-| `L2-237` | `L1-031` | `PUT` and `DELETE /api/reviews/{id}` shall answer the author only, validate again and keep the star counts. |
-| `L2-239` | `L1-031` | The dialogs shall work by touch and keyboard, be bottom sheets under 640 px and disable sending offline. |
+| `L2-233` | `L1-031` | The author shall edit their review in "Edit your review" and remove it in "Remove your review?"; nobody else may change or remove it. |
+| `L2-238` | `L1-031` | `PUT` and `DELETE /api/reviews/{id}` shall answer the author only, validate again and keep the star counts. |
+| `L2-240` | `L1-031` | The dialogs shall work by touch and keyboard, be bottom sheets under 640 px and disable sending offline. |
 | `L2-128` | `L1-018` | A failed dialog submission shall keep everything typed and say what did not happen. |
 | `L2-129` | `L1-018` | A consequential action shall be confirmed in a dialog. |
 | `L2-130` | `L1-018` | An open dialog shall hold focus and return it to its opener. |

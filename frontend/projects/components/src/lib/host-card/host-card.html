@@ -1,6 +1,5 @@
 <h2 class="host-card__label" [id]="id">Your host</h2>
 <p class="host-card__name">{{ name() }}</p>
-<p class="host-card__verified"><svg jb-icon name="verified" size="sm"></svg>Verified by Jubilee</p>
 @if (about(); as about) {
   <p class="host-card__about">{{ about }}</p>
 }

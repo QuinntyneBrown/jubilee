@@ -2,8 +2,8 @@ import type { SpaceDraft } from './listing-drafts';
 
 /** The owner's workspace: My business, the listing editor, photos, pause and resume (L2-085 to L2-088, L2-096). */
 
-export type BusinessState =
-  'none' | 'draft' | 'ready-to-review' | 'changes-requested' | 'live' | 'paused' | 'declined';
+/** Where the owner's listing stands; nobody verifies it before it is live (ADR 0057). */
+export type BusinessState = 'none' | 'draft' | 'live' | 'paused';
 
 export interface BusinessStat {
   value: number;
@@ -32,28 +32,16 @@ export interface BusinessSummary {
   products: number;
   soldOut: number;
   services: number;
-  /** "Verified Jun 2026": when the verification team approved the listing. */
-  verification: string;
+  /** "Live since Jun 2026": when the owner published the listing (L2-085 AC4). */
+  liveSince: string;
 }
 
-export interface BusinessVerification {
-  stage: string;
-  stageLabel: string;
-  changesRequested: {
-    areas: string[];
-    message: string;
-    reviewerFirstName: string;
-    requestedAt: string;
-  } | null;
-  declined: { reason: string; decidedAt: string } | null;
-}
-
-/** One entry of the switcher on My business (L2-079 AC4): a listing with its stage, or a draft not yet submitted. */
+/** One entry of the switcher on My business (L2-079 AC4): a listing with its stage, or a draft not yet published. */
 export interface BusinessOption {
   id: string;
   name: string;
   kind: 'listing' | 'draft';
-  /** "Live", "Paused", "Pending verification", "Changes requested", "Declined" or "Draft". */
+  /** "Live", "Paused" or "Draft". */
   stageLabel: string;
   /** The listing the workspace shows. */
   current: boolean;
@@ -75,12 +63,10 @@ export interface MyBusiness {
   pausedAt: string | null;
   /** The instant the owner is back, while an away period is set (L2-062). */
   awayUntil?: string | null;
-  justApproved: boolean;
   newRequests: number;
   stats: BusinessStats | null;
   needsReply: NeedsReply[];
   summary: BusinessSummary | null;
-  verification: BusinessVerification | null;
 }
 
 export interface CategoryOption {
@@ -102,6 +88,8 @@ export interface ListingEditor {
   id: string;
   version: number;
   slug: string;
+  /** Where the listing stands, for the workspace header: "Live since June 2026" (L2-097 AC3). */
+  subtitle: string;
   stage: string;
   paused: boolean;
   name: string;
@@ -114,7 +102,6 @@ export interface ListingEditor {
   highlight: string | null;
   categories: CategoryOption[];
   photos: ListingPhoto[];
-  recheckRequested: boolean;
   /** A space's own fields, with its exact address for its owner (L2-209); absent for a business. */
   space?: SpaceDraft | null;
 }
@@ -140,7 +127,6 @@ export interface PauseResult {
   paused: boolean;
   pausedAt: string | null;
   state: BusinessState;
-  needsReview: boolean;
 }
 
 /** The owner's away period after a change: the instant they are back, or none (L2-062). */

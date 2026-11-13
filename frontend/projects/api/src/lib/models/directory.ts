@@ -14,11 +14,10 @@ export interface BusinessCard {
   tagline: string;
   highlight: string | null;
   categorySlug: string;
-  verified: boolean;
   coverPhoto: null;
   /** The business carries the "Replies fast" badge (L2-054). */
   repliesFast: boolean;
-  /** The average and count from three reviews; absent or null below three (L2-230). */
+  /** The average and count from three reviews; absent or null below three (L2-231). */
   rating?: CardRating | null;
 }
 
@@ -27,7 +26,6 @@ export interface DirectoryRow {
   slug: string;
   name: string;
   tagline: string;
-  verified: boolean;
 }
 
 export type TileTint = 'ink' | 'gold' | 'green' | 'blue';
@@ -44,7 +42,7 @@ export interface ProductCard {
   tile: { tint: TileTint; icon: ProductTileIcon };
   /** Stock 0 in every option: the card says "Sold out" (L2-034 AC3). */
   soldOut: boolean;
-  /** The average and count from three reviews; absent or null below three (L2-230). */
+  /** The average and count from three reviews; absent or null below three (L2-231). */
   rating?: CardRating | null;
 }
 
@@ -63,7 +61,7 @@ export interface SpaceCard {
   neighbourhood: string;
   available: string;
   coverPhoto: string | null;
-  /** The average and count from three reviews; absent or null below three (L2-230). */
+  /** The average and count from three reviews; absent or null below three (L2-231). */
   rating?: CardRating | null;
 }
 

@@ -2,7 +2,7 @@
 
 ## Overview
 
-Jubilee is Toronto's Christian marketplace. A member finds a verified business and asks it for something without
+Jubilee is Toronto's Christian marketplace. A member finds a business and asks it for something without
 paying through the platform; the owner of the business answers. A *request* is that ask. It has one of four
 types (booking, quote, order, space) and follows one lifecycle shared by the member and the owner. This feature
 covers the owner's list of those requests and the badge that rewards a fast answer.
@@ -42,10 +42,18 @@ marked with it.
   has seen and announces each one it had not with the toast "New {type} request. {Customer} asked for
   {summary}." It polls every 5 seconds only while `RealtimeService.connected` is false, and reads once and stops
   the moment it is true again (ADR 0050, `L2-051` AC5 and AC7).
+- **Mark fulfilled** — a confirmed order, under "Confirmed" or "All", carries "Mark fulfilled" (`L2-225`, ADR
+  0061). It opens `FulfilRequestDialog`: "Mark {first name}'s order fulfilled?", "Only mark it fulfilled once
+  {first name} has it.", the customer, the order and the total, "{first name} is told it's done and the order
+  moves to Completed.", "Not yet" (first focus) and "Mark fulfilled". On success the page reads the list again and
+  shows the toast "Order fulfilled. {first name} has been told."; there is no Undo, because `completed` is final.
+  A failure keeps the dialog open with "We couldn't mark it fulfilled. The order is still confirmed. Check your
+  connection and try again." and "Try again"; a 409 shows the server's sentence and changes nothing. A booking,
+  a quote and a space request carry no such control.
 - **`IncomingRequestsApi`** — service contract behind the `INCOMING_REQUESTS_API` injection token, implemented by
   `HttpIncomingRequestsApi`. `list(tab)` calls `GET /api/my-business/requests?tab=`; the endpoint also takes
-  `listing=` for an owner of more than one listing. There is no cursor. `confirm`, `undoConfirm` and `decline`
-  serve the two dialogs.
+  `listing=` for an owner of more than one listing. There is no cursor. `confirm`, `undoConfirm`, `decline` and `fulfil`
+  (`POST /api/my-business/requests/{id}/fulfil`) serve the three dialogs.
 - **`RealtimeService`** and **`ToastService`** — `RealtimeService` subscribes to `EventsApi.stream()`
   (`SseEventsApi`, an `EventSource` on `/api/events`). It emits each notification once on `received`, applies
   each `counts` event to `NavigationStore` and shows a toast for a notification. On `/my-business/requests` it
@@ -135,6 +143,7 @@ requirement, cited by identifier.
 | `L2-051` | `L1-008` | `/my-business/requests` shall list the requests customers send the owner's business. A new request shall reach the open page over the event stream; the page shall ask on a timer only while the stream cannot connect. |
 | `L2-054` | `L1-008` | A listing shall carry the "Replies fast" badge, on its listing page and on its business card, when its median first response to requests and messages over the last 30 days is under 24 hours with at least 3 responses. The badge shall be recomputed at least hourly and removed when the median rises to 24 hours or more. A space shall not carry it. |
 | `L2-043` | `L1-007` | Each booking, quote and order request shall follow one lifecycle shared by the member's and the owner's views. |
+| `L2-225` | `L1-007` | The owner shall be able to mark a confirmed order fulfilled after a confirmation dialog, and the customer shall be told. |
 | `L2-133` | `L1-019` | The server shall return HTTP 403 when an owner API is called for a listing the caller does not own. |
 | `L2-070` | `L1-010` | A notification, message or request event shall reach an open signed-in page within 2 seconds at the 95th percentile over a persistent connection. |
 | `L2-182` | `L1-025` | Each scheduled job shall be idempotent, shall run at most once per schedule across instances, and shall record its last success. |
@@ -186,6 +195,13 @@ open page, which reads the list again and shows the row with one toast (`L2-051`
 cannot connect the page polls every 5 seconds instead.
 
 ![Sequence diagram for a new request arriving](diagrams/sequence-new-request-arrives.png)
+
+### Behaviour — mark an order fulfilled
+
+"Mark fulfilled" opens the dialog, `FulfilRequestCommandHandler` completes the confirmed order and tells the
+customer in the app and by e-mail, and the customer's open request page reads it again (`L2-225`, `L2-070`).
+
+![Sequence diagram for marking an order fulfilled](diagrams/sequence-mark-fulfilled.png)
 
 ### Behaviour — recompute the badge
 

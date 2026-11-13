@@ -12,7 +12,7 @@ import {
 import { Toasts } from '../pages/toasts';
 
 // Acceptance Test
-// Traces to: L2-232, L2-233, L2-235, L2-239
+// Traces to: L2-233, L2-234, L2-236, L2-240
 // Description: on a listing page the author edits or removes their review, the owner replies, and
 // a member reports a review, each in a dialog; offline, the actions say they need a connection.
 // The reviews and their writes are answered by `stubReviews` (ADR 0009).
@@ -28,7 +28,7 @@ async function openLegacy(page: Page, jb: Jb): Promise<BusinessPage> {
   return business;
 }
 
-test.describe('edit and remove your review (L2-232)', () => {
+test.describe('edit and remove your review (L2-233)', () => {
   test('AC1/AC3: Edit opens the review as it is; a change saves, shows Edited and says so', async ({
     page,
     jb,
@@ -132,7 +132,7 @@ test.describe('edit and remove your review (L2-232)', () => {
   });
 });
 
-test.describe('the owner’s public reply (L2-233)', () => {
+test.describe('the owner’s public reply (L2-234)', () => {
   test('AC1/AC2/AC3: Reply opens the dialog; an empty reply is refused; a reply shows under the review', async ({
     page,
     jb,
@@ -188,7 +188,7 @@ test.describe('the owner’s public reply (L2-233)', () => {
   });
 });
 
-test.describe('report a review (L2-235)', () => {
+test.describe('report a review (L2-236)', () => {
   test('AC1/AC2/AC3: a member reports a review with a reason, once', async ({ page, jb }) => {
     const fake = await stubReviews(page, 'legacy-financial');
     const reviews = (await openLegacy(page, jb)).reviews;
@@ -206,7 +206,7 @@ test.describe('report a review (L2-235)', () => {
 
     await expect(report.title).toHaveText('Thanks for telling us');
     await expect(report.description).toHaveText(
-      'The verification team will look at it within one business day. The author won’t know who reported it.',
+      'The Jubilee team will look at it within one business day. The author won’t know who reported it.',
     );
     await report.done.click();
     await expect(report.root).toBeHidden();
@@ -233,7 +233,7 @@ test.describe('report a review (L2-235)', () => {
   });
 });
 
-test.describe('reviews offline (L2-239 AC5)', () => {
+test.describe('reviews offline (L2-240 AC5)', () => {
   test('Write a review, Edit, Remove and Report need a connection', async ({ page, jb }) => {
     await stubReviews(page, 'legacy-financial', {
       items: [joannasReview(), ...legacyReviews()],

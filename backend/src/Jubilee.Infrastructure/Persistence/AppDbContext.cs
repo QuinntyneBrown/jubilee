@@ -43,6 +43,8 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
 
     public DbSet<ListingPhoto> ListingPhotos => Set<ListingPhoto>();
 
+    public DbSet<ProductPhoto> ProductPhotos => Set<ProductPhoto>();
+
     public DbSet<RecentSearch> RecentSearches => Set<RecentSearch>();
 
     public DbSet<Notification> Notifications => Set<Notification>();
@@ -52,6 +54,8 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
     public DbSet<LinkToken> LinkTokens => Set<LinkToken>();
 
     public DbSet<PasswordResetRequest> PasswordResetRequests => Set<PasswordResetRequest>();
+
+    public DbSet<SecurityAlert> SecurityAlerts => Set<SecurityAlert>();
 
     public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
 
@@ -90,10 +94,6 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
     public DbSet<ListingSubmission> ListingSubmissions => Set<ListingSubmission>();
 
     public DbSet<StatementAgreement> StatementAgreements => Set<StatementAgreement>();
-
-    public DbSet<ReviewTick> ReviewTicks => Set<ReviewTick>();
-
-    public DbSet<ListingDecision> ListingDecisions => Set<ListingDecision>();
 
     public DbSet<AuditRecord> AuditRecords => Set<AuditRecord>();
 

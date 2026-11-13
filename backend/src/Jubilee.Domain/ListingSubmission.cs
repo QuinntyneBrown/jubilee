@@ -54,8 +54,8 @@ public sealed class StatementAgreement
 }
 
 /// <summary>
-/// An owner's submission of a listing for verification: their agreement to the statement of faith
-/// and what the verification team should look at (L2-072, L2-075).
+/// An owner's published listing's record: their agreement to the statement of faith
+/// and the flags the Jubilee team should look at (L2-072, L2-075).
 /// </summary>
 public sealed class ListingSubmission
 {
@@ -81,7 +81,7 @@ public sealed class ListingSubmission
     /// <summary>What the review screen flags: <c>CONTACT_IN_TEXT</c>.</summary>
     public List<string> Flags { get; private set; } = [];
 
-    /// <summary>When the listing last became ready for the verification team; "overdue" counts from here (L2-099 AC5).</summary>
+    /// <summary>When the listing was published; kept from before ADR 0057, when it meant "ready to review".</summary>
     public DateTimeOffset? ReadyAt { get; private set; }
 
     public void MarkReady(DateTimeOffset now) => ReadyAt = now;

@@ -1,6 +1,6 @@
 namespace Jubilee.Domain;
 
-/// <summary>What a verifier did about a report (L2-105 AC2).</summary>
+/// <summary>What a moderator did about a report (L2-105 AC2).</summary>
 public enum ReportActionKind
 {
     Dismiss = 0,
@@ -10,12 +10,12 @@ public enum ReportActionKind
     RemoveListing = 4,
     LiftHold = 5,
 
-    /// <summary>Takes a reported review down, with a reason its author reads (L2-236 AC3).</summary>
+    /// <summary>Takes a reported review down, with a reason its author reads (L2-237 AC3).</summary>
     TakeDownReview = 6,
 }
 
 /// <summary>
-/// One action taken on a report, with the note the verifier wrote. A report's actions are its history.
+/// One action taken on a report, with the note the moderator wrote. A report's actions are its history.
 /// <see cref="ReportId"/> is the id of a <see cref="ListingReport"/> or a <see cref="ConversationReport"/>.
 /// </summary>
 public sealed class ReportAction

@@ -25,35 +25,35 @@ journey that is implemented: the effort-weighted average of its feature designs 
 | 7 | Book a meeting | Request a meeting time for a service with a business. | 6 | 100% |
 | 8 | Request a quote | Describe a job and ask a business for a quote. | 3 | 100% |
 | 9 | Request a product | Send a shop an order request for a product, without payment. | 3 | 100% |
-| 10 | List a business | Describe a business and submit it for verification. | 12 | 100% |
+| 10 | List a business | Describe a business, agree to the statement of faith and publish it; it is live straight away. | 12 | 100% |
 | 11 | Removed: answer a church reference | Jubilee no longer asks for a church reference (ADR 0041). The number is not reused. | 0 | n/a |
-| 12 | Verify a listing | Staff review submitted listings, then approve or request changes. | 10 | 85% |
+| 12 | Keep listings honest | The Jubilee team looks through published listings and takes down one that misrepresents a business. | 10 | 100% |
 | 13 | Respond to customer requests | See incoming requests and confirm or decline each one. | 6 | 100% |
-| 14 | Track and cancel requests | Follow each request's progress and cancel an open one. | 6 | 89% |
+| 14 | Track and cancel requests | Follow each request's progress and cancel an open one. | 6 | 100% |
 | 15 | Run a business listing | Monitor the listing, edit its details, pause or resume it. | 9 | 100% |
-| 16 | Manage products and services | Add, edit, reorder and delete products and services. | 8 | 90% |
+| 16 | Manage products and services | Add, edit, reorder and delete products and services. | 8 | 100% |
 | 17 | Stay notified | Receive events through the notification centre, toasts, banners and e-mail. | 9 | 100% |
-| 18 | Recover a forgotten password | Request a reset link by e-mail and set a new password. | 3 | 90% |
+| 18 | Recover a forgotten password | Request a reset link by e-mail and set a new password. | 3 | 100% |
 | 19 | Save listings for later | Save businesses and products to a private list. | 3 | 100% |
-| 20 | Manage profile and settings | Edit profile, change e-mail or password, choose which e-mails arrive. | 6 | 93% |
+| 20 | Manage profile and settings | Edit profile, change e-mail or password, choose which e-mails arrive. | 6 | 100% |
 | 21 | Share or report a listing | Share a listing's link or report a problem with it. | 3 | 100% |
 | 22 | Read policies and get help | Read the statement of faith, terms, privacy notice and help. | 2 | 85% |
 | 23 | Recover from errors | See clear pages for missing, forbidden, failed or maintenance states. | 3 | 100% |
 | 24 | Use Jubilee offline | Browse cached pages and queue messages on poor connections. | 7 | 83% |
-| 25 | Moderate reports and feature businesses | Staff handle reports and choose the featured businesses. | 5 | 82% |
+| 25 | Moderate reports and feature businesses | Staff handle reports and choose the featured businesses. | 5 | 100% |
 | 26 | Download data and delete account | Export personal data or permanently delete the account. | 5 | 83% |
-| 27 | Meet Jubilee on the marketing site | Read the marketing page and watch the pitch film. Its links to the app and to listing (L2-185) are suspended while Jubilee is launching soon; journey 31 takes their place until launch. | 4 | 95% |
+| 27 | Meet Jubilee on the marketing site | Read the marketing page and watch the pitch film, by pointer or keyboard, with its captions in the picture. Its links to the app and to listing (L2-185) are suspended while Jubilee is launching soon and wait on the owner's decision to open it; journey 31 takes their place until launch. | 4 | 95% |
 | 28 | Rent a room or space | List a room, suite or hall; find spaces by term on Browse, the category and search; request one and let the owner confirm. | 19 | 100% |
-| 29 | Give feedback | Rate Jubilee, report a bug or send kudos from any screen, answer a check-in, and follow past feedback. | 9 | 97% |
+| 29 | Give feedback | Rate Jubilee, report a bug or send kudos from any screen, answer a check-in, and follow past feedback. | 9 | 99% |
 | 30 | Work in the admin application | Staff sign in to the admin application through single sign-on from an allowed network, work in its shell and sign out; old admin links in the app point there. | 20 | 92% |
-| 31 | Get ready for launch | Before Jubilee opens: see that it is launching soon, leave an e-mail address for the launch notice, or send a business's details to be listed on launch day; the team reads them with the CLI. | 7 | 95% |
-| 32 | Write and read reviews | After a request the owner confirmed, write a review of the business, shop or space; read every listing's rating and reviews, sorted and filtered, and its average on the cards; edit or remove your review; the owner replies in public; anyone signed in reports a review and the verification team takes it down. Requirements L2-225 to L2-239. | 14 | 95% |
+| 31 | Get ready for launch | Before Jubilee opens: see that it is launching soon, leave an e-mail address for the launch notice, or send a business's details to be listed on launch day; the team reads them with the CLI. | 7 | 100% |
+| 32 | Write and read reviews | After a request the owner confirmed, write a review of the business, shop or space; read every listing's rating and reviews, sorted and filtered, and its average on the cards; edit or remove your review; the owner replies in public; anyone signed in reports a review and the Jubilee team takes it down. Requirements L2-226 to L2-240. | 14 | 95% |
 
-**Total: 231 days** for the 31 journeys, **95% complete** weighted by effort.
+**Total: 231 days** for the 31 journeys, **98% complete** weighted by effort.
 
 ## Notes
 
-- The order is by user value: first finding and viewing verified businesses, then joining and contacting
+- The order is by user value: first finding and viewing businesses, then joining and contacting
   them, then the supply side that fills the directory, then follow-up, convenience and housekeeping. It is
   not a strict dependency order. Journeys 28 to 30 were added later and keep the number they were given.
 - [`AGENTS.md`](../AGENTS.md) holds the rules and the folder structure every journey follows.
@@ -66,7 +66,14 @@ journey that is implemented: the effort-weighted average of its feature designs 
   counts the two security designs that exist only for staff (authorize staff requests, restrict staff
   network) beside the admin application and staff sign-in. Production operations work that no
   journey reaches (backups, deployment pipeline, load and penetration testing) is not estimated here.
-- The percentages were last recalculated from the code and its tests on 12 November 2026.
+- The percentages were last recalculated from the code and its tests on 12 November 2026, after
+  Jubilee began shipping without verification (ADR 0057) and that work was implemented: journey 10
+  publishes a listing that is live at once (publish-listing), journey 12 is the Jubilee team's
+  Listings screen and the takedown (browse-listings, take-down-listing), and the "Verified" mark and
+  the verification copy have left journeys 1, 2, 3, 15, 22, 25, 27, 28 and 30, whose figures stand.
+  What keeps journeys 10 and 12 below 100% is listed in [`estimates/`](estimates/README.md).
 - [`prompts/`](prompts/) holds one implementation prompt per unfinished journey, named by its number. Each
   lists what the journey still lacks and runs it to 100%, from requirements to a pull request. Journey 28
-  is complete and has none. The prompt for journey 27 is for launch day: it restores the links to the app.
+  is complete and has none. The prompt for journey 27 is for launch day: it restores the links to the app. Its part that did not wait on
+  launch (a behaviour spec for every criterion of L2-183, L2-184 and L2-186) was run on 12 November 2026; the
+  row stays at 95% because L2-185 waits on the owner's launch decision.

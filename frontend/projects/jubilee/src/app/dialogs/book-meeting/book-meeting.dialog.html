@@ -5,7 +5,7 @@
       ? 'Request sent to ' + opts?.business?.name
       : 'Book a meeting' + (opts ? ' with ' + opts.business.name : '')
   "
-  [icon]="view() === 'success' ? 'verified' : 'calendar'"
+  [icon]="view() === 'success' ? 'check-circle' : 'calendar'"
   [busy]="busy()"
   (closed)="close()"
   (outsideClick)="close()"

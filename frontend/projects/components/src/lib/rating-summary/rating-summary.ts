@@ -1,21 +1,19 @@
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
-import { Icon } from '../icon/icon';
 import { Stars } from '../stars/stars';
 
 /**
- * The summary of a listing's reviews (L2-228 AC2, L2-229 AC1): the average large, its stars and
- * the count; one bar for each of 5 to 1 stars, each a toggle that filters the list; and what
- * "Verified" means for `name`.
+ * The summary of a listing's reviews (L2-229 AC2, L2-230 AC1): the average large, its stars and
+ * the count; one bar for each of 5 to 1 stars, each a toggle that filters the list.
  *
  *     <div jb-rating-summary [average]="4.6" [count]="5" [breakdown]="[3, 2, 0, 0, 0]"
- *          name="Legacy Financial" [selected]="stars()" (selectedChange)="stars.set($event)"></div>
+ *          [selected]="stars()" (selectedChange)="stars.set($event)"></div>
  *
  * `breakdown` holds the counts of 5, 4, 3, 2 and 1 stars. Pressing the pressed bar again clears
  * the filter (null).
  */
 @Component({
   selector: 'div[jb-rating-summary]',
-  imports: [Icon, Stars],
+  imports: [Stars],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'rating-summary' },
   templateUrl: './rating-summary.html',
@@ -25,7 +23,6 @@ export class RatingSummary {
   readonly average = input.required<number>();
   readonly count = input.required<number>();
   readonly breakdown = input.required<readonly number[]>();
-  readonly name = input.required<string>();
   readonly selected = input<number | null>(null);
   readonly selectedChange = output<number | null>();
 

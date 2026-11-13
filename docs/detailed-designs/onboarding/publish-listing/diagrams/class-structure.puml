@@ -1,0 +1,167 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Publish a listing
+
+enum ListingStage {
+  Draft = 0
+  Live = 5
+}
+
+class ListingDraft {
+  +Guid Id
+  +string OwnerSubject
+}
+
+class Listing {
+  +Guid Id
+  +string? OwnerId
+  +string Name
+  +string Slug
+  +ListingStage Stage
+  +DateTimeOffset? PublishedAt
+  +bool IsPaused
+  +bool IsUnderModerationHold
+  +DateTimeOffset? DeletedAt
+  +string? Highlight
+  +DateTimeOffset? WorkspaceChosenAt
+  +DateTimeOffset? StatementLapsedAt
+  +Publish(now: DateTimeOffset): void
+  +MoveTo(stage: ListingStage): void
+  +SetHighlight(highlight: string?): void
+  +PauseForStatement(now: DateTimeOffset): void
+  +ResumeAfterStatement(): void
+}
+
+class ListingSubmission {
+  +Guid ListingId
+  +string OwnerSubject
+  +string IdempotencyKey
+  +List<string> Flags
+  +string StatementVersion
+  +DateTimeOffset AgreedAt
+  +DateTimeOffset SubmittedAt
+  +{static} Record(listingId, ownerSubject, idempotencyKey, flags, now): ListingSubmission
+}
+
+class StatementOfFaith <<static>> {
+  +string Version
+  +DateOnly UpdatedOn
+  +DateOnly AgreeBy
+}
+
+class StatementAgreement {
+  +string OwnerSubject
+  +string Version
+  +DateTimeOffset AgreedAt
+}
+
+class AgreeToStatementCommand <<record>> {
+  +string Subject
+  +string Version
+}
+
+class StatementDueDto <<record>> {
+  +string Version
+  +string UpdatedOn
+  +string AgreeBy
+  +bool Overdue
+  +string Business
+}
+
+class RunStatementAgreementJobCommand <<record>> {
+  +string Job = "statement-agreement"
+  +TimeSpan Every = 24 hours
+}
+
+class NewBusinessNotifier <<static>> {
+  +{static} TellAsync(db, listing, now): Task<int>
+}
+
+class AdminListingOwner <<record>> {
+  +string Name
+  +string Email
+  +bool EmailConfirmed
+  +DateTimeOffset MemberSince
+  +IReadOnlyList<AdminOtherListing> OtherListings
+}
+
+class AdminOtherListing <<record>> {
+  +string Name
+  +string StageLabel
+}
+
+class PublishListingCommand {
+  +string Subject
+  +string Name
+  +Guid DraftId
+  +DraftInput Input
+  +string? IdempotencyKey
+}
+
+class PublishListingCommandHandler {
+  +MaxTaglineLength = 90
+  +Handle(command: PublishListingCommand): Task<PublishedListingDto>
+}
+
+class PublishedListingDto {
+  +Guid ListingId
+  +string Slug
+  +string Name
+  +string Kind
+  +string Stage
+  +DateTimeOffset SubmittedAt
+}
+
+class SaveListingDraftCommand {
+  +string Subject
+  +Guid? Id
+  +DraftInput Input
+}
+
+class SaveListingDraftCommandHandler {
+  +Handle(command: SaveListingDraftCommand): Task<ListingDraftDto>
+}
+
+class Drafts <<static>> {
+  +MaxListings = 5
+  +Owned(db, subject, id): Task<ListingDraft>
+}
+
+class BusinessOptionDto {
+  +Guid Id
+  +string Name
+  +string Kind
+  +string StageLabel
+  +bool Current
+}
+
+Listing --> ListingStage : has
+PublishListingCommandHandler ..> PublishListingCommand : handles
+PublishListingCommandHandler ..> ListingDraft : loads and removes
+PublishListingCommandHandler --> Listing : creates and publishes
+PublishListingCommandHandler ..> ListingSubmission : records (key and flags)
+PublishListingCommandHandler ..> PublishedListingDto : returns
+PublishListingCommandHandler ..> NewBusinessNotifier : tells members through
+ListingSubmission ..> StatementOfFaith : stamps Version of
+StatementAgreement ..> StatementOfFaith : names Version of
+AgreeToStatementCommand ..> StatementAgreement : records
+AgreeToStatementCommand ..> Listing : resumes
+StatementDueDto ..> StatementOfFaith : reads
+RunStatementAgreementJobCommand ..> Listing : pauses
+AdminListingOwner "1" *-- "*" AdminOtherListing : names
+AdminOtherListing ..> Listing : projects
+SaveListingDraftCommandHandler ..> SaveListingDraftCommand : handles
+SaveListingDraftCommandHandler ..> Drafts : checks MaxListings
+BusinessOptionDto ..> Listing : projects for the switcher
+@enduml

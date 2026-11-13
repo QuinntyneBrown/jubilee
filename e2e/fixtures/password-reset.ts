@@ -7,8 +7,8 @@ export const RESET_EMAIL = 'joanna.adeyemi@example.com';
 export const BREACHED = 'password12345';
 
 export interface FakePasswordReset {
-  /** How the link request is answered: accepted, or the server fails. */
-  request: 'accepts' | 'fails' | 'slow';
+  /** How the link request is answered: accepted, refused as too often (429), or the server fails. */
+  request: 'accepts' | 'rate-limited' | 'fails' | 'slow';
   /** The state the link is in when the page opens: valid, expired, or the lookup fails. */
   link: 'valid' | 'expired' | 'fails';
   /** How the change is answered: accepted, or the link has expired meanwhile, or the server fails. */
@@ -51,6 +51,13 @@ export async function stubPasswordReset(
       fake.requestedFor.push(body.email);
       if (fake.request === 'fails')
         return route.fulfill(problem(503, { reference: 'JB-AUTH-503' }));
+      if (fake.request === 'rate-limited') {
+        // A fourth request in the hour (L2-008 AC4): 42 minutes until the first leaves it.
+        return route.fulfill({
+          ...problem(429, { code: 'rate_limited' }),
+          headers: { 'Retry-After': '2520' },
+        });
+      }
       if (fake.request === 'slow') await new Promise((resolve) => setTimeout(resolve, 600));
       return route.fulfill({ status: 202 });
     }

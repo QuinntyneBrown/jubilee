@@ -31,8 +31,22 @@ export class StaffSessionService {
     );
   }
 
-  get isVerifier(): boolean {
-    return this.staff()?.roles.includes('verifier') ?? false;
+  /**
+   * Reads the session again for the count of the admin bar (L2-190 AC7, ADR 0058). A refresh that
+   * fails keeps what is shown; an ended session is handled by `sessionExpiredInterceptor`.
+   */
+  refresh(): void {
+    if (!this.staff()) return;
+    this.api
+      .getSession()
+      .pipe(catchError(() => of(null)))
+      .subscribe((staff) => {
+        if (staff && this.staff()) this.staff.set(staff);
+      });
+  }
+
+  get isModerator(): boolean {
+    return this.staff()?.roles.includes('moderator') ?? false;
   }
 
   /** The session ended on the server (L2-190 AC3): forget the staff member. */

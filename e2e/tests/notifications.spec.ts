@@ -238,7 +238,7 @@ test.describe('stay notified (L2-064 to L2-070)', () => {
     await expect(toasts.action(toasts.withTitle(MESSAGE), 'View request')).toBeVisible();
   });
 
-  test('L2-234 AC1 and AC5: a new review has the star icon and opens the listing', async ({
+  test('L2-235 AC1 and AC5: a new review has the star icon and opens the listing', async ({
     page,
     jb,
   }) => {

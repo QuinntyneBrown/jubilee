@@ -1,8 +1,8 @@
 using Jubilee.Application.Abstractions;
 using Jubilee.Application.Directory;
 using Jubilee.Application.Errors;
+using Jubilee.Application.Moderation;
 using Jubilee.Application.Requests;
-using Jubilee.Application.Verification;
 using Jubilee.Domain;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -78,7 +78,7 @@ public sealed class DeleteAccountCommandHandler(IAppDbContext db, TimeProvider c
         // Feedback is the member's own and leaves with them, screenshots first (L2-214 AC12).
         db.FeedbackScreenshots.RemoveRange(await db.FeedbackScreenshots.Where(s => s.UploaderSubject == subject).ToListAsync(cancellationToken));
         db.Feedback.RemoveRange(await db.Feedback.Where(f => f.MemberSubject == subject).ToListAsync(cancellationToken));
-        // Reviews leave with their author, with their replies and reports, and the stars are counted again (ADR 0058).
+        // Reviews leave with their author, with their replies and reports, and the stars are counted again (ADR 0066).
         db.ReviewReports.RemoveRange(await db.ReviewReports.Where(r => r.ReporterSubject == subject).ToListAsync(cancellationToken));
         foreach (var review in await db.Reviews.Where(r => r.AuthorSubject == subject).ToListAsync(cancellationToken))
         {

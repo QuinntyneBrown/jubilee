@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Jubilee.Api.Tests;
 
-// Ratings on cards: L2-230.
+// Ratings on cards: L2-231.
 public sealed partial class ReviewTests
 {
     private async Task CountStars(Listing listing, StarCounts stars)
@@ -22,7 +22,7 @@ public sealed partial class ReviewTests
     private static JsonElement CardOf(JsonElement cards, string slug) =>
         cards.EnumerateArray().Single(c => c.GetProperty("slug").GetString() == slug);
 
-    // L2-230 AC1, AC4
+    // L2-231 AC1, AC4
     [Fact]
     public async Task L2_227_AC1_a_business_card_carries_the_average_and_count_from_three_reviews()
     {
@@ -35,7 +35,7 @@ public sealed partial class ReviewTests
         Assert.Equal(5, rating.GetProperty("count").GetInt32());
     }
 
-    // L2-230 AC3
+    // L2-231 AC3
     [Fact]
     public async Task L2_227_AC3_a_card_with_fewer_than_three_reviews_carries_no_rating()
     {
@@ -46,7 +46,7 @@ public sealed partial class ReviewTests
         Assert.Equal(JsonValueKind.Null, CardOf(page.GetProperty("businesses"), "legacy-financial").GetProperty("rating").ValueKind);
     }
 
-    // L2-230 AC1: a space card
+    // L2-231 AC1: a space card
     [Fact]
     public async Task L2_227_AC1_a_space_card_carries_its_rating()
     {
@@ -59,7 +59,7 @@ public sealed partial class ReviewTests
         Assert.Equal(4.7m, CardOf(page.GetProperty("spaces"), "guest-suite").GetProperty("rating").GetProperty("average").GetDecimal());
     }
 
-    // L2-230 AC2, AC5, L2-237 AC9
+    // L2-231 AC2, AC5, L2-238 AC9
     [Fact]
     public async Task L2_227_AC2_a_product_card_carries_the_rating_of_the_reviews_about_it()
     {

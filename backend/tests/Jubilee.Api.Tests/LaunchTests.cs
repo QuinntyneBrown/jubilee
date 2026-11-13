@@ -337,3 +337,69 @@ public sealed class LaunchSignUpTeamEmailTests(LaunchTeamEmailFactory factory) :
         Assert.Single(await Dispatched());
     }
 }
+
+// Acceptance Test
+// Traces to: L2-218 (AC3), L2-137 (AC1); ADR 0040, ADR 0062
+// Description: behind the marketing host the limits of 5 an hour count each visitor's address, as the proxy states it.
+public sealed class LaunchVisitorLimitTests(FiveLaunchSubmissionsFactory factory) : IClassFixture<FiveLaunchSubmissionsFactory>, IAsyncLifetime
+{
+    private static readonly object Details = new { businessName = "B", contactName = "C", email = "o@example.com", category = "shops", area = "A", description = "D", consent = true };
+
+    public Task InitializeAsync() => factory.Reset();
+
+    public Task DisposeAsync() => Task.CompletedTask;
+
+    private Task<HttpResponseMessage> Send(string path, object body, string address, string? key = JubileeApiFactory.StaffProxyKey)
+    {
+        var request = new HttpRequestMessage(HttpMethod.Post, path) { Content = JsonContent.Create(body) };
+        if (key is not null)
+        {
+            request.Headers.Add("X-Jubilee-Proxy-Key", key);
+        }
+
+        request.Headers.Add("X-Jubilee-Client-Address", address);
+        return factory.CreateClient().SendAsync(request);
+    }
+
+    private async Task<HttpStatusCode[]> FiveThenOneMore(string path, Func<int, object> body, Func<int, string> address, string? key = JubileeApiFactory.StaffProxyKey)
+    {
+        var answers = new HttpStatusCode[6];
+        for (var i = 0; i < 6; i++)
+        {
+            answers[i] = (await Send(path, body(i), address(i), key)).StatusCode;
+        }
+
+        return answers;
+    }
+
+    private static readonly HttpStatusCode[] FiveAcceptedThenRefused =
+        [.. Enumerable.Repeat(HttpStatusCode.Accepted, 5), HttpStatusCode.TooManyRequests];
+
+    // L2-218 AC3
+    // Given two visitors behind the marketing host's proxy, when the first has used the 5 sign-ups and the 5
+    // pre-registrations of the hour, then the first is refused and the second still has 5 of each.
+    [Fact]
+    public async Task L2_218_AC3_behind_the_proxy_each_visitor_address_has_its_own_five_an_hour()
+    {
+        const string Notifications = "/api/launch/notifications";
+        const string Businesses = "/api/launch/businesses";
+
+        Assert.Equal(FiveAcceptedThenRefused, await FiveThenOneMore(Notifications, i => new { email = $"first{i}@example.com", consent = true }, _ => "198.51.100.10"));
+        Assert.Equal(FiveAcceptedThenRefused, await FiveThenOneMore(Notifications, i => new { email = $"second{i}@example.com", consent = true }, _ => "198.51.100.11"));
+        Assert.Equal(FiveAcceptedThenRefused, await FiveThenOneMore(Businesses, _ => Details, _ => "198.51.100.10"));
+        Assert.Equal(FiveAcceptedThenRefused, await FiveThenOneMore(Businesses, _ => Details, _ => "198.51.100.11"));
+        Assert.Equal(10, await factory.Query(db => db.LaunchSubscribers.CountAsync()));
+    }
+
+    // L2-218 AC3
+    // Given a caller without the proxy's key, when it states a new address of its own with each sign-up,
+    // then the address is not believed: the sixth is refused like any other.
+    [Fact]
+    public async Task L2_218_AC3_an_address_stated_without_the_proxy_key_does_not_escape_the_limit()
+    {
+        var answers = await FiveThenOneMore(
+            "/api/launch/notifications", i => new { email = $"caller{i}@example.com", consent = true }, i => $"192.0.2.{i + 1}", key: null);
+
+        Assert.Equal(FiveAcceptedThenRefused, answers);
+    }
+}

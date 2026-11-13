@@ -98,7 +98,7 @@ public sealed class AccountController(ISender sender, IBotChallengeVerifier bot)
     [ErrorReference("JB-AUTH-503")]
     public async Task<IActionResult> RequestPasswordReset(PasswordResetRequestBody request, CancellationToken cancellationToken)
     {
-        await sender.Send(new RequestPasswordResetCommand(request.Email), cancellationToken);
+        await sender.Send(new RequestPasswordResetCommand(request.Email, HttpContext.Connection.RemoteIpAddress?.ToString()), cancellationToken);
         return Accepted();
     }
 
@@ -251,7 +251,7 @@ public sealed class AccountController(ISender sender, IBotChallengeVerifier bot)
     [ErrorReference("JB-ACC-503")]
     public async Task<IActionResult> RequestEmailChange(EmailChangeBody request, CancellationToken cancellationToken)
     {
-        await sender.Send(new RequestEmailChangeCommand(MemberId(), request.Email, request.CurrentPassword), cancellationToken);
+        await sender.Send(new RequestEmailChangeCommand(MemberId(), request.Email, request.CurrentPassword, RemoteAddress()), cancellationToken);
         return Accepted();
     }
 
@@ -262,7 +262,7 @@ public sealed class AccountController(ISender sender, IBotChallengeVerifier bot)
     public async Task<ActionResult<EmailChangeResponse>> ConfirmEmailChange(ConfirmEmailRequest request, CancellationToken cancellationToken)
     {
         NoReferrer();
-        var outcome = await sender.Send(new ConfirmEmailChangeCommand(request.Token), cancellationToken);
+        var outcome = await sender.Send(new ConfirmEmailChangeCommand(request.Token, RemoteAddress()), cancellationToken);
         return Ok(new EmailChangeResponse(outcome switch
         {
             EmailChangeOutcome.Confirmed => "confirmed",
@@ -277,10 +277,30 @@ public sealed class AccountController(ISender sender, IBotChallengeVerifier bot)
     public async Task<IActionResult> ChangePassword(ChangePasswordBody request, CancellationToken cancellationToken)
     {
         var member = await sender.Send(new ChangePasswordCommand(MemberId(), request.CurrentPassword, request.NewPassword, request.RepeatPassword,
-            Guid.TryParse(User.FindFirst(Jubilee.Api.Sessions.DatabaseTicketStore.SessionIdClaim)?.Value, out var current) ? current : null), cancellationToken);
+            CurrentSessionId(), RemoteAddress()), cancellationToken);
         await HttpContext.SignInMemberAsync(member);
         return NoContent();
     }
+
+    /// <summary>"Where you're signed in": the member's live sessions, this device first (L2-143 AC3).</summary>
+    [HttpGet("sessions")]
+    [ErrorReference("JB-ACC-526")]
+    public async Task<ActionResult<IReadOnlyList<MemberSessionDto>>> Sessions(CancellationToken cancellationToken) =>
+        Ok(await sender.Send(new ListMemberSessionsQuery(MemberId(), CurrentSessionId()), cancellationToken));
+
+    /// <summary>Signs one device out (L2-143 AC3). Another member's session is not found and the attempt is logged (L2-133 AC2).</summary>
+    [HttpDelete("sessions/{id:guid}")]
+    [ErrorReference("JB-ACC-527")]
+    public async Task<IActionResult> EndSession(Guid id, CancellationToken cancellationToken)
+    {
+        await sender.Send(new EndMemberSessionCommand(MemberId(), id, RemoteAddress()), cancellationToken);
+        return NoContent();
+    }
+
+    private string? RemoteAddress() => HttpContext.Connection.RemoteIpAddress?.ToString();
+
+    private Guid? CurrentSessionId() =>
+        Guid.TryParse(User.FindFirst(Jubilee.Api.Sessions.DatabaseTicketStore.SessionIdClaim)?.Value, out var id) ? id : null;
 
     [HttpPost("agreement")]
     public async Task<IActionResult> AcceptAgreement(CancellationToken cancellationToken)

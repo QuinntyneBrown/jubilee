@@ -1,0 +1,68 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Browse listings
+enum ListingStage {
+  Draft = 0
+  Live = 5
+}
+class GetAdminListingsQuery {
+  +string? Search
+}
+class GetAdminListingsQueryHandler {
+  +Handle(query: GetAdminListingsQuery): Task<AdminListingsDto>
+}
+class AdminListingsDto {
+  +int Total
+  +int PublishedThisWeek
+  +IReadOnlyList<AdminListingRow> Rows
+}
+class AdminListingRow {
+  +Guid Id
+  +string Name
+  +string CategoryName
+  +string OwnerName
+  +DateTimeOffset PublishedAt
+  +string Status
+  +string StatusLabel
+  +bool Flagged
+}
+class AdminListings <<static>> {
+  +StatusOf(listing: Listing): (string Status, string Label)
+  +Owners(db, subjects): Dictionary<string, Member>
+  +OwnerName(listing, owners): string
+}
+class Listing {
+  +ListingStage Stage
+  +DateTimeOffset? PublishedAt
+  +bool IsPaused
+  +bool IsUnderModerationHold
+  +DateTimeOffset? TakenDownAt
+  +DateTimeOffset? DeletedAt
+}
+class ListingSubmission {
+  +Guid ListingId
+  +IReadOnlyList<string> Flags
+}
+note right of AdminListings
+  StatusOf: taken-down "Taken down",
+  on-hold "On hold", paused "Paused",
+  otherwise live "Live"
+end note
+
+GetAdminListingsQueryHandler ..> GetAdminListingsQuery : handles
+GetAdminListingsQueryHandler --> AdminListingsDto : returns
+GetAdminListingsQueryHandler ..> Listing : reads
+GetAdminListingsQueryHandler ..> ListingSubmission : reads flags
+GetAdminListingsQueryHandler ..> AdminListings : uses
+AdminListingsDto "1" *-- "*" AdminListingRow
+Listing --> ListingStage
+@enduml

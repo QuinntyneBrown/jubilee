@@ -1,0 +1,115 @@
+WEBVTT
+
+00:00:00.407 --> 00:00:04.640
+Journey twenty-five: moderate reports and feature businesses.
+
+00:00:04.640 --> 00:00:09.219
+The Jubilee team handles the reports members send, and chooses the
+
+00:00:09.219 --> 00:00:13.521
+businesses featured this week. This run takes the journey from
+
+00:00:13.521 --> 00:00:15.671
+eighty-two percent to complete.
+
+00:00:16.528 --> 00:00:19.676
+A report must reach the team when it arrives.
+
+00:00:19.676 --> 00:00:23.033
+A report of a listing already e-mailed the team.
+
+00:00:23.033 --> 00:00:28.068
+Now a report of a conversation does too: New report, a conversation with
+
+00:00:28.068 --> 00:00:32.684
+the business, with what the member wrote and a link to the report.
+
+00:00:32.684 --> 00:00:36.880
+It never names who reported, and never carries the messages.
+
+00:00:37.737 --> 00:00:41.192
+Miriam of the Jubilee team opens the reports.
+
+00:00:41.192 --> 00:00:46.489
+Beside Reports, the admin bar now counts the unresolved reports, here
+
+00:00:46.489 --> 00:00:50.097
+two, and a screen reader hears: two unresolved.
+
+00:00:50.799 --> 00:00:53.985
+She opens the report about Luzandre dot com.
+
+00:00:53.985 --> 00:00:59.198
+Opening it moves it into review, and the access is recorded in the audit
+
+00:00:59.198 --> 00:00:59.487
+log.
+
+00:01:00.188 --> 00:01:04.775
+She places the listing on hold, with the note every action requires.
+
+00:01:04.775 --> 00:01:09.295
+The owner is told the listing is paused while the team looks into a
+
+00:01:09.295 --> 00:01:11.588
+report, and never who reported it.
+
+00:01:12.618 --> 00:01:17.446
+A held or removed listing leaves the welcome page, Browse, its category,
+
+00:01:17.446 --> 00:01:21.403
+search and the related businesses on the very next request.
+
+00:01:21.403 --> 00:01:25.694
+The save itself clears the directory cache, and search reads the
+
+00:01:25.694 --> 00:01:28.242
+database, so no outbox step is needed.
+
+00:01:29.100 --> 00:01:34.343
+Meanwhile another report comes in. The admin application does not poll,
+
+00:01:34.343 --> 00:01:37.667
+which would keep an idle staff session alive.
+
+00:01:37.667 --> 00:01:42.983
+It reads the staff session again each time Miriam moves between screens,
+
+00:01:42.983 --> 00:01:44.460
+or acts on a report.
+
+00:01:45.162 --> 00:01:49.602
+So when she opens the featured businesses, the bar reads three.
+
+00:01:50.305 --> 00:01:54.645
+She chooses this week's businesses, up to five live listings in the
+
+00:01:54.645 --> 00:01:56.977
+order she wants, and saves the week.
+
+00:01:58.834 --> 00:02:03.676
+A week saved, or saved again, shows on the welcome page and Browse on
+
+00:02:03.676 --> 00:02:08.657
+the next request. A featured listing that is paused, held or removed is
+
+00:02:08.657 --> 00:02:11.674
+skipped, and returns when it is live again.
+
+00:02:12.532 --> 00:02:17.583
+Tests prove each criterion: API tests for the team's e-mail, the count
+
+00:02:17.583 --> 00:02:22.562
+and every public page, each seen failing first, and browser tests for
+
+00:02:22.562 --> 00:02:23.572
+the admin bar.
+
+00:02:24.430 --> 00:02:29.876
+Journey twenty-five is complete. Nothing new needs setting on Azure: the
+
+00:02:29.876 --> 00:02:34.489
+team's e-mail goes to the address already set for the launch.
+
+00:02:34.489 --> 00:02:39.934
+Left for the owner: run the visual, responsive and accessibility sweeps.

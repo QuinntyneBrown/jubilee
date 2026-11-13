@@ -79,7 +79,7 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 | L2 ID | Refines (L1) | Requirement |
 |-------|--------------|-------------|
 | `L2-038` | `L1-005` | The share action shall open a dialog "Share {business}" with the listing's canonical link, "Copy", "E-mail", "WhatsApp", "More…" and "Done". "Copy" shall confirm for 2 seconds with the polite announcement "Link copied", "More…" shall appear only where the Web Share API exists and open the native share sheet, and a link-preview fetcher of `/b/{slug}` shall receive the Open Graph title, description and image of the listing. |
-| `L2-028` | `L1-003` | A non-public listing opened by its URL shall produce the not-found page with HTTP 404, except for the owner and the verification team. |
+| `L2-028` | `L1-003` | A non-public listing opened by its URL shall produce the not-found page with HTTP 404, except for the owner and the Jubilee team. |
 | `L2-130` | `L1-018` | A dialog shall take focus when it opens, keep Tab within it, close on Escape or the close button, and return focus to the control that opened it. |
 
 ## Diagrams

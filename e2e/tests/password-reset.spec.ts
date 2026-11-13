@@ -48,6 +48,28 @@ test.describe('forgot password (L2-008)', () => {
     expect(fake.requestedFor).toEqual([]);
   });
 
+  test('AC4: a fourth request in an hour is refused and the form says when to try again', async ({
+    page,
+    jb,
+  }) => {
+    const forgot = new ForgotPasswordPage(page);
+    const fake = await stubPasswordReset(page, { request: 'rate-limited' });
+    await jb.goto('/forgot-password');
+
+    await forgot.sendAndBeRefused(RESET_EMAIL);
+
+    await expect(forgot.notice).toHaveText('You’re doing that a lot. Try again in 42 minutes.');
+    await expect(forgot.notice).toHaveAttribute('role', 'alert');
+    await expect(forgot.sentHeading).toBeHidden();
+    await expect(forgot.email).toHaveValue(RESET_EMAIL);
+    expect(fake.requestedFor).toEqual([RESET_EMAIL]);
+
+    // Once the hour has passed, the same form sends the link and the warning goes.
+    fake.request = 'accepts';
+    await forgot.send.click();
+    await expect(forgot.sentHeading).toBeVisible();
+  });
+
   test('the button is busy and the field locked while the request is on its way', async ({
     page,
     jb,

@@ -15,7 +15,7 @@ The terms below are local to this feature.
 - **from** — the name the reply is shown under: the owner name before its first comma, or the listing's name when the owner gave none
 - **review notification** — a notification of kind `review` with the star icon
 
-The decisions are recorded in [ADR 0058](../../../adr/0058-reviews.md).
+The decisions are recorded in [ADR 0066](../../../adr/0066-reviews.md).
 
 ## Description
 
@@ -36,18 +36,18 @@ The decisions are recorded in [ADR 0058](../../../adr/0058-reviews.md).
   - The button is busy while `ReviewsApi.reply(id, text)` runs.
   - On success the dialog closes; the page reloads the reviews, the toast
     "Reply posted" (or "Reply updated") shows, and focus returns to the
-    review's "Edit reply" (`L2-233 AC3, AC4`).
+    review's "Edit reply" (`L2-234 AC3, AC4`).
   - On a failure a `jb-alert` "We couldn’t post your reply" with "Try again."
     keeps what was typed.
 - **`PUT /api/reviews/{id}/reply`** — `ReviewsController.Reply` sends
   `ReplyToReviewCommand`. The review must be live (404 otherwise); the caller
-  must own its listing (403 `NOT_OWNER`, `L2-233 AC6`); the text is trimmed,
+  must own its listing (403 `NOT_OWNER`, `L2-234 AC6`); the text is trimmed,
   required (422 `REQUIRED`) and at most 1,000 characters (422 `TOO_LONG`); the
   limit of 30 edits and replies per member per hour applies.
   `Review.Reply(from, text, now)` sets `ReplyText`, `ReplyFrom` and
   `RepliedAt` the first time and `ReplyEditedAt` after; a second `PUT`
-  replaces the first (`L2-233 AC5`).
-- **Notifications** (`L2-234`) — written with `NotificationRules.Tell` in the
+  replaces the first (`L2-234 AC5`).
+- **Notifications** (`L2-235`) — written with `NotificationRules.Tell` in the
   same transaction as the change they report, and e-mailed through
   `EmailPolicy.Queue` under the `requests` category, so a member who turned off
   e-mails about requests gets the notification only:
@@ -62,12 +62,12 @@ The decisions are recorded in [ADR 0058](../../../adr/0058-reviews.md).
     told nothing.
   The event stream carries each to the member's other devices (`L2-070`).
 - **`jb-notification-item`** — the kind `review` maps to the `star` icon
-  (`L2-234 AC5`).
+  (`L2-235 AC5`).
 - **`ReviewsApi`** gains `reply(id, text)`.
 
 ### Open questions
 
-Every choice below is recorded in [ADR 0058](../../../adr/0058-reviews.md).
+Every choice below is recorded in [ADR 0066](../../../adr/0066-reviews.md).
 
 | Question | Decision | Why |
 |---|---|---|
@@ -84,10 +84,10 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 
 | L2 ID | Refines (L1) | Requirement |
 |-------|--------------|-------------|
-| `L2-233` | `L1-031` | The owner shall reply once to a review in public, change the reply, and nobody else shall reply. |
-| `L2-234` | `L1-031` | The owner shall be told of a new review, the author of the first reply and of a review taken down, in the notification centre and by e-mail. |
-| `L2-228` | `L1-031` | The reply shall show under its review headed "Response from {from}" and its date. |
-| `L2-237` | `L1-031` | `PUT /api/reviews/{id}/reply` shall store the owner's reply and apply the limits. |
+| `L2-234` | `L1-031` | The owner shall reply once to a review in public, change the reply, and nobody else shall reply. |
+| `L2-235` | `L1-031` | The owner shall be told of a new review, the author of the first reply and of a review taken down, in the notification centre and by e-mail. |
+| `L2-229` | `L1-031` | The reply shall show under its review headed "Response from {from}" and its date. |
+| `L2-238` | `L1-031` | `PUT /api/reviews/{id}/reply` shall store the owner's reply and apply the limits. |
 | `L2-064` | `L1-010` | Notifications shall be listed in the notification centre for 90 days. |
 | `L2-068` | `L1-010` | E-mail notifications shall follow the member's choices. |
 

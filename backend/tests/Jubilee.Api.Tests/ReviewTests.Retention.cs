@@ -6,10 +6,10 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Jubilee.Api.Tests;
 
-// A review taken down is kept 12 months for the record, then deleted (L2-238 AC4, ADR 0058).
+// A review taken down is kept 12 months for the record, then deleted (L2-239 AC4, ADR 0066).
 public sealed partial class ReviewTests
 {
-    // L2-238 AC4
+    // L2-239 AC4
     [Fact]
     public async Task L2_235_AC4_a_review_taken_down_twelve_months_ago_is_deleted_with_its_reports()
     {

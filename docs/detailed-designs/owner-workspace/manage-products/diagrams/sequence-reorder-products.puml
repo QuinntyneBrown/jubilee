@@ -17,43 +17,34 @@ skinparam package {
 actor "Owner" as actor
 box "Frontend — Jubilee Web" #E0F2FE
   participant "MyProductsPage" as page
-  participant "ReorderControls" as controls
-  participant "ProductsApi" as client
+  participant "CatalogueApi" as client
 end box
 box "Backend — Jubilee API" #D1FADF
-  participant "OwnerProductsController" as controller
+  participant "CatalogueController" as controller
 end box
 box "Backend — Jubilee Application and Domain" #ECFDF3
-  participant "ReorderProductsCommandHandler" as handler
-  participant "Listing" as entity
+  participant "MoveProductCommandHandler" as handler
 end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
   database "Jubilee database" as db
 end box
-actor -> controls : Drag a row or press move up or move down
-controls -> page : Emit the new order
-page --> actor : Show rows in the new order
-actor -> page : Save the order
-page -> client : Build typed request with all product IDs in order
-client -> controller : PUT /api/owner/listings/{listingId}/products/order
-controller -> controller : Authenticate and apply ListingOwnerPolicy (L2-133)
-controller -> handler : Send ReorderProductsCommand
-handler -> db : Load listing with products
-db --> handler : Listing
-handler -> entity : ReorderProducts (L2-090)
-alt IDs do not match the listing's products
-  entity --> handler : Rule violated
-  handler --> controller : Validation failure
-  controller --> client : 422 ProblemDetails
-  client --> page : Refusal
-  page --> actor : Reload the list
-else IDs match
-  entity --> handler : SortOrder rewritten
-  handler -> db : Save in one unit of work
-  db --> handler : Commit result
-  handler --> controller : Success
-  controller --> client : 204 No Content
-  client --> page : Saved
-  page --> actor : Keep the new order - the public shop shows it
+alt Drag by the handle (pointer or touch)
+  actor -> page : Drop a row in another place
+  page -> page : drop: show the new order at once
+else Keyboard
+  actor -> page : Press "Move {name} up" or "Move {name} down"
+end
+page -> client : moveProduct(id, position)
+client -> controller : PUT /api/my-business/products/{id}/position
+controller -> handler : Send MoveProductCommand
+handler -> db : Load the owner's products in order
+handler -> handler : Insert at the position, renumber from 1 (L2-090)
+handler -> db : Save
+alt Refused
+  controller --> client : Error
+  page --> actor : Put the row back; toast "Couldn’t move the product"
+else Saved
+  controller --> client : ProductsDto
+  page --> actor : Show the list; announce the new position
 end
 @enduml

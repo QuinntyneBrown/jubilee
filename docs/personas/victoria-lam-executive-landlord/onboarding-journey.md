@@ -19,10 +19,10 @@ sets it aside, until she opens the app and sees "Rooms & rentals" second among t
 | 4 | Arrives on `/list?kind=space` | "List a space", "How are you renting it?" with four terms, "Long term" chosen | Clear. She starts with the downtown one-bedroom |
 | 5 | Fills in the space fields (see [profile setup](profile-setup-journey.md)) | "Exact address" with "Only the renter whose request you accept sees it." | Reassured. The address of a tenanted building is not something she publishes |
 | 6 | Reaches the agreement | "I agree to Jubilee’s statement of faith, and confirm I’m allowed to rent this space and will follow Ontario’s tenancy rules." | She is glad the line is there. She notes that it does not mention the Human Rights Code |
-| 7 | Presses "Submit for verification" | "1-bedroom condo near St. Lawrence Market is in for verification. Nothing more to do right now. We'll e-mail you the moment you're live." | Friction: she wants Joanne to add the photos. There is one owner account per listing, and she will not share her password |
+| 7 | Presses "Publish listing" | "1-bedroom condo near St. Lawrence Market is live. Renters can find it in Rooms & rentals now." | Friction: she wants Joanne to add the photos. There is one owner account per listing, and she will not share her password |
 | 8 | Adds six photos herself at 11 p.m. from My business | "Up to 6 photos, JPG or PNG, 5 MB each. The first is your cover." | Done, grudgingly |
 | 9 | Starts a second space for the duplex's upper unit | The switcher at the top of My business shows both | Counts: five homes, and a limit of 5 listings. No room to spare |
-| 10 | Is live the next afternoon; within a week has three "Request a viewing" requests for the condo | Incoming requests: "Move in Mon 1 Feb · 12 months", "Decline" and "Confirm" | First valuable moment, and a new problem: three requests, each a name, a date and a note. Nothing she can fairly compare |
+| 10 | Within a week has three "Request a viewing" requests for the condo | Incoming requests: "Move in Mon 1 Feb · 12 months", "Decline" and "Confirm" | First valuable moment, and a new problem: three requests, each a name, a date and a note. Nothing she can fairly compare |
 
 ## Where it could go wrong
 

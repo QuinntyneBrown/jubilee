@@ -4,7 +4,7 @@ LAYOUT_WITH_LEGEND()
 title Components — Authorize requests
 
 Container_Boundary(web, "Jubilee Web") {
-  Component(guards, "AuthGuard / OwnerGuard / VerifierGuard", "Angular route guards", "Redirect a caller who lacks the role. Convenience only")
+  Component(guards, "AuthGuard / OwnerGuard", "Angular route guards", "Redirect a caller who lacks the role. Convenience only")
   Component(forbidden, "ForbiddenPage", "Angular page", "Page at /forbidden for a 403 answer")
 }
 Container_Boundary(api, "Jubilee API") {

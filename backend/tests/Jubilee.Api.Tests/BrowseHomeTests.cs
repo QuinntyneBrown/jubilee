@@ -166,7 +166,7 @@ public class BrowseHomeTests : IClassFixture<JubileeApiFactory>, IAsyncLifetime
     }
 
     [Fact]
-    public async Task L2_027_AC3_a_directory_row_carries_the_full_name_tagline_and_verified_mark()
+    public async Task L2_027_AC3_a_directory_row_carries_the_full_name_and_tagline_and_no_verified_mark()
     {
         await _factory.Arrange(ListingMother.Public(
             "scott-mission", "community", "The Scott Mission", tagline: "A Christian Ministry of Mercy and Love."));
@@ -176,7 +176,7 @@ public class BrowseHomeTests : IClassFixture<JubileeApiFactory>, IAsyncLifetime
         Assert.Equal("scott-mission", row.GetProperty("slug").GetString());
         Assert.Equal("The Scott Mission", row.GetProperty("name").GetString());
         Assert.Equal("A Christian Ministry of Mercy and Love.", row.GetProperty("tagline").GetString());
-        Assert.True(row.GetProperty("verified").GetBoolean());
+        Assert.False(row.TryGetProperty("verified", out _)); // ADR 0057: no listing is called verified
     }
 
     [Fact]
@@ -192,8 +192,6 @@ public class BrowseHomeTests : IClassFixture<JubileeApiFactory>, IAsyncLifetime
 
     [Theory]
     [InlineData(NonPublicState.Draft)]
-    [InlineData(NonPublicState.ReadyToReview)]
-    [InlineData(NonPublicState.ChangesRequested)]
     [InlineData(NonPublicState.Paused)]
     [InlineData(NonPublicState.Deleted)]
     [InlineData(NonPublicState.UnderModerationHold)]

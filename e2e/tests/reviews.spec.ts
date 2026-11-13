@@ -6,12 +6,12 @@ import { BusinessPage } from '../pages/business.page';
 import { SignInRequiredDialog } from '../pages/sign-in-required.dialog';
 
 // Acceptance Test
-// Traces to: L2-225, L2-228, L2-229
+// Traces to: L2-226, L2-229, L2-230
 // Description: the rating under a listing's name and its "Reviews" section: who may write, the
 // summary, the list, the owner's reply, the member's own review, filter and sort, loading and
 // failure. The reviews are answered by `stubReviews` with the seeded ones (ADR 0009).
 
-test.describe('reviews on a listing page (L2-228)', () => {
+test.describe('reviews on a listing page (L2-229)', () => {
   test('AC1/AC2: under the name the rating leads to the section, which sums the reviews up', async ({
     page,
     jb,
@@ -33,9 +33,7 @@ test.describe('reviews on a listing page (L2-228)', () => {
     await expect(reviews.bar(5)).toHaveAccessibleName('5 stars, 3 reviews');
     await expect(reviews.bar(4)).toHaveAccessibleName('4 stars, 2 reviews');
     await expect(reviews.bar(1)).toHaveAccessibleName('1 stars, 0 reviews');
-    await expect(reviews.note).toHaveText(
-      'Verified means Legacy Financial confirmed the reviewer’s request on Jubilee.',
-    );
+    await expect(reviews.note).toHaveCount(0);
 
     await reviews.ratingLink.click();
     await expect(page).toHaveURL(/#reviews$/);
@@ -62,7 +60,7 @@ test.describe('reviews on a listing page (L2-228)', () => {
     await expect(grace.meta).toHaveText('3 Nov 2026');
     await expect(grace.stars).toHaveAttribute('aria-label', '5 out of 5 stars');
     await expect(grace.item).toHaveText('Estate & legacy plan');
-    await expect(grace.verified).toHaveText('Verified');
+    await expect(grace.verified).toHaveCount(0);
     await expect(grace.text).toContainText('Trevor helped my husband and me write wills');
     await expect(grace.replyHead).toHaveText(/Response from Trevor Chew\s*· 4 Nov 2026/);
     await expect(grace.replyText).toHaveText(
@@ -203,7 +201,7 @@ test.describe('reviews on a listing page (L2-228)', () => {
   });
 });
 
-test.describe('who may write a review (L2-225)', () => {
+test.describe('who may write a review (L2-226)', () => {
   test('AC1: an eligible member is offered Write a review, which leads to /b/{slug}/review', async ({
     page,
     jb,
@@ -264,21 +262,20 @@ test.describe('who may write a review (L2-225)', () => {
     await expect(reviews.write).toHaveCount(0);
   });
 
-  test('AC6: every review carries Verified', async ({ page, jb }) => {
+  test('AC6: no review carries a Verified mark (ADR 0057)', async ({ page, jb }) => {
     const reviews = new BusinessPage(page).reviews;
     await stubReviews(page, 'legacy-financial');
     await jb.signInAs('member');
     await jb.goto('/b/legacy-financial');
 
-    await expect(reviews.root.locator('.review__verified')).toHaveText([
-      'Verified',
-      'Verified',
-      'Verified',
-    ]);
+    await expect(reviews.review(0).text).toBeVisible();
+    await expect(reviews.review(0).verified).toHaveCount(0);
+    await expect(reviews.note).toHaveCount(0);
+    await expect(reviews.root).not.toContainText('Verified');
   });
 });
 
-test.describe('filter and sort reviews (L2-229)', () => {
+test.describe('filter and sort reviews (L2-230)', () => {
   test('AC1/AC2/AC6: a bar filters to its stars, says so, and Clear shows every review', async ({
     page,
     jb,
@@ -338,7 +335,7 @@ test.describe('filter and sort reviews (L2-229)', () => {
   });
 });
 
-test.describe('ratings on cards (L2-230)', () => {
+test.describe('ratings on cards (L2-231)', () => {
   test('AC1/AC3/AC4: a card shows the rating from three reviews, and none below', async ({
     page,
     jb,

@@ -20,6 +20,7 @@ box "Backend — Jubilee Worker" #D1FADF
   participant "OutboxDispatcherJob" as outbox
 end box
 box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "ScheduledJobs" as jobs
   participant "Request" as entity
 end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
@@ -27,24 +28,34 @@ box "Backend — Jubilee Infrastructure" #FFF4E5
 end box
 actor "Member" as member
 actor "Owner" as owner
+done -> jobs : RunBookingCompletionJobCommand (every minute)
+jobs -> db : Claim this 5-minute occurrence in JobRun (L2-182)
+alt another instance claimed it
+  db --> jobs : Refused; nothing runs
+else claimed
 done -> db : Find Confirmed bookings whose meeting end time has passed
 db --> done : Bookings
 loop each booking
-  done -> entity : Complete(no actor, now) (L2-043)
+  done -> entity : Complete("system", now) (L2-043)
   entity --> done : Status Completed and RequestTransition recorded
 end
-done -> db : Save changes and outbox messages in one unit of work
+done -> db : Save changes in one unit of work
 db --> done : Commit result
+jobs -> db : Record the run's success
+end
+stale -> jobs : RunUnansweredRequestJobCommand (every 10 minutes)
+jobs -> db : Claim this hour in JobRun (L2-182)
 stale -> db : Find New requests created 7 days ago or earlier with no NudgedAt
 db --> stale : Requests
 loop each request
-  stale -> entity : Mark nudged (L2-043)
+  stale -> entity : Nudge(now) (L2-043)
   entity --> stale : NudgedAt set, status unchanged
 end
-stale -> db : Save changes and one owner reminder per request to the outbox (L2-182)
+stale -> db : Save changes, the owner's in-app reminder and one e-mail per request to the outbox (L2-182)
 db --> stale : Commit result
+jobs -> db : Record the run's success
 outbox -> db : Read pending outbox messages
 db --> outbox : Messages
 outbox --> owner : One reminder about the unanswered request
-outbox --> member : Request event; the detail page offers "Cancel or ask again"
+member -> db : Opens the request: the detail offers "Cancel request" and "Ask again"
 @enduml

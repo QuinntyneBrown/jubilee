@@ -1,0 +1,16 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Take down a listing
+Person(moderator, "Jubilee team member", "Takes down a listing that misrepresents a business")
+Person(owner, "Owner", "Published the listing and is told why it was taken down")
+Person(member, "Member", "No longer finds the listing")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace")
+System_Ext(email, "E-mail provider", "Delivers the takedown e-mail to the owner")
+
+Rel(moderator, jubilee, "Opens and takes down listings in", "HTTPS")
+Rel(jubilee, owner, "Notifies of the takedown")
+Rel(jubilee, email, "Sends the reason via")
+Rel(email, owner, "Delivers e-mail to")
+Rel(member, jubilee, "Browses public listings in", "HTTPS")
+@enduml

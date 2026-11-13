@@ -30,18 +30,20 @@ box "Backend — Jubilee Infrastructure" #FFF4E5
   database "Jubilee database" as db
 end box
 actor -> page : Open the feedback page
+page -> page : loadHistory() in ngOnInit
 page -> history : state loading
-history --> actor : Skeleton rows and "Loading your feedback…" announced (L2-123)
+history --> actor : Skeleton rows in a busy list named "Loading your feedback" (L2-123)
 page -> client : mine()
 client -> controller : GET /api/feedback
 controller -> controller : Take the member from the session (L2-133)
 controller -> handler : Send GetMyFeedbackQuery(Subject)
-handler -> db : Load the caller's Feedback of kind Rating or BugReport or Kudos, newest first
+handler -> db : Load the caller's Feedback whose kind is not CheckIn, newest first
 db --> handler : Feedback rows
-handler -> handler : Map to FeedbackItemDto without the note or the browser or the screenshots
+handler -> handler : FeedbackWire.ToItem without the note or the browser or the screenshots
 handler --> controller : Items
 controller --> client : 200 OK
 client --> page : FeedbackItem list
+page -> page : Word each item as a FeedbackHistoryItem
 alt No items
   page -> history : state loaded with no items
   history --> actor : "Nothing yet. What you send shows up here, with our reply."
@@ -57,12 +59,14 @@ else Items
 end
 opt The list fails to load
   client --> page : Error
-  page -> history : state failed
+  page -> history : state error
   history --> actor : "We couldn't load your feedback." with "Try again" while the form still works (L2-125)
   actor -> history : Press "Try again"
   history -> page : retry
+  page -> page : loadHistory()
   page -> client : mine()
   client --> page : FeedbackItem list
-  page --> actor : List shown and focus on the heading "Your feedback"
+  page -> history : state loaded with the items
+  history --> actor : The list
 end
 @enduml

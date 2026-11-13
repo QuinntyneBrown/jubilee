@@ -1,0 +1,112 @@
+WEBVTT
+
+00:00:00.509 --> 00:00:06.240
+Journey twenty-nine: give feedback. A member rates Jubilee, reports a
+
+00:00:06.240 --> 00:00:12.221
+bug or sends kudos from any screen, answers a check-in, and follows what
+
+00:00:12.221 --> 00:00:17.206
+became of it. This run closed the last tests of the feedback
+
+00:00:17.206 --> 00:00:19.781
+requirements, L2-210 to L2-214.
+
+00:00:20.637 --> 00:00:25.475
+Joanna is signed in on Browse. At the bottom right is the Feedback
+
+00:00:25.475 --> 00:00:30.388
+launcher. It opens by a click, a tap, Enter or Space; new specs now
+
+00:00:30.388 --> 00:00:35.446
+prove Space and touch, and that the feedback page and the error pages
+
+00:00:35.446 --> 00:00:36.693
+show no launcher.
+
+00:00:37.394 --> 00:00:41.599
+The panel asks how Jubilee is working for her so far.
+
+00:00:41.599 --> 00:00:46.993
+Five stars, each with its word. She chooses four, Good, and the note
+
+00:00:46.993 --> 00:00:52.706
+asks what's working well. Send rating, and the panel thanks her by name.
+
+00:00:53.409 --> 00:00:58.022
+Report a bug asks what went wrong, and says what will be attached: the
+
+00:00:58.022 --> 00:01:02.241
+screen she is on, her browser and device, and the app's version.
+
+00:01:02.942 --> 00:01:07.290
+Kudos are chips, as many as she likes, each saying whether it is
+
+00:01:07.290 --> 00:01:11.911
+pressed. On a touch screen a chip can now be pressed over forty-four
+
+00:01:11.911 --> 00:01:15.648
+pixels, while it is still drawn thirty-two pixels tall.
+
+00:01:15.648 --> 00:01:19.046
+That was the one defect this run found, and fixed.
+
+00:01:19.747 --> 00:01:24.949
+After a meeting request, the confirmation asks one question: how easy
+
+00:01:24.949 --> 00:01:29.925
+was it to send your request? A low score asks what got in the way.
+
+00:01:29.925 --> 00:01:34.675
+The question is a courtesy, never an error on a success screen.
+
+00:01:36.466 --> 00:01:41.637
+The full form is the feedback page. Rate asks about the whole of Jubilee
+
+00:01:41.637 --> 00:01:46.522
+and then each part of it, and she can skip any part she hasn't used.
+
+00:01:47.224 --> 00:01:51.736
+Beside the form, Your feedback lists what she sent, newest first: each
+
+00:01:51.736 --> 00:01:56.184
+with its date, its status in words, the reference of a bug report and
+
+00:01:56.184 --> 00:01:57.280
+the team's reply.
+
+00:01:58.138 --> 00:02:01.977
+Behind it, the API answers only the member of the session.
+
+00:02:01.977 --> 00:02:06.676
+New tests prove that a PNG screenshot is cleaned and stored, that kudos
+
+00:02:06.676 --> 00:02:11.243
+sent twice with the same key are stored once, and that the list never
+
+00:02:11.243 --> 00:02:12.898
+carries what was written.
+
+00:02:13.756 --> 00:02:18.405
+For a member who prefers reduced motion, the launcher and the panel now
+
+00:02:18.405 --> 00:02:21.351
+appear without movement, and a spec holds it.
+
+00:02:21.351 --> 00:02:25.084
+Each new spec was first seen failing against broken code.
+
+00:02:25.943 --> 00:02:31.080
+The parity specs of the six feedback components will compare with the
+
+00:02:31.080 --> 00:02:36.366
+Magic Patterns design the moment the owner saves its captures, by name,
+
+00:02:36.366 --> 00:02:39.791
+with no change to a spec. ADR 0060 records it.
+
+00:02:40.649 --> 00:02:45.825
+What is left is the owner's: export the Feedback captures, and run the
+
+00:02:45.825 --> 00:02:50.705
+sweeps by hand. Journey twenty-nine stands at ninety-nine percent.

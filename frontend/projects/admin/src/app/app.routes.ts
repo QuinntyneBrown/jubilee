@@ -5,14 +5,14 @@ import { signedOutGuard, staffGuard } from './guards/staff.guard';
 /**
  * The data every route of the admin application carries: `shell` picks the chrome (the admin
  * bar, or the sign-in frame), `page` is stamped on `<body data-page>`, `section` marks the current
- * entry of the staff navigation, and `verifier` says the screen is the verification team's
+ * entry of the staff navigation, and `moderator` says the screen is the Jubilee team's
  * (L2-188 AC4).
  */
 export interface AdminRouteData {
   shell: 'admin' | 'bare';
   page: string;
   section?: StaffSection;
-  verifier?: boolean;
+  moderator?: boolean;
 }
 
 export type SignInState = 'sign-in' | 'signed-out' | 'session-expired';
@@ -20,10 +20,10 @@ export type SignInState = 'sign-in' | 'signed-out' | 'session-expired';
 const data = (value: AdminRouteData & { state?: SignInState }) => value;
 
 const screen = (page: string, section: StaffSection) =>
-  data({ shell: 'admin', page, section, verifier: true });
+  data({ shell: 'admin', page, section, moderator: true });
 
 export const routes: Routes = [
-  { path: '', pathMatch: 'full', redirectTo: 'verifications' },
+  { path: '', pathMatch: 'full', redirectTo: 'listings' },
   {
     path: 'sign-in',
     canActivate: [signedOutGuard],
@@ -50,23 +50,19 @@ export const routes: Routes = [
     canActivateChild: [staffGuard],
     children: [
       {
-        path: 'verifications',
+        path: 'listings',
         pathMatch: 'full',
         loadComponent: () =>
-          import('./pages/admin-verifications/admin-verifications.page').then(
-            (m) => m.AdminVerificationsPage,
-          ),
-        data: screen('admin-verifications', 'verifications'),
-        title: 'Verification queue · Jubilee admin',
+          import('./pages/admin-listings/admin-listings.page').then((m) => m.AdminListingsPage),
+        data: screen('admin-listings', 'listings'),
+        title: 'Listings · Jubilee admin',
       },
       {
-        path: 'verifications/:id',
+        path: 'listings/:id',
         loadComponent: () =>
-          import('./pages/admin-verification/admin-verification.page').then(
-            (m) => m.AdminVerificationPage,
-          ),
-        data: screen('admin-verification', 'verifications'),
-        title: 'Review a listing · Jubilee admin',
+          import('./pages/admin-listing/admin-listing.page').then((m) => m.AdminListingPage),
+        data: screen('admin-listing', 'listings'),
+        title: 'A listing · Jubilee admin',
       },
       {
         path: 'reports',

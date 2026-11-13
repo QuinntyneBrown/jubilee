@@ -1,10 +1,25 @@
 import type { Page, Route } from '@playwright/test';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { naomi } from './incoming-requests';
 
 // A stand-in for the owner's products and services (L2-089 to L2-095) and for the session of an
 // owner. What the app sends is kept so a test can prove it (ADR 0009).
 
 export type CatalogueOutcome = 'ok' | 'fails' | 'forbidden';
+
+/** A product photo as the upload answers it (L2-091 AC9). */
+export interface FakeProductPhoto {
+  id: string;
+  key: string;
+  width: number;
+  height: number;
+}
+
+interface FakeOption {
+  label: string;
+  stock: number | null;
+}
 
 interface FakeProduct {
   id: string;
@@ -16,6 +31,9 @@ interface FakeProduct {
   description: string | null;
   minimumQuantity: number;
   requests: number;
+  optionName: string | null;
+  options: FakeOption[];
+  photo: FakeProductPhoto | null;
 }
 
 interface FakeService {
@@ -65,11 +83,21 @@ export function meetsOn(days: number[]): string {
 }
 
 export interface FakeCatalogue {
+  /** A listing that is not live yet gives its stage in place of "Live since" (L2-097 AC3). */
+  live: boolean;
+  subtitle: string;
   /** `fails` answers the list with a 503; `forbidden` with a 403. */
   products: CatalogueOutcome;
   services: CatalogueOutcome;
   /** `fails` answers the save with a 500, `hangs` never answers, `limit` refuses it with a 409. */
   save: 'ok' | 'fails' | 'hangs' | 'limit';
+  /**
+   * Uploading a product photo: `hangs` never answers, `infected` is refused with 422 `FAILED_SCAN`,
+   * `unavailable` with 503 `SCAN_UNAVAILABLE`, `not-an-image` with 422 `NOT_AN_IMAGE`.
+   */
+  upload: 'ok' | 'hangs' | 'infected' | 'unavailable' | 'not-an-image';
+  /** The photos the app uploaded, in order. */
+  uploads: FakeProductPhoto[];
   remove: 'ok' | 'fails';
   move: 'ok' | 'fails';
   /** Saving meeting hours: `fails` answers 500, `hangs` never answers, `refused` answers 422 on "Until". */
@@ -105,8 +133,14 @@ const product = (
   description: null,
   minimumQuantity: 1,
   requests: 0,
+  optionName: null,
+  options: [],
+  photo: null,
   ...extra,
 });
+
+/** The photo key the stub gives the n-th upload; `/media/{key}/…` is answered with the mocks' mug. */
+export const photoKey = (n: number) => `${String(n).padStart(2, '0')}`.repeat(16);
 
 export const PRODUCTS = [
   product(1, 'Faith heavyweight tee, charcoal', 3400, { stock: 0, requests: 41 }),
@@ -151,9 +185,13 @@ export async function stubCatalogue(
 ): Promise<FakeCatalogue> {
   let next = 50;
   const fake: FakeCatalogue = {
+    live: true,
+    subtitle: 'Live since June 2026',
     products: 'ok',
     services: 'ok',
     save: 'ok',
+    upload: 'ok',
+    uploads: [],
     remove: 'ok',
     move: 'ok',
     hours: 'ok',
@@ -168,23 +206,25 @@ export async function stubCatalogue(
     ...initial,
   };
 
+  const soldOut = (row: FakeProduct) =>
+    row.options.length > 0 ? row.options.every((option) => option.stock === 0) : row.stock === 0;
+
   const productView = (row: FakeProduct) => ({
     ...row,
-    soldOut: row.stock === 0,
+    stock: row.options.length > 0 ? null : row.stock,
+    soldOut: soldOut(row),
     tint: 'gold',
     icon: 'bag',
-    optionName: null,
-    options: [],
     stockChange: 'none',
   });
 
   const products = () => ({
     business: 'Luzandre.com',
     slug: 'luzandre-com',
-    subtitle: 'Verified · live since June 2026',
-    live: true,
+    subtitle: fake.subtitle,
+    live: fake.live,
     total: fake.productRows.length,
-    soldOut: fake.productRows.filter((row) => row.stock === 0).length,
+    soldOut: fake.productRows.filter(soldOut).length,
     max: 100,
     rows: fake.productRows.map(productView),
   });
@@ -192,8 +232,8 @@ export async function stubCatalogue(
   const services = () => ({
     business: 'Luzandre.com',
     slug: 'luzandre-com',
-    subtitle: 'Verified · live since June 2026',
-    live: true,
+    subtitle: fake.subtitle,
+    live: fake.live,
     total: fake.serviceRows.length,
     max: 50,
     rows: fake.serviceRows,
@@ -214,17 +254,46 @@ export async function stubCatalogue(
         unreadNotificationCount: 3,
         newRequestCount: 3,
         ownsListing: true,
-        isVerifier: false,
-        verificationCount: 0,
+        isModerator: false,
       },
     }),
   );
+
+  // The product photos are the mocks' mug, whatever their key.
+  await page.route('**/media/**', (route) => {
+    if (/\.woff2?(\?|$)/.test(route.request().url())) return route.fallback();
+    return route.fulfill({
+      body: readFileSync(join(__dirname, '..', '..', 'docs', 'assets', 'photos', 'mug.jpg')),
+      contentType: 'image/jpeg',
+    });
+  });
 
   await page.route(/\/api\/my-business\/products(\/.*)?$/, async (route: Route) => {
     const request = route.request();
     const method = request.method();
     const [id, what] = new URL(request.url()).pathname.split('/').slice(4);
 
+    if (id === 'photos' && method === 'POST') {
+      if (fake.upload === 'hangs') return;
+      if (fake.upload === 'infected') {
+        return route.fulfill(problem(422, { code: 'FAILED_SCAN' }));
+      }
+      if (fake.upload === 'not-an-image') {
+        return route.fulfill(problem(422, { code: 'NOT_AN_IMAGE' }));
+      }
+      if (fake.upload === 'unavailable') {
+        return route.fulfill(problem(503, { code: 'SCAN_UNAVAILABLE' }));
+      }
+      const n = fake.uploads.length + 1;
+      const photo = {
+        id: `c3000000-0000-4000-8000-0000000000${String(n).padStart(2, '0')}`,
+        key: photoKey(n),
+        width: 1200,
+        height: 1200,
+      };
+      fake.uploads.push(photo);
+      return route.fulfill({ status: 201, json: photo });
+    }
     if (method === 'GET') {
       const refused = listFailure(fake.products, 'JB-PRD-503');
       return route.fulfill(refused ?? { json: products() });
@@ -250,8 +319,19 @@ export async function stubCatalogue(
       price: string;
       stock: number | null;
       description: string;
+      minimumQuantity?: number | null;
+      optionName?: string | null;
+      options?: FakeOption[] | null;
+      photoId?: string | null;
     };
     fake.productSaves.push(body);
+    const known = [...fake.uploads, ...fake.productRows.map((row) => row.photo)];
+    const saved = {
+      minimumQuantity: body.minimumQuantity ?? 1,
+      optionName: body.options?.length ? (body.optionName ?? 'Option') : null,
+      options: body.options ?? [],
+      photo: known.find((photo) => photo && photo.id === body.photoId) ?? null,
+    };
     if (fake.save === 'hangs') return;
     if (fake.save === 'fails') return route.fulfill(problem(500, { code: 'SERVER_ERROR' }));
     if (fake.save === 'limit') {
@@ -274,6 +354,7 @@ export async function stubCatalogue(
         priceCents: cents(body.price),
         stock: body.stock,
         description: body.description || null,
+        ...saved,
       });
       return route.fulfill({ json: { ...productView(row), stockChange: change } });
     }
@@ -281,6 +362,7 @@ export async function stubCatalogue(
     const created = product(next, body.name, cents(body.price), {
       stock: body.stock,
       description: body.description || null,
+      ...saved,
     });
     fake.productRows.push(created);
     return route.fulfill({

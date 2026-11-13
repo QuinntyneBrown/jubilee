@@ -53,8 +53,6 @@ export class BusinessPage extends ShellPage implements Screen {
   /** The head of the page: kicker, name, what the business offers and its actions. */
   readonly detailHead: Locator;
   readonly kicker: Locator;
-  readonly kickerIcon: Locator;
-  readonly verifiedLabel: Locator;
   readonly categoryLink: Locator;
   readonly heading: Locator;
   readonly ownerName: Locator;
@@ -95,7 +93,7 @@ export class BusinessPage extends ShellPage implements Screen {
   readonly errorReference: Locator;
   readonly tryAgain: Locator;
   readonly errorBackToBrowse: Locator;
-  /** The rating under the name and the "Reviews" section (L2-228). */
+  /** The rating under the name and the "Reviews" section (L2-229). */
   readonly reviews: ReviewsRegion;
 
   constructor(page: Page) {
@@ -111,8 +109,6 @@ export class BusinessPage extends ShellPage implements Screen {
     this.photoWebpSources = this.photos.locator('.media picture > source[type="image/webp"]');
     this.detailHead = this.main.locator('.detail-head');
     this.kicker = this.main.locator('.detail-head__kicker');
-    this.kickerIcon = this.kicker.locator('svg');
-    this.verifiedLabel = this.kicker.getByRole('link', { name: 'Verified Christian business' });
     this.categoryLink = this.kicker.getByRole('link').last();
     this.heading = this.main.getByRole('heading', { level: 1 });
     this.ownerName = this.main.locator('.detail-head p > strong');

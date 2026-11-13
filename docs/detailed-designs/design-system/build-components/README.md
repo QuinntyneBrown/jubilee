@@ -2,7 +2,7 @@
 
 ## Overview
 
-Jubilee is Toronto's Christian marketplace: a directory of verified
+Jubilee is Toronto's Christian marketplace: a directory of
 Christian-owned businesses. Its screens are specified by static HTML mocks in
 `docs/mocks/`: 39 pages, 21 dialogs and 7 notification types in 271 states,
 listed in `docs/mocks/manifest.json`. The mocks share one stylesheet,
@@ -66,9 +66,6 @@ The slice lives in `Jubilee Web`, with data from `Jubilee API`, photos from
   estate & living gold home "Real estate"; Health & family green heart
   "Health"; Business & tech blue briefcase "Business"; Learning blue book
   "Learning"; Media ink image "Media"; Community green user "Community".
-- **`VerifiedBadge`** — Angular component that emits `.verified` with the
-  check icon and text, so the status is not conveyed by colour alone. It renders
-  only for a listing that passed verification.
 - **Form and feedback components** — `Field` (`.field`, `.input` with
   `aria-invalid="true"` and `.field__error`), `ErrorSummary` (`.form-summary`),
   `DialogShell` (`.dialog`, `.dialog__panel`), `Toast` (`.toast`), `Banner`
@@ -76,13 +73,13 @@ The slice lives in `Jubilee Web`, with data from `Jubilee API`, photos from
   `.empty--error`). Each follows the same rule: mock classes, state attributes,
   no local appearance.
 - **`ListingSummary` and `PhotoRef`** — data that `ListingsApi` returns for a
-  card: slug, name, tagline, category, verified flag and an optional cover
+  card: slug, name, tagline, category, an optional highlight and an optional cover
   photo with its alt text and intrinsic width and height.
 - **`ClassNameAudit`** — CI step. It parses `ui.css` into the set of defined
   classes and state selectors, then scans each Angular template and stylesheet.
   It fails the build on a template class that `ui.css` does not define and on a
   page stylesheet rule that targets a kit class (a per-page override), for
-  example `.topbar`, `.btn`, `.media` or `.verified`.
+  example `.topbar`, `.btn`, `.media` or `.badge`.
 - **`VisualRegressionSuite`** — the test suite of `L2-163`. For each screen
   and state in `docs/mocks/manifest.json` it renders the product screen with a
   fixture of the mocks' cast and catalog and compares it with the mock opened
@@ -96,7 +93,7 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 
 | L2 ID | Refines (L1) | Requirement |
 |-------|--------------|-------------|
-| `L2-171` | `L1-024` | Each screen shall use the mocks' BEM class names and accessible state attributes (`aria-current`, `aria-pressed`, `aria-invalid`, `aria-busy`, `data-state`) from `docs/mocks/assets/ui.css`. Each screen and state in `docs/mocks/manifest.json` shall match its mock in layout, copy and states, verified by the visual regression tests of `L2-163`, and the ink top bar, gold pill-shaped primary buttons, media tiles and verified badges shall follow the mock components without per-page overrides. |
+| `L2-171` | `L1-024` | Each screen shall use the mocks' BEM class names and accessible state attributes (`aria-current`, `aria-pressed`, `aria-invalid`, `aria-busy`, `data-state`) from `docs/mocks/assets/ui.css`. Each screen and state in `docs/mocks/manifest.json` shall match its mock in layout, copy and states, verified by the visual regression tests of `L2-163`, and the ink top bar, gold pill-shaped primary buttons, media tiles and badges shall follow the mock components without per-page overrides. |
 | `L2-173` | `L1-024` | A listing or product with photos shall show the real photos; without photos it shall show the category's tinted icon tile (`.media`). Every image shall keep its aspect ratio with `object-fit: cover` and shall not distort. |
 | `L2-163` | `L1-023` | Visual regression tests in CI shall compare each screen with its approved baseline at 360, 576, 768, 992 and 1280 px wide and shall fail the build on a difference above threshold. |
 | `L2-160` | `L1-022` | The gold accent shall not be used for text; gold controls shall carry ink text and the darker `--color-accent-border` edge. Each status shall be conveyed by text or icon as well as colour. |
@@ -120,7 +117,7 @@ renditions.
 
 ### Components
 
-`BusinessCard` renders `MediaTile` and `VerifiedBadge`; `MediaTile` loads the
+`BusinessCard` renders `MediaTile`; `MediaTile` loads the
 cover photo or asks `CategoryTileMap` for a tint and icon. Each kit component
 is styled by `ui.css` alone. `ClassNameAudit` and `VisualRegressionSuite` run
 in the CI pipeline.
@@ -129,8 +126,7 @@ in the CI pipeline.
 
 ### Class structure
 
-`BusinessCard` shows a `ListingSummary` and owns a `MediaTile` and at most one
-`VerifiedBadge`. `MediaTile` uses the optional `PhotoRef` or a `CategoryTile`
+`BusinessCard` shows a `ListingSummary` and owns a `MediaTile`. `MediaTile` uses the optional `PhotoRef` or a `CategoryTile`
 from `CategoryTileMap`. `ClassNameAudit` reports `AuditFinding` values.
 
 ![Class diagram for building components](diagrams/class-structure.png)
@@ -139,7 +135,7 @@ from `CategoryTileMap`. `ClassNameAudit` reports `AuditFinding` values.
 
 For each listing, `MediaTile` shows the cover photo with `object-fit: cover`
 when the listing has photos, and the category's tinted icon tile otherwise.
-`VerifiedBadge` renders for a verified listing.
+The card carries no "Verified" mark (ADR 0057).
 
 ![Sequence diagram for rendering a business card](diagrams/sequence-render-business-card.png)
 

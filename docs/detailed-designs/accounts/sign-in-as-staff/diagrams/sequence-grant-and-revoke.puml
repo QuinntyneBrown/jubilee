@@ -17,20 +17,20 @@ end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
   database "Jubilee database" as db
 end box
-actor -> cli : staff grant --email esther@jubilee.to --role verifier
+actor -> cli : staff grant --email esther@jubilee.to --role moderator
 cli -> grant : GrantStaffRoleCommand
 alt unknown role or not an e-mail address
   grant --> cli : Validation failure
   cli --> actor : Says why - exit 1 (L2-193)
 else valid
   grant -> db : Find or create the StaffMember
-  grant -> entity : Grant(Verifier)
+  grant -> entity : Grant(Moderator)
   grant -> db : Save
-  cli --> actor : "esther@jubilee.to: verifier" - exit 0
+  cli --> actor : "esther@jubilee.to: moderator" - exit 0
 end
-actor -> cli : staff revoke --email esther@jubilee.to --role verifier
+actor -> cli : staff revoke --email esther@jubilee.to --role moderator
 cli -> revoke : RevokeStaffRoleCommand
-revoke -> entity : Revoke(Verifier)
+revoke -> entity : Revoke(Moderator)
 revoke -> db : End every open staff session of the account (L2-190)
 revoke -> db : Save
 cli --> actor : "esther@jubilee.to: no roles" - exit 0

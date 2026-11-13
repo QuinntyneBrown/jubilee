@@ -37,9 +37,9 @@ interface Item extends ReviewsItem {
 }
 
 /**
- * The "Reviews" section of a listing or a product page (L2-228, L2-229, L2-231): it draws the
+ * The "Reviews" section of a listing or a product page (L2-229, L2-230, L2-232): it draws the
  * reviews of the page's `ListingReviewsStore` with `jb-reviews`, offers "Write a review" to those
- * who may write (L2-225), and gives each review the actions of the viewer.
+ * who may write (L2-226), and gives each review the actions of the viewer.
  */
 @Component({
   selector: 'jb-listing-reviews',
@@ -57,7 +57,7 @@ export class ListingReviews {
   readonly invite = input<string | null>(null);
   /** The author edits or removes their review here; on a product page only from the listing's page. */
   readonly changes = input(true);
-  /** What a review may be about, for the Edit dialog (L2-232 AC1). */
+  /** What a review may be about, for the Edit dialog (L2-233 AC1). */
   readonly items = input<ReviewItemOption[]>([]);
   readonly itemLegend = input<'service' | 'product' | null>(null);
   readonly space = input(false);
@@ -81,7 +81,7 @@ export class ListingReviews {
     return state.status === 'error' ? state.reference : 'JB-REV-503';
   });
 
-  /** "Write a review" is offered to a visitor and to an eligible member (L2-225 AC1, AC3). */
+  /** "Write a review" is offered to a visitor and to an eligible member (L2-226 AC1, AC3). */
   protected readonly canWrite = computed(() => {
     const writing = this.store.writing();
     return writing === 'eligible' || writing === 'sign-in';
@@ -93,7 +93,7 @@ export class ListingReviews {
       : null,
   );
 
-  /** The Write a review screen, with the product chosen on a product page (L2-231 AC3). */
+  /** The Write a review screen, with the product chosen on a product page (L2-232 AC3). */
   protected readonly writeHref = computed(
     () => `/b/${this.slug()}/review${this.itemId() ? `?item=${this.itemId()}` : ''}`,
   );
@@ -105,10 +105,10 @@ export class ListingReviews {
 
   protected readonly shown = computed<Item[]>(() => this.store.shown().map(toItem));
 
-  /** The viewer's relation to the listing: what each review offers them (L2-228 AC8). */
+  /** The viewer's relation to the listing: what each review offers them (L2-229 AC8). */
   protected readonly viewer = this.store.viewer;
 
-  /** A visitor is asked to join first and comes back to the form (L2-225 AC3). */
+  /** A visitor is asked to join first and comes back to the form (L2-226 AC3). */
   protected write(event: MouseEvent): void {
     if (event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey) return;
     event.preventDefault();
@@ -130,7 +130,7 @@ export class ListingReviews {
     this.store.order(sort as ReviewSort);
   }
 
-  /** The rest show in place, and focus moves to the first one added (L2-228 AC4). */
+  /** The rest show in place, and focus moves to the first one added (L2-229 AC4). */
   protected showAll(): void {
     const first = this.store.shown().length;
     this.store.showAll();
@@ -145,7 +145,7 @@ export class ListingReviews {
     );
   }
 
-  /** "Edit": the author changes their review in a dialog (L2-232 AC1 to AC4). */
+  /** "Edit": the author changes their review in a dialog (L2-233 AC1 to AC4). */
   protected edit(review: ListingReview, button: HTMLElement): void {
     const ref = this.dialog.open<ListingReview, EditReviewData>(EditReviewDialog, {
       data: {
@@ -165,7 +165,7 @@ export class ListingReviews {
     });
   }
 
-  /** "Remove": asked first, then the review goes and focus moves to "Reviews" (L2-232 AC5). */
+  /** "Remove": asked first, then the review goes and focus moves to "Reviews" (L2-233 AC5). */
   protected remove(review: ListingReview, button: HTMLElement): void {
     const ref = this.dialog.open<boolean, RemoveReviewData>(RemoveReviewDialog, {
       data: { reviewId: review.id, listingName: this.name() },
@@ -180,7 +180,7 @@ export class ListingReviews {
     });
   }
 
-  /** "Reply" or "Edit reply": the owner's one public answer (L2-233). */
+  /** "Reply" or "Edit reply": the owner's one public answer (L2-234). */
   protected reply(review: ListingReview, button: HTMLElement): void {
     const first = review.reply === null;
     const ref = this.dialog.open<ListingReview, ReplyReviewData>(ReplyReviewDialog, {
@@ -192,7 +192,7 @@ export class ListingReviews {
       if (!answered) return;
       this.store.replace(answered);
       this.toasts.show({ tone: 'success', title: first ? 'Reply posted' : 'Reply updated' });
-      // The button now reads "Edit reply"; focus returns to it (L2-233 AC3).
+      // The button now reads "Edit reply"; focus returns to it (L2-234 AC3).
       afterNextRender(
         () =>
           this.host
@@ -205,7 +205,7 @@ export class ListingReviews {
     });
   }
 
-  /** "Report": privately, to the verification team (L2-235). */
+  /** "Report": privately, to the Jubilee team (L2-236). */
   protected report(review: ListingReview, button: HTMLElement): void {
     this.dialog.open<void, ReportReviewData>(ReportReviewDialog, {
       data: { reviewId: review.id, author: review.author },
@@ -214,7 +214,7 @@ export class ListingReviews {
     });
   }
 
-  /** After a removal, focus moves to the "Reviews" heading (L2-232 AC5). */
+  /** After a removal, focus moves to the "Reviews" heading (L2-233 AC5). */
   focusHeading(): void {
     this.section().focusHeading();
   }

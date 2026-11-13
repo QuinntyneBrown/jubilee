@@ -3,13 +3,13 @@ import { stubReviews, teeReviews } from '../fixtures/reviews';
 import { ProductPage } from '../pages/product.page';
 
 // Acceptance Test
-// Traces to: L2-231, L2-230
+// Traces to: L2-232, L2-231
 // Description: a product page shows the reviews of that product, and a member writes one about it
 // from there. The reviews are answered by `stubReviews` (ADR 0009).
 
 const TEE = '/b/luzandre/p/faith-heavyweight-tee-charcoal';
 
-test.describe('reviews on a product page (L2-231)', () => {
+test.describe('reviews on a product page (L2-232)', () => {
   test('AC1/AC4: the reviews of the product, and its rating under the name', async ({
     page,
     jb,
@@ -63,7 +63,7 @@ test.describe('reviews on a product page (L2-231)', () => {
     );
   });
 
-  test('L2-225 AC2: a member who may not write is told why under the invitation', async ({
+  test('L2-226 AC2: a member who may not write is told why under the invitation', async ({
     page,
     jb,
   }) => {

@@ -1,0 +1,118 @@
+WEBVTT
+
+00:00:00.441 --> 00:00:04.338
+Journey twenty-seven: meet Jubilee on the marketing site.
+
+00:00:04.338 --> 00:00:09.056
+Jubilee is still launching soon, and the owner has not yet decided to
+
+00:00:09.056 --> 00:00:13.773
+open it. So this run did the part that does not wait on launch: every
+
+00:00:13.773 --> 00:00:18.628
+criterion of the marketing page, the pitch film and the site's delivery
+
+00:00:18.628 --> 00:00:20.337
+now has a behaviour spec.
+
+00:00:21.191 --> 00:00:25.895
+A visitor opens the marketing site. The top bar and the opening say
+
+00:00:25.895 --> 00:00:30.599
+Launching soon, and beside the heading stands a preview of the app.
+
+00:00:31.409 --> 00:00:36.338
+This visitor uses the keyboard. Tab moves through the top bar and the
+
+00:00:36.338 --> 00:00:41.410
+opening to the film's play button. Enter plays the film from the start,
+
+00:00:41.410 --> 00:00:43.481
+and the film takes the focus.
+
+00:00:44.187 --> 00:00:48.952
+The sound is off. The narration is still readable, because the captions
+
+00:00:48.952 --> 00:00:53.449
+are part of the picture. A new spec reads the caption box under the
+
+00:00:53.449 --> 00:00:58.215
+picture at a line in each chapter, and was first seen failing against a
+
+00:00:58.215 --> 00:00:59.691
+film without captions.
+
+00:01:00.392 --> 00:01:04.526
+Because the film has the focus, the browser's own controls answer the
+
+00:01:04.526 --> 00:01:08.420
+keyboard: Space pauses it. Tab goes through those controls to the
+
+00:01:08.420 --> 00:01:12.733
+chapters, and Enter on Finding someone you can trust plays the film from
+
+00:01:12.733 --> 00:01:15.728
+twenty-one seconds, marked as the current chapter.
+
+00:01:16.429 --> 00:01:20.683
+Straight after the film, the page states the mission, word for word:
+
+00:01:20.683 --> 00:01:25.125
+Abiding in Jesus and for love of Him, Jubilee equips Christian business
+
+00:01:25.125 --> 00:01:29.317
+people in Toronto to prosper with purpose and resource His Kingdom.
+
+00:01:30.019 --> 00:01:35.238
+Every heading reads as one sentence to a screen reader, and its second
+
+00:01:35.238 --> 00:01:40.607
+part is set in the accent colour. That criterion had no spec before; now
+
+00:01:40.607 --> 00:01:41.203
+it does.
+
+00:01:41.905 --> 00:01:46.378
+Tab reaches every link, button and field of the page in reading order,
+
+00:01:46.378 --> 00:01:50.787
+twenty-eight stops from Skip to content to the last button, and every
+
+00:01:50.787 --> 00:01:52.321
+stop shows a focus ring.
+
+00:01:53.024 --> 00:01:57.637
+This visitor prefers reduced motion. Watch the film jumps to the film
+
+00:01:57.637 --> 00:02:02.316
+instead of scrolling smoothly, and pressing play gives way to the film
+
+00:02:02.316 --> 00:02:03.920
+at once, without a zoom.
+
+00:02:04.621 --> 00:02:09.610
+And on a device set to dark, the page stays in its light theme, cream
+
+00:02:09.610 --> 00:02:12.430
+paper and ink type, as the design asks.
+
+00:02:12.430 --> 00:02:16.117
+Specs now hold it on a light device and a dark one.
+
+00:02:17.082 --> 00:02:21.882
+Each new spec was seen failing against a broken page before it was
+
+00:02:21.882 --> 00:02:26.754
+relied on. The whole behaviour suite passes, with the parity specs.
+
+00:02:27.614 --> 00:02:32.270
+What is left waits on the owner. On the day the owner decides to open
+
+00:02:32.270 --> 00:02:36.926
+Jubilee, the journey twenty-seven prompt brings back the links to the
+
+00:02:36.926 --> 00:02:41.312
+app from one configured address. Until then the journey stands at
+
+00:02:41.312 --> 00:02:42.662
+ninety-five percent.

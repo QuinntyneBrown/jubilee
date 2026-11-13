@@ -95,7 +95,7 @@ export class ProductPage {
   private readonly pending = inject(PendingActionService);
   private readonly dialog = inject(Dialog);
   private readonly savedStore = inject(SavedStore);
-  /** The product's reviews: the rating under the name and the "Reviews" section (L2-231). */
+  /** The product's reviews: the rating under the name and the "Reviews" section (L2-232). */
   protected readonly reviews = inject(ListingReviewsStore);
   private request?: Subscription;
   private composeRef?: { close: () => void };

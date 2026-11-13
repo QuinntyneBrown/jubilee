@@ -31,5 +31,5 @@ end
 handler -> db : The rest of the deletion; SaveChanges, one transaction
 controller --> dialog : 204
 dialog --> actor : Welcome page with the confirmation toast
-note over db : The cards and summaries no longer count the reviews (L2-238 AC2)
+note over db : The cards and summaries no longer count the reviews (L2-239 AC2)
 @enduml

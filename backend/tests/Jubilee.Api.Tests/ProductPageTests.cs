@@ -52,7 +52,7 @@ public class ProductPageTests : IClassFixture<JubileeApiFactory>, IAsyncLifetime
         var seller = json.GetProperty("shop");
         Assert.Equal("luzandre", seller.GetProperty("slug").GetString());
         Assert.Equal("Luzandre.com", seller.GetProperty("name").GetString());
-        Assert.True(seller.GetProperty("verified").GetBoolean());
+        Assert.False(seller.TryGetProperty("verified", out _)); // ADR 0057: no listing is called verified
         Assert.Equal("Size", json.GetProperty("optionName").GetString());
         Assert.Equal(["S", "M", "L", "XL", "2XL"], json.GetProperty("options").EnumerateArray().Select(o => o.GetProperty("label").GetString()));
         Assert.False(json.GetProperty("soldOut").GetBoolean());

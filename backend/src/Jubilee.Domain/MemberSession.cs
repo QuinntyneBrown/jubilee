@@ -37,8 +37,17 @@ public sealed class MemberSession
 
     public DateTimeOffset? EndedAt { get; private set; }
 
-    public static MemberSession Start(Guid id, Guid? memberId, string keyHash, byte[] ticket, bool persistent, DateTimeOffset now) => new()
+    /// <summary>The browser and system the session started on, "Chrome on Windows" (L2-143 AC3).</summary>
+    public string? Device { get; private set; }
+
+    /// <summary>The network the session started from, with the last part of its address hidden (L2-143 AC3).</summary>
+    public string? Network { get; private set; }
+
+    public static MemberSession Start(
+        Guid id, Guid? memberId, string keyHash, byte[] ticket, bool persistent, DateTimeOffset now, string? device = null, string? network = null) => new()
     {
+        Device = device,
+        Network = network,
         Id = id,
         KeyHash = keyHash,
         MemberId = memberId,

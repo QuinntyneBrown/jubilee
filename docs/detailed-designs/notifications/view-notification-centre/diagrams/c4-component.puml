@@ -20,7 +20,7 @@ Container_Boundary(api, "Jubilee API") {
   Component(markall, "MarkAllNotificationsReadCommandHandler", "MediatR handler", "Marks every unread notification of the caller read")
   Component(counts, "GetNavigationSummaryQueryHandler", "MediatR handler", "Counts unread conversations and notifications and new requests")
   Component(rules, "NotificationRules", "Static rules", "Tell and Visible and UnreadCount")
-  Component(newbiz, "NewBusinessNotifier", "Static rule", "Tells members who browsed the category of an approved listing")
+  Component(newbiz, "NewBusinessNotifier", "Static rule", "Tells members who browsed the category of a published listing")
   Component(handlers, "Command handlers", "MediatR handlers", "Save a state change and its notification together")
 }
 Container_Boundary(worker, "Jubilee Worker") {
@@ -47,7 +47,7 @@ Rel(mark, rules, "Counts through UnreadCount")
 Rel(markall, rules, "Selects through Visible")
 Rel(events, rules, "Selects through Visible")
 Rel(handlers, rules, "Creates through Tell")
-Rel(handlers, newbiz, "ApproveListingCommandHandler calls")
+Rel(handlers, newbiz, "PublishListingCommandHandler calls")
 Rel(newbiz, rules, "Creates through Tell")
 Rel(reminders, rules, "Creates through Tell")
 Rel(rules, db, "Reads and adds notifications", "EF Core")

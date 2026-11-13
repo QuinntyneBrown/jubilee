@@ -26,15 +26,20 @@ class HttpFeedbackApi {
 class FeedbackDialog {
   #tab: Signal<FeedbackTab>
   #view: Signal<View>
+  #busy: Signal<boolean>
+  #failure: Signal<FeedbackFailure>
   #rating: Signal<number | null>
-  #note: Signal<string>
+  #ratingNote: Signal<string>
   #happened: Signal<string>
   #chips: Signal<KudosChip[]>
+  #kudosNote: Signal<string>
+  #canSend: Signal<boolean>
+  #thanks: Signal<string>
   -keys: Record<FeedbackTab, string>
-  #canSend(): boolean
+  #choose(tab: FeedbackTab): void
+  #toggle(chip: KudosChip): void
   #send(): void
-  #openFullForm(): void
-  #done(): void
+  #close(): void
 }
 
 class FeedbackDialogData {
@@ -56,37 +61,54 @@ enum View {
 
 class RatingRequest {
   +rating: number
-  +note: string | null
-  +mayContact: boolean
+  +note?: string
+  +areas?: Partial<Record<FeedbackArea, number>>
+  +mayContact?: boolean
 }
 
 class BugReportRequest {
+  +where?: BugPlace
   +happened: string
-  +screen: string
-  +version: string
-  +mayContact: boolean
+  +expected?: string
+  +frequency?: BugFrequency
+  +screen?: string
+  +version?: string
+  +screenshotIds?: string[]
+  +mayContact?: boolean
 }
 
 class KudosRequest {
+  +business?: string
   +chips: KudosChip[]
-  +note: string | null
-  +mayContact: boolean
+  +note?: string
+  +showOnPage?: boolean
+  +mayContact?: boolean
 }
 
 class FeedbackItem {
   +id: string
-  +kind: string
-  +status: string
-  +reference: string | null
+  +kind: FeedbackKind
   +createdAt: string
+  +status: FeedbackStatus
+  +rating: number | null
+  +summary: string | null
+  +reference: string | null
+  +business: string | null
+  +reply: string | null
 }
 
 class App {
-  #showLauncher(): boolean
-  #openFeedback(): void
+  #routeData: Signal<JbRouteData>
+  #member: Signal<ChromeMember | null>
+  #openFeedback(launcher: HTMLElement): Promise<void>
+}
+
+class FeedbackLauncher <<jb-feedback-launcher>> {
+  +opened: OutputEmitterRef<HTMLButtonElement>
 }
 
 HttpFeedbackApi ..|> FeedbackApi
+App --> FeedbackLauncher : renders
 App ..> FeedbackDialog : opens
 FeedbackDialog --> FeedbackDialogData : receives
 FeedbackDialog --> FeedbackApi : sends through

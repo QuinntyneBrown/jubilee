@@ -2,7 +2,7 @@
 
 ## Overview
 
-Jubilee is Toronto's Christian marketplace: a directory of verified
+Jubilee is Toronto's Christian marketplace: a directory of
 Christian-owned businesses that members browse, search, message and send
 requests to. The directory is expected to grow beyond its launch size to
 thousands of businesses and members. This feature is the set of mechanisms in
@@ -58,7 +58,7 @@ uses.
   and a cache-tag header naming the category and each listing (header name
   `<TO SUPPLY>`). For a signed-in request it sets `Cache-Control: private, no-store`.
 - **`ListingStateChanged`** — domain event raised when a `Listing` changes
-  `ListingStage` (for example on approval, pause or resume). The write handler
+  `ListingStage` (for example on publishing, pause or resume). The write handler
   stores it as an `OutboxMessage` in the same transaction as the state change.
 - **`EdgeCachePurgeHandler`** — outbox handler in `Jubilee Worker`. On
   `ListingStateChanged` it removes the matching `IReadCache` entries and calls

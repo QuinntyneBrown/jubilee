@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Jubilee.Application.Reviews;
 
-/// <summary>Anyone signed in but the author reports a review privately to the verification team (L2-235).</summary>
+/// <summary>Anyone signed in but the author reports a review privately to the Jubilee team (L2-236).</summary>
 public sealed record ReportReviewCommand(Guid Id, string Subject, string ReporterName, string? Reason, string? Note, string? IdempotencyKey)
     : IRequest<ReportedDto>;
 
@@ -16,7 +16,7 @@ public sealed class ReportReviewCommandHandler(IAppDbContext db, TimeProvider cl
 {
     public const string OwnReviewCode = "OWN_REVIEW";
 
-    /// <summary>Reports of reviews one member may send in a day (L2-235 AC6).</summary>
+    /// <summary>Reports of reviews one member may send in a day (L2-236 AC6).</summary>
     public const int PerDay = 10;
 
     public static readonly IReadOnlyDictionary<string, ReviewReportReason> Reasons = new Dictionary<string, ReviewReportReason>

@@ -4,13 +4,14 @@
 
 Anyone reads the statement of faith, terms, privacy notice and help (`frontend/projects/jubilee/src/app/pages/policy`, `help`). The pages read the published version of their text and every version is kept.
 
-Roles: Visitor, Member, Verification team. Journey 22 in `docs/journey.md`, recorded at 85% complete on 12 November 2026. This prompt takes it to 100%.
+Roles: Visitor, Member, Jubilee team. Journey 22 in `docs/journey.md`, recorded at 85% complete on 12 November 2026. This prompt takes it to 100%.
 
 What is left, from an audit of the code and its tests against the acceptance criteria:
 
 - `L2-107` AC2: there is no staff screen for editing and publishing a policy version. Build it in the admin application (`frontend/projects/admin/src/app/pages/`), not in the app (ADR 0040).
 - The read cache for policy text that the design names is not built.
 - The privacy contact is a placeholder and the legal wording is not final.
+- ADR 0057: Help asks "How does Jubilee keep listings honest?" with the answer of `L2-110`, and the statement of faith's section "How a listing is confirmed" becomes "How listings stay honest" with the same link to Help.
 
 The audit read test titles and spot-checked assertions. Verify each gap against the code before you plan, and treat any other acceptance criterion of the requirements below that has no implementation or no acceptance test as part of this work.
 
@@ -157,7 +158,7 @@ These need the repository owner. Prepare everything in the repository that they 
 
 ## Done means
 
-- The verification team can publish a new version of a policy from the admin application, and members read it at once.
+- The Jubilee team can publish a new version of a policy from the admin application, and members read it at once.
 - Every acceptance criterion of the requirements listed above has a passing test, or is listed as an owner step with the reason.
 - All the new and existing tests pass: `pwsh eng/Test-Backend.ps1` at the root; `npm run lint`, `npm run format:check`, `npm run design:check` and `npm run build` in `frontend/`; `npm run typecheck`, `npm test` and `npm run parity` in `e2e/`. No sweep was run.
 - `docs/estimates/` and row 22 of `docs/journey.md` show the true figures, and the requirements, designs, mocks and code agree.

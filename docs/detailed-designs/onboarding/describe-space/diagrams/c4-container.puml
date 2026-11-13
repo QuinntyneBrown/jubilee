@@ -6,13 +6,13 @@ title Containers — Describe a space
 Person(member, "Member", "Lists a space on /list")
 System_Boundary(jubilee, "Jubilee") {
   Container(web, "Jubilee Web", "Angular single-page application", "ListBusinessPage with the space fields and How renters see it")
-  Container(api, "Jubilee API", "ASP.NET Core", "Draft and submit endpoints under /api/listing-drafts")
+  Container(api, "Jubilee API", "ASP.NET Core", "Draft and publish endpoints under /api/listing-drafts")
   Container(worker, "Jubilee Worker", ".NET worker service", "Sends the decision e-mail")
   ContainerDb(db, "Jubilee database", "SQL Server", "ListingDrafts and Listings, each with a Space JSON column")
 }
 System_Ext(email, "E-mail provider", "Delivers e-mail")
 Rel(member, web, "Fills in the space form", "HTTPS")
-Rel(web, api, "Saves and submits the draft", "JSON/HTTPS")
+Rel(web, api, "Saves and publishes the draft", "JSON/HTTPS")
 Rel(api, db, "Reads and writes", "EF Core")
 Rel(worker, db, "Reads the outbox", "EF Core")
 Rel(worker, email, "Sends the reference request", "HTTPS")

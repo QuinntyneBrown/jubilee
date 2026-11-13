@@ -7,7 +7,7 @@ import { IconName } from '../icon/icons';
  * back".
  *
  *     <span jb-inline-status tone="success" live><span jb-dot></span>Saved</span>
- *     <p jb-inline-status tone="success" icon="verified" live size="lg">We’ll tell you</p>
+ *     <p jb-inline-status tone="success" icon="check-circle" live size="lg">We’ll tell you</p>
  *
  * `live` makes it a polite live region, for a status that appears or changes while the page is
  * open. The words say the state; the tone, the icon or a projected `jb-dot` only repeat it.

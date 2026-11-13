@@ -5,18 +5,19 @@
 ## Feedback Joshua might send
 
 **Moment check-in, "How easy was it to list your business?", 3; "What got in the way?"**
-"photos and waiting. also it's a room not a business"
+"photos. also it's a room not a business"
 
-**Rate, 3 stars, "Okay"; "Listing your business" scored 2, "Trust and verification" scored 4.**
-"Form is fine and dark mode works everywhere, respect. But I had to submit with no photos and then
-add them. Nobody my age opens a room listing without photos. Let me add them first."
+**Rate, 3 stars, "Okay"; "Listing your business" scored 2, "Trust and safety" scored 4.**
+"Form is fine and dark mode works everywhere, respect. But I had to publish with no photos and then
+add them, so my room was live with no picture. Nobody my age opens a room listing without photos. Let me add them first."
 
 **Report a bug, "Listing a business", "Every time".** "What happened: I shared my listing link
-before it was verified and my friends got a page that said it couldn't be found. What I expected:
-a warning before I share, or a page that says it is being checked."
+the minute it went live and my friends got a card with a coloured tile and no photo, because photos
+only come after you publish. What I expected: a warning before I share a listing with no photo, or
+photos on the form."
 
-**Kudos, to the Jubilee team, chips "Found someone I trust" and "Quick replies".** "Got verified in
-under a day and found a roommate in five. Daniel is in second-year mech. We met for bubble tea
+**Kudos, to the Jubilee team, chips "Found someone I trust" and "Quick replies".** "Was live the same
+evening and found a roommate in five days. Daniel is in second-year mech. We met for bubble tea
 before I confirmed anything. Thanks for making me ask my landlord, by the way. I would have
 skipped that and it would have been a problem."
 
@@ -33,9 +34,8 @@ sort by price first."
 | Need | Today | Suggestion |
 |---|---|---|
 | Sublet his room for a fixed summer term | Four terms; a minimum stay but no end date | A sublet option, or an "Available until" date on monthly terms, with a line on needing the landlord's consent |
-| Photos before submitting | "Add photos from My business once you submit." | Photos on the space form itself, so that the verification team and the preview see the real card |
+| Photos before publishing | "Add photos from My business once you submit." | Photos on the space form itself, so that the preview and the first card anyone sees are the real ones |
 | Know that he is welcome as a renter, not a business | "Free for Christian-owned businesses in Toronto." above the space form; "My business" | Copy for spaces that speaks to people with a room: "Free for anyone in the community with a room to share." |
-| A faster answer when time is short | "Within two business days", with no word on where he stands | Show the listing's place in the queue, and review spaces on Saturdays in September, January and May |
 | Be found by students | A term filter only; search over title, line, neighbourhood and key facts | A price filter, and a "Students welcome" chip beside "Pets OK" that renters can filter on |
 | Understand what he is agreeing to | "confirm I’m allowed to rent this space" with no explanation | One line under the agreement for those who rent: "If you rent your place, ask your landlord first." |
 

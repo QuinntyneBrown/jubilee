@@ -62,7 +62,8 @@ export interface FakeListingDrafts {
   outcome: DraftOutcome;
   creates: FakeDraftBody[];
   saves: FakeDraftBody[];
-  submits: FakeDraftBody[];
+  /** Every listing the app published (L2-078). */
+  publishes: FakeDraftBody[];
   /** The field codes of an `invalid` answer. */
   errors: DraftErrors;
 }
@@ -82,7 +83,7 @@ export async function stubListingDrafts(
     outcome: 'ok',
     creates: [],
     saves: [],
-    submits: [],
+    publishes: [],
     errors: { tagline: 'TOO_LONG:94' },
     ...initial,
   };
@@ -112,7 +113,8 @@ export async function stubListingDrafts(
       fake.draft = store('d-1', body);
       return route.fulfill({ json: fake.draft });
     }
-    // POST /{id}/submit
+    // POST /{id}/publish (ADR 0057): anything else is not an endpoint
+    if (!path.endsWith('/publish')) return route.fulfill({ status: 404 });
     switch (fake.outcome) {
       case 'hang':
         return new Promise<void>(() => void route);
@@ -126,7 +128,7 @@ export async function stubListingDrafts(
       case 'invalid':
         return route.fulfill(problem(422, { code: 'validation_failed', errors: fake.errors }));
       default:
-        fake.submits.push(body);
+        fake.publishes.push(body);
         return route.fulfill({
           status: 201,
           json: {
@@ -134,7 +136,7 @@ export async function stubListingDrafts(
             slug: 'luzandre-com',
             name: body.name,
             kind: body.kind,
-            stage: 'ready-to-review',
+            stage: 'live',
             submittedAt: '2026-11-10T14:40:00Z',
           },
         });

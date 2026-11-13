@@ -42,7 +42,7 @@ public sealed class Product
 
     public DateTimeOffset CreatedAt { get; private set; }
 
-    /// <summary>The count of 5-star reviews shown; with the four below it, the stored <see cref="Stars"/> (ADR 0058).</summary>
+    /// <summary>The count of 5-star reviews shown; with the four below it, the stored <see cref="Stars"/> (ADR 0066).</summary>
     public int Stars5 { get; private set; }
 
     public int Stars4 { get; private set; }
@@ -53,10 +53,10 @@ public sealed class Product
 
     public int Stars1 { get; private set; }
 
-    /// <summary>The count of each star of the reviews shown (L2-230).</summary>
+    /// <summary>The count of each star of the reviews shown (L2-231).</summary>
     public StarCounts Stars => new(Stars5, Stars4, Stars3, Stars2, Stars1);
 
-    /// <summary>Stores the counts after a review was written, changed, removed or taken down (L2-237 AC9).</summary>
+    /// <summary>Stores the counts after a review was written, changed, removed or taken down (L2-238 AC9).</summary>
     public void CountStars(StarCounts stars)
     {
         Stars5 = stars.Five;
@@ -143,6 +143,23 @@ public sealed class Product
     }
 
     public void MoveTo(int position) => Position = position;
+
+    /// <summary>The product's photo, or null: its tile shows instead (L2-091 AC10).</summary>
+    public Guid? PhotoId { get; private set; }
+
+    public ProductPhoto? Photo { get; private set; }
+
+    /// <summary>Shows a photo of the same listing in place of the tile, or none (L2-091 AC9).</summary>
+    public void ShowPhoto(ProductPhoto? photo)
+    {
+        if (photo is not null && photo.ListingId != ListingId)
+        {
+            throw new ArgumentException("A product shows only a photo of its own listing.", nameof(photo));
+        }
+
+        Photo = photo;
+        PhotoId = photo?.Id;
+    }
 
     /// <summary>The owner's edit of the words and the price; the slug stays, so links keep working (L2-091).</summary>
     public void Revise(string name, int priceCents, string? description)

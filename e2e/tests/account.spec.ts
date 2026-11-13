@@ -34,7 +34,7 @@ test.describe('edit the profile (L2-013)', () => {
     await expect(account.homeChurchAddress).toHaveValue('383 Jarvis Street, Toronto');
     await expect(account.homeChurchAddressHint).toHaveText('Shown to no one.');
     await expect(account.pronounsHint).toHaveText(
-      'Used in messages we write about you, such as a change request from the verification team.',
+      'Used in messages we write about you, such as a message from the Jubilee team.',
     );
     await expect(account.lastSaved).toHaveText('Last saved Mon 9 Nov');
     await expect(account.passwordRow).toContainText('Changed 14 Oct 2026');

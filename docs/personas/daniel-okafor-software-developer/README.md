@@ -34,7 +34,8 @@ freelance work came later.
 
 ## What worries him
 
-- That "verified" means less than it sounds like. He wants to know what was checked.
+- That a listing means less than it looks like. Nobody checks a business before it goes live, so he
+  wants to know how a dishonest one is caught.
 - That a listing commits him to answering requests during his day job.
 - That his evenings fill up and the sound desk, and Chidinma, get what is left.
 

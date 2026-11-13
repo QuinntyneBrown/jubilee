@@ -4,12 +4,12 @@ import { browseHomeFromMock, categoryPageFromMock, listingFromMock } from './moc
 import { fulfil, recordedAnswer } from './mock-api';
 import { legacyMessages, ownerRows, photoMessages, requestCards, stubMessaging } from './messaging';
 import { stubAccountData } from './account-data';
-import { SPACE_REVIEW, stubAdmin } from './admin';
+import { SPACE_LISTING, stubAdmin } from './admin';
 import { daniel, stubStaff } from './staff';
 import { stubModeration } from './moderation';
-import { stubIncoming } from './incoming-requests';
+import { confirmedRows, stubIncoming } from './incoming-requests';
 import { stubCatalogue } from './catalogue';
-import { stubProfile } from './profile';
+import { THIS_DEVICE, stubProfile } from './profile';
 import { BROWSE_SAVED, stubSaved } from './saved';
 import { stubFeedback } from './feedback';
 import { stubPasswordReset } from './password-reset';
@@ -381,7 +381,7 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
         photos: LISTING_PHOTOS.map(({ file: _file, ...photo }) => photo),
       }));
     case 'reviews-member':
-      // The recording is made as a visitor; Joanna is a member who may write (L2-225 AC1).
+      // The recording is made as a visitor; Joanna is a member who may write (L2-226 AC1).
       return stubReviews(page, 'legacy-financial');
     case 'reviews-empty':
       return stubReviews(page, 'deeks-insurance', { items: [] });
@@ -421,13 +421,12 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
         ),
       }));
     case 'business-preview':
-      // The owner's preview of a listing the verification team sent back (L2-219).
+      // The owner's preview of a listing that is not public (L2-219).
       return patchListing(page, legacyFinancial, (listing) => ({
         ...listing,
         viewerRelation: 'owner',
-        verified: false,
-        stage: 'changes-requested',
-        status: 'changes-requested',
+        stage: 'draft',
+        status: 'draft',
       }));
     case 'shop-loading':
       return page.route(luzandre, pending);
@@ -502,22 +501,28 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
     }
     case 'request-detail-error':
       return stubMemberRequests(page, { detail: 'fails' });
+    case 'request-detail-unanswered': {
+      const fake = await stubMemberRequests(page);
+      fake.requests.find((request) => request.id === DRAIN)!.unanswered = true;
+      return fake;
+    }
     case 'incoming':
       return stubIncoming(page);
     case 'incoming-empty':
       return stubIncoming(page, { list: 'empty' });
     case 'incoming-error':
       return stubIncoming(page, { list: 'fails' });
+    case 'incoming-confirmed': {
+      const fake = await stubIncoming(page);
+      fake.rows.push(...confirmedRows());
+      return fake;
+    }
     case 'business':
       return stubMyBusiness(page);
     case 'business-away':
       return stubMyBusiness(page, { awayUntil: '2026-11-16T05:00:00Z' });
     case 'business-switcher':
       return stubMyBusiness(page, { others: OTHER_BUSINESSES });
-    case 'business-pending':
-      return stubMyBusiness(page, { state: 'ready-to-review' });
-    case 'business-changes':
-      return stubMyBusiness(page, { state: 'changes-requested' });
     case 'business-empty':
       return stubMyBusiness(page, { state: 'none' });
     case 'business-retrying':
@@ -587,7 +592,11 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
       return stubMessaging(page);
     case 'profile-this-device-only':
       await stubSignedInSession(page, { signedIn: true, otherSessionCount: 0 });
-      return void (await stubProfile(page));
+      return void (await stubProfile(page, { sessions: [THIS_DEVICE] }));
+    case 'profile-sessions-loading':
+      return void (await stubProfile(page, { sessionsLoad: 'pending' }));
+    case 'profile-sessions-error':
+      return void (await stubProfile(page, { sessionsLoad: 'fails' }));
     case 'profile-other-devices':
       await stubSignedInSession(page, { signedIn: true, otherSessionCount: 1 });
       return void (await stubProfile(page));
@@ -647,6 +656,8 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
     case 'password-reset':
     case 'reset-password':
       return void (await stubPasswordReset(page));
+    case 'password-reset-rate-limited':
+      return void (await stubPasswordReset(page, { request: 'rate-limited' }));
     case 'reset-password-expired':
       return void (await stubPasswordReset(page, { link: 'expired' }));
     case 'reset-password-error':
@@ -679,24 +690,27 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
       return stubCatalogue(page, { hours: 'hangs' });
     case 'services-hours-failing':
       return stubCatalogue(page, { hours: 'fails' });
-    case 'admin-queue':
+    case 'admin-listings':
       return stubAdmin(page);
-    case 'admin-queue-empty':
-      return stubAdmin(page, { queue: 'empty' });
-    case 'admin-queue-error':
-      return stubAdmin(page, { queue: 'fails' });
-    case 'admin-review':
+    case 'admin-listings-empty':
+      return stubAdmin(page, { listings: 'empty' });
+    case 'admin-listings-error':
+      return stubAdmin(page, { listings: 'fails' });
+    case 'admin-listing':
       return stubAdmin(page);
-    case 'admin-review-approved':
-      return stubAdmin(page, { stage: 'live' });
-    case 'admin-review-changes-requested':
-      return stubAdmin(page, { stage: 'changes-requested' });
-    case 'admin-review-space':
-      return stubAdmin(page, { listing: SPACE_REVIEW });
-    case 'admin-review-no-items':
-      return stubAdmin(page, { listing: { itemCount: 0 } });
-    case 'admin-review-error':
-      return stubAdmin(page, { review: 'fails' });
+    case 'admin-listing-taken-down':
+      return stubAdmin(page, {
+        takenDown: {
+          at: '2026-11-10T14:05:00-05:00',
+          byName: 'Miriam Castillo',
+          reason:
+            'The web address in the listing’s name leads to a different company’s store, so members could not tell who they were buying from. You’re welcome to list again with your own shop’s address.',
+        },
+      });
+    case 'admin-listing-space':
+      return stubAdmin(page, { fields: SPACE_LISTING });
+    case 'admin-listing-error':
+      return stubAdmin(page, { listing: 'fails' });
     case 'moderation-reports':
     case 'moderation-report':
     case 'moderation-featured':
@@ -742,6 +756,18 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
       return stubSent(page, '**/api/launch/notifications', limited);
     case 'launch-notify-challenge':
       return stubSent(page, '**/api/launch/notifications', challengeFailed);
+    case 'launch-notify-refused-field':
+      return stubSent(page, '**/api/launch/notifications', refused({ email: 'EMAIL_INVALID' }));
+    case 'launch-notify-unreachable':
+      return stubSent(page, '**/api/launch/notifications', (route) => route.abort('failed'));
+    case 'launch-business-refused-fields':
+      return stubSent(
+        page,
+        '**/api/launch/businesses',
+        refused({ category: 'CATEGORY_UNKNOWN', website: 'WEBSITE_INVALID' }),
+      );
+    case 'launch-business-unreachable':
+      return stubSent(page, '**/api/launch/businesses', (route) => route.abort('failed'));
     case 'launch-business-pending':
       return stubSent(page, '**/api/launch/businesses', pending);
     case 'launch-business-failing':
@@ -851,6 +877,21 @@ function limited(route: Route): Promise<void> {
     contentType: 'application/problem+json',
     body: JSON.stringify({ title: 'You’re doing that a lot.', status: 429, code: 'rate_limited' }),
   });
+}
+
+/** The server refuses fields the page let through, with a code for each (ADR 0012). */
+function refused(errors: Record<string, string>): (route: Route) => Promise<void> {
+  return (route) =>
+    route.fulfill({
+      status: 422,
+      contentType: 'application/problem+json',
+      body: JSON.stringify({
+        title: 'Fix the highlighted fields.',
+        status: 422,
+        code: 'validation_failed',
+        errors,
+      }),
+    });
 }
 
 /** The bot challenge was not passed (L2-137 AC2). */

@@ -3,28 +3,23 @@ import { expect, test } from '../fixtures/jb-test';
 import { fulfil, recordedAnswer } from '../fixtures/mock-api';
 import { BusinessPage } from '../pages/business.page';
 
-// The preview of a listing that is not public (L2-219, L2-028 AC3): its owner and the verification
-// team may open it, and the page says that it is a preview and gives the status.
+// The preview of a listing that is not public (L2-219, L2-028 AC3): its owner and the Jubilee team
+// may open it, and the page says that it is a preview and gives the status.
 
 /** Answers Legacy Financial's page as the API does for a listing in this status. */
 async function previewAs(
   page: Page,
-  viewerRelation: 'owner' | 'verifier',
+  viewerRelation: 'owner' | 'moderator',
   status: string,
 ): Promise<void> {
   await page.route('**/api/listings/legacy-financial', async (route) => {
     const answer = await recordedAnswer(route);
     const listing = answer.body as Record<string, unknown>;
-    const approved = status === 'paused' || status === 'on-hold';
+    const published = status === 'paused' || status === 'on-hold';
+    const { verified: _verified, ...rest } = listing;
     await fulfil(route, {
       ...answer,
-      body: {
-        ...listing,
-        viewerRelation,
-        status,
-        stage: approved ? 'live' : status,
-        verified: approved,
-      },
+      body: { ...rest, viewerRelation, status, stage: published ? 'live' : status },
     });
   });
 }
@@ -50,11 +45,11 @@ test.describe('preview of a listing that is not public (L2-219)', () => {
     await expect(business.previewBanner).toHaveRole('status');
     await expect(business.previewTitle).toHaveText('Preview: members can’t see this page yet');
     await expect(business.previewBanner).toContainText(
-      'Changes requested · not public yet. Only you and the Jubilee verification team can open it.',
+      'Draft · not published yet. Only you and the Jubilee team can open it.',
     );
     await expect(business.goToMyBusiness).toHaveAttribute('href', '/my-business');
     // The banner of a live listing is not shown with it
-    await expect(business.main).not.toContainText('It’s live and verified.');
+    await expect(business.main).not.toContainText('It’s live.');
 
     await expect(business.primaryAction).toHaveText('Edit listing');
     await expect(business.messageLink).toHaveCount(0);
@@ -63,7 +58,7 @@ test.describe('preview of a listing that is not public (L2-219)', () => {
     expect(views).toEqual([]);
   });
 
-  test('AC7: a listing that is not verified does not say "Verified Christian business"', async ({
+  test('AC7: the line above the name gives the category only, as on the public page', async ({
     page,
     jb,
   }) => {
@@ -71,16 +66,12 @@ test.describe('preview of a listing that is not public (L2-219)', () => {
     await jb.open('business.preview');
 
     await expect(business.kicker).toHaveText('Financial & insurance');
-    await expect(business.verifiedLabel).toHaveCount(0);
     await expect(business.categoryLink).toHaveAttribute('href', '/c/financial-insurance');
   });
 
   for (const [status, words] of [
-    ['draft', 'Draft · not submitted yet'],
-    ['ready-to-review', 'Pending verification'],
-    ['changes-requested', 'Changes requested · not public yet'],
-    ['declined', 'Declined · not public'],
-    ['paused', 'Verified · paused, not public'],
+    ['draft', 'Draft · not published yet'],
+    ['paused', 'Paused · not public'],
     ['on-hold', 'On hold while we look into a report · not public'],
   ] as const) {
     test(`AC2: a listing that is ${status} reads "${words}"`, async ({ page, jb }) => {
@@ -89,24 +80,24 @@ test.describe('preview of a listing that is not public (L2-219)', () => {
       await jb.goto('/b/legacy-financial');
 
       await expect(business.previewBanner).toContainText(
-        `${words}. Only you and the Jubilee verification team can open it.`,
+        `${words}. Only you and the Jubilee team can open it.`,
       );
     });
   }
 
-  test('AC3: the verification team sees the status and none of the member actions', async ({
+  test('AC3: the Jubilee team sees the status and none of the member actions', async ({
     page,
     jb,
   }) => {
     const views = countedViews(page);
     const business = new BusinessPage(page);
-    await previewAs(page, 'verifier', 'ready-to-review');
+    await previewAs(page, 'moderator', 'draft');
     await jb.goto('/b/legacy-financial');
 
     await expect(business.previewBanner).toHaveRole('status');
     await expect(business.previewTitle).toHaveText('Preview: this listing is not public');
     await expect(business.previewBanner).toContainText(
-      'Pending verification. Only its owner and the Jubilee verification team can open it.',
+      'Draft · not published yet. Only its owner and the Jubilee team can open it.',
     );
     await expect(business.goToMyBusiness).toHaveCount(0);
     await expect(business.heading).toHaveText('Legacy Financial');
@@ -126,7 +117,8 @@ test.describe('preview of a listing that is not public (L2-219)', () => {
     await jb.open('business.owner');
     await expect(business.heading).toHaveText('Legacy Financial');
     await expect(business.previewBanner).toHaveCount(0);
-    await expect(business.ownerBanner).toContainText('It’s live and verified.');
+    await expect(business.ownerBanner).toContainText('It’s live.');
+    await expect(business.ownerBanner).not.toContainText('verified');
   });
 
   test('AC5: a member sees no preview banner on a public listing', async ({ page, jb }) => {

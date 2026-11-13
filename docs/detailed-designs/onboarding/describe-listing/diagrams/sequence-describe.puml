@@ -36,7 +36,7 @@ else Signed-in member
   client --> page : null
   page --> actor : Show "What do you offer?" with Products and Services and A space
   opt Unconfirmed member
-    page --> actor : Show "Confirm your e-mail to submit." and disable the submit button (L2-005)
+    page --> actor : Show "Confirm your e-mail to publish." and disable "Publish listing" (L2-005)
   end
   actor -> cards : Choose Products or Services
   cards -> page : selected

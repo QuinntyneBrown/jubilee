@@ -2,7 +2,7 @@ using Jubilee.Application.Abstractions;
 using Jubilee.Application.Accounts;
 using Jubilee.Application.Directory;
 using Jubilee.Application.Errors;
-using Jubilee.Application.Verification;
+using Jubilee.Application.Moderation;
 using Jubilee.Domain;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -11,11 +11,11 @@ namespace Jubilee.Application.Listings;
 
 public sealed record ReportedDto(Guid Id);
 
-/// <summary>A member reports a listing privately to the verification team (L2-039).</summary>
+/// <summary>A member reports a listing privately to the Jubilee team (L2-039).</summary>
 public sealed record ReportListingCommand(string Subject, string Slug, string? Reason, string? Description, string? IdempotencyKey, string? ReporterName = null)
     : IRequest<ReportedDto>;
 
-public sealed class ReportListingCommandHandler(IAppDbContext db, TimeProvider clock, VerificationSettings team) : IRequestHandler<ReportListingCommand, ReportedDto>
+public sealed class ReportListingCommandHandler(IAppDbContext db, TimeProvider clock, TeamSettings team) : IRequestHandler<ReportListingCommand, ReportedDto>
 {
     public const string OwnListingCode = "OWN_LISTING";
 
@@ -97,7 +97,7 @@ public sealed class ReportListingCommandHandler(IAppDbContext db, TimeProvider c
 }
 
 /// <summary>
-/// The verification team's notice of a report of a listing (L2-105 AC1, ADR 0055): "New report: {business}", or
+/// The Jubilee team's notice of a report of a listing (L2-105 AC1, ADR 0055): "New report: {business}", or
 /// "More on a report: {business}" when the entry joined the reporter's report of the last 24 hours, with the reason
 /// in the dialog's words, the description and the report in the admin application. It never names the reporter.
 /// </summary>
@@ -112,7 +112,7 @@ public static class ReportSubmitted
     };
 
     public static void Tell(
-        IAppDbContext db, VerificationSettings team, Listing listing, ListingReport report, ListingReportEntry entry, bool added, DateTimeOffset now)
+        IAppDbContext db, TeamSettings team, Listing listing, ListingReport report, ListingReportEntry entry, bool added, DateTimeOffset now)
     {
         var subject = added ? $"More on a report: {listing.Name}" : $"New report: {listing.Name}";
         var opening = added
@@ -120,9 +120,9 @@ public static class ReportSubmitted
             : "A member reported a listing. Look at it within one business day.";
         var body =
             $"{opening}\n\nListing: {listing.Name}\nReason: {ReasonWords[entry.Reason]}\nWhat happened: {entry.Description}\n\n" +
-            $"Open the report: {VerificationTeam.AdminLink(team, $"/reports/{report.Id}")}\n\n" +
-            "The reporter's name is shown to verifiers in the admin application only.\n\nJubilee · Toronto's Christian marketplace\n";
-        VerificationTeam.Tell(db, team, subject, body, now, report.Id);
+            $"Open the report: {JubileeTeam.AdminLink(team, $"/reports/{report.Id}")}\n\n" +
+            "The reporter's name is shown to the Jubilee team in the admin application only.\n\nJubilee · Toronto's Christian marketplace\n";
+        JubileeTeam.Tell(db, team, subject, body, now, report.Id);
     }
 }
 

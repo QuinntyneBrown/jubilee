@@ -9,6 +9,9 @@ import { ToastService } from 'components';
 /** Where the owner answers requests; a notification about a request of theirs opens it. */
 const INCOMING = '/my-business/requests';
 
+/** The member's requests; a notification about one of them opens it. */
+const MY_REQUESTS = '/requests';
+
 const OPEN: Record<NotificationKind, string> = {
   message: 'Open conversation',
   request: 'View request',
@@ -19,6 +22,13 @@ const OPEN: Record<NotificationKind, string> = {
   product: 'View in shop',
   review: 'View reviews',
 };
+
+/** Whether the page at `here` announces a request notification with this target itself. */
+function saysItself(here: string, target: string): boolean {
+  if (here === INCOMING) return target === INCOMING;
+  if (here === MY_REQUESTS) return target.startsWith(`${MY_REQUESTS}/`);
+  return here.startsWith(`${MY_REQUESTS}/`) && here === target;
+}
 
 /**
  * The member's open connection (L2-070): each notification that arrives becomes a toast, the badge counts
@@ -73,10 +83,9 @@ export class RealtimeService {
       // A message in the conversation that is open is read where it lands, not in a toast.
       const here = this.router.url.split('?')[0];
       if (event.item.kind === 'message' && here === event.item.target) return;
-      // The owner's requests page says a new request in its own words (L2-051 AC5).
-      if (event.item.kind === 'request' && here === INCOMING && event.item.target === INCOMING) {
-        return;
-      }
+      // The owner's requests page says a new request in its own words (L2-051 AC5), and a member's
+      // request page says a change of status in its own (L2-070 AC6).
+      if (event.item.kind === 'request' && saysItself(here, event.item.target)) return;
       this.announce(event.item);
     });
   }

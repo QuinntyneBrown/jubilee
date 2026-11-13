@@ -1,0 +1,68 @@
+@startuml
+title UML sequence behaviour — Receive and open a report
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as member
+actor "Jubilee team member" as actor
+box "Frontend — Admin application" #E0F2FE
+  participant "AdminBar" as bar
+  participant "AdminReportsPage" as list
+  participant "AdminReportPage" as page
+  participant "AdminApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "AdminReportsController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "ReportConversationCommandHandler" as rh
+  participant "JubileeTeam" as team
+  participant "GetStaffSessionQueryHandler" as sh
+  participant "GetReportsQueryHandler" as lh
+  participant "OpenReportCommandHandler" as oh
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+box "Backend — Jubilee Worker" #D1FADF
+  participant "OutboxDispatcher" as job
+end box
+member -> rh : Report a conversation (L2-063)
+rh -> team : Tell(New report: a conversation with business)
+team -> db : Add the e-mail to the outbox, without the reporter or the messages
+rh -> db : Save the report and the e-mail in one unit of work
+job -> db : Read the e-mail from the outbox
+job --> actor : E-mail to the team's address with the link to /reports/{id} (L2-105)
+actor -> bar : Move to another screen
+bar -> sh : GET /api/staff/session
+sh -> db : Count unresolved reports
+sh --> bar : reportCount
+bar --> actor : Reports with "{n} unresolved" (L2-188)
+actor -> list : Open the reports list
+list -> client : reports(filter)
+client -> controller : GET /api/admin/reports
+controller -> controller : RequiresModerator (L2-191)
+controller -> lh : Send GetReportsQuery
+lh -> db : Read listing and conversation reports
+lh -> lh : Mark reports open more than one business day overdue (L2-105)
+lh --> list : ReportListDto
+actor -> page : Open one report
+page -> client : openReport(id)
+client -> controller : POST /api/admin/reports/{id}/open
+controller -> oh : Send OpenReportCommand
+oh -> db : Load the report; StartReview
+oh -> db : Save the report and the audit entry with the report ID as reason (L2-150)
+oh --> page : ReportDetailDto with the conversation while unresolved
+page --> actor : Show the report and its actions
+@enduml

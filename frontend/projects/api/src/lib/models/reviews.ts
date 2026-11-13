@@ -1,10 +1,10 @@
-/** The rating a card carries from three reviews (L2-230); absent below three. */
+/** The rating a card carries from three reviews (L2-231); absent below three. */
 export interface CardRating {
   average: number;
   count: number;
 }
 
-/** The average, the count and the counts of 5, 4, 3, 2 and 1 stars (L2-228 AC2). */
+/** The average, the count and the counts of 5, 4, 3, 2 and 1 stars (L2-229 AC2). */
 export interface ReviewSummary {
   average: number;
   count: number;
@@ -18,7 +18,7 @@ export interface ReviewReply {
   editedAt: string | null;
 }
 
-/** One review as anyone reads it: first name and last initial only (L2-238 AC1). */
+/** One review as anyone reads it: first name and last initial only (L2-239 AC1). */
 export interface ListingReview {
   id: string;
   author: string;
@@ -33,13 +33,13 @@ export interface ListingReview {
   reply: ReviewReply | null;
 }
 
-/** Who may write a review (L2-225, L2-237 AC1). */
+/** Who may write a review (L2-226, L2-238 AC1). */
 export type ReviewWriting = 'sign-in' | 'eligible' | 'not-eligible' | 'written' | 'owner';
 
 /** Who the caller is to the listing. */
 export type ReviewViewer = 'visitor' | 'member' | 'owner';
 
-/** The reviews of a listing or of one of its products (L2-237 AC1). */
+/** The reviews of a listing or of one of its products (L2-238 AC1). */
 export interface ListingReviews {
   summary: ReviewSummary;
   viewer: ReviewViewer;
@@ -52,7 +52,7 @@ export interface ReviewItemOption {
   name: string;
 }
 
-/** What the Write a review screen needs (L2-237 AC2). `itemLegend` is null when nothing is chosen. */
+/** What the Write a review screen needs (L2-238 AC2). `itemLegend` is null when nothing is chosen. */
 export interface ReviewForm {
   listing: {
     slug: string;
@@ -73,7 +73,7 @@ export interface ReviewRequest {
   text: string;
 }
 
-/** The reasons of the Report this review dialog (L2-235 AC1). */
+/** The reasons of the Report this review dialog (L2-236 AC1). */
 export type ReviewReportReason =
   'not-a-real-dealing' | 'abusive' | 'private-details' | 'advertising' | 'other';
 
@@ -82,13 +82,13 @@ export interface ReviewReportRequest {
   note: string;
 }
 
-/** The orders of the reviews (L2-229). */
+/** The orders of the reviews (L2-230). */
 export type ReviewSort = 'relevant' | 'newest' | 'highest' | 'lowest';
 
-/** The words of each star, from one to five (L2-226 AC2). */
+/** The words of each star, from one to five (L2-227 AC2). */
 export const STAR_WORDS = ['Poor', 'Not great', 'Okay', 'Good', 'Excellent'] as const;
 
-/** At least this many characters, once trimmed (L2-227 AC2). */
+/** At least this many characters, once trimmed (L2-228 AC2). */
 export const REVIEW_MIN_LENGTH = 40;
 export const REVIEW_MAX_LENGTH = 2000;
 export const REPLY_MAX_LENGTH = 1000;
@@ -97,7 +97,7 @@ export const REVIEW_REPORT_NOTE_MAX_LENGTH = 1000;
 const YEAR_MS = 365 * 24 * 60 * 60 * 1000;
 
 /**
- * Sorts reviews (L2-229, ADR 0058). "Most relevant" puts the reviews of the last 12 months first,
+ * Sorts reviews (L2-230, ADR 0066). "Most relevant" puts the reviews of the last 12 months first,
  * then the longer text, then the newer; the others sort by date or by stars, newer first on a tie.
  */
 export function sortReviews(
@@ -117,7 +117,7 @@ export function sortReviews(
   return [...reviews].sort(order[sort]);
 }
 
-/** The reviews with the given number of stars, or all of them (L2-229 AC1). */
+/** The reviews with the given number of stars, or all of them (L2-230 AC1). */
 export function filterReviews(
   reviews: readonly ListingReview[],
   stars: number | null,
@@ -125,7 +125,7 @@ export function filterReviews(
   return stars === null ? [...reviews] : reviews.filter((r) => r.rating === stars);
 }
 
-/** The member's own review first, then the rest in the chosen order (L2-228 AC7). */
+/** The member's own review first, then the rest in the chosen order (L2-229 AC7). */
 export function mineFirst(reviews: readonly ListingReview[]): ListingReview[] {
   return [...reviews.filter((r) => r.mine), ...reviews.filter((r) => !r.mine)];
 }
@@ -135,7 +135,7 @@ export function formatAverage(average: number): string {
   return average.toFixed(1);
 }
 
-/** The summary counted again from the reviews shown (L2-237 AC9), after an edit or a removal. */
+/** The summary counted again from the reviews shown (L2-238 AC9), after an edit or a removal. */
 export function summarize(reviews: readonly ListingReview[]): ReviewSummary {
   const breakdown = [5, 4, 3, 2, 1].map((s) => reviews.filter((r) => r.rating === s).length);
   const count = reviews.length;

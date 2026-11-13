@@ -23,7 +23,7 @@ export interface ReviewsItem {
   review: ReviewView;
 }
 
-/** The orders the section offers (L2-229 AC3). */
+/** The orders the section offers (L2-230 AC3). */
 export const REVIEW_SORTS = [
   { value: 'relevant', label: 'Most relevant' },
   { value: 'newest', label: 'Newest' },
@@ -34,7 +34,7 @@ export const REVIEW_SORTS = [
 let nextId = 0;
 
 /**
- * The Reviews section of a listing or a product (L2-228, L2-229, L2-231): the heading with
+ * The Reviews section of a listing or a product (L2-229, L2-230, L2-232): the heading with
  * `[slot=action]` ("Write a review"); a `notice`; while loading, placeholders; on an error, the
  * alert with "Try again"; with no reviews, "No reviews yet" with `[slot=empty-action]`; otherwise
  * the summary beside the member's own review, the toolbar (the filter, "Clear" and the sort), the
@@ -56,12 +56,12 @@ let nextId = 0;
 })
 export class Reviews {
   readonly state = input<'loading' | 'error' | 'ready'>('ready');
-  /** The listing's name, in the empty state and the note on "Verified". */
+  /** The listing's name, in the empty state. */
   readonly name = input.required<string>();
   readonly average = input(0);
   readonly count = input(0);
   readonly breakdown = input<readonly number[]>([0, 0, 0, 0, 0]);
-  /** The member's own review, shown first and apart (L2-228 AC7). */
+  /** The member's own review, shown first and apart (L2-229 AC7). */
   readonly mine = input<ReviewsItem | null>(null);
   /** The reviews to show, filtered, ordered and cut by the page. */
   readonly items = input<readonly ReviewsItem[]>([]);
@@ -70,7 +70,7 @@ export class Reviews {
   readonly stars = input<number | null>(null);
   readonly sort = input<string>('relevant');
   readonly notice = input<string | null>(null);
-  /** The question of the empty state: "Worked with {name}?" unless given, as for a space or a product (L2-228 AC6, L2-231 AC2). */
+  /** The question of the empty state: "Worked with {name}?" unless given, as for a space or a product (L2-229 AC6, L2-232 AC2). */
   readonly invite = input<string | null>(null);
   /** The error reference quoted in the alert. */
   readonly reference = input('JB-REV-503');
@@ -94,7 +94,7 @@ export class Reviews {
 
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
 
-  /** Moves focus to the "Reviews" heading, after a review is removed (L2-232 AC5). */
+  /** Moves focus to the "Reviews" heading, after a review is removed (L2-233 AC5). */
   focusHeading(): void {
     this.host.querySelector<HTMLElement>(`#${this.headingId}`)?.focus();
   }

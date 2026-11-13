@@ -6,8 +6,6 @@ namespace Jubilee.Tests.Shared;
 public enum NonPublicState
 {
     Draft,
-    ReadyToReview,
-    ChangesRequested,
     Paused,
     Deleted,
     UnderModerationHold,
@@ -33,7 +31,7 @@ public static class ListingMother
         listing.SetHighlight(highlight);
         listing.SetOffers(offers);
         listing.SetAreasServed(areas);
-        listing.Approve("Miriam Castillo", approved);
+        listing.Publish(approved);
         listing.RefreshRecommendedScore(Now);
         return listing;
     }

@@ -263,14 +263,17 @@ public sealed class MeetingReminderJob(IServiceScopeFactory scopes, ILogger<Meet
 }
 
 /// <summary>
-/// Every five minutes: completes each confirmed booking whose meeting has ended (L2-043 AC5, L2-182).
-/// Safe to repeat.
+/// Every five minutes: completes each confirmed booking whose meeting has ended (L2-043 AC5, L2-182). Ticks
+/// every minute; <see cref="Jubilee.Application.Jobs.ScheduledJobs"/> lets only one instance run each
+/// occurrence and records its success. Safe to repeat.
 /// </summary>
 public sealed class BookingCompletionJob(IServiceScopeFactory scopes, ILogger<BookingCompletionJob> logger) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        using var timer = new PeriodicTimer(TimeSpan.FromMinutes(5));
+        // Every minute, so an instance that starts late in a 5-minute occurrence still serves the next one on
+        // time; ScheduledJobs lets one instance run each occurrence and records its success (L2-182 AC1).
+        using var timer = new PeriodicTimer(TimeSpan.FromMinutes(1));
         try
         {
             do
@@ -279,7 +282,7 @@ public sealed class BookingCompletionJob(IServiceScopeFactory scopes, ILogger<Bo
                 {
                     await using var scope = scopes.CreateAsyncScope();
                     var completed = await scope.ServiceProvider.GetRequiredService<MediatR.ISender>()
-                        .Send(new Jubilee.Application.Requests.CompleteFinishedBookingsCommand(), stoppingToken);
+                        .Send(new Jubilee.Application.Jobs.RunBookingCompletionJobCommand(), stoppingToken);
                     if (completed > 0)
                     {
                         logger.LogInformation("Completed {Count} finished bookings.", completed);
@@ -300,14 +303,16 @@ public sealed class BookingCompletionJob(IServiceScopeFactory scopes, ILogger<Bo
 }
 
 /// <summary>
-/// Every hour: reminds an owner once of a request nobody answered in a week (L2-043 AC8, L2-182).
-/// Safe to repeat: a request is reminded of once.
+/// Once an hour: reminds an owner once of a request nobody answered in a week (L2-043 AC8, L2-182).
+/// The tick is every ten minutes so an instance that starts late in an hour still serves the next one;
+/// <see cref="Jubilee.Application.Jobs.ScheduledJobs"/> lets only one instance run each hour and records
+/// its success. Safe to repeat: a request is reminded of once.
 /// </summary>
 public sealed class UnansweredRequestJob(IServiceScopeFactory scopes, ILogger<UnansweredRequestJob> logger) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        using var timer = new PeriodicTimer(TimeSpan.FromHours(1));
+        using var timer = new PeriodicTimer(TimeSpan.FromMinutes(10));
         try
         {
             do
@@ -316,7 +321,7 @@ public sealed class UnansweredRequestJob(IServiceScopeFactory scopes, ILogger<Un
                 {
                     await using var scope = scopes.CreateAsyncScope();
                     var reminded = await scope.ServiceProvider.GetRequiredService<MediatR.ISender>()
-                        .Send(new Jubilee.Application.Requests.RemindUnansweredRequestsCommand(), stoppingToken);
+                        .Send(new Jubilee.Application.Jobs.RunUnansweredRequestJobCommand(), stoppingToken);
                     if (reminded > 0)
                     {
                         logger.LogInformation("Reminded the owners of {Count} unanswered requests.", reminded);
@@ -442,7 +447,7 @@ public sealed class AccountErasureJob(IServiceScopeFactory scopes, ILogger<Accou
 /// <summary>
 /// Once a day: deletes the launch notification sign-ups and the business pre-registrations that are
 /// 12 months old, and the reviews taken down 12 months ago, and logs how many, counts only
-/// (L2-148 AC5, AC6; L2-218 AC6; L2-238 AC4).
+/// (L2-148 AC5, AC6; L2-218 AC6; L2-239 AC4).
 /// </summary>
 public sealed class LaunchRetentionJob(IServiceScopeFactory scopes, ILogger<LaunchRetentionJob> logger) : BackgroundService
 {

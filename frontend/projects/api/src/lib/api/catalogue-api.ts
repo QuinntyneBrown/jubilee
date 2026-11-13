@@ -10,6 +10,7 @@ import {
   OwnerService,
   OwnerServices,
   ProductInput,
+  ProductPhoto,
   ServiceInput,
 } from '../models/catalogue';
 
@@ -17,6 +18,8 @@ import {
 export interface CatalogueApi {
   products(): Observable<OwnerProducts>;
   saveProduct(id: string | null, input: ProductInput): Observable<OwnerProduct>;
+  /** Uploads a photo before the product is saved; the save sends its id (L2-091 AC9). */
+  uploadProductPhoto(file: File): Observable<ProductPhoto>;
   deleteProduct(id: string): Observable<DeletedItem>;
   moveProduct(id: string, position: number): Observable<OwnerProducts>;
   services(): Observable<OwnerServices>;
@@ -41,6 +44,12 @@ export class HttpCatalogueApi implements CatalogueApi {
     return id
       ? this.http.put<OwnerProduct>(`/api/my-business/products/${id}`, input)
       : this.http.post<OwnerProduct>('/api/my-business/products', input);
+  }
+
+  uploadProductPhoto(file: File): Observable<ProductPhoto> {
+    const form = new FormData();
+    form.append('file', file, file.name);
+    return this.http.post<ProductPhoto>('/api/my-business/products/photos', form);
   }
 
   deleteProduct(id: string): Observable<DeletedItem> {

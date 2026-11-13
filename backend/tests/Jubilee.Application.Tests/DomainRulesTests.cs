@@ -118,12 +118,12 @@ public class RecommendedScoreTests
     }
 
     [Fact]
-    public void Approving_a_listing_refreshes_its_score()
+    public void Publishing_a_listing_refreshes_its_score()
     {
         var listing = Listing.Create("a", "A", "tagline", "shops", Now.AddDays(-10));
         Assert.Equal(0, listing.RecommendedScore);
 
-        listing.Approve("verifier", Now);
+        listing.Publish(Now);
 
         Assert.True(listing.RecommendedScore > 0);
     }
@@ -131,7 +131,7 @@ public class RecommendedScoreTests
     private static Listing ApprovedListing(DateTimeOffset approvedAt)
     {
         var listing = Listing.Create("a", "A", "tagline", "shops", approvedAt);
-        listing.Approve("verifier", approvedAt);
+        listing.Publish(approvedAt);
         listing.RefreshRecommendedScore(Now);
         return listing;
     }
@@ -220,59 +220,40 @@ public class ListingSortTests
     }
 }
 
-public class VerifiedMarkTests
+public class ListingLifecycleTests
 {
     private static readonly DateTimeOffset Now = new(2026, 11, 10, 15, 0, 0, TimeSpan.Zero);
 
-    // L2-111 AC1: only an approved listing that is currently live carries the mark.
-    [Theory]
-    [InlineData(ListingStage.Draft)]
-    [InlineData(ListingStage.ReadyToReview)]
-    [InlineData(ListingStage.ChangesRequested)]
-    public void L2_111_AC1_a_listing_that_is_not_live_is_never_verified(ListingStage stage)
-    {
-        var neverApproved = Listing.Create("a", "A", "t", "shops", Now);
-        neverApproved.MoveTo(stage);
-        var approvedThenMoved = Listing.Create("b", "B", "t", "shops", Now);
-        approvedThenMoved.Approve("verifier", Now);
-        approvedThenMoved.MoveTo(stage);
-
-        Assert.False(neverApproved.IsVerified);
-        Assert.False(approvedThenMoved.IsVerified);
-        Assert.False(approvedThenMoved.IsPublic());
-    }
-
+    // L2-078 AC1, ADR 0057: the owner publishes and the listing is live at once.
     [Fact]
-    public void L2_111_AC1_an_approved_live_listing_is_verified()
+    public void L2_078_AC1_publishing_makes_a_listing_live_and_public()
     {
         var listing = Listing.Create("a", "A", "t", "shops", Now);
 
-        listing.Approve("Miriam Castillo", Now);
+        listing.Publish(Now);
 
         Assert.Equal(ListingStage.Live, listing.Stage);
-        Assert.Equal(Now, listing.ApprovedAt);
-        Assert.Equal("Miriam Castillo", listing.ApprovedBy);
-        Assert.True(listing.IsVerified);
+        Assert.Equal(Now, listing.PublishedAt);
         Assert.True(listing.IsPublic());
     }
 
     [Fact]
-    public void L2_111_AC1_a_listing_cannot_be_made_live_without_approval()
+    public void L2_078_a_listing_becomes_live_only_by_being_published()
     {
         var listing = Listing.Create("a", "A", "t", "shops", Now);
 
         Assert.Throws<InvalidOperationException>(() => listing.MoveTo(ListingStage.Live));
-        Assert.False(listing.IsVerified);
+        Assert.False(listing.IsPublic());
     }
 
     [Fact]
-    public void L2_028_a_paused_deleted_or_held_listing_stays_verified_but_is_not_public()
+    public void L2_028_a_paused_deleted_or_held_listing_is_not_public()
     {
-        var paused = Approved();
+        var paused = Published();
         paused.Pause();
-        var deleted = Approved();
+        var deleted = Published();
         deleted.Delete(Now);
-        var held = Approved();
+        var held = Published();
         held.PlaceModerationHold();
 
         Assert.All([paused, deleted, held], l => Assert.False(l.IsPublic()));
@@ -283,10 +264,10 @@ public class VerifiedMarkTests
         Assert.True(held.IsPublic());
     }
 
-    private static Listing Approved()
+    private static Listing Published()
     {
         var listing = Listing.Create("a", "A", "t", "shops", Now);
-        listing.Approve("verifier", Now);
+        listing.Publish(Now);
         return listing;
     }
 }

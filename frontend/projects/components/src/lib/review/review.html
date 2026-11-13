@@ -26,9 +26,6 @@
     [label]="review().rating + ' out of 5 stars'"
   ></span>
   <span class="review__item">{{ review().itemName }}</span>
-  <span class="review__verified"
-    ><svg jb-icon name="verified" class="review__verified-icon"></svg>Verified</span
-  >
 </div>
 <p class="review__text">{{ review().text }}</p>
 @if (review().reply; as reply) {

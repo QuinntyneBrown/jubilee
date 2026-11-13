@@ -61,12 +61,10 @@ public sealed class CliTests
         var hidden = await Query(db => db.Listings.ToListAsync());
         var notPublic = hidden.Where(l => !l.IsPublic()).ToList();
 
-        Assert.Equal(5, notPublic.Count);
+        Assert.Equal(3, notPublic.Count);
         Assert.Contains(notPublic, l => l.Stage == ListingStage.Draft);
-        Assert.Contains(notPublic, l => l.Stage == ListingStage.ReadyToReview);
-        Assert.Contains(notPublic, l => l.Stage == ListingStage.ChangesRequested);
-        Assert.Contains(notPublic, l => l.IsVerified && l.IsPaused);
-        Assert.Contains(notPublic, l => l.IsVerified && l.IsUnderModerationHold);
+        Assert.Contains(notPublic, l => l.Stage == ListingStage.Live && l.IsPaused);
+        Assert.Contains(notPublic, l => l.Stage == ListingStage.Live && l.IsUnderModerationHold);
     }
 
     [Fact]
@@ -79,7 +77,7 @@ public sealed class CliTests
         var second = await RowCounts();
 
         Assert.Equal(first, second);
-        Assert.Equal((57, 6, 5), second);
+        Assert.Equal((55, 6, 5), second);
         Assert.Equal(47, await Query(db => db.Listings.WherePublic().WhereBusiness().CountAsync()));
     }
 
@@ -96,7 +94,7 @@ public sealed class CliTests
         Assert.Equal(0, await Run("reset"));
         Assert.Equal(0, await Run("seed"));
 
-        Assert.Equal((57, 6, 5), await RowCounts());
+        Assert.Equal((55, 6, 5), await RowCounts());
         Assert.False(await Query(db => db.Listings.AnyAsync(l => l.Slug == "leftover")));
     }
 

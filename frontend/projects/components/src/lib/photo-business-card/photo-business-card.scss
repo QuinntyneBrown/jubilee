@@ -90,19 +90,6 @@
   color: var(--jb-mkt-accent-text);
 }
 
-.mkt-card__verified {
-  display: flex;
-  align-items: center;
-  gap: var(--space-1);
-  color: var(--color-fg-subtle);
-}
-
-.mkt-card__check {
-  width: 0.875rem;
-  height: 0.875rem;
-  color: var(--jb-mkt-accent);
-}
-
 @media (min-width: 40rem) {
   .mkt-card__name {
     font-size: var(--font-size-lg);

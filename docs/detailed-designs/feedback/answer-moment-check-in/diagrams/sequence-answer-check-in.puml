@@ -17,6 +17,7 @@ skinparam package {
 actor "Member" as actor
 box "Frontend — Jubilee Web" #E0F2FE
   participant "Confirmation container" as host
+  participant "MomentCheckIn" as state
   participant "jb-moment-check" as check
   participant "FeedbackApi" as client
 end box
@@ -30,7 +31,7 @@ box "Backend — Jubilee Infrastructure" #FFF4E5
   database "Jubilee database" as db
 end box
 note over host : BookMeetingDialog or RequestQuoteDialog or RequestItemDialog success view, or ListBusinessPage submitted view
-host -> host : Make one check-in id for this confirmation
+host -> state : momentCheckIn(moment) makes one check-in id with newKey()
 host -> check : Render with the question of the moment
 check --> actor : "How easy was it to send your request?" with 1 to 5 between "Very hard" and "Very easy" (L2-211)
 alt Member ignores the question
@@ -38,39 +39,43 @@ alt Member ignores the question
   host --> actor : Nothing stored
 else Member chooses a score
   actor -> check : Choose a score
-  check -> host : scored(score)
-  host -> client : saveCheckIn(id, { moment, score })
+  check -> host : scoreChange(score)
+  host -> state : choose(score)
+  state -> client : saveCheckIn(id, { moment, score })
   client -> controller : PUT /api/feedback/check-ins/{id}
   controller -> handler : Send SaveCheckInCommand with the member of the session
   handler -> db : Load Feedback by id
   db --> handler : Feedback or none
   alt No feedback with the id
-    handler -> db : Save a new Feedback of kind CheckIn unless past 30 in the hour
+    handler -> db : Save Feedback.CheckIn under the id unless past 30 in the hour
   else Check-in of the caller
-    handler -> db : Replace the score and the note (one answer per confirmation)
-  else Feedback of another member
-    handler --> controller : NotFoundException (L2-133)
+    handler -> db : Feedback.Answer replaces the moment and the score and the note (one answer per confirmation)
+  else Feedback of another member or of another kind
+    handler --> controller : NotFoundException check_in_not_found (L2-133)
   end
   controller --> client : 204 or 404 or 422 or 429
-  client --> host : Result, ignored when it is an error
+  client --> state : Result, ignored when it is an error
   alt Score of 4 or 5
     check --> actor : "Thanks, that helps us."
   else Score of 3 or less
     check --> actor : Field "What got in the way?" and button "Send"
     opt Member chooses another score
       actor -> check : Choose a score
-      host -> client : saveCheckIn(id, { moment, score }) replaces the first
+      check -> host : scoreChange(score)
+      host -> state : choose(score)
+      state -> client : saveCheckIn(id, { moment, score }) replaces the first
     end
     actor -> check : Type a note or none and press "Send"
-    check -> host : noted(note)
-    host -> client : saveCheckIn(id, { moment, score, note })
+    check -> host : sent(note)
+    host -> state : send(note)
+    state -> client : saveCheckIn(id, { moment, score, note })
     client -> controller : PUT /api/feedback/check-ins/{id}
     controller --> client : 204 No Content
     check --> actor : "Thanks, that helps us."
   end
 end
 opt The answer cannot be stored
-  client --> host : Error or timeout
-  host --> actor : Nothing said and the confirmation is not blocked (L2-211)
+  client --> state : Error
+  state --> actor : Nothing said and the confirmation is not blocked (L2-211)
 end
 @enduml

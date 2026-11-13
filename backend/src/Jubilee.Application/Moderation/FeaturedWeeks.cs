@@ -1,6 +1,5 @@
 using Jubilee.Application.Abstractions;
 using Jubilee.Application.Accounts;
-using Jubilee.Application.Verification;
 using Jubilee.Domain;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -46,7 +45,7 @@ public sealed class GetFeaturedWeeksQueryHandler(IAppDbContext db, TimeProvider 
         new(await FeaturedWeekReader.Weeks(db, TorontoClock.Today(clock.GetUtcNow()), cancellationToken));
 }
 
-/// <summary>The live listings a verifier can feature, found by name (L2-106 AC1).</summary>
+/// <summary>The live listings a moderator can feature, found by name (L2-106 AC1).</summary>
 public sealed record GetFeaturedCandidatesQuery(string? Search) : IRequest<FeaturedCandidatesDto>;
 
 public sealed class GetFeaturedCandidatesQueryHandler(IAppDbContext db) : IRequestHandler<GetFeaturedCandidatesQuery, FeaturedCandidatesDto>

@@ -2,18 +2,20 @@
 
 ## Goal
 
-A member describes a business and submits it for verification (`frontend/projects/jubilee/src/app/pages/list-business`). Drafts and their expiry, the form with its live preview, the item dialog and submission exist.
+A member describes a business, agrees to the statement of faith and publishes it; the listing is live straight away (`frontend/projects/jubilee/src/app/pages/list-business`). Drafts and their expiry, the form with its live preview and the item dialog exist. Submission exists too, but it still sends the listing to "Ready to review" for a verification team that no longer exists: Jubilee ships without verification (ADR 0057).
 
-Roles: Member, Owner. Journey 10 in `docs/journey.md`, recorded at 87% complete on 12 November 2026. This prompt takes it to 100%.
+Roles: Member, Owner. Journey 10 in `docs/journey.md`, recorded at 87% complete on 12 November 2026, before ADR 0057 replaced submit-for-verification with publish-listing (about 74% weighted from `docs/estimates/onboarding.md` since). This prompt takes it to 100%.
 
 What is left, from an audit of the code and its tests against the acceptance criteria:
 
+- `L2-078` (ADR 0057): "Publish listing" puts a valid listing live at once and public within 60 seconds, and the page says "{Business} is live. Members can find you in {category} now." with "View public listing", "Go to My business" and "Add more products" (or "Add more services"). The stages become Draft and Live; "Ready to review", "Changes requested" and "Declined" go, with `POST /api/listings/{id}/verification/resubmit` and `GET /api/listings/{id}/verification`. One EF migration, `ShipWithoutVerification`, moves waiting listings to Live and declined ones to Draft and renames `ApprovedAt` to `PublishedAt`.
+- `L2-071`, `L2-075`, `L2-076` (ADR 0057): the copy before publishing ("Your listing goes live as soon as you publish it.", "Confirm your e-mail to publish.", "Agree to the statement of faith to publish your listing.") and "Not published yet" on the live preview.
 - `L2-073` AC1: `/list` adds products and services through `ListingItemDialog`, not the full editors (`dialogs/product-editor`, `dialogs/service-editor`), and has no "Members can" action.
 - `L2-076` AC1: no highlight field (the preview sends `highlight: null`).
 - `L2-073` AC3: the "No products or services yet" state appears nowhere in code or tests.
 - `L2-075` AC3: re-agreement when a new statement of faith version is published is not built.
 - `L2-079` AC1: no "List another business" and no switcher between an owner's businesses in the app (API tested only).
-- `L2-079` AC3: the review shows a count of the owner's other listings, not their stages.
+- `L2-079` AC3: the admin application's screen for one listing (`L2-100`) shows a count of the owner's other listings, not their stages.
 - `onboarding/save-draft` is recorded at 90% with no named gap; check the job guarantees of `L2-182` for the draft-expiry job.
 
 The audit read test titles and spot-checked assertions. Verify each gap against the code before you plan, and treat any other acceptance criterion of the requirements below that has no implementation or no acceptance test as part of this work.
@@ -82,7 +84,7 @@ Detailed designs (read each `README.md` and its `diagrams/`):
 
 - `docs/detailed-designs/onboarding/describe-listing/README.md`
 - `docs/detailed-designs/onboarding/save-draft/README.md`
-- `docs/detailed-designs/onboarding/submit-for-verification/README.md`
+- `docs/detailed-designs/onboarding/publish-listing/README.md` (it replaces `submit-for-verification`)
 
 Requirements in `docs/specs/L2.md` (those the designs cite, and those the gaps name): `L2-005`, `L2-071`, `L2-072`, `L2-073`, `L2-075`, `L2-076`, `L2-077`, `L2-078`, `L2-079`, `L2-086`, `L2-091`, `L2-094`, `L2-099`, `L2-118`, `L2-126`, `L2-127`, `L2-132`, `L2-133`, `L2-182`, `L2-198`.
 
@@ -95,7 +97,7 @@ Mocks (every state file in each folder; the full list is in `docs/mocks/manifest
 - `docs/mocks/dialogs/leave-unsaved/`
 - `docs/mocks/pages/my-business/`
 
-Decisions already recorded: `docs/adr/0018-listing-onboarding-decisions.md`, `docs/adr/0041-remove-church-reference-and-add-home-church-address.md`.
+Decisions already recorded: `docs/adr/0018-listing-onboarding-decisions.md`, `docs/adr/0041-remove-church-reference-and-add-home-church-address.md`, `docs/adr/0057-ship-without-verification.md`.
 
 Code and tests that exist today:
 
@@ -104,7 +106,7 @@ Code and tests that exist today:
 
 Progress notes: `docs/estimates/onboarding.md`.
 
-Builds on: journey 16 (Manage products and services) for the editors, journey 12 (Verify a listing) for the review. If the seam this journey needs from another journey is missing, build only that seam and note it. Do not stop.
+Builds on: journey 16 (Manage products and services) for the editors, journey 12 (Keep listings honest) for the listing's screen in the admin application. If the seam this journey needs from another journey is missing, build only that seam and note it. Do not stop.
 
 ## Phase 1: Requirements (`engineering-requirements`)
 
@@ -120,18 +122,19 @@ Builds on: journey 16 (Manage products and services) for the editors, journey 12
 
 ## Phase 3: Mocks and design system (`writing-html-mocks`, `extracting-design-systems`)
 
-- Mock what is missing: the highlight field, the empty products and services state, the "Members can" action, the re-agreement prompt, and the business switcher with "List another business".
+- Mock what is missing (the "is live" page and the publish copy may already be mocked by ADR 0057's design work; check first): the highlight field, the empty products and services state, the "Members can" action, the re-agreement prompt, and the business switcher with "List another business".
 - A new or changed component is documented in `docs/design-system/` and registered there before it is built in `frontend/projects/components`. Run `npm run design:check` in `frontend/`.
 - If the Magic Patterns reference in `docs/design-reference/magic-patterns/` shows the state, it trumps the mock.
 
 ## Phase 4: Incremental implementation (`implementing-incrementally`, test-first)
 
 - Plan thin vertical slices. The list is a guide; where its wording and `docs/specs/L2.md` differ, the requirement wins. For example:
-  1. The full product and service editors on `/list`, and the empty state.
-  2. The "Members can" action and the highlight field, shown in the live preview.
-  3. Re-agreement on a new statement version before submitting.
-  4. "List another business" and the switcher.
-  5. The stages of the owner's other listings on the review screen in the admin application.
+  1. Publish a listing: live at once, the "is live" page, the Draft and Live stages, the migration, and the copy before publishing.
+  2. The full product and service editors on `/list`, and the empty state.
+  3. The "Members can" action and the highlight field, shown in the live preview.
+  4. Re-agreement on a new statement version before publishing.
+  5. "List another business" and the switcher.
+  6. The stages of the owner's other listings on the listing's screen in the admin application.
 - For each slice:
   - Write the Given-When-Then criteria, taken from the acceptance criteria of the requirements above.
   - Write the acceptance test: an integration test against the API in `backend/tests/Jubilee.Api.Tests/`
@@ -158,7 +161,7 @@ Builds on: journey 16 (Manage products and services) for the editors, journey 12
 
 ## Done means
 
-- An owner can describe a business fully, with its highlight, products and services, agree to the current statement of faith, submit it, and start a second business.
+- An owner can describe a business fully, with its highlight, products and services, agree to the current statement of faith, publish it and be live straight away, and start a second business. Nothing says the listing is verified or waits for approval.
 - Every acceptance criterion of the requirements listed above has a passing test, or is listed as an owner step with the reason.
 - All the new and existing tests pass: `pwsh eng/Test-Backend.ps1` at the root; `npm run lint`, `npm run format:check`, `npm run design:check` and `npm run build` in `frontend/`; `npm run typecheck`, `npm test` and `npm run parity` in `e2e/`. No sweep was run.
 - `docs/estimates/` and row 10 of `docs/journey.md` show the true figures, and the requirements, designs, mocks and code agree.

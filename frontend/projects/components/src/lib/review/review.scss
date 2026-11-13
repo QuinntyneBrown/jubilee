@@ -72,19 +72,6 @@
   overflow-wrap: anywhere;
 }
 
-.review__verified {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-1);
-  font-weight: var(--font-weight-medium);
-  color: var(--color-success-fg);
-}
-
-.review__verified-icon {
-  width: var(--icon-size-sm);
-  height: var(--icon-size-sm);
-}
-
 .review__text {
   margin: 0;
   max-width: 42rem;

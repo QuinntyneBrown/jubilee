@@ -10,7 +10,7 @@ public static class ListingSortPolicy
     public static IOrderedQueryable<Listing> Apply(IQueryable<Listing> listings, ListingSort sort) => sort switch
     {
         ListingSort.NameAscending => listings.OrderBy(l => l.SortName).ThenBy(l => l.Slug),
-        ListingSort.Newest => listings.OrderByDescending(l => l.ApprovedAt).ThenBy(l => l.SortName).ThenBy(l => l.Slug),
+        ListingSort.Newest => listings.OrderByDescending(l => l.PublishedAt).ThenBy(l => l.SortName).ThenBy(l => l.Slug),
         _ => listings.OrderByDescending(l => l.RecommendedScore).ThenBy(l => l.SortName).ThenBy(l => l.Slug),
     };
 }

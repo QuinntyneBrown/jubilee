@@ -2,7 +2,7 @@ import { parity } from '../../fixtures/parity';
 import { MyProductsPage } from '../../pages/my-products.page';
 
 // jb-table in its frame: headings, values, figures set to the right, and the frame that scrolls.
-// The verification team's queues are not compared: their mocks list other rows than the recorded
+// The Jubilee team's listings and reports are not compared: their mocks list other rows than the recorded
 // answers, so they differ in what they hold, not in how they are drawn.
 parity('table', {
   cases: [

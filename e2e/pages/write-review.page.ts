@@ -2,7 +2,7 @@ import type { Locator, Page } from '@playwright/test';
 import type { Region, Screen } from '../fixtures/visual';
 import { ShellPage } from './shell.page';
 
-/** The Write a review screen at /b/:slug/review (L2-226, L2-227), with its posted state. */
+/** The Write a review screen at /b/:slug/review (L2-227, L2-228), with its posted state. */
 export class WriteReviewPage extends ShellPage implements Screen {
   readonly backLink: Locator;
   /** The listing being reviewed: its tile, name and category or host. */

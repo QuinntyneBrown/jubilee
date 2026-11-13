@@ -18,6 +18,8 @@ export class MyProductsPage extends ShellPage implements Screen {
   readonly backToOverview: Locator;
   readonly loading: Locator;
   readonly announcement: Locator;
+  /** "Drag a product by its handle, or use the arrows, to change the order." (L2-090 AC2) */
+  readonly dragHelp: Locator;
 
   /** The state of each product: "Listed" or "Sold out". */
   readonly statusBadges: Locator;
@@ -38,6 +40,7 @@ export class MyProductsPage extends ShellPage implements Screen {
     this.backToOverview = this.main.getByRole('link', { name: 'Back to overview' });
     this.loading = this.main.getByRole('status').filter({ hasText: 'Loading your products' });
     this.announcement = this.main.locator('span.visually-hidden[role="status"]');
+    this.dragHelp = this.main.getByText('Drag a product by its handle, or use the arrows');
   }
 
   row(name: string | RegExp): Locator {
@@ -62,6 +65,30 @@ export class MyProductsPage extends ShellPage implements Screen {
 
   moveDown(name: string): Locator {
     return this.main.getByRole('button', { name: `Move ${name} down` });
+  }
+
+  /** The handle a product is dragged by: a pointer affordance, hidden from the keyboard and assistive technology. */
+  dragHandle(name: string): Locator {
+    return this.row(name).locator('.cdk-drag-handle');
+  }
+
+  /**
+   * Drags the product named `from` by its handle and drops it on the row of `to`, as a hand does: press,
+   * move in steps so the drag starts, release.
+   */
+  async drag(from: string, to: string): Promise<void> {
+    const handle = await this.dragHandle(from).boundingBox();
+    const source = await this.row(from).boundingBox();
+    const target = await this.row(to).boundingBox();
+    if (!handle || !source || !target)
+      throw new Error('The product to drag, or the place to drop it, is not on screen.');
+    const start = { x: handle.x + handle.width / 2, y: handle.y + handle.height / 2 };
+    const end = { x: start.x, y: target.y + (start.y - source.y) };
+    await this.page.mouse.move(start.x, start.y);
+    await this.page.mouse.down();
+    await this.page.mouse.move(start.x + 4, start.y + 8, { steps: 4 });
+    await this.page.mouse.move(end.x, end.y, { steps: 12 });
+    await this.page.mouse.up();
   }
 
   /** The names in the order shown. */

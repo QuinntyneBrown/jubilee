@@ -22,7 +22,7 @@
 
   /**
    * The Jubilee seal: the J mark in a ring of set text (John 15:16 and the mission), turning at `spin`
-   * degrees a second. It carries the design's ring text; the shared runtime's seal still has the old one.
+   * degrees a second. It carries the design's ring text, as the shared runtime's seal now does too.
    */
   let seals = 0;
   const seal = (S, size, spin) => {

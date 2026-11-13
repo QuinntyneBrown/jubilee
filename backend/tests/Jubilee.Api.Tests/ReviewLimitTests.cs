@@ -13,7 +13,7 @@ public sealed class ThreeReviewChangesPerHourFactory : JubileeApiFactory
         builder.UseSetting("RateLimits:ReviewChangesPerHour", "3");
 }
 
-// L2-237 AC6: edits and replies share one budget per member an hour (30 by default; 3 here).
+// L2-238 AC6: edits and replies share one budget per member an hour (30 by default; 3 here).
 public sealed class ReviewLimitTests(ThreeReviewChangesPerHourFactory factory) : IClassFixture<ThreeReviewChangesPerHourFactory>
 {
     [Fact]

@@ -18,6 +18,8 @@ export class ForgotPasswordPage extends ShellPage implements Screen {
   readonly errorState: Locator;
   readonly reference: Locator;
   readonly tryAgain: Locator;
+  /** The warning a refused request (429) leaves above the form. */
+  readonly notice: Locator;
 
   constructor(page: Page) {
     super(page);
@@ -34,6 +36,7 @@ export class ForgotPasswordPage extends ShellPage implements Screen {
     this.errorState = this.main.getByRole('alert').filter({ hasText: 'JB-AUTH-503' });
     this.reference = this.errorState.locator('code');
     this.tryAgain = this.main.getByRole('button', { name: 'Try again' });
+    this.notice = this.main.locator('.alert--warning');
   }
 
   /** Sends the form empty, then leaves the summary so that it is shown at rest. */
@@ -61,11 +64,28 @@ export class ForgotPasswordPage extends ShellPage implements Screen {
     await this.email.focus();
   }
 
+  /** Sends an address the API refuses as asked for too often, and waits for the warning. */
+  async sendAndBeRefused(address: string): Promise<void> {
+    await this.email.fill(address);
+    await this.send.click();
+    await this.notice.waitFor();
+  }
+
   async ready(): Promise<void> {
     await this.main.locator('h1').first().waitFor();
   }
 
   regions(): Region[] {
     return [{ name: 'main', locator: this.main }];
+  }
+}
+
+/** `/forgot-password` after a request the API refused as too often (L2-008 AC4), as the mock draws it. */
+export class ForgotPasswordRateLimitedScreen extends ForgotPasswordPage {
+  override async ready(): Promise<void> {
+    await super.ready();
+    if (await this.notice.isVisible()) return;
+    await this.sendAndBeRefused('joanna.adeyemi@example.com');
+    await this.page.locator(':focus').blur();
   }
 }

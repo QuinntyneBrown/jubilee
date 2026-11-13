@@ -14,7 +14,7 @@ skinparam package {
   FontColor #101828
   BackgroundColor #F9FAFB
 }
-actor "Verification team member" as verifier
+actor "Jubilee team member" as moderator
 box "Frontend — Jubilee Admin" #E0F2FE
   participant "AdminReportPage" as page
   participant "AdminApi" as client
@@ -29,14 +29,14 @@ end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
   database "Jubilee database" as db
 end box
-verifier -> page : Open a report
+moderator -> page : Open a report
 page -> client : openReport(id)
 client -> controller : POST /api/admin/reports/{id}/open
-controller -> controller : RequiresVerifier checks the staff session (L2-133)
-alt no staff session of the verification team
+controller -> controller : RequiresModerator checks the staff session (L2-133)
+alt no staff session of the Jubilee team
   controller --> client : 403 STAFF_SESSION_REQUIRED
   client --> page : Refused
-else verifier
+else moderator
   controller -> handler : Send OpenReportCommand
   handler -> db : Load the report by its id
   alt the id is not a report
@@ -54,12 +54,12 @@ else verifier
       handler --> controller : ReportDetailDto with ReportedConversationDto
       controller --> client : 200 OK
       client --> page : Report and conversation
-      page --> verifier : Show the messages as text in jb-message-bubble
+      page --> moderator : Show the messages as text in jb-message-bubble
     else report resolved
       handler --> controller : ReportDetailDto with no conversation
       controller --> client : 200 OK
       client --> page : Report only
-      page --> verifier : Show the report without the conversation (L2-063)
+      page --> moderator : Show the report without the conversation (L2-063)
     end
   end
 end

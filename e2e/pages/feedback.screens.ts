@@ -139,7 +139,7 @@ export class FeedbackBugScreenshotsScreen extends FeedbackPage {
   }
 }
 
-/** The listing that was just submitted, with the question under what happens next (L2-211). */
+/** The listing that was just published, with the question under it (L2-211). */
 export class ListBusinessSubmittedScreen extends ListBusinessPage {
   readonly check: MomentCheck;
 
@@ -152,7 +152,7 @@ export class ListBusinessSubmittedScreen extends ListBusinessPage {
     if (!BASELINE) {
       await super.ready();
       await this.fillValid();
-      await this.submit.click();
+      await this.publish.click();
       await this.check.question.waitFor();
       await this.answer();
       await this.page.mouse.move(0, 0);

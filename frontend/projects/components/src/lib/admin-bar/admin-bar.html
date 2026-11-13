@@ -1,28 +1,28 @@
-<a jb-lockup onInk class="topbar__brand" aria-label="jubilee admin" routerLink="/verifications"
+<a jb-lockup onInk class="topbar__brand" aria-label="jubilee admin" routerLink="/listings"
   ><span class="admin-bar__tag" aria-hidden="true">admin</span></a
 >
 @if (staff(); as staff) {
-  @if (verifier()) {
+  @if (moderator()) {
     <nav class="admin-bar__nav" aria-label="Staff">
       <a
         class="nav-link"
-        routerLink="/verifications"
-        [attr.aria-current]="current() === 'verifications' ? 'page' : null"
-        >Verifications
-        @if (staff.verificationCount > 0) {
-          <span
-            jb-badge
-            [count]="staff.verificationCount"
-            [label]="staff.verificationCount + ' ready to review'"
-          ></span>
-        }
-      </a>
+        routerLink="/listings"
+        [attr.aria-current]="current() === 'listings' ? 'page' : null"
+        >Listings</a
+      >
       <a
         class="nav-link"
         routerLink="/reports"
         [attr.aria-current]="current() === 'reports' ? 'page' : null"
-        >Reports</a
-      >
+        >Reports
+        @if (staff.reportCount > 0) {
+          <span
+            jb-badge
+            [count]="staff.reportCount"
+            [label]="staff.reportCount + ' unresolved'"
+          ></span>
+        }
+      </a>
       <a
         class="nav-link"
         routerLink="/featured"

@@ -19,52 +19,53 @@ skinparam package {
 actor "Member" as actor
 box "Frontend — Jubilee Web" #E0F2FE
   participant "AccountPage" as page
-  participant "ProfileForm" as form
-  participant "AccountApi" as client
+  participant "ProfileApi
+(HttpProfileApi)" as client
   participant "SessionService" as session
 end box
 box "Backend — Jubilee API" #D1FADF
   participant "AccountController" as controller
 end box
 box "Backend — Jubilee Application and Domain" #ECFDF3
-  participant "UpdateProfileCommandValidator" as validator
   participant "UpdateProfileCommandHandler" as handler
+  participant "Profiles" as profiles
   participant "Member" as entity
 end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
   database "Jubilee database" as db
 end box
 actor -> page : Press "Save profile"
-page -> form : Validate fields (L2-126)
+page -> page : Check the template form fields (L2-126)
 alt Field fails a browser rule
-  form --> page : Field errors
-  page --> actor : Show "Fix {n} thing(s) to continue" and focus the summary
+  page --> actor : Show jb-form-summary and the message under each field, keep typed values
 else Fields pass
-  form --> page : Profile values
   page -> client : saveProfile(profile)
   client -> controller : PUT /api/account/profile
   controller -> controller : Authenticate session and check CSRF token (L2-133)
-  controller -> validator : Validate UpdateProfileCommand
-  alt Phone or postal code invalid
-    validator --> controller : PHONE_INVALID or POSTAL_CODE_INVALID
+  controller -> handler : Send UpdateProfileCommand
+  handler -> profiles : TryPhone and TryPostalCode
+  profiles --> handler : Ten digits and upper-case postal code, or invalid
+  handler -> handler : Check names, home church, home church address and pronouns lengths
+  alt A field breaks a rule
+    handler --> controller : ValidationFailedException (PHONE_INVALID, POSTAL_CODE_INVALID, REQUIRED or TOO_LONG)
     controller --> client : 422 ProblemDetails with per-field codes
     client --> page : Field errors
-    page --> actor : Show the field message and keep typed values
-  else Command valid
-    validator --> controller : Valid
-    controller -> handler : Send UpdateProfileCommand
+    page --> actor : Show the field message in jb-form-summary and keep typed values
+  else Every field valid
     handler -> db : Load Member of the session
     db --> handler : Member
     handler -> entity : UpdateProfile (L2-013)
     entity --> handler : Profile changed and ProfileSavedAt set
     handler -> db : Save changes in one unit of work
     db --> handler : Commit result
-    handler --> controller : AccountDto
+    handler --> controller : Done
+    controller -> db : Send GetAccountQuery and read the member
+    db --> controller : AccountDto
     controller --> client : 200 AccountDto
-    client --> page : Saved profile
-    page -> session : Refresh SessionMember
+    client --> page : Saved account
+    page -> session : Resolve the session again
     session --> page : New name and initials
-    page --> actor : Show "Profile saved. Saved today at {time}."
+    page --> actor : Show "Profile saved" with "Saved today at {time}."
   end
 end
 @enduml

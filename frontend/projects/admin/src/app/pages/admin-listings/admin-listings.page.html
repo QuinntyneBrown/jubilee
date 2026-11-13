@@ -1,0 +1,74 @@
+<jb-page-header heading="Listings" [subtitle]="subtitle()"> </jb-page-header>
+@let list = state();
+@switch (list.status) {
+  @case ('error') {
+    <div jb-empty-state [error]="true" icon="alert" heading="We couldn’t load the listings">
+      Nothing is lost. Check your connection and try again. If it keeps happening, tell us and quote
+      <code>{{ list.reference }}</code
+      >.
+      <button slot="actions" jb-button variant="primary" type="button" (click)="load(search())">
+        <svg jb-icon name="refresh"></svg>Try again
+      </button>
+    </div>
+  }
+  @case ('loading') {
+    <p class="visually-hidden" role="status">Loading the listings…</p>
+    <ul jb-row-list-skeleton [count]="4" action></ul>
+  }
+  @case ('loaded') {
+    @if (list.value.total === 0) {
+      <div jb-empty-state icon="check" heading="No listings yet">
+        A listing appears here as soon as its owner publishes it.
+        <button slot="actions" jb-button type="button" (click)="load('')">
+          <svg jb-icon name="refresh"></svg>Refresh
+        </button>
+      </div>
+    } @else {
+      <form
+        jb-search-field
+        label="Search listings by name"
+        placeholder="Search listings by name"
+        [value]="search()"
+        (searched)="load($event)"
+      ></form>
+      @if (list.value.rows.length === 0) {
+        <div jb-empty-state [compact]="true" icon="search" heading="No match">
+          No listing matches “{{ search() }}”.
+          <button slot="actions" jb-button type="button" (click)="load('')">Clear search</button>
+        </div>
+      } @else {
+        <div jb-table-scroll>
+          <table jb-table caption="Published listings, newest first">
+            <thead>
+              <tr>
+                <th jb-table-cell scope="col">Business</th>
+                <th jb-table-cell scope="col">Category</th>
+                <th jb-table-cell scope="col">Owner</th>
+                <th jb-table-cell scope="col">Published</th>
+                <th jb-table-cell scope="col">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (row of list.value.rows; track row.id) {
+                <tr>
+                  <td jb-table-cell>
+                    <a [routerLink]="['/listings', row.id]">{{ row.name }}</a>
+                    @if (row.flagged) {
+                      <span jb-badge tone="warning">Flagged</span>
+                    }
+                  </td>
+                  <td jb-table-cell>{{ row.categoryName }}</td>
+                  <td jb-table-cell>{{ row.ownerName }}</td>
+                  <td jb-table-cell>{{ published(row) }}</td>
+                  <td jb-table-cell>
+                    <span jb-badge [tone]="tone(row)">{{ row.statusLabel }}</span>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    }
+  }
+}

@@ -9,7 +9,7 @@ public enum ViewerRelation
     Visitor = 0,
     Member = 1,
     Owner = 2,
-    Verifier = 3,
+    Moderator = 3,
 }
 
 /// <summary>
@@ -25,13 +25,7 @@ public static class ListingStatus
         _ when listing.IsPublic() => Live,
         { IsUnderModerationHold: true } => "on-hold",
         { Stage: ListingStage.Live, IsPaused: true } => "paused",
-        { Stage: ListingStage.Draft } => "draft",
-        { Stage: ListingStage.ReadyToReview } => "ready-to-review",
-        { Stage: ListingStage.ChangesRequested } => "changes-requested",
-        { Stage: ListingStage.Declined } => "declined",
-
-        // Live without an approval: it waits for the verification team like a submitted listing.
-        _ => "ready-to-review",
+        _ => "draft",
     };
 }
 
@@ -109,7 +103,6 @@ public sealed record ListingPageDto(
     string Kind,
     string Name,
     CategoryLinkDto Category,
-    bool Verified,
     string Stage,
     string Status,
     string ViewerRelation,

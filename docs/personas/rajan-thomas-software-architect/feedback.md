@@ -9,12 +9,13 @@
 No note is asked for at 4.
 
 **Rate, 3 stars, "Okay"** (full form at `/feedback/rate`: "Finding businesses" 4, "Messages and
-requests" 4, "Trust and verification" 2)
+requests" 4, "Trust and safety" 2)
 
 "The product is carefully made: keyboard, dark theme, sensible session rules, no payment data
-held. My low score is for one thing. 'Verified' appears on every listing and I cannot find what
-it certifies. For a lawyer I checked the public register myself. For a roofer there is no
-register, and I have only the listing's own words. Tell me what your team looked at."
+held. My low score is for one thing. Nothing on a listing is checked before it goes live. You say
+so plainly, and I respect that. For a lawyer I checked the public register myself. For a roofer
+there is no register, and I have only the listing's own words and the owner's promise to deal
+honestly. Taking a listing down after a report is a remedy, not evidence."
 
 **Report a bug** ("Where did it happen?": Somewhere else; "How often?": Just once)
 
@@ -43,8 +44,8 @@ appeared under "Your feedback")
 
 | Need | Today | Suggestion |
 |---|---|---|
-| To know what "Verified" certifies | A Help answer; the checklist is seen only by the verification team | Show on each listing what was checked and the date, in the same words as the checklist |
-| Evidence for regulated professions | No licence or credential fields; he checks registers himself | Where a public register exists, have the verification team check it and say so on the listing |
+| To know what stands behind a listing | A Help answer: owners agree to deal honestly, and the Jubilee team takes down listings that misrepresent a business | Show on each listing when it was published and that its owner agreed to the statement of faith, and say plainly that the rest is the owner's own words |
+| Evidence for regulated professions | No licence or credential fields; he checks registers himself | Where a public register exists, let the owner link their entry so a member can check it in one step |
 | To hear from members who hired the business | No reviews or ratings; kudos shows praise only, with consent | Accounts of completed requests, limited to members whose request the business confirmed, with the owner's reply beside them |
 | A second step at sign-in | E-mail and password, or Google | Offer two-step sign-in to members who want it |
 | To know a data request was received | An e-mailed link within 24 hours | A status on the account page: requested, ready, expires on |

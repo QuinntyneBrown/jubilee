@@ -96,7 +96,7 @@ public sealed class GetCategoryListingsQueryHandler(IAppDbContext db, IDirectory
         var totalCount = await inCategory.CountAsync(cancellationToken);
 
         // The term is inside the JSON column, so the (small) category is narrowed in memory.
-        var all = await inCategory.OrderByDescending(l => l.ApprovedAt).ThenBy(l => l.SortName).ToListAsync(cancellationToken);
+        var all = await inCategory.OrderByDescending(l => l.PublishedAt).ThenBy(l => l.SortName).ToListAsync(cancellationToken);
         var matches = all.Where(l => l.Space is not null && (request.Term is null || l.Space.Term == request.Term)).ToList();
 
         var window = PageWindow.Clamp(request.Page, matches.Count);

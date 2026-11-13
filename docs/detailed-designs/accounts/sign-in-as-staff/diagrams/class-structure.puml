@@ -13,7 +13,7 @@ title Class structure — Sign in as staff
 
 enum StaffRoles <<flags>> {
   None
-  Verifier
+  Moderator
   Admin
 }
 enum StaffSignInOutcome {

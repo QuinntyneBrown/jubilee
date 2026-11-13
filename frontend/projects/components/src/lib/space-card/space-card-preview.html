@@ -16,7 +16,7 @@
   @if (available()) {
     <span class="space-card__available">{{ available() }}</span>
   }
-  @if (!verified()) {
-    <span jb-perk>Pending verification</span>
+  @if (!published()) {
+    <span jb-perk>Not published yet</span>
   }
 </p>

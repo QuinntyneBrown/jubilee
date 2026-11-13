@@ -55,7 +55,7 @@ test.describe('list a space (L2-198 to L2-200)', () => {
     await expect(list.category).toHaveCount(0);
     await expect(list.addItem).toHaveCount(0);
     await expect(list.space.previewHeading).toHaveText('How renters see it');
-    await expect(list.space.previewPending).toHaveText('Pending verification');
+    await expect(list.space.previewPending).toHaveText('Not published yet');
 
     await list.name.fill('Bright basement apartment in the Annex');
     await list.space.price.fill('1850');
@@ -110,7 +110,7 @@ test.describe('list a space (L2-198 to L2-200)', () => {
     ]);
     await expect(list.space.household).toHaveCount(0);
     await expect(list.space.photosHelp).toContainText(
-      'Add photos from My business once you submit. The first photo is your cover.',
+      'Add photos from My business once you publish. The first photo is your cover.',
     );
 
     await list.space.includedChip('Wi-Fi').click();
@@ -171,7 +171,7 @@ test.describe('list a space (L2-198 to L2-200)', () => {
       'I agree to Jubilee’s statement of faith, and confirm I’m allowed to rent this space and will follow Ontario’s tenancy rules.',
     );
     await list.space.term('Rooms').check();
-    await list.submit.click();
+    await list.publish.click();
 
     await expect(list.fieldError).toContainText([
       'Enter the rent in whole dollars, like 950.',
@@ -179,12 +179,12 @@ test.describe('list a space (L2-198 to L2-200)', () => {
       'Enter the neighbourhood, like The Annex.',
       'Enter the exact address. Renters only see it once you accept them.',
       'Tell renters who lives there in a line or two.',
-      'Agree to the statement of faith and the rental terms to submit your space.',
+      'Agree to the statement of faith and the rental terms to publish your space.',
     ]);
     await list.space.price.fill('60000');
-    await list.submit.click();
+    await list.publish.click();
     await expect(list.fieldError).toContainText(['Enter a rent of $50,000 or less.']);
-    expect(fake.submits).toHaveLength(0);
+    expect(fake.publishes).toHaveLength(0);
   });
 
   test('L2-199 AC10, L2-198 AC4: a space draft saves every field and comes back as it was', async ({
@@ -227,7 +227,7 @@ test.describe('list a space (L2-198 to L2-200)', () => {
     });
   });
 
-  test('L2-200 AC2: a valid space is in for verification', async ({ page, jb }) => {
+  test('L2-200 AC2: a valid space is published and live straight away', async ({ page, jb }) => {
     const list = new ListBusinessPage(page);
     await list.setWidth(1280);
     await jb.signInAs('member');
@@ -238,13 +238,13 @@ test.describe('list a space (L2-198 to L2-200)', () => {
     await list.tagline.fill('Separate entrance, garden walkout');
     await list.space.fillValid();
     await list.space.agreement.check();
-    await list.submit.click();
+    await list.publish.click();
 
-    await expect(list.doneHeading).toHaveText(
-      'Bright basement apartment in the Annex is in for verification',
-    );
+    await expect(list.doneHeading).toHaveText('Bright basement apartment in the Annex is live');
+    await expect(list.doneText).toHaveText('Renters can find it in Rooms & rentals now.');
+    await expect(list.viewPublicListing).toBeVisible();
     await expect(list.goToMyBusiness).toBeVisible();
-    expect(fake.submits[0]).toMatchObject({
+    expect(fake.publishes[0]).toMatchObject({
       kind: 'space',
       categorySlug: null,
       space: { term: 'long-term', rent: 1850, available: 'Dec 1', neighbourhood: 'The Annex' },
@@ -265,7 +265,7 @@ test.describe('list a space (L2-198 to L2-200)', () => {
     await list.tagline.fill('Separate entrance, garden walkout');
     await list.space.fillValid();
     await list.space.agreement.check();
-    await list.submit.click();
+    await list.publish.click();
 
     await expect(list.fieldError).toHaveText([
       'Enter a rent of $50,000 or less.',

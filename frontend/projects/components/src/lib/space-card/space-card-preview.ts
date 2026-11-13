@@ -12,8 +12,8 @@ import { SpaceCardView } from './space-card';
 import { availability, formatRent, TERM_BADGES, TERM_TILES } from './space-terms';
 
 /**
- * How renters will see a space that is not live yet (L2-198 AC3): the space card, with nothing
- * to follow, marked "Pending verification" until it is `verified`.
+ * How renters see a space (L2-198 AC3): the space card, with nothing to follow, marked "Not
+ * published yet" until it is `published` (ADR 0057).
  *
  *     <div jb-space-card-preview [space]="preview()"></div>
  */
@@ -27,7 +27,7 @@ import { availability, formatRent, TERM_BADGES, TERM_TILES } from './space-terms
 })
 export class SpaceCardPreview {
   readonly space = input.required<SpaceCardView>();
-  readonly verified = input(false, { transform: booleanAttribute });
+  readonly published = input(false, { transform: booleanAttribute });
 
   protected readonly tile = computed(() => TERM_TILES[this.space().term]);
   protected readonly badge = computed(() => TERM_BADGES[this.space().term]);

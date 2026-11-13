@@ -8,9 +8,8 @@ interface FakeCard {
   tagline: string;
   highlight: string | null;
   categorySlug: string;
-  verified: boolean;
   coverPhoto: null;
-  /** Null below 3 reviews (L2-230). */
+  /** Null below 3 reviews (L2-231). */
   rating: { average: number; count: number } | null;
 }
 
@@ -63,7 +62,6 @@ const card = (
   tagline,
   highlight,
   categorySlug,
-  verified: true,
   coverPhoto: null,
   rating: null,
 });

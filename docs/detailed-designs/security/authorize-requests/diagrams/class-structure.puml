@@ -15,7 +15,7 @@ title Class structure — Authorize requests
 
 enum MemberRole {
   Member
-  Verifier
+  Moderator
   Admin
 }
 
@@ -23,7 +23,7 @@ enum EndpointPolicy {
   Public
   MemberOnly
   ListingOwner
-  Verifier
+  Moderator
   Admin
 }
 

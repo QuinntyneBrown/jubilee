@@ -13,7 +13,7 @@ Container_Boundary(api, "Jubilee API") {
   Component(ctrl, "MyBusinessController", "ASP.NET Core controller", "Exposes /api/my-business/pause and /resume")
   Component(rules, "Workspace", "Application rules", "Owned finds the owner's listing or refuses with 403")
   Component(pause, "PauseListingCommandHandler", "MediatR handler", "Refuses NOT_LIVE and ALREADY_PAUSED and pauses")
-  Component(resume, "ResumeListingCommandHandler", "MediatR handler", "Refuses NOT_PAUSED and resumes or re-queues")
+  Component(resume, "ResumeListingCommandHandler", "MediatR handler", "Refuses NOT_PAUSED and resumes")
   Component(listing, "Listing", "Domain entity", "Owns Pause and Resume")
   Component(interceptor, "DirectoryCacheInvalidationInterceptor", "EF Core interceptor", "Drops the cached reads after a save of a listing")
   Component(readcache, "DistributedDirectoryReadCache", "IDirectoryReadCache", "Keeps public answers for at most 60 seconds")

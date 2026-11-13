@@ -234,7 +234,7 @@ public class DemoDirectoryTests(SeededApiFactory factory) : IClassFixture<Seeded
             json.GetProperty("related").EnumerateArray().Select(c => (c.GetProperty("name").GetString()!, c.GetProperty("highlight").GetString()!)));
     }
 
-    // L2-228, ADR 0058: the sample reviews of the mocks.
+    // L2-229, ADR 0066: the sample reviews of the mocks.
     [Fact]
     public async Task L2_225_the_demo_listings_have_the_sample_reviews_of_the_mocks()
     {

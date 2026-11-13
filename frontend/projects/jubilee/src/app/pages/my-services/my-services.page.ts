@@ -1,4 +1,11 @@
 import { Dialog } from '@angular/cdk/dialog';
+import {
+  CdkDrag,
+  CdkDragDrop,
+  CdkDragHandle,
+  CdkDropList,
+  moveItemInArray,
+} from '@angular/cdk/drag-drop';
 import { HttpErrorResponse } from '@angular/common/http';
 import {
   ChangeDetectionStrategy,
@@ -30,6 +37,7 @@ import {
   RowTitle,
   Rows,
   WorkspaceHeader,
+  FieldHelp,
 } from 'components';
 import { DeleteItemData, DeleteItemDialog } from '../../dialogs/delete-item/delete-item.dialog';
 import {
@@ -48,6 +56,10 @@ import { ToastService } from 'components';
 @Component({
   selector: 'jb-my-services-page',
   imports: [
+    CdkDrag,
+    CdkDragHandle,
+    CdkDropList,
+    FieldHelp,
     EmptyState,
     Icon,
     WorkspaceHeader,
@@ -205,6 +217,31 @@ export class MyServicesPage implements OnInit {
     const index = services.rows.indexOf(service);
     const target = index + by;
     if (target < 0 || target >= services.rows.length) return;
+    this.moveTo(services, service, target, by === -1 ? 'up' : 'down');
+  }
+
+  /**
+   * A service dragged by its handle and dropped (L2-090 AC2). The list shows the new order at once
+   * and the API confirms it; a drop in the same place sends nothing, and a refused move puts it back.
+   */
+  protected drop(
+    services: OwnerServices,
+    event: CdkDragDrop<OwnerService[], OwnerService[], OwnerService>,
+  ): void {
+    if (this.moving() || event.previousIndex === event.currentIndex) return;
+    const rows = [...services.rows];
+    moveItemInArray(rows, event.previousIndex, event.currentIndex);
+    this.state.set({ status: 'loaded', value: { ...services, rows } });
+    this.moveTo(services, event.item.data, event.currentIndex, null);
+  }
+
+  /** Sends one move; `before` is the list to go back to when it is refused. */
+  private moveTo(
+    before: OwnerServices,
+    service: OwnerService,
+    target: number,
+    button: 'up' | 'down' | null,
+  ): void {
     this.moving.set(true);
     this.api.moveService(service.id, target + 1).subscribe({
       next: (value) => {
@@ -213,16 +250,18 @@ export class MyServicesPage implements OnInit {
         this.announcement.set(
           `${service.name} moved to position ${target + 1} of ${value.rows.length}.`,
         );
+        if (!button) return;
         setTimeout(() =>
           document
             .querySelector<HTMLElement>(
-              `[aria-label="Move ${service.name} ${by === -1 ? 'up' : 'down'}"]:not([disabled])`,
+              `[aria-label="Move ${service.name} ${button}"]:not([disabled])`,
             )
             ?.focus(),
         );
       },
       error: () => {
         this.moving.set(false);
+        this.state.set({ status: 'loaded', value: before });
         this.toasts.show({
           tone: 'danger',
           title: 'Couldn’t move the service',

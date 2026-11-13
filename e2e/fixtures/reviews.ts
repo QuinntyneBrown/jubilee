@@ -1,6 +1,6 @@
 import type { Page, Route } from '@playwright/test';
 
-// Stand-ins for the reviews endpoints (L2-237, ADR 0058). The recording is made as a visitor, so
+// Stand-ins for the reviews endpoints (L2-238, ADR 0066). The recording is made as a visitor, so
 // what a member, the owner or an author sees, and every write, is answered here (ADR 0009). The
 // reviews are the seeded ones (DemoReviews), with the ids the tests name them by.
 
@@ -340,7 +340,7 @@ export async function stubReviews(
   return fake;
 }
 
-/** What the Write a review screen of Legacy Financial needs (L2-237 AC2). */
+/** What the Write a review screen of Legacy Financial needs (L2-238 AC2). */
 export function legacyForm() {
   return {
     listing: {
@@ -362,7 +362,7 @@ export function legacyForm() {
   };
 }
 
-/** The guest suite's form: a space shows no choice (L2-226 AC3). */
+/** The guest suite's form: a space shows no choice (L2-227 AC3). */
 export function suiteForm(): ReturnType<typeof legacyForm> {
   return {
     listing: {
@@ -392,7 +392,7 @@ export interface FakeReviewForm {
   posts: { body: Record<string, unknown>; key?: string }[];
 }
 
-/** Answers the Write a review screen's form and its post (L2-226, L2-227). */
+/** Answers the Write a review screen's form and its post (L2-227, L2-228). */
 export async function stubReviewForm(
   page: Page,
   slug: string,

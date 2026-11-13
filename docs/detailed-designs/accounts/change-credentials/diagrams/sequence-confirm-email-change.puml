@@ -19,7 +19,7 @@ skinparam package {
 actor "Member" as actor
 box "Frontend — Jubilee Web" #E0F2FE
   participant "ConfirmEmailChangePage" as page
-  participant "AccountApi" as client
+  participant "ProfileApi\n(HttpProfileApi)" as client
 end box
 box "Backend — Jubilee API" #D1FADF
   participant "AccountController" as controller
@@ -35,29 +35,37 @@ end box
 actor -> page : Open the confirmation link
 page -> page : Read the token and remove it from the address bar (L2-140)
 page -> client : confirmEmailChange(token)
-client -> controller : POST /api/account/email-change/confirm
-controller -> handler : Send ConfirmEmailChangeCommand
-handler -> db : Load LinkToken by SHA-256 hash of the token
+client -> controller : POST /api/account/email-change/confirm (no session needed)
+controller -> handler : Send ConfirmEmailChangeCommand (Address)
+handler -> db : Load ChangeEmail LinkToken by SHA-256 hash of the token
 db --> handler : LinkToken or none
-handler -> token : IsUsable(now)
-token --> handler : Usable or not
-alt Token unknown or used or older than 24 hours
-  handler --> controller : Link not valid
-  controller --> client : 410 ProblemDetails
-  client --> page : Not confirmed
+handler -> token : IsRedeemable(now)
+token --> handler : Redeemable or not
+alt Token unknown, used, superseded or older than 24 hours
+  handler --> controller : EmailChangeOutcome.Expired
+  controller --> client : 200 outcome "expired"
+  client --> page : expired
   page --> actor : Show that the link no longer works. The old address stays in use
-else Token usable
+else Target address taken by another account in the meantime
+  handler -> db : Check that no other account uses the target address
+  db --> handler : Taken
+  handler --> controller : EmailChangeOutcome.EmailInUse
+  controller --> client : 200 outcome "email-in-use"
+  client --> page : email-in-use
+  page --> actor : Say another account uses the address. The old address stays in use
+else Token redeemable and address free
   handler -> db : Check that no other account uses the target address
   db --> handler : Free
   handler -> entity : ChangeEmail(TargetEmail) (L2-014)
   entity --> handler : Address replaced and marked confirmed
-  handler -> token : MarkUsed(now)
+  handler -> token : Redeem(now)
   token --> handler : Used
-  handler -> db : Save changes and security event in one unit of work (L2-143)
+  handler -> db : Save changes in one unit of work
   db --> handler : Commit result
-  handler --> controller : Confirmed
-  controller --> client : 200 OK
-  client --> page : Confirmed
+  handler -> handler : SecurityLog: EmailChange succeeded (L2-143)
+  handler --> controller : EmailChangeOutcome.Confirmed
+  controller --> client : 200 outcome "confirmed"
+  client --> page : confirmed
   page --> actor : Show the new address with "Confirmed."
 end
 @enduml

@@ -92,7 +92,6 @@ class IncomingRequestsDto {
 class OwnerListingDto {
   +string Name
   +string Slug
-  +bool Verified
 }
 
 class RequestCountsDto {

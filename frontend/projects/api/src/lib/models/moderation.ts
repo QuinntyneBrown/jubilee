@@ -1,4 +1,4 @@
-/** What the verification team sees of reports and featured businesses (L2-105, L2-106). */
+/** What the Jubilee team sees of reports and featured businesses (L2-105, L2-106). */
 
 export type ReportStatus = 'open' | 'in-review' | 'resolved';
 
@@ -8,7 +8,7 @@ export type ReportFilter = 'unresolved' | 'open' | 'in-review' | 'resolved';
 export type ReportActionKind =
   'dismiss' | 'message-reporter' | 'message-owner' | 'hold' | 'remove' | 'lift-hold' | 'take-down';
 
-/** What a report is about: a listing, a conversation with it, or a review of it (L2-236). */
+/** What a report is about: a listing, a conversation with it, or a review of it (L2-237). */
 export type ReportType = 'listing' | 'conversation' | 'review';
 
 /** How a reported listing stands: live, paused, on hold, removed. */
@@ -47,7 +47,7 @@ export interface ReportAction {
   at: string;
 }
 
-/** A reported review as it stands, for the verification team (L2-236 AC2). */
+/** A reported review as it stands, for the Jubilee team (L2-237 AC2). */
 export interface ReviewUnderReport {
   author: string;
   initials: string;

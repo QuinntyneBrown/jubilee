@@ -3,13 +3,16 @@
 ## Overview
 
 Jubilee's staff work in their own application, the *admin application*, at
-`https://admin.jubilee.to` (`L2-188`). The *verification team* is the staff who
-hold the `verifier` role; an *administrator* holds the `admin` role. Before this
-feature the verification queue, the review of a listing, the reports and the
-featured businesses were screens of the app under `/admin/*`, shown to any
-session that carried the `verifier` role. They now live only in the admin
-application, and the app keeps a single *moved page* for old links
-(`L2-194`).
+`https://admin.jubilee.to` (`L2-188`). The *Jubilee team* is the staff who
+hold the `moderator` role (named `verifier` before ADR 0057); an
+*administrator* holds the `admin` role. The admin application holds five
+screens: the listings (`/listings`), one listing (`/listings/:id`), the reports
+list (`/reports`), one report (`/reports/:id`) and the featured businesses
+(`/featured`). Nobody verifies a listing before it goes live (ADR 0057), so
+there is no queue and no review: the team looks through published listings and
+takes down one that misrepresents a business. These screens were once screens
+of the app under `/admin/*`; they now live only in the admin application, and
+the app keeps a single *moved page* for old links (`L2-194`).
 
 The admin application is the third Angular application of the frontend
 workspace, beside the app (`jubilee`) and the marketing site (`marketing`). It
@@ -30,23 +33,23 @@ on its own host (ADR 0040).
 - **`App`** — the application's root container (`jb-root`). It renders
   `jb-skip-link`, `jb-admin-bar`, the routed page in `main` and
   `jb-toast-region`. Route data (`shell`: `admin` or `bare`; `page`; `section`;
-  `verifier`) picks the chrome and is stamped on `<body data-page>`. The
-  sign-in screens use the `bare` shell. On a screen marked `verifier`, a staff
-  member without the `verifier` role sees `AdminOnlyPage` in place of the
+  `moderator`) picks the chrome and is stamped on `<body data-page>`. The
+  sign-in screens use the `bare` shell. On a screen marked `moderator`, a staff
+  member without the `moderator` role sees `AdminOnlyPage` in place of the
   router outlet, so the screen is never loaded and its endpoint never called
   (`L2-188` criterion 4).
 - **`jb-admin-bar`** — presentation component in `frontend/projects/components`
-  (`admin-bar.ts`, `.html`, `.scss`). Inputs: `staff` (`displayName`, `roles`,
-  `verificationCount`) and `current`, the section. It shows the lockup
-  with the tag "admin", the links "Verifications {n}", "Reports" and "Featured"
-  to a staff member with the `verifier` role (none otherwise), marks the
+  (`admin-bar.ts`, `.html`, `.scss`). Inputs: `staff` (`displayName`, `roles`)
+  and `current`, the section. It shows the lockup with the tag "admin", the
+  links "Listings", "Reports" and "Featured" to a staff member with the
+  `moderator` role (none otherwise), with no count, marks the
   current link with `aria-current="page"` and the underline, shows the name and
-  role ("Verifier", "Administrator" or both) from 768 px, and emits `signOut`
+  role ("Moderator", "Administrator" or both) from 768 px, and emits `signOut`
   from its "Sign out" button. Under 768 px the navigation is one row under the
   lockup that scrolls sideways.
 - **`StaffSessionService`** — root service. `resolve()` reads
   `GET /api/staff/session` once at start-up and holds the staff member
-  (display name, initials, e-mail, roles, `verificationCount`) as a signal, or
+  (display name, initials, e-mail, roles) as a signal, or
   `null`; `refused` is true when the API answered 403 `NETWORK_NOT_ALLOWED`
   (`L2-192` criterion 6). `signOut()` calls `DELETE /api/staff/session`.
 - **`staffGuard`** — functional guard on every screen (`canActivateChild`).
@@ -57,14 +60,15 @@ on its own host (ADR 0040).
 - **`sessionExpiredInterceptor`** — HTTP interceptor. A 401 with `code`
   `SESSION_EXPIRED` clears the staff session and navigates to
   `/session-expired`; a 401 `sign_in_required` navigates to `/sign-in`.
-- **Moved pages** — `AdminVerificationsPage` (`/verifications`),
-  `AdminVerificationPage` (`/verifications/:id`), `AdminReportsPage`
-  (`/reports`), `AdminReportPage` (`/reports/:id`) and `AdminFeaturedPage`
-  (`/featured`) move unchanged in behaviour from the app, with their dialogs `approve-listing`,
-  `request-changes`, `decline-listing` and `report-action`. The "Verification
-  team" tabs under each title give way to the admin bar's navigation. `/`
-  redirects to `/verifications`; any other path renders `NotFoundPage`
-  ("We couldn't find that page." with "Go to the verification queue").
+- **Screens** — `AdminListingsPage` (`/listings`,
+  `moderation/browse-listings`), `AdminListingPage` (`/listings/:id`, with the
+  dialog `take-down-listing`, `moderation/take-down-listing`),
+  `AdminReportsPage` (`/reports`), `AdminReportPage` (`/reports/:id`, with the
+  dialog `report-action`, `moderation/handle-reports`) and
+  `AdminFeaturedPage` (`/featured`, `moderation/feature-businesses`). The admin
+  bar's navigation is the only navigation between them. `/` redirects to
+  `/listings`; any other path renders `NotFoundPage` ("We couldn't find that
+  page." with "Go to listings").
 - **Shared helpers** — `ClockService`, `LoadState` with `errorReference` and the
   message-time formatters move from the app to the `api` library, and
   `ToastService` with `jb-toast-region` to the `components` library, so that both
@@ -72,11 +76,13 @@ on its own host (ADR 0040).
 - **`AdminMovedPage`** — the one page the app keeps under `/admin/**`. It shows
   "This page has moved" with "Open the admin application", whose address is
   `ADMIN_URL` (a per-environment token, `https://admin.jubilee.to` in
-  production, `http://localhost:4202` in development) followed by the path
-  without its `/admin` prefix when it is one of the five screens, or
-  `/verifications` otherwise, and "Back to browse". The app's top bar, tab bar
-  and account menu show no admin link, `verifierGuard` is removed, and the app
-  no longer reads `isVerifier` or `verificationCount`.
+  production, `http://localhost:4202` in development) followed by the matching
+  screen (`/admin/verifications` to `/listings`, `/admin/verifications/:id` to
+  `/listings/:id`, `/admin/reports`, `/admin/reports/:id` and
+  `/admin/featured` without their `/admin` prefix), or `/listings` for any
+  other path, and "Back to browse". The app's top bar, tab bar and account menu
+  show no admin link, the app has no staff route guard, and the app reads no
+  staff role and no count.
 
 ## Requirements
 
@@ -85,9 +91,9 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 
 | L2 ID | Refines (L1) | Requirement |
 |-------|--------------|-------------|
-| `L2-188` | `L1-027` | The admin application shall be its own application at `https://admin.jubilee.to` with its own routes and shell, shall hold the verification queue, the review, the reports list, a report and the featured businesses, shall show the admin bar with the staff navigation, name, role and "Sign out", shall show "Nothing here for your role" to a staff member without the `verifier` role, shall send a caller without a staff session to staff sign-in, and shall fit every width from 360 px in both themes with a keyboard. |
-| `L2-194` | `L1-014` | The app shall show no admin link and call no admin-only endpoint; an old `/admin/*` link shall show "This page has moved" with "Open the admin application" to the same screen there and "Back to browse". |
-| `L2-098` | `L1-014` | The admin application's top bar shall show "Verifications {n}" with the number of listings ready to review. |
+| `L2-188` | `L1-027` | The admin application shall be its own application at `https://admin.jubilee.to` with its own routes and shell, shall hold the listings (`/listings`, which `/` opens), one listing (`/listings/:id`), the reports list (`/reports`), one report (`/reports/:id`) and the featured businesses (`/featured`), shall show the admin bar with the staff navigation, name, role and "Sign out", shall show "Nothing here for your role" to a staff member without the `moderator` role, shall send a caller without a staff session to staff sign-in, and shall fit every width from 360 px in both themes with a keyboard. |
+| `L2-194` | `L1-014` | The app shall show no admin link and call no admin-only endpoint; an old `/admin/*` link shall show "This page has moved" with "Open the admin application" to the matching screen there (`/admin/verifications` to `/listings`, `/admin/verifications/:id` to `/listings/:id`, any other path to `/listings`) and "Back to browse". |
+| `L2-098` | `L1-014` | The admin application's top bar shall show "Listings", "Reports" and "Featured" to a moderator. |
 
 ## Diagrams
 

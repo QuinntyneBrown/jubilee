@@ -3,7 +3,7 @@ import { stubReviewForm, suiteForm } from '../fixtures/reviews';
 import { WriteReviewPage } from '../pages/write-review.page';
 
 // Acceptance Test
-// Traces to: L2-225, L2-226, L2-227
+// Traces to: L2-226, L2-227, L2-228
 // Description: the Write a review screen at /b/{slug}/review: what it shows, who reaches it, how
 // the review is checked, posted once and confirmed, and what a failure keeps. The form and the
 // post are answered by `stubReviewForm` (ADR 0009).
@@ -11,7 +11,7 @@ import { WriteReviewPage } from '../pages/write-review.page';
 const GOOD =
   'Trevor took the time to understand what we needed before suggesting anything. Clear, honest and no pressure. We’d go back.';
 
-test.describe('the Write a review screen (L2-226)', () => {
+test.describe('the Write a review screen (L2-227)', () => {
   test('AC1/AC2/AC3/AC4/AC5: it names the listing, then the stars, the service, the text and the notes', async ({
     page,
     jb,
@@ -54,7 +54,7 @@ test.describe('the Write a review screen (L2-226)', () => {
     await expect(write.counter).toHaveText(`Looks good · ${GOOD.length}`);
 
     await expect(write.notes).toHaveText([
-      'Your review will show as Verified because Legacy Financial confirmed your request on Jubilee. It posts under your first name and last initial: Joanna A.',
+      'Your review posts under your first name and last initial: Joanna A.',
       'Keep to what happened to you: no private details of anyone and no advertising.',
     ]);
     await expect(write.post).toHaveText('Post review');
@@ -99,7 +99,7 @@ test.describe('the Write a review screen (L2-226)', () => {
   });
 });
 
-test.describe('who reaches the Write a review screen (L2-225)', () => {
+test.describe('who reaches the Write a review screen (L2-226)', () => {
   test('AC2: a member who may not write is told when they can', async ({ page, jb }) => {
     const write = new WriteReviewPage(page);
     await stubReviewForm(page, 'legacy-financial', {
@@ -134,7 +134,7 @@ test.describe('who reaches the Write a review screen (L2-225)', () => {
   });
 });
 
-test.describe('posting a review (L2-227)', () => {
+test.describe('posting a review (L2-228)', () => {
   test('AC1/AC2: nothing chosen and too little written: both say so, focus goes to the stars, nothing is sent', async ({
     page,
     jb,

@@ -12,14 +12,14 @@ import {
 } from 'api';
 import { Subscription } from 'rxjs';
 
-/** How many reviews show before "Show all {n} reviews" (L2-228 AC4). */
+/** How many reviews show before "Show all {n} reviews" (L2-229 AC4). */
 const FIRST = 3;
 
 /**
- * The reviews of one listing or one product, for the page that shows them (L2-228, L2-229,
- * L2-231). Provided by the page, so the rating under the name and the "Reviews" section read the
+ * The reviews of one listing or one product, for the page that shows them (L2-229, L2-230,
+ * L2-232). Provided by the page, so the rating under the name and the "Reviews" section read the
  * same answer. The summary is counted from the reviews held, so an edit or a removal redraws it
- * (L2-237 AC9).
+ * (L2-238 AC9).
  */
 @Injectable()
 export class ListingReviewsStore {
@@ -42,10 +42,10 @@ export class ListingReviewsStore {
   readonly writing = computed(() => this.loaded()?.writing ?? 'sign-in');
   readonly summary = computed(() => summarize(this.loaded()?.items ?? []));
 
-  /** The member's own review, shown first and apart (L2-228 AC7). */
+  /** The member's own review, shown first and apart (L2-229 AC7). */
   readonly mine = computed(() => this.loaded()?.items.find((r) => r.mine) ?? null);
 
-  /** The others, filtered and ordered (L2-229). */
+  /** The others, filtered and ordered (L2-230). */
   readonly ordered = computed(() => {
     const others = (this.loaded()?.items ?? []).filter((r) => !r.mine);
     return sortReviews(filterReviews(others, this.stars()), this.sort(), new Date());
@@ -95,7 +95,7 @@ export class ListingReviewsStore {
     this.patch((items) => items.map((r) => (r.id === review.id ? review : r)));
   }
 
-  /** The member removed their review: they may write one again (L2-232 AC5). */
+  /** The member removed their review: they may write one again (L2-233 AC5). */
   remove(id: string): void {
     this.patch((items) => items.filter((r) => r.id !== id), 'eligible');
   }

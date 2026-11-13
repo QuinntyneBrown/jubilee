@@ -8,11 +8,11 @@ namespace Jubilee.Api.Tests;
 
 // Acceptance Test
 // Traces to: L2-114 AC2, L2-127, L2-132
-// Description: "Ask for access" e-mails the verification team the address, the member and when it was asked,
+// Description: "Ask for access" e-mails the Jubilee team the address, the member and when it was asked,
 // through the outbox, once per request: a repeated key or a request over the hourly limit sends nothing (ADR 0056).
-public sealed class AccessRequestNoticeTests(VerificationTeamEmailFactory factory) : IClassFixture<VerificationTeamEmailFactory>, IAsyncLifetime
+public sealed class AccessRequestNoticeTests(JubileeTeamEmailFactory factory) : IClassFixture<JubileeTeamEmailFactory>, IAsyncLifetime
 {
-    private const string Team = "verification@jubilee.test";
+    private const string Team = "team@jubilee.test";
     private Member _joanna = null!;
 
     public async Task InitializeAsync()

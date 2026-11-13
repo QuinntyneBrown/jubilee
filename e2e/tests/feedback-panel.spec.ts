@@ -1,6 +1,10 @@
 import { expect, test } from '../fixtures/jb-test';
 import { stubFeedback } from '../fixtures/feedback';
 import { FeedbackDialog } from '../pages/feedback.dialog';
+import { FeedbackPage } from '../pages/feedback.page';
+import { MaintenancePage } from '../pages/maintenance.page';
+import { OfflinePage } from '../pages/offline.page';
+import { ServerErrorPage } from '../pages/server-error.page';
 import { ShellPage } from '../pages/shell.page';
 
 test.describe('feedback launcher and panel (L2-210)', () => {
@@ -44,6 +48,31 @@ test.describe('feedback launcher and panel (L2-210)', () => {
     await expect(shell.feedbackLauncher).toHaveCount(0);
   });
 
+  test('AC1: the feedback page and the error pages show a member no launcher', async ({
+    page,
+    jb,
+  }) => {
+    const shell = new ShellPage(page);
+    await shell.setWidth(1280);
+    await jb.signInAs('member');
+    await stubFeedback(page);
+
+    await jb.goto('/feedback/rate');
+    await expect(new FeedbackPage(page).heading).toBeVisible();
+    await expect(shell.topBar).toBeVisible();
+    await expect(shell.feedbackLauncher).toHaveCount(0);
+
+    for (const [address, screen] of [
+      ['/error', new ServerErrorPage(page)],
+      ['/maintenance', new MaintenancePage(page)],
+      ['/offline', new OfflinePage(page)],
+    ] as const) {
+      await jb.goto(address);
+      await expect(screen.heading).toBeVisible();
+      await expect(shell.feedbackLauncher).toHaveCount(0);
+    }
+  });
+
   test('AC2: the launcher opens the panel on Rate, and the arrow keys move between the tabs', async ({
     page,
     jb,
@@ -68,6 +97,38 @@ test.describe('feedback launcher and panel (L2-210)', () => {
     await page.keyboard.press('ArrowLeft');
     await page.keyboard.press('ArrowLeft');
     await expect(panel.tab('Kudos')).toHaveAttribute('aria-selected', 'true');
+  });
+
+  test('AC2: Space opens the panel as Enter does', async ({ page, jb }) => {
+    const shell = new ShellPage(page);
+    const panel = new FeedbackDialog(page);
+    await shell.setWidth(1280);
+    await jb.signInAs('member');
+    await jb.goto('/');
+    await shell.feedbackLauncher.focus();
+    await page.keyboard.press('Space');
+
+    await expect(panel.title).toHaveText('Tell us how it’s going');
+    await expect(panel.tab('Rate')).toHaveAttribute('aria-selected', 'true');
+  });
+
+  test.describe('on a touch screen', () => {
+    test.use({ hasTouch: true, viewport: { width: 360, height: 760 } });
+
+    test('AC2: a tap on the launcher opens the panel as a bottom sheet', async ({ page, jb }) => {
+      const shell = new ShellPage(page);
+      const panel = new FeedbackDialog(page);
+      await jb.signInAs('member');
+      await jb.goto('/');
+      await shell.feedbackLauncher.tap();
+
+      await expect(panel.title).toHaveText('Tell us how it’s going');
+      await panel.settled();
+      const sheet = (await panel.panel.boundingBox())!;
+      expect(Math.round(sheet.y + sheet.height)).toBe(760);
+      await panel.star(4).tap();
+      await expect(panel.starRadio(4)).toBeChecked();
+    });
   });
 
   test('AC2: from 640 px the panel is a card in the bottom right corner; under it, a bottom sheet', async ({
@@ -227,5 +288,62 @@ test.describe('feedback launcher and panel (L2-210)', () => {
     await shell.feedbackLauncher.click();
 
     await expect(panel.note).toHaveAttribute('maxlength', '1000');
+  });
+
+  test('AC12: with reduced motion the launcher and the panel appear without movement', async ({
+    page,
+    jb,
+  }) => {
+    const shell = new ShellPage(page);
+    const panel = new FeedbackDialog(page);
+    await shell.setWidth(360);
+    await jb.signInAs('member');
+    await jb.goto('/');
+    // Without the preference the launcher answers a press and the panel slides in
+    expect(await shell.feedbackLauncherMotionMs()).toBeGreaterThan(1);
+    await shell.feedbackLauncher.click();
+    await expect(panel.title).toBeVisible();
+    expect(await panel.arrivalMs()).toBeGreaterThan(1);
+    await page.keyboard.press('Escape');
+
+    // Given the member prefers reduced motion
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+
+    // Then neither moves
+    expect(await shell.feedbackLauncherMotionMs()).toBeLessThanOrEqual(1);
+    await shell.feedbackLauncher.click();
+    await expect(panel.title).toBeVisible();
+    expect(await panel.arrivalMs()).toBeLessThanOrEqual(1);
+  });
+
+  test.describe('on a touch screen', () => {
+    test.use({ hasTouch: true });
+
+    for (const width of [360, 1280]) {
+      test(`AC12: every target of the panel can be pressed over 44 px at ${width} px`, async ({
+        page,
+        jb,
+      }) => {
+        const shell = new ShellPage(page);
+        const panel = new FeedbackDialog(page);
+        await shell.setWidth(width);
+        await jb.signInAs('member');
+        await stubFeedback(page);
+        await jb.goto('/');
+        await shell.feedbackLauncher.tap();
+        await panel.settled();
+
+        expect(await panel.targetsSmallerThan(44)).toEqual([]);
+        await panel.tab('Report a bug').tap();
+        expect(await panel.targetsSmallerThan(44)).toEqual([]);
+        await panel.tab('Kudos').tap();
+        await expect(panel.chips).toBeVisible();
+        expect(await panel.targetsSmallerThan(44)).toEqual([]);
+        await panel.chip('Quick replies').tap();
+        await panel.send.tap();
+        await expect(panel.done).toBeVisible();
+        expect(await panel.targetsSmallerThan(44)).toEqual([]);
+      });
+    }
   });
 });

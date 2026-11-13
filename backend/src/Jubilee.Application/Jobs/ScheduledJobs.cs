@@ -83,3 +83,55 @@ public sealed class RunResponseTimeBadgeJobCommandHandler(ScheduledJobs jobs, IS
         return recomputed;
     }
 }
+
+/// <summary>
+/// The booking-completion job (L2-043 AC5, L2-182 AC1): completes each confirmed booking whose meeting
+/// has ended, once per 5 minutes however many instances of the worker run. The answer is the number of
+/// bookings completed, or null when another instance already ran this occurrence.
+/// </summary>
+public sealed record RunBookingCompletionJobCommand : IRequest<int?>
+{
+    public const string Job = "booking-completion";
+
+    public static readonly TimeSpan Every = TimeSpan.FromMinutes(5);
+}
+
+public sealed class RunBookingCompletionJobCommandHandler(ScheduledJobs jobs, ISender sender) : IRequestHandler<RunBookingCompletionJobCommand, int?>
+{
+    public async Task<int?> Handle(RunBookingCompletionJobCommand command, CancellationToken cancellationToken)
+    {
+        int? completed = null;
+        await jobs.RunOnceAsync(
+            RunBookingCompletionJobCommand.Job,
+            RunBookingCompletionJobCommand.Every,
+            async token => completed = await sender.Send(new CompleteFinishedBookingsCommand(), token),
+            cancellationToken);
+        return completed;
+    }
+}
+
+/// <summary>
+/// The unanswered-request job (L2-043 AC8, L2-182 AC1): reminds the owner once of each request nobody
+/// answered in a week, once per hour however many instances of the worker run. The answer is the number
+/// of owners reminded, or null when another instance already ran this hour.
+/// </summary>
+public sealed record RunUnansweredRequestJobCommand : IRequest<int?>
+{
+    public const string Job = "unanswered-requests";
+
+    public static readonly TimeSpan Every = TimeSpan.FromHours(1);
+}
+
+public sealed class RunUnansweredRequestJobCommandHandler(ScheduledJobs jobs, ISender sender) : IRequestHandler<RunUnansweredRequestJobCommand, int?>
+{
+    public async Task<int?> Handle(RunUnansweredRequestJobCommand command, CancellationToken cancellationToken)
+    {
+        int? reminded = null;
+        await jobs.RunOnceAsync(
+            RunUnansweredRequestJobCommand.Job,
+            RunUnansweredRequestJobCommand.Every,
+            async token => reminded = await sender.Send(new RemindUnansweredRequestsCommand(), token),
+            cancellationToken);
+        return reminded;
+    }
+}

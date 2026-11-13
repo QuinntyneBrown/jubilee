@@ -1,0 +1,54 @@
+@startuml
+title UML sequence behaviour — Show featured businesses
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member or visitor" as actor
+box "Frontend — Jubilee app" #E0F2FE
+  participant "WelcomePage or BrowsePage" as page
+  participant "DirectoryApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "DirectoryController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "GetWelcomeQueryHandler or GetBrowseHomeQueryHandler" as handler
+  participant "FeaturedSelector" as sel
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Cache" as cache
+  database "Jubilee database" as db
+end box
+actor -> page : Open the welcome page or Browse
+page -> client : getWelcome() or getHome()
+client -> controller : GET /api/directory/welcome or /home
+controller -> handler : Send the query
+handler -> cache : Read the cached answer
+alt cache hit
+  cache --> handler : Answer, at most 60 seconds old and dropped by any save of a slot or a listing
+else cache miss
+  handler -> sel : SelectAsync(now, limit)
+  sel -> db : Slots with start date <= today < start date + 7 days in Toronto, joined to public listings
+  db --> sel : Listings in slot order, skipping paused, held or removed (L2-106)
+  sel --> handler : Featured listings, or the newest published when no slot is current
+  handler -> cache : Store the answer
+end
+handler --> controller : Answer with featured
+controller --> page : 200
+alt at least one business
+  page --> actor : Show "Featured this week" in slot order
+else none
+  page --> actor : Render nothing
+end
+@enduml

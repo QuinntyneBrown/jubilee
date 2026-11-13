@@ -14,11 +14,12 @@ No note is asked for at 4. The form was easy; the four days were his compliance 
 understand all three. I mention it because it is rare. You do not take payment, you say so in one
 sentence, and you have not once told me that listing will make me prosper. Thank you for that."
 
-**Rate, 2 stars, "Not great"** (full form at `/feedback/rate`; "Trust and verification" scored 2)
+**Rate, 2 stars, "Not great"** (full form at `/feedback/rate`; "Trust and safety" scored 2)
 
-"I was verified in a day and nobody asked whether I hold a licence. I do. The next person in my
-category may not, and will carry the same mark. In a regulated profession, 'Verified' that does
-not include the licence is a risk to your members and to those of us who are licensed."
+"I was live the moment I pressed Publish, and nobody asked whether I hold a licence. I do. The
+next person in my category may not, and his listing will look exactly like mine. In a regulated
+profession, a listing anyone can publish with no licence shown is a risk to your members and to
+those of us who are licensed. Taking it down after the harm is done is late."
 
 **Report a bug** ("Where did it happen?": Requests)
 
@@ -35,7 +36,7 @@ anyone. For a deacon who will not sell in the foyer, that is the whole point."
 
 | Need | Today | Suggestion |
 |---|---|---|
-| To show licences and designations as checked facts | No licence or credential field in the editor; he writes them in About | For regulated categories, fields for licence type and number that the verification team checks against the public register before approving |
+| To show licences and designations as facts a member can check | No licence or credential field in the editor; he writes them in About | For regulated categories, fields for licence type and number, linked to the public register so a member can check them before booking |
 | To make required disclosures hard to miss | One About text of 1,500 characters | A short "How I am paid" line on listings in Financial & insurance, shown beside the services |
 | To get wording approved before it is public | "Save draft", with no way to share it | A read-only preview link to a draft that an owner can send to one reviewer |
 | To keep readable records of client conversations | Data download as a JSON archive, e-mailed within 24 hours | A printable copy of a single conversation or request for the owner's records |

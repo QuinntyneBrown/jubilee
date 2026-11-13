@@ -46,21 +46,21 @@ import { RequiresConnection } from '../../directives/requires-connection';
 
 type FieldName = 'rating' | 'itemId' | 'text';
 
-/** A post that takes longer than this fails instead of spinning (L2-227 AC6). */
+/** A post that takes longer than this fails instead of spinning (L2-228 AC6). */
 const SUBMIT_TIMEOUT_MS = 10_000;
 
 const PROMPT =
   'What did they do, and how did it go? Was the price what they quoted? Would you hire them again?';
 const PROMPT_SPACE = 'Was it as described? How was the host? Would you stay again?';
 
-/** Why the screen cannot show the form: the member may not write (L2-225 AC2). */
+/** Why the screen cannot show the form: the member may not write (L2-226 AC2). */
 interface Refused {
   status: 'refused';
   name: string;
 }
 
 /**
- * The Write a review screen at /b/:slug/review (L2-226, L2-227): the stars, the item, the text and
+ * The Write a review screen at /b/:slug/review (L2-227, L2-228): the stars, the item, the text and
  * the notes; checked before it is sent, sent once with an idempotency key, and confirmed in place.
  * A member who may not write is told when they can; one who already wrote is sent to the listing.
  */
@@ -151,7 +151,7 @@ export class WriteReviewPage {
   private load(): void {
     this.request = this.api.form(this.slug).subscribe({
       next: (form) => {
-        // The first item is chosen, or the one the address names (L2-226 AC3).
+        // The first item is chosen, or the one the address names (L2-227 AC3).
         const asked = this.route.snapshot.queryParamMap.get('item');
         const chosen = form.items.find((item) => item.id === asked) ?? form.items[0];
         this.itemId.set(chosen?.id ?? null);
@@ -160,12 +160,12 @@ export class WriteReviewPage {
       error: (error: unknown) => {
         const code = (error as HttpErrorResponse | null)?.error?.code as string | undefined;
         if (error instanceof HttpErrorResponse && error.status === 409) {
-          // They already wrote one: their review is on the listing (L2-225 AC5).
+          // They already wrote one: their review is on the listing (L2-226 AC5).
           void this.router.navigate(['/b', this.slug], { replaceUrl: true });
           return;
         }
         if (error instanceof HttpErrorResponse && error.status === 403 && code) {
-          // The owner, or a member without a confirmed request (L2-225 AC2, AC4).
+          // The owner, or a member without a confirmed request (L2-226 AC2, AC4).
           this.state.set({ status: 'refused', name: '' });
           this.nameRefused();
           return;
@@ -309,7 +309,7 @@ export class WriteReviewPage {
   }
 }
 
-/** The reason under the alert (L2-227 AC6): no answer in time, no connection, or the server. */
+/** The reason under the alert (L2-228 AC6): no answer in time, no connection, or the server. */
 function reasonOf(error: unknown): string {
   if (error instanceof HttpErrorResponse) {
     if (error.status === 0) return 'There’s no connection.';

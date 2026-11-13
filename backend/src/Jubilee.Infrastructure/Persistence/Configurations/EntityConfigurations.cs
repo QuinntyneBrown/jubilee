@@ -18,8 +18,8 @@ public sealed class ListingConfiguration : IEntityTypeConfiguration<Listing>
         builder.Property(l => l.Tagline).HasMaxLength(200).IsRequired();
         builder.Property(l => l.Highlight).HasMaxLength(60);
         builder.Property(l => l.CategorySlug).HasMaxLength(40).IsRequired();
-        builder.Property(l => l.ApprovedBy).HasMaxLength(120);
-        builder.Ignore(l => l.IsVerified);
+        builder.Property(l => l.TakenDownByName).HasMaxLength(200);
+        builder.Property(l => l.TakedownReason).HasMaxLength(1000);
         builder.Ignore(l => l.ReplyTimeBand);
         builder.Ignore(l => l.Stars);
         builder.Property(l => l.Kind).HasConversion<string>().HasMaxLength(16);
@@ -77,6 +77,8 @@ public sealed class ProductConfiguration : IEntityTypeConfiguration<Product>
         });
         builder.OwnsMany(p => p.Attributes, a => a.ToJson());
         builder.HasIndex(p => new { p.ListingId, p.Slug }).IsUnique();
+        // The photo row outlives a product that stops showing it only until the save deletes it (ADR 0063).
+        builder.HasOne(p => p.Photo).WithMany().HasForeignKey(p => p.PhotoId).OnDelete(DeleteBehavior.ClientSetNull);
         builder.HasOne<Listing>().WithMany().HasForeignKey(p => p.ListingId).OnDelete(DeleteBehavior.Cascade);
     }
 }
@@ -378,6 +380,20 @@ public sealed class PasswordResetRequestConfiguration : IEntityTypeConfiguration
         builder.Property(r => r.EmailKey).HasMaxLength(254).IsRequired();
         builder.HasIndex(r => new { r.EmailKey, r.RequestedAt });
         builder.HasIndex(r => r.ProcessedAt);
+        // The burst alert counts the requests of the last 5 minutes across all addresses (L2-143 AC4).
+        builder.HasIndex(r => r.RequestedAt);
+    }
+}
+
+public sealed class SecurityAlertConfiguration : IEntityTypeConfiguration<SecurityAlert>
+{
+    public void Configure(EntityTypeBuilder<SecurityAlert> builder)
+    {
+        builder.ToTable("SecurityAlerts");
+        builder.HasKey(a => a.Id);
+        builder.Property(a => a.Id).ValueGeneratedNever();
+        builder.Property(a => a.Kind).HasMaxLength(40).IsRequired();
+        builder.HasIndex(a => new { a.Kind, a.RaisedAt });
     }
 }
 
@@ -631,41 +647,6 @@ internal static class StringLists
                 list => list.ToList()));
 }
 
-public sealed class ReviewTickConfiguration : IEntityTypeConfiguration<ReviewTick>
-{
-    public void Configure(EntityTypeBuilder<ReviewTick> builder)
-    {
-        builder.ToTable("ReviewTicks");
-        builder.HasKey(t => t.Id);
-        builder.Property(t => t.Id).ValueGeneratedNever();
-        builder.Property(t => t.Item).HasMaxLength(40).IsRequired();
-        builder.Property(t => t.TickedBy).HasMaxLength(200).IsRequired();
-        builder.Property(t => t.TickedByName).HasMaxLength(200).IsRequired();
-        builder.HasIndex(t => new { t.ListingId, t.Item }).IsUnique();
-        builder.HasOne<Listing>().WithMany().HasForeignKey(t => t.ListingId).OnDelete(DeleteBehavior.Cascade);
-    }
-}
-
-public sealed class ListingDecisionConfiguration : IEntityTypeConfiguration<ListingDecision>
-{
-    public void Configure(EntityTypeBuilder<ListingDecision> builder)
-    {
-        builder.ToTable("ListingDecisions");
-        builder.HasKey(d => d.Id);
-        builder.Property(d => d.Id).ValueGeneratedNever();
-        builder.Property(d => d.DecidedBy).HasMaxLength(200).IsRequired();
-        builder.Property(d => d.DecidedByName).HasMaxLength(200).IsRequired();
-        builder.Property(d => d.Note).HasMaxLength(2000);
-        builder.Property(d => d.SnapshotName).HasMaxLength(200);
-        builder.Property(d => d.SnapshotTagline).HasMaxLength(400);
-        builder.Property(d => d.SnapshotCategory).HasMaxLength(60);
-        StringLists.Store(builder.Property(d => d.Areas));
-        StringLists.Store(builder.Property(d => d.Ticked));
-        builder.HasIndex(d => new { d.ListingId, d.DecidedAt });
-        builder.HasOne<Listing>().WithMany().HasForeignKey(d => d.ListingId).OnDelete(DeleteBehavior.Cascade);
-    }
-}
-
 public sealed class AuditRecordConfiguration : IEntityTypeConfiguration<AuditRecord>
 {
     public void Configure(EntityTypeBuilder<AuditRecord> builder)
@@ -738,6 +719,19 @@ public sealed class ListingPhotoConfiguration : IEntityTypeConfiguration<Listing
     }
 }
 
+public sealed class ProductPhotoConfiguration : IEntityTypeConfiguration<ProductPhoto>
+{
+    public void Configure(EntityTypeBuilder<ProductPhoto> builder)
+    {
+        builder.ToTable("ProductPhotos");
+        builder.HasKey(p => p.Id);
+        builder.Property(p => p.Id).ValueGeneratedNever();
+        builder.Property(p => p.Key).HasMaxLength(64).IsRequired();
+        builder.HasIndex(p => new { p.ListingId, p.UploadedAt });
+        builder.HasOne<Listing>().WithMany().HasForeignKey(p => p.ListingId).OnDelete(DeleteBehavior.Cascade);
+    }
+}
+
 public sealed class MemberSessionConfiguration : IEntityTypeConfiguration<MemberSession>
 {
     public void Configure(EntityTypeBuilder<MemberSession> builder)
@@ -750,6 +744,8 @@ public sealed class MemberSessionConfiguration : IEntityTypeConfiguration<Member
         builder.HasIndex(s => s.MemberId);
         builder.Property(s => s.Kind).HasConversion<string>().HasMaxLength(16);
         builder.HasIndex(s => s.StaffMemberId);
+        builder.Property(s => s.Device).HasMaxLength(100);
+        builder.Property(s => s.Network).HasMaxLength(64);
     }
 }
 
@@ -819,7 +815,7 @@ public sealed class SignInFailureConfiguration : IEntityTypeConfiguration<SignIn
     }
 }
 
-/// <summary>Reviews (ADR 0058): the owner's one reply is kept on the row; a review goes with its listing.</summary>
+/// <summary>Reviews (ADR 0066): the owner's one reply is kept on the row; a review goes with its listing.</summary>
 public sealed class ReviewConfiguration : IEntityTypeConfiguration<Review>
 {
     public void Configure(EntityTypeBuilder<Review> builder)
@@ -844,7 +840,7 @@ public sealed class ReviewConfiguration : IEntityTypeConfiguration<Review>
     }
 }
 
-/// <summary>Reports of reviews (L2-235); they go with their review.</summary>
+/// <summary>Reports of reviews (L2-236); they go with their review.</summary>
 public sealed class ReviewReportConfiguration : IEntityTypeConfiguration<ReviewReport>
 {
     public void Configure(EntityTypeBuilder<ReviewReport> builder)

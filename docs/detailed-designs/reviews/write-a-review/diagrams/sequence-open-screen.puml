@@ -39,15 +39,15 @@ else Public
   else No confirmed or completed request
     rule --> controller : 403 NOT_ELIGIBLE
     controller --> page : 403
-    page --> actor : "You can review {name} after they confirm a request of yours." and Back (L2-225 AC2)
+    page --> actor : "You can review {name} after they confirm a request of yours." and Back (L2-226 AC2)
   else Live review exists
     rule --> controller : 409 ALREADY_REVIEWED
     controller --> page : 409
-    page --> actor : Navigate to /b/{slug} (L2-225 AC5)
+    page --> actor : Navigate to /b/{slug} (L2-226 AC5)
   else Eligible
     handler --> controller : Listing, items, legend, author name
     controller --> page : 200 ReviewForm
-    page --> actor : How was it? with stars, items, text and Post review (L2-226)
+    page --> actor : How was it? with stars, items, text and Post review (L2-227)
   end
 end
 @enduml

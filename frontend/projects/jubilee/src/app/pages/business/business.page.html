@@ -75,8 +75,8 @@
           {{ statusWords(listing.status) }}.
           {{
             isOwner
-              ? 'Only you and the Jubilee verification team can open it.'
-              : 'Only its owner and the Jubilee verification team can open it.'
+              ? 'Only you and the Jubilee team can open it.'
+              : 'Only its owner and the Jubilee team can open it.'
           }}
         </div>
         @if (isOwner) {
@@ -85,7 +85,7 @@
       </div>
     } @else if (isOwner) {
       <div jb-alert heading="This is how members see your listing">
-        <div>It’s live and verified. Changes you make are published straight away.</div>
+        <div>It’s live. Changes you make are published straight away.</div>
         <a slot="actions" routerLink="/my-business">Go to My business</a>
       </div>
     }
@@ -108,9 +108,6 @@
         </div>
         <div jb-detail-head class="split__sticky">
           <p jb-detail-head-kicker>
-            @if (listing.verified) {
-              <svg jb-icon name="verified"></svg>Verified host ·
-            }
             {{ space.neighbourhood }}
           </p>
           <h1>{{ listing.name }}</h1>
@@ -278,13 +275,9 @@
           }
         </div>
         <div jb-detail-head class="split__sticky">
-          @if (listing.verified) {
-            <p jb-verified-business-label [category]="listing.category"></p>
-          } @else {
-            <p jb-detail-head-kicker>
-              <a [routerLink]="['/c', listing.category.slug]">{{ listing.category.name }}</a>
-            </p>
-          }
+          <p jb-detail-head-kicker>
+            <a [routerLink]="['/c', listing.category.slug]">{{ listing.category.name }}</a>
+          </p>
           <h1>{{ listing.name }}</h1>
           @if (!preview) {
             <ng-container [ngTemplateOutlet]="rating" />

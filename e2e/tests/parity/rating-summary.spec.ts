@@ -1,7 +1,7 @@
 import { parity } from '../../fixtures/parity';
 import { BusinessPage } from '../../pages/business.page';
 
-// jb-rating-summary: the average, the stars, the count, the five bars and the note on "Verified".
+// jb-rating-summary: the average, the stars, the count, the five bars.
 parity('rating-summary', {
   cases: [
     {
@@ -19,7 +19,7 @@ parity('rating-summary', {
         frame: 'listing-reviews-section-1280.png',
         clip: { x: 30, y: 60, width: 310, height: 300 },
         knownDifference:
-          'The frame counts 137 reviews and says Verified means a booking through Jubilee; the product counts the seeded 5 and says the listing confirmed the reviewer’s request (ADR 0058).',
+          'The frame counts 137 reviews and says Verified means a booking through Jubilee; the product counts the seeded 5 and carries no note, as Jubilee shows no Verified mark (ADR 0057, ADR 0066).',
       },
     ],
   },

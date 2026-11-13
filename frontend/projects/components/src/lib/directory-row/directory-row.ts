@@ -5,7 +5,6 @@ import { Icon } from '../icon/icon';
 export interface DirectoryRowView {
   name: string;
   tagline: string;
-  verified: boolean;
 }
 
 /**

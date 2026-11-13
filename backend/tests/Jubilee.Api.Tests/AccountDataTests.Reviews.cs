@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Jubilee.Api.Tests;
 
-// A member's reviews are theirs: they are in the download and go with the account (L2-238 AC2, AC3, ADR 0058).
+// A member's reviews are theirs: they are in the download and go with the account (L2-239 AC2, AC3, ADR 0066).
 public sealed partial class AccountDataTests
 {
     private const string ReviewText = "Trevor took the time to understand what we needed. Clear, honest and no pressure.";
@@ -27,7 +27,7 @@ public sealed partial class AccountDataTests
         return (listing, joannas, davids);
     }
 
-    // L2-238 AC3
+    // L2-239 AC3
     [Fact]
     public async Task L2_235_AC3_Deleting_the_account_deletes_the_member_s_reviews_and_reports_and_recounts_the_stars()
     {
@@ -43,7 +43,7 @@ public sealed partial class AccountDataTests
         Assert.Equal((0, 1), (stored.Stars5, stored.Stars3));
     }
 
-    // L2-238 AC2
+    // L2-239 AC2
     [Fact]
     public async Task L2_235_AC2_The_archive_holds_the_member_s_reviews_and_reports()
     {

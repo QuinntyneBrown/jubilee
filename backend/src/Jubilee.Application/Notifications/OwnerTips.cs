@@ -91,7 +91,7 @@ public sealed class SendOwnerTipsCommandHandler(ScheduledJobs jobs, IAppDbContex
         {
             var owner = member.Id.ToString();
             var listing = (await db.Listings.AsNoTracking().WherePublic().Where(l => l.OwnerId == owner).ToListAsync(cancellationToken))
-                .OrderBy(l => l.ApprovedAt).FirstOrDefault();
+                .OrderBy(l => l.PublishedAt).FirstOrDefault();
             if (listing is null)
             {
                 continue;

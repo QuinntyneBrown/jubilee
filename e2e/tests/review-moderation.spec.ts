@@ -4,7 +4,7 @@ import { AdminReportPage } from '../pages/admin-report.page';
 import { AdminReportsPage } from '../pages/admin-reports.page';
 import { ReportActionDialog } from '../pages/report-action.dialog';
 
-test.describe('the verification team takes a review down (L2-236)', () => {
+test.describe('the Jubilee team takes a review down (L2-237)', () => {
   test('AC1: a report of a review is listed with the type "Review"', async ({ page, jb }) => {
     const reports = new AdminReportsPage(page);
     await reports.setWidth(1280);

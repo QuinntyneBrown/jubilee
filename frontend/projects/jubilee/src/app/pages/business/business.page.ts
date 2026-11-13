@@ -31,7 +31,6 @@ import {
   MediaTile,
   ProductCard,
   ServiceRow,
-  VerifiedBusinessLabel,
   categoryTile,
   Button,
   Alert,
@@ -122,17 +121,14 @@ interface DetailRow {
 }
 
 const STATUS_WORDS: Record<ListingStatus, string> = {
-  live: 'Verified · live',
-  draft: 'Draft · not submitted yet',
-  'ready-to-review': 'Pending verification',
-  'changes-requested': 'Changes requested · not public yet',
-  declined: 'Declined · not public',
-  paused: 'Verified · paused, not public',
+  live: 'Live',
+  draft: 'Draft · not published yet',
+  paused: 'Paused · not public',
   'on-hold': 'On hold while we look into a report · not public',
 };
 
 /**
- * The listing page at /b/:slug (L2-033): header with the verified label and the actions, the
+ * The listing page at /b/:slug (L2-033): header with the category and the actions, the
  * services, About, Details and "More in {category}". Actions of later journeys are links to
  * their routes (ADR 0007).
  */
@@ -150,7 +146,6 @@ const STATUS_WORDS: Record<ListingStatus, string> = {
     MediaTile,
     ProductCard,
     ServiceRow,
-    VerifiedBusinessLabel,
     Button,
     Alert,
     RowListSkeleton,
@@ -197,7 +192,7 @@ export class BusinessPage {
   private readonly session = inject(SessionService);
   private readonly dialog = inject(Dialog);
   private readonly savedStore = inject(SavedStore);
-  /** The listing's reviews: the rating under the name and the "Reviews" section (L2-228). */
+  /** The listing's reviews: the rating under the name and the "Reviews" section (L2-229). */
   protected readonly reviews = inject(ListingReviewsStore);
   private slug = '';
   /** Which dialog the address asks for: /b/:slug/message, /book, /request (a space) and so on. */
@@ -361,7 +356,7 @@ export class BusinessPage {
         this.hints.rememberCategory(listing.related, listing.category.slug);
         this.state.set({ status: 'loaded', value: listing });
         this.title.setTitle(`${listing.name} · Jubilee`);
-        // A listing that is not public shows no reviews (L2-225 AC7).
+        // A listing that is not public shows no reviews (L2-226 AC7).
         if (listing.status === 'live') this.reviews.load(listing.slug);
         // A listing view counts for the owner's statistics; their own visits do not (L2-037),
         // and a preview is not a visit by the public (L2-219 AC3).
@@ -602,7 +597,7 @@ export class BusinessPage {
   }
 
   /**
-   * What a review of this listing may be about, for the Edit dialog (L2-232 AC1): a business's
+   * What a review of this listing may be about, for the Edit dialog (L2-233 AC1): a business's
    * services. A shop's review keeps the product it is about, and a space's is about the stay.
    */
   protected reviewItems(listing: ListingPage): ReviewItemOption[] {

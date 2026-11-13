@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Jubilee.Api.Tests;
 
-// Writing a review: L2-225 AC2, AC4, AC5; L2-227 AC3; L2-230 AC5; L2-234 AC1; L2-237 AC2, AC3, AC4, AC6, AC7, AC8.
+// Writing a review: L2-226 AC2, AC4, AC5; L2-228 AC3; L2-231 AC5; L2-235 AC1; L2-238 AC2, AC3, AC4, AC6, AC7, AC8.
 public sealed partial class ReviewTests
 {
     private const string GoodText = "Trevor took the time to understand what we needed. Clear, honest and no pressure.";
@@ -24,7 +24,7 @@ public sealed partial class ReviewTests
 
     private Task Eligible(string subject = Joanna, string name = "Joanna Adeyemi") => _factory.Arrange(RequestOf(subject, name, RequestStatus.Confirmed));
 
-    // L2-237 AC2
+    // L2-238 AC2
     [Fact]
     public async Task L2_234_AC2_the_form_answers_the_listing_its_items_and_the_name_shown()
     {
@@ -39,7 +39,7 @@ public sealed partial class ReviewTests
         Assert.Equal("Joanna A.", form.GetProperty("authorName").GetString());
     }
 
-    // L2-237 AC2, L2-225 AC2, AC4, AC5
+    // L2-238 AC2, L2-226 AC2, AC4, AC5
     [Fact]
     public async Task L2_234_AC2_the_form_refuses_a_member_who_may_not_write()
     {
@@ -56,7 +56,7 @@ public sealed partial class ReviewTests
         Assert.Equal("ALREADY_REVIEWED", (await Json(written)).GetProperty("code").GetString());
     }
 
-    // L2-226 AC3: a space is about the stay; a listing with no services is about "Their service"
+    // L2-227 AC3: a space is about the stay; a listing with no services is about "Their service"
     [Fact]
     public async Task L2_223_AC3_a_space_and_a_listing_without_items_ask_for_no_item()
     {
@@ -86,7 +86,7 @@ public sealed partial class ReviewTests
         return request;
     }
 
-    // L2-237 AC3, L2-227 AC3
+    // L2-238 AC3, L2-228 AC3
     [Fact]
     public async Task L2_234_AC3_an_eligible_member_posts_a_review_with_themselves_as_its_author()
     {
@@ -107,7 +107,7 @@ public sealed partial class ReviewTests
         Assert.Equal(_estate.Id, review.ServiceId);
     }
 
-    // L2-237 AC3, L2-132
+    // L2-238 AC3, L2-132
     [Fact]
     public async Task L2_234_AC3_a_repeat_with_the_same_key_answers_the_first_review()
     {
@@ -121,7 +121,7 @@ public sealed partial class ReviewTests
         Assert.Equal(1, await Read(db => db.Reviews.CountAsync()));
     }
 
-    // L2-237 AC4
+    // L2-238 AC4
     [Theory]
     [InlineData(null, "rating", "RATING_REQUIRED")]
     [InlineData(0, "rating", "RATING_REQUIRED")]
@@ -137,7 +137,7 @@ public sealed partial class ReviewTests
         Assert.Equal(0, await Read(db => db.Reviews.CountAsync()));
     }
 
-    // L2-237 AC4, L2-227 AC2
+    // L2-238 AC4, L2-228 AC2
     [Fact]
     public async Task L2_234_AC4_text_is_held_between_40_and_2000_characters_once_trimmed()
     {
@@ -154,7 +154,7 @@ public sealed partial class ReviewTests
         Assert.Equal(HttpStatusCode.Created, shortest.StatusCode);
     }
 
-    // L2-225 AC2, AC4, AC5, L2-237 AC7
+    // L2-226 AC2, AC4, AC5, L2-238 AC7
     [Fact]
     public async Task L2_222_a_member_who_may_not_write_is_refused()
     {
@@ -174,7 +174,7 @@ public sealed partial class ReviewTests
         Assert.Equal(1, await Read(db => db.Reviews.CountAsync()));
     }
 
-    // L2-230 AC5, L2-237 AC9
+    // L2-231 AC5, L2-238 AC9
     [Fact]
     public async Task L2_227_AC5_a_posted_review_is_counted_on_the_listing()
     {
@@ -193,7 +193,7 @@ public sealed partial class ReviewTests
         Assert.Equal(3, card.GetProperty("rating").GetProperty("count").GetInt32());
     }
 
-    // L2-234 AC1
+    // L2-235 AC1
     [Fact]
     public async Task L2_231_AC1_the_owner_is_told_of_a_new_review()
     {
@@ -209,7 +209,7 @@ public sealed partial class ReviewTests
         Assert.Equal("/b/legacy-financial", notification.Target);
     }
 
-    // L2-237 AC6
+    // L2-238 AC6
     [Fact]
     public async Task L2_234_AC6_more_than_five_new_reviews_in_a_day_are_slowed_down()
     {

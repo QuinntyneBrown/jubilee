@@ -6,7 +6,7 @@ import { ShellPage } from './shell.page';
 
 /** The product page at /b/:slug/p/:product. */
 export class ProductPage extends ShellPage implements Screen {
-  /** The rating under the name and the "Reviews" section of the product (L2-231). */
+  /** The rating under the name and the "Reviews" section of the product (L2-232). */
   readonly reviews: ReviewsRegion;
   readonly breadcrumb: Locator;
   readonly breadcrumbLinks: Locator;

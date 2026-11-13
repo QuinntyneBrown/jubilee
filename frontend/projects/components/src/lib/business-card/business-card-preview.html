@@ -1,13 +1,13 @@
 <div jb-media-tile [tint]="tint()" [icon]="icon()" [tag]="tag()"></div>
 <p class="biz-card__name">{{ name() }}</p>
 <p class="biz-card__tagline">{{ tagline() }}</p>
-<p class="biz-card__meta">
-  @if (highlight(); as line) {
-    <span jb-perk>{{ line }}</span>
-  }
-  @if (verified()) {
-    <span jb-verified-mark></span>
-  } @else {
-    <span jb-perk>Pending verification</span>
-  }
-</p>
+@if (highlight() || !published()) {
+  <p class="biz-card__meta">
+    @if (highlight(); as line) {
+      <span jb-perk>{{ line }}</span>
+    }
+    @if (!published()) {
+      <span jb-perk>Not published yet</span>
+    }
+  </p>
+}

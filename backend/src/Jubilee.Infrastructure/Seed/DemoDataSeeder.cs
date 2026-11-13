@@ -11,7 +11,6 @@ namespace Jubilee.Infrastructure.Seed;
 /// </summary>
 public sealed class DemoDataSeeder(AppDbContext db, TimeProvider clock)
 {
-    public const string SeededBy = "Miriam Castillo";
 
     public async Task SeedAsync(CancellationToken cancellationToken = default)
     {
@@ -19,33 +18,33 @@ public sealed class DemoDataSeeder(AppDbContext db, TimeProvider clock)
         var listings = await db.Listings.ToDictionaryAsync(l => l.Slug, cancellationToken);
 
         // Every public demo listing is equally complete, so recency decides the Recommended
-        // order: each listing is approved a day before the one above it in the catalogue.
+        // order: each listing is published a day before the one above it in the catalogue.
         for (var i = 0; i < PublicListings.Length; i++)
         {
             var demo = PublicListings[i];
             if (!listings.ContainsKey(demo.Slug))
             {
-                var approvedAt = now.AddDays(-(i + 1));
-                var createdAt = Profiles.TryGetValue(demo.Slug, out var joined) ? joined.JoinedOn : approvedAt.AddDays(-14);
+                var publishedAt = now.AddDays(-(i + 1));
+                var createdAt = Profiles.TryGetValue(demo.Slug, out var joined) ? joined.JoinedOn : publishedAt.AddDays(-14);
                 var listing = Draft(demo, createdAt);
-                listing.Approve(SeededBy, approvedAt);
+                listing.Publish(publishedAt);
                 listing.RefreshRecommendedScore(now);
                 listings[demo.Slug] = listing;
                 db.Listings.Add(listing);
             }
         }
 
-        // Spaces are newer than every business: each is approved an hour before the one above it.
+        // Spaces are newer than every business: each is published an hour before the one above it.
         for (var i = 0; i < Spaces.Length; i++)
         {
             var demo = Spaces[i];
             if (!listings.ContainsKey(demo.Slug))
             {
-                var approvedAt = now.AddHours(-(i + 1));
-                var listing = Listing.Create(demo.Slug, demo.Name, demo.Tagline, Category.RoomsSlug, approvedAt.AddDays(-14));
+                var publishedAt = now.AddHours(-(i + 1));
+                var listing = Listing.Create(demo.Slug, demo.Name, demo.Tagline, Category.RoomsSlug, publishedAt.AddDays(-14));
                 listing.Describe(new ListingProfile(demo.Host, [], demo.About, null, null, null, null, null));
                 listing.DescribeSpace(demo.Details());
-                listing.Approve(SeededBy, approvedAt);
+                listing.Publish(publishedAt);
                 listing.RefreshRecommendedScore(now);
                 if (Owners.TryGetValue(demo.Slug, out var owner))
                 {
@@ -149,7 +148,7 @@ public sealed class DemoDataSeeder(AppDbContext db, TimeProvider clock)
     }
 
     /// <summary>
-    /// The sample reviews (ADR 0058), each once by its key; the star counts of their listings and products are
+    /// The sample reviews (ADR 0066), each once by its key; the star counts of their listings and products are
     /// counted again from what is stored, so a re-run changes nothing.
     /// </summary>
     private async Task SeedReviewsAsync(CancellationToken cancellationToken)
@@ -223,18 +222,12 @@ public sealed class DemoDataSeeder(AppDbContext db, TimeProvider clock)
         var listing = Draft(hidden.Listing, now.AddDays(-3));
         switch (hidden.Because)
         {
-            case HiddenBecause.ReadyToReview:
-                listing.MoveTo(ListingStage.ReadyToReview);
-                break;
-            case HiddenBecause.ChangesRequested:
-                listing.MoveTo(ListingStage.ChangesRequested);
-                break;
             case HiddenBecause.Paused:
-                listing.Approve(SeededBy, now.AddHours(-2));
+                listing.Publish(now.AddHours(-2));
                 listing.Pause();
                 break;
             case HiddenBecause.UnderModerationHold:
-                listing.Approve(SeededBy, now.AddHours(-1));
+                listing.Publish(now.AddHours(-1));
                 listing.PlaceModerationHold();
                 break;
         }

@@ -4,7 +4,7 @@ LAYOUT_WITH_LEGEND()
 title Containers — Moderate reviews
 
 Person(member, "Member", "Reports a review")
-Person(verifier, "Verification team", "Takes a review down")
+Person(moderator, "Jubilee team", "Takes a review down")
 System_Boundary(jubilee, "Jubilee") {
   Container(web, "Jubilee Web", "Angular single-page application", "Report this review dialog")
   Container(admin, "Jubilee Admin Web", "Angular single-page application", "Reports queue, report screen, take-down")
@@ -12,7 +12,7 @@ System_Boundary(jubilee, "Jubilee") {
   ContainerDb(db, "Jubilee database", "SQL Server", "Reviews, review reports, report actions, audit records, notifications")
 }
 Rel(member, web, "Uses", "HTTPS")
-Rel(verifier, admin, "Uses from an allowed network", "HTTPS")
+Rel(moderator, admin, "Uses from an allowed network", "HTTPS")
 Rel(web, api, "Posts a report", "JSON/HTTPS")
 Rel(admin, api, "Lists, opens and acts on reports", "JSON/HTTPS")
 Rel(api, db, "Reads and writes", "EF Core")

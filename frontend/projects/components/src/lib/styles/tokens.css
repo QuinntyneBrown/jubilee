@@ -22,7 +22,7 @@
    prefers-reduced-motion adjust semantic tokens at the end of this file.
 
    Jubilee brand: ink and cream neutrals; a gold accent that always carries
-   ink text and is never used as text; green for verified, links and success.
+   ink text and is never used as text; green for links and success.
    ========================================================================== */
 
 /* Archivo, the display face, ships with the design system (SIL OFL 1.1, see
@@ -70,7 +70,7 @@
   --palette-gold-900: #4d3500;
   --palette-gold-950: #2b1e00;
 
-  /* Green: verified, links and success (#00875a). */
+  /* Green: links and success (#00875a). */
   --palette-green-50: #e5f5ee;
   --palette-green-100: #c2e8d7;
   --palette-green-300: #5fc49b;
@@ -227,7 +227,7 @@
   --control-height-sm: 2rem;     /* 32px  small buttons, chips, menu items */
   --control-height-md: 2.75rem;  /* 44px  default buttons and inputs */
   --control-height-lg: 3rem;     /* 48px  large buttons, hero search */
-  --icon-size-sm: 1rem;          /* 16px  inline with captions, verified tick */
+  --icon-size-sm: 1rem;          /* 16px  inline with captions */
   --icon-size-md: 1.25rem;       /* 20px  default */
   --icon-size-lg: 1.5rem;        /* 24px  brand mark, empty-state glyph */
   --avatar-size-sm: 2rem;        /* 32px  top bar, rows */
@@ -313,7 +313,7 @@
   --color-success-border: var(--palette-green-300);
   --color-success-icon: var(--palette-green-500);
   --color-success-icon-inverse: var(--palette-green-300);
-  --color-success-solid: var(--palette-green-500);   /* verified, complete steps, business avatar */
+  --color-success-solid: var(--palette-green-500);   /* complete steps, business avatar */
 
   --color-warning-bg: var(--palette-amber-50);
   --color-warning-fg: var(--palette-amber-700);

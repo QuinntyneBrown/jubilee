@@ -1,3 +1,4 @@
+import { stubChallenge, stubLaunchChallenge } from '../fixtures/bot-challenge';
 import { expect, test } from '../fixtures/jb-test';
 import { MarketingHomePage, naomiDetails } from '../pages/marketing-home.page';
 
@@ -159,7 +160,7 @@ test.describe('business pre-registration (L2-216)', () => {
     });
     await expect(form.confirmationHeading).toHaveText('Thank you. We have your details.');
     await expect(form.confirmation).toContainText(
-      'The Jubilee team will be in touch at naomi@luzandre.com before launch. Your business is not listed or verified yet: every business is verified before it appears.',
+      'The Jubilee team will be in touch at naomi@luzandre.com before launch. Your business is not listed yet.',
     );
     await expect(form.form).toHaveCount(0);
     await expect.poll(() => form.hasFocus(form.confirmation)).toBe(true);
@@ -250,5 +251,120 @@ test.describe('business pre-registration (L2-216)', () => {
     await expect(home.businessForm.field('About your business')).toHaveValue(
       naomiDetails.description,
     );
+  });
+
+  test('AC8 and L2-218 AC5: with a bot challenge configured the details carry its token', async ({
+    page,
+    jb,
+  }) => {
+    const home = new MarketingHomePage(page);
+    const loaded = await stubChallenge(page, ['token-1']);
+    await stubLaunchChallenge(page);
+    await jb.open('marketing-home');
+    await home.fillBusiness();
+    const request = await home.businessForm.sendAndCapture();
+    expect(request.postDataJSON().challengeToken).toBe('token-1');
+    expect(loaded()).toBe(1);
+  });
+
+  test('L2-218 AC5: without a site key the page loads no challenge and sends no token', async ({
+    page,
+    jb,
+  }) => {
+    const home = new MarketingHomePage(page);
+    const loaded = await stubChallenge(page, ['token-1']);
+    await jb.open('marketing-home');
+    await home.fillBusiness();
+    const request = await home.businessForm.sendAndCapture();
+    expect(request.postDataJSON().challengeToken).toBeNull();
+    expect(loaded()).toBe(0);
+  });
+
+  test('AC8: after a challenge that was not passed, the next send carries a fresh token', async ({
+    page,
+    jb,
+  }) => {
+    const home = new MarketingHomePage(page);
+    await stubChallenge(page, ['token-1', 'token-2']);
+    await stubLaunchChallenge(page);
+    await jb.open('marketing-home.business-challenge-failed');
+    const form = home.businessForm;
+    const bodies = form.capture();
+    await home.fillBusiness();
+    await form.send.click();
+    await expect(form.alert).toHaveText(
+      'We couldn’t check that you’re not a robot. Wait a moment and try again.',
+    );
+    await expect(form.summary).toHaveCount(0);
+    await form.send.click();
+    await expect.poll(() => bodies().length).toBe(2);
+    expect(bodies().map((body) => (body as { challengeToken: string }).challengeToken)).toEqual([
+      'token-1',
+      'token-2',
+    ]);
+  });
+
+  test('AC3: a category or a website the server refuses is shown at its field, with the summary, and every value is kept', async ({
+    page,
+    jb,
+  }) => {
+    const home = new MarketingHomePage(page);
+    // Given the server refuses the category and the website with their codes
+    await jb.open('marketing-home.business-server-invalid');
+    const form = home.businessForm;
+    await home.fillBusiness();
+    // When the owner sends the form
+    await form.send.click();
+    // Then the summary names both, in the order of the form, and takes the focus
+    await expect(form.summaryLinks).toHaveText(['Choose a category', 'Enter a web address']);
+    await expect.poll(() => form.hasFocus(form.summary)).toBe(true);
+    // And each field says how to fix it
+    await expect(form.errorOf('Category')).toHaveText('Choose a category.');
+    await expect(form.errorOf('Website or social link')).toHaveText(
+      'Enter a web address, like example.com, or leave this empty.',
+    );
+    // And every value typed is kept, and can be changed again
+    await expect(form.send).not.toHaveAttribute('aria-busy', 'true');
+    await expect(form.field('Business name')).toHaveValue('Luzandre.com');
+    await expect(form.field('Website or social link')).toHaveValue('luzandre.com');
+    await expect(form.field('About your business')).toHaveValue(naomiDetails.description);
+    await expect(form.consent).toBeChecked();
+  });
+
+  test('AC6: a send that cannot be made shows no error: the form says it is still sending and sends again', async ({
+    page,
+    jb,
+  }) => {
+    const home = new MarketingHomePage(page);
+    await jb.open('marketing-home.business-unreachable');
+    const form = home.businessForm;
+    const sent = form.watch();
+    await home.fillBusiness();
+    await form.send.click();
+    await expect(form.alert).toContainText('Still sending.');
+    await expect(form.send).toHaveAttribute('aria-busy', 'true');
+    await expect(form.field('Business name')).toHaveValue('Luzandre.com');
+    await expect.poll(sent, { timeout: 15_000 }).toBeGreaterThanOrEqual(2);
+  });
+
+  test('AC6: details not answered within 10 seconds show no error, say they are still sending and are sent again 5 seconds later', async ({
+    page,
+    jb,
+  }) => {
+    const home = new MarketingHomePage(page);
+    await page.clock.install();
+    await jb.open('marketing-home.business-busy');
+    const form = home.businessForm;
+    const sent = form.watch();
+    await home.fillBusiness();
+    await form.send.click();
+    await page.clock.runFor(9_000);
+    await expect(form.alert).toHaveCount(0);
+    await page.clock.runFor(1_000);
+    await expect(form.alert).toContainText('Still sending.');
+    await expect(form.send).toHaveAttribute('aria-busy', 'true');
+    expect(sent()).toBe(1);
+    await page.clock.runFor(5_000);
+    await expect.poll(sent).toBe(2);
   });
 });

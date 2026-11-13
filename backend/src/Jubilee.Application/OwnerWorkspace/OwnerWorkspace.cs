@@ -3,7 +3,6 @@ using Jubilee.Application.Abstractions;
 using Jubilee.Application.Accounts;
 using Jubilee.Application.Errors;
 using Jubilee.Application.Listings;
-using Jubilee.Application.Verification;
 using Jubilee.Domain;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -18,7 +17,7 @@ public sealed record MyBusinessStatsDto(StatDto Views, int OpenRequests, int New
 
 public sealed record NeedsReplyDto(Guid Id, string Kind, string KindLabel, string CustomerName, string Title, DateTimeOffset SentAt);
 
-public sealed record MyBusinessSummaryDto(int Products, int SoldOut, int Services, string Verification);
+public sealed record MyBusinessSummaryDto(int Products, int SoldOut, int Services, string LiveSince);
 
 /// <summary>
 /// One entry of the switcher on My business (L2-079 AC4): a listing with its stage, or a draft not yet submitted.
@@ -38,12 +37,10 @@ public sealed record MyBusinessDto(
     string Subtitle,
     bool Paused,
     DateTimeOffset? PausedAt,
-    bool JustApproved,
     int NewRequests,
     MyBusinessStatsDto? Stats,
     IReadOnlyList<NeedsReplyDto> NeedsReply,
     MyBusinessSummaryDto? Summary,
-    OwnerVerificationDto? Verification,
     DateTimeOffset? AwayUntil = null)
 {
     /// <summary>The owner's listings, oldest first, then their drafts (L2-079 AC4); empty for a member who owns nothing.</summary>
@@ -73,10 +70,10 @@ public sealed record ListingEditorDto(
     string? Highlight,
     IReadOnlyList<CategoryOptionDto> Categories,
     IReadOnlyList<ListingPhotoDto> Photos,
-    bool RecheckRequested,
-    Onboarding.SpaceDraftDto? Space = null);
+    Onboarding.SpaceDraftDto? Space = null,
+    string Subtitle = "");
 
-public sealed record PauseResultDto(bool Paused, DateTimeOffset? PausedAt, string State, bool NeedsReview);
+public sealed record PauseResultDto(bool Paused, DateTimeOffset? PausedAt, string State);
 
 /// <summary>The rules the owner's workspace shares.</summary>
 internal static class Workspace
@@ -88,7 +85,6 @@ internal static class Workspace
     public const int MaxWebsite = 300;
     public const int MaxWhere = 200;
     public const int MaxHours = 200;
-    public static readonly TimeSpan JustApprovedFor = TimeSpan.FromDays(7);
 
     /// <summary>
     /// The listing the owner works on: the one they chose last in the switcher (L2-079 AC5), else the live one, else
@@ -115,10 +111,7 @@ internal static class Workspace
     {
         "live" => "Live",
         "paused" => "Paused",
-        "changes-requested" => "Changes requested",
-        "declined" => "Declined",
-        "draft" => "Draft",
-        _ => "Pending verification",
+        _ => "Draft",
     };
 
     public static async Task<Listing> Owned(IAppDbContext db, string subject, CancellationToken cancellationToken) =>
@@ -128,44 +121,23 @@ internal static class Workspace
     public static string State(Listing listing) => listing.Stage switch
     {
         ListingStage.Live => listing.IsPaused ? "paused" : "live",
-        ListingStage.Draft => "draft",
-        ListingStage.ReadyToReview => "ready-to-review",
-        ListingStage.ChangesRequested => "changes-requested",
-        _ => "declined",
+        _ => "draft",
     };
 
     public static string Month(DateTimeOffset at) => at.ToString("MMMM yyyy", CultureInfo.InvariantCulture);
 
     public static string ShortMonth(DateTimeOffset at) => at.ToString("MMM yyyy", CultureInfo.InvariantCulture);
 
-    public static string SubmittedWords(DateTimeOffset? at, DateTimeOffset now)
-    {
-        if (at is null)
-        {
-            return "today";
-        }
-
-        var days = (int)(now - at.Value).TotalDays;
-        return days <= 0 ? "today" : days == 1 ? "yesterday" : $"{days} days ago";
-    }
-
     /// <summary>The line under the business name on every page of the workspace (L2-097 AC3).</summary>
-    public static string Subtitle(Listing listing, DateTimeOffset? submittedAt, DateTimeOffset now) => State(listing) switch
+    public static string Subtitle(Listing listing, DateTimeOffset now) => State(listing) switch
     {
-        "live" => $"Verified · live since {Month(listing.ApprovedAt ?? now)}",
-        "paused" => "Verified · paused, not public",
-        "changes-requested" => "Changes requested · not public yet",
-        "declined" => "Declined · not public",
-        "draft" => "Draft · not submitted yet",
-        _ => $"Pending verification · submitted {SubmittedWords(submittedAt, now)}",
+        "live" => $"Live since {Month(listing.PublishedAt ?? now)}",
+        "paused" => "Paused · not public",
+        _ => "Draft · not published yet",
     };
 
-    public static async Task<string> SubtitleOf(IAppDbContext db, Listing listing, DateTimeOffset now, CancellationToken cancellationToken)
-    {
-        var submitted = await db.ListingSubmissions.AsNoTracking()
-            .Where(x => x.ListingId == listing.Id).Select(x => (DateTimeOffset?)x.SubmittedAt).SingleOrDefaultAsync(cancellationToken);
-        return Subtitle(listing, submitted, now);
-    }
+    public static Task<string> SubtitleOf(IAppDbContext db, Listing listing, DateTimeOffset now, CancellationToken cancellationToken) =>
+        Task.FromResult(Subtitle(listing, now));
 
     public static string DefaultAlt(string business, int position) => $"{business} photo {position}";
 
@@ -177,7 +149,7 @@ internal static class Workspace
             listing.Id,
             listing.Version,
             listing.Slug,
-            StageWire.Of(listing.Stage),
+            WireValues.Of(listing.Stage),
             listing.IsPaused,
             listing.Name,
             listing.Tagline,
@@ -190,14 +162,14 @@ internal static class Workspace
             [.. Category.All.Where(c => (c.Slug == Category.RoomsSlug) == (listing.Kind == ListingKind.Space))
                 .Select(c => new CategoryOptionDto(c.Slug, c.Name))],
             [.. photos.Select((p, i) => new ListingPhotoDto(p.Id, p.Key, i + 1, p.Alt ?? DefaultAlt(listing.Name, i + 1), p.Alt, p.Width, p.Height))],
-            listing.RecheckRequestedAt is not null,
-            listing.Space is null ? null : Onboarding.SpaceDraftDto.From(listing.Space));
+            listing.Space is null ? null : Onboarding.SpaceDraftDto.From(listing.Space),
+            Subtitle(listing, listing.PublishedAt ?? listing.CreatedAt));
     }
 }
 
 public sealed record GetMyBusinessQuery(string Subject) : IRequest<MyBusinessDto>;
 
-public sealed class GetMyBusinessQueryHandler(IAppDbContext db, IMediator mediator, TimeProvider clock)
+public sealed class GetMyBusinessQueryHandler(IAppDbContext db, TimeProvider clock)
     : IRequestHandler<GetMyBusinessQuery, MyBusinessDto>
 {
     public async Task<MyBusinessDto> Handle(GetMyBusinessQuery request, CancellationToken cancellationToken)
@@ -207,7 +179,7 @@ public sealed class GetMyBusinessQueryHandler(IAppDbContext db, IMediator mediat
         var listing = Workspace.Current(owned);
         if (listing is null)
         {
-            return new MyBusinessDto("none", null, null, null, null, null, null, "You haven't listed a business yet", false, null, false, 0, null, [], null, null, null);
+            return new MyBusinessDto("none", null, null, null, null, null, null, "You haven't listed a business yet", false, null, 0, null, [], null, null);
         }
 
         var drafts = (await db.ListingDrafts.AsNoTracking().Where(d => d.OwnerSubject == request.Subject).ToListAsync(cancellationToken))
@@ -219,7 +191,6 @@ public sealed class GetMyBusinessQueryHandler(IAppDbContext db, IMediator mediat
         ];
 
         var state = Workspace.State(listing);
-        var submission = await db.ListingSubmissions.AsNoTracking().SingleOrDefaultAsync(s => s.ListingId == listing.Id, cancellationToken);
         var live = listing.Stage == ListingStage.Live;
 
         var requests = await db.Requests.AsNoTracking().Where(r => r.ListingId == listing.Id).ToListAsync(cancellationToken);
@@ -250,16 +221,10 @@ public sealed class GetMyBusinessQueryHandler(IAppDbContext db, IMediator mediat
                 products.Count,
                 products.Count(p => p.IsSoldOut),
                 services,
-                $"Verified {Workspace.ShortMonth(listing.ApprovedAt ?? now)}");
+                $"Live since {Workspace.ShortMonth(listing.PublishedAt ?? now)}");
         }
 
-        OwnerVerificationDto? verification = null;
-        if (listing.Stage is ListingStage.ChangesRequested or ListingStage.Declined)
-        {
-            verification = await mediator.Send(new GetOwnerVerificationQuery(request.Subject, listing.Id), cancellationToken);
-        }
-
-        var subtitle = Workspace.Subtitle(listing, submission?.SubmittedAt, now);
+        var subtitle = Workspace.Subtitle(listing, now);
 
         var needs = fresh.Take(3).Select(r => new NeedsReplyDto(
             r.Id, r.Kind.ToString().ToLowerInvariant(), r.Kind.ToString(), r.MemberName, r.ServiceName ?? r.Kind.ToString(), r.CreatedAt)).ToList();
@@ -275,12 +240,10 @@ public sealed class GetMyBusinessQueryHandler(IAppDbContext db, IMediator mediat
             subtitle,
             listing.IsPaused,
             listing.PausedAt,
-            live && !listing.IsPaused && listing.ApprovedAt is { } approved && now - approved <= Workspace.JustApprovedFor,
             fresh.Count,
             stats,
             needs,
             summary,
-            verification,
             listing.AwayUntil is { } back && back > now ? back : null)
         {
             Businesses = businesses,
@@ -333,7 +296,7 @@ public sealed record SaveListingCommand(
     string Subject, int Version, string? Name, string? Tagline, string? CategorySlug, string? About, string? Where,
     string? Hours, string? Website, string? Highlight, Onboarding.SpaceInput? Space = null, Guid? ListingId = null) : IRequest<ListingEditorDto>;
 
-public sealed partial class SaveListingCommandHandler(IAppDbContext db, TimeProvider clock, AccountSettings account, VerificationSettings verification)
+public sealed partial class SaveListingCommandHandler(IAppDbContext db, TimeProvider clock)
     : IRequestHandler<SaveListingCommand, ListingEditorDto>
 {
     public async Task<ListingEditorDto> Handle(SaveListingCommand request, CancellationToken cancellationToken)
@@ -430,7 +393,7 @@ public sealed partial class SaveListingCommandHandler(IAppDbContext db, TimeProv
 
         var now = clock.GetUtcNow();
         var before = $"{listing.Name} | {listing.CategorySlug}";
-        var (oldName, oldCategory) = (listing.Name, listing.CategorySlug);
+        var oldName = listing.Name;
         var space = isSpace ? Onboarding.Drafts.SpaceFrom(request.Space) : null;
         var reworded = listing.Edit(
             name, tagline, request.CategorySlug!, request.About, space?.Neighbourhood ?? request.Where, hours, website, request.Highlight, now);
@@ -439,6 +402,7 @@ public sealed partial class SaveListingCommandHandler(IAppDbContext db, TimeProv
             listing.DescribeSpace(space);
         }
 
+        // A new name or category is live at once and tells nobody; the audit log keeps it (L2-087 AC6, ADR 0057).
         // The address follows the name; the old one keeps answering with 301 (L2-113 AC2, ADR 0056).
         if (!string.Equals(oldName, listing.Name, StringComparison.Ordinal))
         {
@@ -448,48 +412,12 @@ public sealed partial class SaveListingCommandHandler(IAppDbContext db, TimeProv
         if (reworded && listing.Stage == ListingStage.Live)
         {
             db.AuditRecords.Add(AuditRecord.Make(
-                request.Subject, listing.OwnerName ?? listing.Name, "listing.recheck-requested", "listing", listing.Id.ToString(),
+                request.Subject, listing.OwnerName ?? listing.Name, "listing.renamed", "listing", listing.Id.ToString(),
                 before, $"{listing.Name} | {listing.CategorySlug}", "The name or category of a live listing changed.", now));
-            await TellOfRecheck(listing, oldName, oldCategory, now, cancellationToken);
         }
 
         await db.SaveChangesAsync(cancellationToken);
         return await Workspace.Editor(db, listing, cancellationToken);
-    }
-}
-
-public sealed partial class SaveListingCommandHandler
-{
-    /// <summary>
-    /// Tells the verification team and the owner that a live listing changed its name or category and is looked at
-    /// again within two business days (L2-087 AC6). The e-mails are saved with the change, so they are sent once or
-    /// the change is not saved; the outbox sends them.
-    /// </summary>
-    private async Task TellOfRecheck(Listing listing, string oldName, string oldCategory, DateTimeOffset now, CancellationToken cancellationToken)
-    {
-        static string CategoryName(string slug) => Category.Find(slug)?.Name ?? slug;
-        var owner = Guid.TryParse(listing.OwnerId, out var id)
-            ? await db.Members.AsNoTracking().SingleOrDefaultAsync(m => m.Id == id, cancellationToken)
-            : null;
-        var title = $"We’ll re-check {listing.Name}";
-        Notifications.NotificationRules.Tell(
-            db, listing.OwnerId, "listing", title, "Your change is live now. The verification team looks at the listing again within two business days.", "/my-business", now);
-        if (owner is not null)
-        {
-            db.OutboxMessages.Add(OutboxMessage.Email(
-                owner.Id,
-                owner.Email,
-                title,
-                $"Hi {owner.FirstName},\n\nYour change is live now. Because the name or category changed, the verification team looks at the listing again within two business days. You don’t need to do anything.\n\nSee it here: {account.PublicBaseUrl.TrimEnd('/')}/b/{listing.Slug}\n\nJubilee · Toronto's Christian marketplace\n",
-                now));
-        }
-
-        VerificationTeam.Tell(
-            db,
-            verification,
-            $"Re-check: {listing.Name} changed its name or category",
-            $"A live listing changed. The change is public now; look at the listing again within two business days.\n\nName: {oldName} → {listing.Name}\nCategory: {CategoryName(oldCategory)} → {CategoryName(listing.CategorySlug)}\nOwner: {owner?.DisplayName ?? listing.OwnerName ?? "Unknown"}\n\nThe listing: {VerificationTeam.AdminLink(verification, $"/verifications/{listing.Id}")}\n",
-            now);
     }
 }
 
@@ -512,7 +440,7 @@ public sealed class PauseListingCommandHandler(IAppDbContext db, TimeProvider cl
 
         listing.Pause(clock.GetUtcNow());
         await db.SaveChangesAsync(cancellationToken);
-        return new PauseResultDto(true, listing.PausedAt, Workspace.State(listing), false);
+        return new PauseResultDto(true, listing.PausedAt, Workspace.State(listing));
     }
 }
 
@@ -575,9 +503,9 @@ public sealed class ResumeListingCommandHandler(IAppDbContext db, TimeProvider c
                 "STATEMENT_AGREEMENT_REQUIRED", "Agree to the updated statement of faith to resume your listing.");
         }
 
-        listing.Resume(clock.GetUtcNow());
+        listing.Resume();
         await db.SaveChangesAsync(cancellationToken);
-        return new PauseResultDto(false, null, Workspace.State(listing), listing.Stage != ListingStage.Live);
+        return new PauseResultDto(false, null, Workspace.State(listing));
     }
 }
 

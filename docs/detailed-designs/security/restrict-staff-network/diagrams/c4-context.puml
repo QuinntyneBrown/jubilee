@@ -3,7 +3,7 @@
 LAYOUT_WITH_LEGEND()
 title System Context — Restrict staff access by network
 
-Person(staff, "Staff member", "Verifier or administrator on an allowed network")
+Person(staff, "Staff member", "Moderator or administrator on an allowed network")
 Person_Ext(other, "Caller off the list", "Any address outside the allow-list")
 System(jubilee, "Jubilee", "Toronto's Christian marketplace")
 Rel(staff, jubilee, "Opens the admin application and calls staff endpoints", "HTTPS")

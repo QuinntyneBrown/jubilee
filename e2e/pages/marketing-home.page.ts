@@ -121,6 +121,13 @@ export class LaunchFormPart {
     );
   }
 
+  /** The height of each field and button of the form, in px (L2-215 AC8). */
+  controlHeights(): Promise<number[]> {
+    return this.form
+      .locator('input:not([type="checkbox"]), select, textarea, button')
+      .evaluateAll((controls) => controls.map((c) => c.getBoundingClientRect().height));
+  }
+
   /** Whether the element with focus is `locator`. */
   hasFocus(locator: Locator): Promise<boolean> {
     return locator.evaluate((element) => element === document.activeElement);
@@ -178,8 +185,6 @@ export class MarketingHomePage implements Screen {
   readonly cardTags: Locator;
   readonly cardTaglines: Locator;
   readonly cardHighlights: Locator;
-  readonly cardVerified: Locator;
-  readonly cardVerifiedIcons: Locator;
   readonly forBusinesses: Locator;
   readonly points: Locator;
   readonly sendDetails: Locator;
@@ -258,8 +263,6 @@ export class MarketingHomePage implements Screen {
     this.cardTags = this.cards.locator('.mkt-card__tag');
     this.cardTaglines = this.cards.locator('.mkt-card__tagline');
     this.cardHighlights = this.cards.locator('.mkt-card__highlight');
-    this.cardVerified = this.cards.locator('.mkt-card__verified');
-    this.cardVerifiedIcons = this.cardVerified.locator('svg');
     this.forBusinesses = this.main.locator('section#businesses');
     this.points = this.forBusinesses.locator('.mkt-points > li');
     this.pointList = this.forBusinesses.locator('.mkt-points');
@@ -314,6 +317,121 @@ export class MarketingHomePage implements Screen {
     return this.video.evaluate((video: HTMLVideoElement) => video.currentTime);
   }
 
+  /**
+   * Each heading of the page (the opening's and every section's): its name as assistive technology
+   * reads it, and whether its second part is set in a colour of its own.
+   */
+  headingParts(): Promise<{ name: string; accented: boolean }[]> {
+    return this.main.locator('h1, h2').evaluateAll((headings) =>
+      headings.map((heading) => {
+        const accent = heading.querySelector('.mkt-heading__accent');
+        return {
+          name: (heading.textContent ?? '').replace(/\s+/g, ' ').trim(),
+          accented: !!accent && getComputedStyle(accent).color !== getComputedStyle(heading).color,
+        };
+      }),
+    );
+  }
+
+  /** Turns the film's sound off, as a visitor does in a quiet room. */
+  async muteFilm(): Promise<void> {
+    await this.video.evaluate((video: HTMLVideoElement) => (video.muted = true));
+  }
+
+  /** Whether the film is paused. */
+  filmPaused(): Promise<boolean> {
+    return this.video.evaluate((video: HTMLVideoElement) => video.paused);
+  }
+
+  /** Whether the film holds the focus, so that its own controls answer the keyboard. */
+  filmFocused(): Promise<boolean> {
+    return this.video.evaluate((video) => document.activeElement === video);
+  }
+
+  /** Presses Tab from where the focus is until `target` holds it; fails after `presses` presses. */
+  async tabTo(target: Locator, presses = 40): Promise<void> {
+    for (let press = 0; press < presses; press++) {
+      await this.page.keyboard.press('Tab');
+      if (await target.evaluate((element) => element === document.activeElement)) return;
+    }
+    throw new Error(`Tab did not reach ${target} in ${presses} presses`);
+  }
+
+  /**
+   * Every stop Tab makes from the top of the page to its end: the role and the name of what holds
+   * the focus, and whether it shows a focus ring.
+   */
+  async tabOrder(): Promise<{ stop: string; ring: boolean }[]> {
+    const stops: { stop: string; ring: boolean }[] = [];
+    for (let press = 0; press < 80; press++) {
+      await this.page.keyboard.press('Tab');
+      const stop = await this.page.evaluate(() => {
+        const element = document.activeElement as HTMLElement | null;
+        if (!element || element === document.body) return null;
+        const style = getComputedStyle(element);
+        const labelled =
+          (element.id ? document.querySelector(`label[for="${element.id}"]`)?.textContent : null) ??
+          element.closest('label')?.textContent;
+        const name = (element.getAttribute('aria-label') ?? labelled ?? element.textContent ?? '')
+          .replace(/\s+/g, ' ')
+          .trim();
+        const role =
+          element.tagName === 'A' ? 'link' : element.tagName === 'BUTTON' ? 'button' : 'field';
+        return {
+          stop: `${role} ${name}`,
+          ring: style.outlineStyle !== 'none' && parseFloat(style.outlineWidth) > 0,
+        };
+      });
+      if (!stop) break;
+      stops.push(stop);
+    }
+    return stops;
+  }
+
+  /** The duration of the play button's change of size, in seconds. */
+  playZoomDuration(): Promise<number> {
+    return this.player
+      .locator('.mkt-player__play')
+      .evaluate((circle) => parseFloat(getComputedStyle(circle).transitionDuration));
+  }
+
+  /**
+   * The film without sound, stood at `seconds`: how much of the band where a caption stands
+   * (under the middle of the picture) is light type and how much is the dark box behind it.
+   */
+  captionBand(seconds: number): Promise<{ light: number; dark: number }> {
+    return this.video.evaluate(async (video: HTMLVideoElement, at) => {
+      video.muted = true;
+      video.pause();
+      await new Promise<void>((resolve) => {
+        video.addEventListener('seeked', () => resolve(), { once: true });
+        video.currentTime = at;
+      });
+      const canvas = document.createElement('canvas');
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      const context = canvas.getContext('2d')!;
+      context.drawImage(video, 0, 0);
+      const x = Math.round(canvas.width * 0.4);
+      const y = Math.round(canvas.height * 0.89);
+      const band = context.getImageData(
+        x,
+        y,
+        Math.round(canvas.width * 0.2),
+        Math.round(canvas.height * 0.05),
+      ).data;
+      let light = 0;
+      let dark = 0;
+      for (let index = 0; index < band.length; index += 4) {
+        const luma = 0.2126 * band[index] + 0.7152 * band[index + 1] + 0.0722 * band[index + 2];
+        if (luma > 200) light++;
+        else if (luma < 60) dark++;
+      }
+      const pixels = band.length / 4;
+      return { light: light / pixels, dark: dark / pixels };
+    }, seconds);
+  }
+
   /** Starts noting what the page asks for; call before opening it. */
   watchRequests(): void {
     this.page.on('request', (request) => this.requests.push(request.url()));
@@ -351,6 +469,11 @@ export class MarketingHomePage implements Screen {
     return locator.evaluate((element) => element.getBoundingClientRect().top);
   }
 
+  /** The distance of an element's left edge from the left of the viewport. */
+  leftOf(locator: Locator): Promise<number> {
+    return locator.evaluate((element) => element.getBoundingClientRect().left);
+  }
+
   topBarHeight(): Promise<number> {
     return this.topBar.evaluate((element) => element.getBoundingClientRect().height);
   }
@@ -381,22 +504,6 @@ export class MarketingHomePage implements Screen {
     );
   }
 
-  /** The names of the links and buttons reached by pressing Tab `presses` times from the top. */
-  async tabThrough(presses: number): Promise<string[]> {
-    const names: string[] = [];
-    for (let press = 0; press < presses; press++) {
-      await this.page.keyboard.press('Tab');
-      names.push(
-        await this.page.evaluate(() => {
-          const element = document.activeElement as HTMLElement;
-          const text = element.getAttribute('aria-label') ?? element.textContent ?? '';
-          return text.replace(/\s+/g, ' ').trim();
-        }),
-      );
-    }
-    return names;
-  }
-
   /** Reaches "Skip to content" with Tab from the top of the page and activates it. */
   async skipToContent(): Promise<void> {
     await this.page.keyboard.press('Tab');
@@ -406,14 +513,6 @@ export class MarketingHomePage implements Screen {
   /** Whether `main` holds the focus. */
   mainFocused(): Promise<boolean> {
     return this.main.evaluate((main) => document.activeElement === main);
-  }
-
-  /** Whether the focused element shows a focus ring. */
-  focusRingShown(): Promise<boolean> {
-    return this.page.evaluate(() => {
-      const style = getComputedStyle(document.activeElement as HTMLElement);
-      return style.outlineStyle !== 'none' && parseFloat(style.outlineWidth) > 0;
-    });
   }
 
   async ready(): Promise<void> {

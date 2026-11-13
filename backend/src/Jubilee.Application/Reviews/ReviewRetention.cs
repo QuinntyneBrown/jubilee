@@ -7,7 +7,7 @@ namespace Jubilee.Application.Reviews;
 
 /// <summary>
 /// The daily retention rule of reviews: a review taken down is kept for the record for
-/// <see cref="Review.TakenDownKeptFor"/>, then deleted with its reports (L2-238 AC4, ADR 0058). Answers how many.
+/// <see cref="Review.TakenDownKeptFor"/>, then deleted with its reports (L2-239 AC4, ADR 0066). Answers how many.
 /// </summary>
 public sealed record PurgeTakenDownReviewsCommand : IRequest<int>;
 

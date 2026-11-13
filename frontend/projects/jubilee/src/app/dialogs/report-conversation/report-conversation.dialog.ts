@@ -37,7 +37,7 @@ const MAX = 1000;
 const SUBMIT_TIMEOUT_MS = 10_000;
 
 /**
- * ReportConversationDialog (L2-063): what happened goes privately to the verification team, and a
+ * ReportConversationDialog (L2-063): what happened goes privately to the Jubilee team, and a
  * member may block the business with it. A failure keeps everything typed (L2-128); sending again
  * is safe, because a participant has one open report at a time.
  */

@@ -1,4 +1,11 @@
 import { Dialog } from '@angular/cdk/dialog';
+import {
+  CdkDrag,
+  CdkDragDrop,
+  CdkDragHandle,
+  CdkDropList,
+  moveItemInArray,
+} from '@angular/cdk/drag-drop';
 import { HttpErrorResponse } from '@angular/common/http';
 import {
   ChangeDetectionStrategy,
@@ -12,6 +19,7 @@ import { Router } from '@angular/router';
 import { CATALOGUE_API, DeletedItem, OwnerProduct, OwnerProducts } from 'api';
 import {
   EmptyState,
+  FieldHelp,
   Icon,
   IconName,
   MediaTile,
@@ -39,7 +47,11 @@ import { ToastService } from 'components';
 @Component({
   selector: 'jb-my-products-page',
   imports: [
+    CdkDrag,
+    CdkDragHandle,
+    CdkDropList,
     EmptyState,
+    FieldHelp,
     Icon,
     MediaTile,
     WorkspaceHeader,
@@ -199,6 +211,31 @@ export class MyProductsPage implements OnInit {
     const index = products.rows.indexOf(product);
     const target = index + by;
     if (target < 0 || target >= products.rows.length) return;
+    this.moveTo(products, product, target, by === -1 ? 'up' : 'down');
+  }
+
+  /**
+   * A product dragged by its handle and dropped (L2-090 AC2). The table shows the new order at once
+   * and the API confirms it; a drop in the same place sends nothing, and a refused move puts it back.
+   */
+  protected drop(
+    products: OwnerProducts,
+    event: CdkDragDrop<OwnerProduct[], OwnerProduct[], OwnerProduct>,
+  ): void {
+    if (this.moving() || event.previousIndex === event.currentIndex) return;
+    const rows = [...products.rows];
+    moveItemInArray(rows, event.previousIndex, event.currentIndex);
+    this.state.set({ status: 'loaded', value: { ...products, rows } });
+    this.moveTo(products, event.item.data, event.currentIndex, null);
+  }
+
+  /** Sends one move; `before` is the list to go back to when it is refused. */
+  private moveTo(
+    before: OwnerProducts,
+    product: OwnerProduct,
+    target: number,
+    button: 'up' | 'down' | null,
+  ): void {
     this.moving.set(true);
     this.api.moveProduct(product.id, target + 1).subscribe({
       next: (value) => {
@@ -207,16 +244,18 @@ export class MyProductsPage implements OnInit {
         this.announcement.set(
           `${product.name} moved to position ${target + 1} of ${value.rows.length}.`,
         );
+        if (!button) return;
         setTimeout(() =>
           document
             .querySelector<HTMLElement>(
-              `[aria-label="Move ${product.name} ${by === -1 ? 'up' : 'down'}"]:not([disabled])`,
+              `[aria-label="Move ${product.name} ${button}"]:not([disabled])`,
             )
             ?.focus(),
         );
       },
       error: () => {
         this.moving.set(false);
+        this.state.set({ status: 'loaded', value: before });
         this.toasts.show({
           tone: 'danger',
           title: 'Couldn’t move the product',

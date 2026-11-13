@@ -463,14 +463,16 @@ internal static class MemberRequestMail
     }
 }
 
-/// <summary>The owner marks a confirmed order fulfilled (L2-043 AC5).</summary>
+/// <summary>The owner marks a confirmed order fulfilled; the customer is told in the app and by e-mail (L2-043 AC5, L2-225).</summary>
 public sealed record FulfilRequestCommand(string Subject, Guid Id) : IRequest<RequestDecisionDto>;
 
-public sealed class FulfilRequestCommandHandler(IAppDbContext db, TimeProvider clock) : IRequestHandler<FulfilRequestCommand, RequestDecisionDto>
+public sealed class FulfilRequestCommandHandler(IAppDbContext db, TimeProvider clock, AccountSettings settings)
+    : IRequestHandler<FulfilRequestCommand, RequestDecisionDto>
 {
     public async Task<RequestDecisionDto> Handle(FulfilRequestCommand command, CancellationToken cancellationToken)
     {
-        var (request, _) = await IncomingRules.OwnedRequest(db, command.Subject, command.Id, cancellationToken);
+        var (request, listing) = await IncomingRules.OwnedRequest(db, command.Subject, command.Id, cancellationToken);
+        var now = clock.GetUtcNow();
         if (request.Kind != RequestKind.Order)
         {
             throw IncomingRules.Invalid(request);
@@ -478,13 +480,24 @@ public sealed class FulfilRequestCommandHandler(IAppDbContext db, TimeProvider c
 
         try
         {
-            request.Complete(command.Subject, clock.GetUtcNow());
+            request.Complete(command.Subject, now);
         }
         catch (InvalidTransitionException)
         {
             throw IncomingRules.Invalid(request);
         }
 
+        var title = IncomingRules.Title(request);
+        var first = IncomingRules.FirstName(request.MemberName);
+        var link = $"{settings.PublicBaseUrl.TrimEnd('/')}/requests/{request.Id}";
+        await IncomingRules.QueueEmail(
+            db,
+            request,
+            $"{listing.Name} marked your order fulfilled",
+            $"Hi {first},\n\n{listing.Name} marked your order fulfilled: {title}.\n\nSee it on Jubilee: {link}\n\nJubilee · Toronto's Christian marketplace\n",
+            now,
+            null,
+            cancellationToken);
         await db.SaveChangesAsync(cancellationToken);
         return new RequestDecisionDto(
             request.Id, RequestLabels.Wire(request.Status), RequestLabels.ForMember(request.Status), IncomingRules.KindWire(request.Kind),

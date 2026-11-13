@@ -2,7 +2,7 @@
 
 ## Overview
 
-Jubilee is Toronto's Christian marketplace: a directory in which members find verified
+Jubilee is Toronto's Christian marketplace: a directory in which members find
 businesses, send requests and exchange messages. This feature covers the mechanisms that keep
 the web application and the API reachable. The target is an availability of at least 99.9 %
 in each calendar month, measured without announced maintenance (`L2-174`).

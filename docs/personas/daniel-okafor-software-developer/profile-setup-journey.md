@@ -35,8 +35,8 @@ After the accountant and the mover both go well, Daniel opens `/list` on a Sunda
 | Service 3 | "Care plan", "Updates, backups and small edits, per month.", Fixed price $120, Ask for a quote |
 
 He ticks "I agree to Jubilee's statement of faith and to deal honestly with every customer." and
-presses "Submit for verification". The check-in asks "How easy was it to list your business?" and
-he answers 4. The listing is approved the next business day.
+presses "Publish listing". The page says "Okafor Web Studio is live. Members can find you in
+Business & tech now." The check-in asks "How easy was it to list your business?" and he answers 4.
 
 In My business, under Listing, he adds:
 

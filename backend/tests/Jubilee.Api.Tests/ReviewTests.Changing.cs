@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Jubilee.Api.Tests;
 
-// Editing, removing and replying: L2-232 AC5, AC6, AC7; L2-233 AC5, AC6; L2-234 AC2, AC4; L2-237 AC5, AC7, AC9.
+// Editing, removing and replying: L2-233 AC5, AC6, AC7; L2-234 AC5, AC6; L2-235 AC2, AC4; L2-238 AC5, AC7, AC9.
 public sealed partial class ReviewTests
 {
     private async Task<Review> JoannasReview(int rating = 5)
@@ -23,7 +23,7 @@ public sealed partial class ReviewTests
 
     private Task<StarCounts> ListingStars() => Read(db => db.Listings.Where(l => l.Id == _listing.Id).Select(l => new StarCounts(l.Stars5, l.Stars4, l.Stars3, l.Stars2, l.Stars1)).SingleAsync());
 
-    // L2-237 AC5, L2-232 AC7, L2-234 AC4, L2-237 AC9
+    // L2-238 AC5, L2-233 AC7, L2-235 AC4, L2-238 AC9
     [Fact]
     public async Task L2_234_AC5_the_author_changes_their_review_and_the_reply_stays()
     {
@@ -47,7 +47,7 @@ public sealed partial class ReviewTests
         Assert.Equal(0, await Read(db => db.Notifications.CountAsync()));
     }
 
-    // L2-232 AC2, L2-237 AC4
+    // L2-233 AC2, L2-238 AC4
     [Fact]
     public async Task L2_229_AC2_a_change_is_held_to_the_same_rules()
     {
@@ -62,7 +62,7 @@ public sealed partial class ReviewTests
         Assert.Equal(5, (await Read(db => db.Reviews.SingleAsync())).Rating);
     }
 
-    // L2-232 AC6, L2-237 AC7
+    // L2-233 AC6, L2-238 AC7
     [Fact]
     public async Task L2_229_AC6_nobody_but_the_author_changes_or_removes_a_review()
     {
@@ -84,7 +84,7 @@ public sealed partial class ReviewTests
         Assert.Equal(5, (await Read(db => db.Reviews.SingleAsync())).Rating);
     }
 
-    // L2-232 AC5, L2-237 AC9
+    // L2-233 AC5, L2-238 AC9
     [Fact]
     public async Task L2_229_AC5_the_author_removes_their_review_with_its_reports()
     {
@@ -99,7 +99,7 @@ public sealed partial class ReviewTests
         Assert.Equal(StarCounts.None, await ListingStars());
     }
 
-    // L2-233 AC5, L2-234 AC2
+    // L2-234 AC5, L2-235 AC2
     [Fact]
     public async Task L2_230_AC5_the_owner_replies_once_and_the_author_is_told_of_the_first()
     {
@@ -121,7 +121,7 @@ public sealed partial class ReviewTests
         Assert.Equal("/b/legacy-financial", notification.Target);
     }
 
-    // L2-233 AC6
+    // L2-234 AC6
     [Fact]
     public async Task L2_230_AC6_only_the_owner_replies_and_a_reply_is_held_to_1000_characters()
     {

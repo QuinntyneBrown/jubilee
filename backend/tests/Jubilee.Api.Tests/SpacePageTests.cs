@@ -116,7 +116,7 @@ public class SpacePageTests : IClassFixture<JubileeApiFactory>, IAsyncLifetime
         {
             _factory.CreateClient(),
             _factory.CreateMemberClient("Joanna Adeyemi", "member|joanna"),
-            _factory.CreateMemberClient("Miriam Castillo", "member|miriam", "verifier"),
+            _factory.CreateMemberClient("Miriam Castillo", "member|miriam", "moderator"),
             _factory.CreateMemberClient("Paul Kowalski", Owner),
         };
 

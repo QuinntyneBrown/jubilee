@@ -6,7 +6,7 @@ skinparam roundcorner 12
 skinparam defaultFontName Arial
 skinparam ArrowColor #344054
 actor "Member" as member
-actor "Verifier" as verifier
+actor "Moderator" as moderator
 box "Frontend — Jubilee Web and Admin Web" #E0F2FE
   participant "ReportReviewDialog" as dialog
   participant "AdminReportPage" as adminPage
@@ -27,7 +27,7 @@ member -> dialog : Press "Report", choose a reason, press "Send report"
 dialog -> controller : POST /api/reviews/{id}/reports with Idempotency-Key
 controller -> report : Send with the member of the session
 alt Own review
-  report --> controller : 403 OWN_REVIEW (L2-235 AC4)
+  report --> controller : 403 OWN_REVIEW (L2-236 AC4)
 else Over 10 today
   report --> controller : 429 with Retry-After
 else Allowed
@@ -35,18 +35,18 @@ else Allowed
   report --> controller : 201
 end
 controller --> dialog : Answer
-dialog --> member : "Thanks for telling us" … "The author won’t know who reported it." (L2-235 AC3)
+dialog --> member : "Thanks for telling us" … "The author won’t know who reported it." (L2-236 AC3)
 == Take down ==
-verifier -> adminPage : Open the review report from /reports
+moderator -> adminPage : Open the review report from /reports
 adminPage -> modController : GET /api/admin/reports/{id} (staff session, allowed network)
 modController -> db : ReportStore.Load; StartReview; audit report.opened
-modController --> adminPage : Report with the review and its reports (L2-236 AC2)
-verifier -> adminPage : "Take the review down" with the reason and a resolution note
+modController --> adminPage : Report with the review and its reports (L2-237 AC2)
+moderator -> adminPage : "Take the review down" with the reason and a resolution note
 adminPage -> modController : POST /api/admin/reports/{id}/actions kind take-down
 modController -> apply : Send
 apply -> apply : Validate messageText and resolutionNote; refuse on a non-review report
 apply -> db : Review.TakeDown; resolve every report of the review; ReviewTally recounts
-apply -> db : Notification and e-mail to the author "We took down your review of {name}" (L2-234 AC3)
+apply -> db : Notification and e-mail to the author "We took down your review of {name}" (L2-235 AC3)
 apply -> db : ReportAction and audit review.taken-down; SaveChanges
 apply --> modController : ReportDetailDto
 modController --> adminPage : 200, resolved

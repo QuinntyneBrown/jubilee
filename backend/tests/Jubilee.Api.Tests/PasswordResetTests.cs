@@ -126,6 +126,53 @@ public sealed partial class PasswordResetTests : IClassFixture<JubileeApiFactory
         Assert.Equal(outboxBefore, await Read(db => db.OutboxMessages.CountAsync()));
     }
 
+    // L2-008 AC5, L2-141 AC1
+    // Given an address with an account and one without, when 100 requests are made for each, interleaved and with the
+    // hour moved on between pairs so the limit never answers, then the median times differ by less than 50 ms.
+    [Fact]
+    public async Task L2_008_AC5_the_median_answer_takes_as_long_for_an_address_with_an_account_as_for_one_without()
+    {
+        await Join();
+        var visitor = Visitor();
+        var known = new List<double>();
+        var unknown = new List<double>();
+        async Task Time(string email, List<double> into)
+        {
+            var watch = System.Diagnostics.Stopwatch.StartNew();
+            var response = await visitor.PostAsJsonAsync("/api/account/password-reset-requests", new { email });
+            watch.Stop();
+            Assert.Equal(HttpStatusCode.Accepted, response.StatusCode);
+            into.Add(watch.Elapsed.TotalMilliseconds);
+        }
+
+        // Warm the pipeline so the first request's start-up cost falls on neither side.
+        await Ask("warm.up@example.com");
+        for (var i = 0; i < 100; i++)
+        {
+            // Alternate which side goes first, so neither always follows the other.
+            if (i % 2 == 0)
+            {
+                await Time(Email, known);
+                await Time("nobody@example.com", unknown);
+            }
+            else
+            {
+                await Time("nobody@example.com", unknown);
+                await Time(Email, known);
+            }
+
+            _factory.Clock.Advance(TimeSpan.FromMinutes(61));
+        }
+
+        static double Median(List<double> values)
+        {
+            var sorted = values.Order().ToList();
+            return (sorted[49] + sorted[50]) / 2;
+        }
+
+        Assert.InRange(Math.Abs(Median(known) - Median(unknown)), 0, 49.999);
+    }
+
     // L2-008 AC2, L2-140 AC1
     [Fact]
     public async Task L2_008_AC2_an_account_gets_a_link_stored_only_as_a_hash_and_an_unknown_address_gets_nothing()
@@ -174,22 +221,80 @@ public sealed partial class PasswordResetTests : IClassFixture<JubileeApiFactory
     }
 
     // L2-008 AC4, L2-137 AC1
+    // Given 3 reset requests for one address within an hour, when another is made for it,
+    // then it is answered 429 with Retry-After, nothing is recorded and no e-mail is sent.
     [Fact]
-    public async Task L2_008_AC4_the_fourth_request_in_an_hour_shows_the_same_answer_but_sends_nothing()
+    public async Task L2_008_AC4_the_fourth_request_in_an_hour_is_refused_with_429_and_sends_nothing()
     {
         await Join();
-        for (var i = 0; i < 4; i++)
+        for (var i = 0; i < 3; i++)
         {
             Assert.Equal(HttpStatusCode.Accepted, (await Ask(Email)).StatusCode);
             await Deliver();
         }
 
-        Assert.Equal(3, ResetMails().Count());
+        _factory.Clock.Advance(TimeSpan.FromMinutes(10));
+        var refused = await Ask(Email);
 
-        _factory.Clock.Advance(TimeSpan.FromMinutes(61));
-        await Ask(Email);
+        Assert.Equal(HttpStatusCode.TooManyRequests, refused.StatusCode);
+        Assert.Equal(TimeSpan.FromMinutes(50), refused.Headers.RetryAfter?.Delta);
+        Assert.Equal("rate_limited", (await Json(refused)).GetProperty("code").GetString());
+        await Deliver();
+        Assert.Equal(3, ResetMails().Count());
+        Assert.Equal(3, await Read(db => db.PasswordResetRequests.CountAsync()));
+
+        // When the first of the three leaves the hour, the address may ask again.
+        _factory.Clock.Advance(TimeSpan.FromMinutes(51));
+        Assert.Equal(HttpStatusCode.Accepted, (await Ask(Email)).StatusCode);
         await Deliver();
         Assert.Equal(4, ResetMails().Count());
+    }
+
+    // L2-141 AC1, L2-137 AC1
+    // Given 3 requests each for an address with an account and one without, when a fourth is made for each,
+    // then both are refused alike: the limit counts requests, never the account.
+    [Fact]
+    public async Task L2_141_AC1_the_limit_answers_the_same_for_an_address_with_an_account_and_one_without()
+    {
+        await Join();
+        for (var i = 0; i < 3; i++)
+        {
+            await Ask(Email);
+            await Ask("nobody@example.com");
+        }
+
+        var known = await Ask(Email);
+        var unknown = await Ask("nobody@example.com");
+
+        Assert.Equal(HttpStatusCode.TooManyRequests, known.StatusCode);
+        Assert.Equal(known.StatusCode, unknown.StatusCode);
+        Assert.Equal(known.Headers.RetryAfter?.Delta, unknown.Headers.RetryAfter?.Delta);
+        var (a, b) = (await Json(known), await Json(unknown));
+        Assert.Equal(
+            a.EnumerateObject().Select(p => p.Name).Order(),
+            b.EnumerateObject().Select(p => p.Name).Order());
+        foreach (var field in new[] { "title", "status", "detail", "code" })
+        {
+            Assert.Equal(a.GetProperty(field).ToString(), b.GetProperty(field).ToString());
+        }
+    }
+
+    // L2-143 AC1
+    // Given a refused reset request, when it is refused, then a security event names the IP address and not the e-mail.
+    [Fact]
+    public async Task L2_143_AC1_a_refused_reset_request_is_logged_as_a_rate_limit_trip_without_the_address()
+    {
+        for (var i = 0; i < 4; i++)
+        {
+            var client = Visitor();
+            client.DefaultRequestHeaders.Add(JubileeApiFactory.RemoteAddressHeader, "203.0.113.18");
+            await client.PostAsJsonAsync("/api/account/password-reset-requests", new { email = Email });
+        }
+
+        var trip = Assert.Single(_factory.Logs.Entries, e => e.Message.Contains("RateLimitTrip"));
+        Assert.Contains("Security event: RateLimitTrip PasswordReset refused from 203.0.113.18", trip.Message);
+        Assert.Equal(Microsoft.Extensions.Logging.LogLevel.Warning, trip.Level);
+        Assert.DoesNotContain(_factory.Logs.Entries, e => e.Message.Contains(Email, StringComparison.OrdinalIgnoreCase));
     }
 
     // L2-008 AC4

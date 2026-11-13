@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, output } from '@angular/core';
 import { Button, StatusPage } from 'components';
 
-/** A screen of the verification team, shown to a staff member without the verifier role (L2-188 AC4). */
+/** A screen of the Jubilee team, shown to a staff member without the moderator role (L2-188 AC4). */
 @Component({
   selector: 'jb-admin-only-page',
   imports: [Button, StatusPage],

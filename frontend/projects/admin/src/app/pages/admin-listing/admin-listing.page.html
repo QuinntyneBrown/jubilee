@@ -1,0 +1,121 @@
+@let current = state();
+@switch (current.status) {
+  @case ('error') {
+    <div
+      jb-empty-state
+      [error]="true"
+      [level]="1"
+      icon="alert"
+      heading="We couldn’t load this listing"
+    >
+      Nothing is lost. Check your connection and try again. If it keeps happening, tell us and quote
+      <code>{{ current.reference }}</code
+      >.
+      <button slot="actions" jb-button variant="primary" type="button" (click)="load()">
+        <svg jb-icon name="refresh"></svg>Try again
+      </button>
+      <a slot="actions" jb-button routerLink="/listings">Back to listings</a>
+    </div>
+  }
+  @case ('loading') {
+    <p class="visually-hidden" role="status">Loading the listing…</p>
+    <div aria-hidden="true">
+      <span jb-skeleton shape="text" width="50"></span>
+      <span jb-skeleton shape="text" width="70"></span>
+    </div>
+  }
+  @case ('loaded') {
+    @let l = current.value;
+    <nav
+      jb-breadcrumb
+      [items]="[{ label: 'Listings', link: '/listings' }, { label: l.name }]"
+    ></nav>
+    <jb-page-header [heading]="l.name">
+      <ng-container ngProjectAs="[slot=subtitle]">
+        {{ l.categoryName }} · published {{ when(l.publishedAt) }} ·
+        <span jb-badge [tone]="tone(l)">{{ l.statusLabel }}</span>
+      </ng-container>
+      @if (canTakeDown()) {
+        <div class="cluster">
+          <button jb-button variant="danger" type="button" (click)="takeDown(l)">
+            Take down listing
+          </button>
+        </div>
+      }
+    </jb-page-header>
+    @if (l.takenDown; as down) {
+      @if (justTakenDown()) {
+        <div jb-alert tone="success" icon="check" heading="Taken down" role="status">
+          <div>
+            <!-- The time ends with "a.m." or "p.m.", which closes the sentence. -->
+            You took down {{ l.name }} today at {{ time(down.at) }} {{ first(l) }} has been e-mailed
+            your reason.
+          </div>
+          <div>Reason: “{{ down.reason }}”</div>
+        </div>
+      } @else {
+        <div jb-alert tone="danger" heading="Taken down" role="status">
+          <div>Taken down {{ day(down.at) }} by {{ down.byName }}.</div>
+          <div>Reason: “{{ down.reason }}”</div>
+        </div>
+      }
+    }
+    @if (l.isOwnListing) {
+      <div jb-alert heading="This is your own listing">
+        <div>Another member of the team has to act on it.</div>
+      </div>
+    }
+    <div class="split">
+      <div class="stack">
+        <section jb-card heading="Owner" headingId="own">
+          <dl jb-description-list>
+            <div jb-description-item term="Name" [value]="l.owner.name"></div>
+            @if (l.owner.pronouns; as pronouns) {
+              <div jb-description-item term="Pronouns" [value]="pronouns"></div>
+            }
+            <div jb-description-item term="E-mail">
+              {{ l.owner.email }} · {{ l.owner.emailConfirmed ? 'confirmed' : 'not confirmed' }}
+            </div>
+            <div jb-description-item term="Member since" [value]="since(l.owner.memberSince)"></div>
+            <div jb-description-item term="Other listings" [value]="otherListings(l)"></div>
+          </dl>
+        </section>
+        @if (spaceRows(); as rows) {
+          <section jb-card heading="The space" headingId="spc">
+            <dl jb-description-list>
+              @for (row of rows; track row.term) {
+                <div jb-description-item [term]="row.term" [value]="row.value"></div>
+              }
+            </dl>
+            <p class="text-caption">
+              The exact address is never shown here; only the renter the owner accepts receives it.
+            </p>
+          </section>
+        }
+      </div>
+      <aside class="split__sticky" aria-labelledby="pv">
+        @for (flag of flags(); track flag) {
+          <div jb-alert tone="warning" icon="alert" heading="Flagged">
+            <div>{{ flag }}</div>
+          </div>
+        }
+        <h2 id="pv" class="text-caption">
+          {{ l.space ? 'How renters see it' : 'How members see it' }}
+        </h2>
+        @if (spacePreview(); as space) {
+          <div jb-space-card-preview [space]="space" published></div>
+        } @else if (tile(); as t) {
+          <div
+            jb-business-card-preview
+            [name]="l.name"
+            [tagline]="l.tagline"
+            [tint]="t.tint"
+            [icon]="t.icon"
+            [tag]="l.kind === 'products' ? 'Shop' : 'Business'"
+            published
+          ></div>
+        }
+      </aside>
+    </div>
+  }
+}

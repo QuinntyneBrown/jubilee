@@ -19,7 +19,7 @@ test.describe('service business page (L2-033)', () => {
 
     await expect(business.backLink).toHaveText('Back to browse');
     await expect(business.backLink).toHaveAttribute('href', '/');
-    await expect(business.kicker).toHaveText('Verified Christian business · Financial & insurance');
+    await expect(business.kicker).toHaveText('Financial & insurance');
     await expect(business.categoryLink).toHaveAttribute('href', '/c/financial-insurance');
     await expect(business.heading).toHaveText('Legacy Financial');
     await expect(business.ownerName).toHaveText('Trevor Chew, CKA®, CFP®, CLU®');
@@ -216,19 +216,16 @@ test.describe('who sees a listing (L2-028)', () => {
   });
 });
 
-test.describe('verified label and photo (L2-111, L2-088)', () => {
-  test('L2-111 AC2 and AC3: the label carries an icon and links to the Help answer on verification', async ({
+test.describe('no verified claim, and the photo (ADR 0057, L2-088)', () => {
+  test('ADR 0057: the page calls the business neither verified nor checked', async ({
     page,
     jb,
   }) => {
     const business = new BusinessPage(page);
     await jb.open('business');
 
-    await expect(business.kickerIcon).toBeVisible();
-    await expect(business.verifiedLabel).toHaveAttribute(
-      'href',
-      '/help#how-does-a-business-get-verified',
-    );
+    await expect(business.kicker).not.toContainText('Verified');
+    await expect(business.main.getByRole('link', { name: /verified/i })).toHaveCount(0);
   });
 
   test('L2-088 AC6: a business without photos shows its category tile', async ({ page, jb }) => {
@@ -251,7 +248,7 @@ test.describe('related businesses (L2-040)', () => {
     await expect(business.relatedCards).toHaveCount(2);
     await expect(business.relatedCard(0).name).toHaveText('Deeks Insurance');
     await expect(business.relatedCard(0).root).toHaveAttribute('href', '/b/deeks-insurance');
-    await expect(business.relatedCard(0).verifiedMark).toHaveText('Verified');
+    await expect(business.relatedCard(0).root).not.toContainText('Verified');
     await expect(business.relatedCard(1).name).toHaveText('JD Smith Insurance Brokers');
     await expect(business.seeAll).toHaveAttribute('href', '/c/financial-insurance');
 

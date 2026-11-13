@@ -3,12 +3,14 @@ import { Injectable, InjectionToken, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { IncomingRequests, IncomingTab, RequestDecision } from '../models/incoming-requests';
 
-/** Contract of the owner's side of requests (L2-051 to L2-053). */
+/** Contract of the owner's side of requests (L2-051 to L2-053, L2-225). */
 export interface IncomingRequestsApi {
   list(tab: IncomingTab): Observable<IncomingRequests>;
   confirm(id: string): Observable<RequestDecision>;
   undoConfirm(id: string): Observable<RequestDecision>;
   decline(id: string, reason: string, message: string): Observable<RequestDecision>;
+  /** Marks a confirmed order fulfilled (L2-225). */
+  fulfil(id: string): Observable<RequestDecision>;
 }
 
 export const INCOMING_REQUESTS_API = new InjectionToken<IncomingRequestsApi>(
@@ -36,5 +38,9 @@ export class HttpIncomingRequestsApi implements IncomingRequestsApi {
       reason,
       message,
     });
+  }
+
+  fulfil(id: string): Observable<RequestDecision> {
+    return this.http.post<RequestDecision>(`/api/my-business/requests/${id}/fulfil`, {});
   }
 }

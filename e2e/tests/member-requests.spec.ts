@@ -1,5 +1,6 @@
 import { expect, test } from '../fixtures/jb-test';
 import {
+  BIBLE,
   DRAIN,
   FLOWERS,
   MEETING,
@@ -153,7 +154,7 @@ test.describe('track requests: the list (L2-047)', () => {
     await expect(requests.rows).toHaveCount(4);
   });
 
-  test('L2-070: a request the owner answers while the page is open changes status with a toast', async ({
+  test('L2-070 AC1, AC6: a request the owner answers reaches the open list over the event stream, with one toast', async ({
     page,
     jb,
   }) => {
@@ -166,10 +167,66 @@ test.describe('track requests: the list (L2-047)', () => {
 
     fake.answer(DRAIN, 'confirmed');
 
-    await expect(requests.row('Kitchen drain')).toContainText('Confirmed', { timeout: 10_000 });
+    // Well inside the five seconds a timer would take: the stream told the page.
+    await expect(requests.row('Kitchen drain')).toContainText('Confirmed', { timeout: 2_500 });
+    await expect(requests.subtitle).toHaveText('3 open · 0 awaiting reply');
     await expect(
       toasts.withTitle('WaterWorks Plumbing & Drains confirmed your quote request'),
+    ).toHaveCount(1);
+    await expect(toasts.all).toHaveCount(1);
+  });
+
+  test('L2-070 AC6: while the event stream is connected the list does not ask on a timer', async ({
+    page,
+    jb,
+  }) => {
+    const requests = new RequestsPage(page);
+    await requests.setWidth(1280);
+    const fake = await stubMemberRequests(page);
+    await jb.goto('/requests');
+    await expect(requests.rows).toHaveCount(4);
+    const asked = fake.listRequests.length;
+
+    // Longer than the five seconds between two questions of the fallback.
+    await requests.idle(6_500);
+
+    expect(fake.listRequests.length).toBe(asked);
+  });
+
+  test('L2-070 AC6: when the event stream cannot connect the list asks every five seconds, so an answer still shows', async ({
+    page,
+    jb,
+  }) => {
+    const requests = new RequestsPage(page);
+    const toasts = new Toasts(page);
+    await requests.setWidth(1280);
+    const fake = await stubMemberRequests(page, { stream: 'down' });
+    await jb.goto('/requests');
+    await expect(requests.row('Kitchen drain')).toContainText('Awaiting reply');
+
+    fake.answer(DRAIN, 'declined');
+
+    await expect(requests.row('Kitchen drain')).toContainText('Declined', { timeout: 10_000 });
+    await expect(
+      toasts.withTitle('WaterWorks Plumbing & Drains declined your quote request'),
     ).toBeVisible();
+  });
+
+  test('L2-070 AC6: a confirmation the owner takes back makes the request awaiting reply again', async ({
+    page,
+    jb,
+  }) => {
+    const requests = new RequestsPage(page);
+    await requests.setWidth(1280);
+    const fake = await stubMemberRequests(page);
+    await jb.goto('/requests');
+    await expect(requests.row('Kitchen drain')).toContainText('Awaiting reply');
+    fake.answer(DRAIN, 'confirmed');
+    await expect(requests.row('Kitchen drain')).toContainText('Confirmed', { timeout: 2_500 });
+
+    fake.takeBack(DRAIN);
+
+    await expect(requests.row('Kitchen drain')).toContainText('Awaiting reply', { timeout: 2_500 });
   });
 
   test('a row opens its request', async ({ page, jb }) => {
@@ -298,7 +355,10 @@ test.describe('track requests: the detail (L2-048)', () => {
     await expect(detail.heading).toHaveText('Kitchen drain is slow and gurgling');
   });
 
-  test('L2-070: an owner’s answer shows on the open page with a toast', async ({ page, jb }) => {
+  test('L2-070 AC1, AC6: an owner’s answer reaches the open request over the event stream, with one toast', async ({
+    page,
+    jb,
+  }) => {
     const detail = new RequestDetailPage(page);
     const toasts = new Toasts(page);
     await detail.setWidth(1280);
@@ -308,10 +368,63 @@ test.describe('track requests: the detail (L2-048)', () => {
 
     fake.answer(DRAIN, 'confirmed');
 
-    await expect(detail.callout).toContainText('Wanda confirmed your order', { timeout: 10_000 });
+    await expect(detail.callout).toContainText('Wanda confirmed your order', { timeout: 2_500 });
     await expect(
       toasts.withTitle('WaterWorks Plumbing & Drains confirmed your quote request'),
-    ).toBeVisible();
+    ).toHaveCount(1);
+    await expect(toasts.all).toHaveCount(1);
+  });
+
+  test('L2-070 AC6: while the event stream is connected the request is not asked for on a timer', async ({
+    page,
+    jb,
+  }) => {
+    const detail = new RequestDetailPage(page);
+    await detail.setWidth(1280);
+    const fake = await stubMemberRequests(page);
+    await jb.goto(`/requests/${DRAIN}`);
+    await expect(detail.callout).toContainText('Waiting for');
+    const asked = fake.detailRequests.length;
+
+    await detail.idle(6_500);
+
+    expect(fake.detailRequests.length).toBe(asked);
+  });
+
+  test('L2-070 AC6: when the event stream cannot connect the request is asked for every five seconds', async ({
+    page,
+    jb,
+  }) => {
+    const detail = new RequestDetailPage(page);
+    await detail.setWidth(1280);
+    const fake = await stubMemberRequests(page, { stream: 'down' });
+    await jb.goto(`/requests/${BIBLE}`);
+    await expect(detail.callout).toContainText('Ben confirmed your order');
+
+    fake.answer(BIBLE, 'completed');
+
+    await expect(detail.subtitle).toContainText('Completed', { timeout: 10_000 });
+  });
+
+  test('L2-070 AC6: a notification about another request leaves the open one alone', async ({
+    page,
+    jb,
+  }) => {
+    const detail = new RequestDetailPage(page);
+    const toasts = new Toasts(page);
+    await detail.setWidth(1280);
+    const fake = await stubMemberRequests(page);
+    await jb.goto(`/requests/${DRAIN}`);
+    await expect(detail.callout).toContainText('Waiting for');
+    const asked = fake.detailRequests.length;
+
+    fake.answer(BIBLE, 'completed');
+
+    // The application's own toast says it, with the way to the other request.
+    await expect(toasts.withTitle('Christian Bookstores marked your order fulfilled')).toBeVisible({
+      timeout: 2_500,
+    });
+    expect(fake.detailRequests.length).toBe(asked);
   });
 });
 
@@ -424,6 +537,32 @@ test.describe('track requests: cancel (L2-049)', () => {
     await expect(dialog.root).toHaveCount(0);
     await expect(detail.callout).toContainText('can’t take this job');
     await expect(detail.cancel).toHaveCount(0);
+  });
+
+  test('L2-043 AC8: a request nobody answered for a week offers Cancel or ask again', async ({
+    page,
+    jb,
+  }) => {
+    const detail = new RequestDetailPage(page);
+    const dialog = new CancelRequestDialog(page);
+    await detail.setWidth(1280);
+    const fake = await stubMemberRequests(page);
+    fake.requests.find((r) => r.id === DRAIN)!.unanswered = true;
+    await jb.goto(`/requests/${DRAIN}`);
+
+    await expect(detail.callout).toContainText('WaterWorks Plumbing & Drains has not replied yet');
+    await expect(detail.callout).toContainText(
+      'It has been over a week. You can cancel this request or ask again.',
+    );
+    await expect(detail.subtitle).toContainText('Awaiting reply');
+    await expect(detail.askAgain).toHaveAttribute('href', '/b/waterworks');
+    await expect(detail.cancel).toHaveText(/Cancel request/);
+
+    await detail.cancel.click();
+    await dialog.cancel.click();
+
+    expect(fake.cancels).toEqual([DRAIN]);
+    await expect(detail.callout).toContainText('You cancelled this request');
   });
 
   test('a closed request offers no cancel', async ({ page, jb }) => {

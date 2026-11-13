@@ -12,6 +12,13 @@ namespace Jubilee.Application.OwnerWorkspace;
 
 public sealed record OwnerProductOptionDto(string Label, int? Stock);
 
+/// <summary>A product photo the owner uploaded: its id for the save, its key and size for the tile (L2-091 AC9).</summary>
+public sealed record ProductPhotoDto(Guid Id, string Key, int Width, int Height)
+{
+    public static ProductPhotoDto? From(ProductPhoto? photo) =>
+        photo is null ? null : new ProductPhotoDto(photo.Id, photo.Key, photo.Width, photo.Height);
+}
+
 /// <summary>
 /// One row of the owner's products (L2-089). <paramref name="StockChange"/> is what a save did to
 /// the stock ("none", "became-sold-out" or "back-in-stock"), for the owner's toast (L2-036 AC3);
@@ -32,7 +39,8 @@ public sealed record ProductRowDto(
     string? OptionName,
     IReadOnlyList<OwnerProductOptionDto> Options,
     int Requests,
-    string StockChange);
+    string StockChange,
+    ProductPhotoDto? Photo);
 
 public sealed record ProductsDto(string Business, string Slug, string Subtitle, bool Live, int Total, int SoldOut, int Max, IReadOnlyList<ProductRowDto> Rows);
 
@@ -61,6 +69,12 @@ internal static partial class CatalogueRules
     public const int MaxOptionLabel = 40;
     public const int MaxPlace = 200;
     public static readonly TimeSpan IdempotencyWindow = TimeSpan.FromHours(24);
+
+    /// <summary>An owner uploads at most this many product photos an hour (L2-138 AC6).</summary>
+    public const int PhotosPerHour = 30;
+
+    /// <summary>The window of <see cref="PhotosPerHour"/>.</summary>
+    public static readonly TimeSpan PhotoWindow = TimeSpan.FromHours(1);
 
     [GeneratedRegex(@"^\d{1,6}(\.\d{1,2})?$")]
     private static partial Regex PriceShape();
@@ -110,7 +124,8 @@ internal static partial class CatalogueRules
         product.OptionName,
         [.. product.OrderedOptions.Select(o => new OwnerProductOptionDto(o.Label, o.Stock))],
         requests,
-        WireValues.Of(change));
+        WireValues.Of(change),
+        ProductPhotoDto.From(product.Photo));
 
     public static OwnerServiceRowDto Row(Service service) => new(
         service.Id,
@@ -144,7 +159,7 @@ public sealed class ListProductsQueryHandler(IAppDbContext db, TimeProvider cloc
     public async Task<ProductsDto> Handle(ListProductsQuery request, CancellationToken cancellationToken)
     {
         var listing = await Workspace.Owned(db, request.Subject, cancellationToken);
-        var products = CatalogueRules.Ordered(await db.Products.AsNoTracking()
+        var products = CatalogueRules.Ordered(await db.Products.AsNoTracking().Include(p => p.Photo)
             .Where(p => p.ListingId == listing.Id && !p.IsDeleted).ToListAsync(cancellationToken));
         var counts = await CatalogueRules.RequestCounts(db, listing.Id, cancellationToken);
         return new ProductsDto(
@@ -170,9 +185,10 @@ public sealed record SaveProductCommand(
     int? MinimumQuantity,
     string? OptionName,
     IReadOnlyList<OwnerProductOptionDto>? Options,
-    string? IdempotencyKey) : IRequest<ProductRowDto>;
+    string? IdempotencyKey,
+    Guid? PhotoId = null) : IRequest<ProductRowDto>;
 
-public sealed class SaveProductCommandHandler(IAppDbContext db, TimeProvider clock, AccountSettings settings)
+public sealed class SaveProductCommandHandler(IAppDbContext db, TimeProvider clock, AccountSettings settings, IMediaStore store)
     : IRequestHandler<SaveProductCommand, ProductRowDto>
 {
     public async Task<ProductRowDto> Handle(SaveProductCommand request, CancellationToken cancellationToken)
@@ -221,6 +237,20 @@ public sealed class SaveProductCommandHandler(IAppDbContext db, TimeProvider clo
             errors["options"] = "INVALID";
         }
 
+        if ((request.OptionName?.Trim().Length ?? 0) > CatalogueRules.MaxOptionLabel)
+        {
+            errors["optionName"] = "TOO_LONG";
+        }
+
+        // A product takes only a photo its own owner uploaded (L2-138 AC6).
+        var photo = request.PhotoId is { } photoId
+            ? await db.ProductPhotos.SingleOrDefaultAsync(p => p.Id == photoId && p.ListingId == listing.Id, cancellationToken)
+            : null;
+        if (request.PhotoId is not null && photo is null)
+        {
+            errors["photo"] = "INVALID";
+        }
+
         if (errors.Count > 0)
         {
             throw new ValidationFailedException(errors);
@@ -232,7 +262,7 @@ public sealed class SaveProductCommandHandler(IAppDbContext db, TimeProvider clo
         {
             if (key is not null)
             {
-                var earlier = await db.Products.AsNoTracking().FirstOrDefaultAsync(
+                var earlier = await db.Products.AsNoTracking().Include(p => p.Photo).FirstOrDefaultAsync(
                     p => p.ListingId == listing.Id && p.IdempotencyKey == key && p.CreatedAt > now - CatalogueRules.IdempotencyWindow,
                     cancellationToken);
                 if (earlier is not null)
@@ -252,14 +282,24 @@ public sealed class SaveProductCommandHandler(IAppDbContext db, TimeProvider clo
             var created = Product.Create(listing.Id, slug, name, cents!.Value, false, (TileTint)(live.Count % 4), TileIcon.Bag, now);
             created.Place(live.Count == 0 ? 1 : live.Max(p => p.Position) + 1, key);
             Apply(created, request, options);
+            created.ShowPhoto(photo);
             db.Products.Add(created);
             await db.SaveChangesAsync(cancellationToken);
             return CatalogueRules.Row(created, 0, created.ChangeSince(false));
         }
 
-        var product = await db.Products.SingleOrDefaultAsync(p => p.Id == request.Id && p.ListingId == listing.Id && !p.IsDeleted, cancellationToken)
+        var product = await db.Products.Include(p => p.Photo)
+            .SingleOrDefaultAsync(p => p.Id == request.Id && p.ListingId == listing.Id && !p.IsDeleted, cancellationToken)
             ?? throw new NotFoundException("product_not_found", "We can't find that product.");
         var wasSoldOut = product.IsSoldOut;
+        var replaced = product.Photo is { } old && old.Id != photo?.Id ? old : null;
+        product.ShowPhoto(photo);
+        if (replaced is not null)
+        {
+            // A photo the product no longer shows is not kept (ADR 0063).
+            db.ProductPhotos.Remove(replaced);
+        }
+
         product.Revise(name, cents!.Value, description);
         Apply(product, request, options);
         var change = product.ChangeSince(wasSoldOut);
@@ -270,6 +310,11 @@ public sealed class SaveProductCommandHandler(IAppDbContext db, TimeProvider clo
         }
 
         await db.SaveChangesAsync(cancellationToken);
+        if (replaced is not null)
+        {
+            await store.Delete(replaced.Key, CancellationToken.None);
+        }
+
         return CatalogueRules.Row(product, counts.GetValueOrDefault(product.Id), change);
     }
 
@@ -300,6 +345,66 @@ public sealed class SaveProductCommandHandler(IAppDbContext db, TimeProvider clo
         }
 
         return candidate;
+    }
+}
+
+/// <summary>
+/// A product photo, uploaded before the product is saved: checked and re-encoded, scanned for malware,
+/// and only then stored under a random name (L2-091 AC9, L2-138 AC6, ADR 0063).
+/// </summary>
+public sealed record UploadProductPhotoCommand(string Subject, byte[] Content) : IRequest<ProductPhotoDto>;
+
+public sealed class UploadProductPhotoCommandHandler(IAppDbContext db, IImageProcessor images, IMalwareScanner scanner, IMediaStore store, TimeProvider clock)
+    : IRequestHandler<UploadProductPhotoCommand, ProductPhotoDto>
+{
+    public async Task<ProductPhotoDto> Handle(UploadProductPhotoCommand request, CancellationToken cancellationToken)
+    {
+        var listing = await Workspace.Owned(db, request.Subject, cancellationToken);
+        var now = clock.GetUtcNow();
+        var since = now - CatalogueRules.PhotoWindow;
+        var recent = await db.ProductPhotos.AsNoTracking()
+            .Where(p => p.ListingId == listing.Id && p.UploadedAt > since)
+            .OrderBy(p => p.UploadedAt).Select(p => p.UploadedAt).ToListAsync(cancellationToken);
+        if (recent.Count >= CatalogueRules.PhotosPerHour)
+        {
+            throw new RateLimitedException("rate_limited", recent[recent.Count - CatalogueRules.PhotosPerHour] + CatalogueRules.PhotoWindow - now);
+        }
+
+        ProcessedImage processed;
+        using (var stream = new MemoryStream(request.Content))
+        {
+            processed = images.Process(stream);
+        }
+
+        // Nothing is stored that was not scanned, so no member is ever shown it.
+        switch (await scanner.Scan(request.Content, cancellationToken))
+        {
+            case ScanVerdict.Infected:
+                throw new InvalidPhotoException("FAILED_SCAN", "This photo didn’t pass our safety check.");
+            case ScanVerdict.Unavailable:
+                throw new Messaging.ScanUnavailableException();
+        }
+
+        var key = Convert.ToHexString(System.Security.Cryptography.RandomNumberGenerator.GetBytes(16)).ToLowerInvariant();
+        foreach (var rendition in processed.Renditions)
+        {
+            await store.Save(key, rendition.Width, rendition.Format, rendition.Data, cancellationToken);
+        }
+
+        var photo = ProductPhoto.Upload(listing.Id, key, processed.Width, processed.Height, now);
+        try
+        {
+            db.ProductPhotos.Add(photo);
+            await db.SaveChangesAsync(cancellationToken);
+        }
+        catch
+        {
+            // Without its row nobody can use the photo: do not leave it behind.
+            await store.Delete(key, CancellationToken.None);
+            throw;
+        }
+
+        return ProductPhotoDto.From(photo)!;
     }
 }
 

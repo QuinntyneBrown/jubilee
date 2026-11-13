@@ -39,7 +39,7 @@ else claimed
     handler -> db : Select members with EmailNewBusinesses on and a confirmed address
     db --> handler : Opted-in members
     loop each member
-      handler -> db : Listings first approved in 7 days in the categories the member browsed
+      handler -> db : Listings published in 7 days in the categories the member browsed
       opt at least one listing
         handler -> policy : Queue(member, "new-businesses", "New on Jubilee this week", body with the mailing address)
         policy -> db : Add OutboxMessage when WantsEmail holds, never held for the summary

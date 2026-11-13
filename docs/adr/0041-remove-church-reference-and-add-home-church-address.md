@@ -2,6 +2,8 @@
 
 ## Status
 
+Superseded in part by ADR 0057, 12 November 2026: Jubilee ships without verification; a listing goes live when its owner publishes it, there is no Verified mark, and the verification team is the Jubilee team (`moderator` role).
+
 Accepted, 12 November 2026. Supersedes ADR 0019 (church reference decisions). Supersedes the
 church-reference parts of ADR 0018, 0020, 0023, 0028, 0031, 0034 and both records numbered 0038;
 each carries a note. Applies ADR 0036 (component parity) to the changed copy.

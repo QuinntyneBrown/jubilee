@@ -2,6 +2,12 @@
 
 Audited 11 November 2026, against `frontend/projects/` at commit `8fe2233`.
 
+> **Since ADR 0057 (12 November 2026)** Jubilee ships without verification. The verified mark and
+> label, the marketing site's verified checks and the app's admin verification pages are deleted,
+> not moved into `components`: the `verified` block of B17, finding C4's `jb-verified-mark`, the
+> verified checks of C6 and the `admin-verification` and `admin-verifications` rows below no
+> longer call for a fix. The `verify-email` page confirms an e-mail address and is not affected.
+
 ## The rule
 
 > Every presentation component is implemented in the `components` Angular library project and

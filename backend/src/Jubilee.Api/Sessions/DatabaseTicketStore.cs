@@ -13,7 +13,7 @@ namespace Jubilee.Api.Sessions;
 /// random 256-bit key, the table keeps its hash and the serialised ticket. A session that is ended,
 /// older than 30 days or idle past its limit is not found, so the caller is asked to sign in again.
 /// </summary>
-public class DatabaseTicketStore(IServiceScopeFactory scopes, TimeProvider clock) : ITicketStore
+public class DatabaseTicketStore(IServiceScopeFactory scopes, TimeProvider clock, IHttpContextAccessor? http = null) : ITicketStore
 {
     /// <summary>The kind of session this store keeps; a key is only ever found within its kind (ADR 0040).</summary>
     protected virtual SessionKind Kind => SessionKind.Member;
@@ -39,7 +39,9 @@ public class DatabaseTicketStore(IServiceScopeFactory scopes, TimeProvider clock
                 LinkTokens.Hash(key),
                 TicketSerializer.Default.Serialize(ticket),
                 ticket.Properties.IsPersistent,
-                clock.GetUtcNow());
+                clock.GetUtcNow(),
+                SessionOrigin.Device(http?.HttpContext?.Request.Headers.UserAgent.ToString()),
+                SessionOrigin.Network(http?.HttpContext?.Connection.RemoteIpAddress));
 
         await using var scope = scopes.CreateAsyncScope();
         var db = scope.ServiceProvider.GetRequiredService<IAppDbContext>();
@@ -108,7 +110,7 @@ public class DatabaseTicketStore(IServiceScopeFactory scopes, TimeProvider clock
 }
 
 /// <summary>Keeps staff sessions (L2-190) the same way, as rows of kind <c>Staff</c>.</summary>
-public sealed class StaffTicketStore(IServiceScopeFactory scopes, TimeProvider clock) : DatabaseTicketStore(scopes, clock)
+public sealed class StaffTicketStore(IServiceScopeFactory scopes, TimeProvider clock) : DatabaseTicketStore(scopes, clock, null)
 {
     protected override SessionKind Kind => SessionKind.Staff;
 }

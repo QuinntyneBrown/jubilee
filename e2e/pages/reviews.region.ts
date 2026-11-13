@@ -41,7 +41,7 @@ export class ReviewPart {
 }
 
 /**
- * The "Reviews" section of a listing or a product page (L2-228, L2-229, L2-231) and the rating
+ * The "Reviews" section of a listing or a product page (L2-229, L2-230, L2-232) and the rating
  * under the name that leads to it.
  */
 export class ReviewsRegion {

@@ -5,7 +5,7 @@
 Jubilee is Toronto's Christian marketplace. A member whose request a business,
 shop or space confirmed writes one honest review of that listing: a rating of 1
 to 5 stars, the service, product or stay it is about, and what happened. Every
-review on Jubilee therefore comes from a real dealing and is shown as Verified.
+review on Jubilee therefore comes from a real dealing.
 This feature covers who may write, the Write a review screen at
 `/b/{slug}/review`, posting, the posted confirmation, the owner's notification
 of the new review, and the API that stores it.
@@ -23,7 +23,7 @@ The terms below are local to this feature.
 Reading the reviews on a listing is `read-reviews`; editing and removing are
 `edit-and-remove-a-review`; the owner's reply is `reply-to-a-review`; reports
 and take-downs are `moderate-reviews`. The decisions are recorded in
-[ADR 0058](../../../adr/0058-reviews.md).
+[ADR 0066](../../../adr/0066-reviews.md).
 
 ## Description
 
@@ -67,10 +67,9 @@ only (ADR 0035).
     `textarea[jb-textarea]` held to 2,000 characters, the placeholder "Say
     what happened, as you would tell a friend.", and the counter "At least 40
     characters · {n}" until 40 trimmed characters, then "Looks good · {n}".
-  - The note "Your review will show as Verified because {name} confirmed your
-    request on Jubilee. It posts under your first name and last initial:
-    {author name}." with `jb-verified-mark`, and "Keep to what happened to you:
-    no private details of anyone and no advertising."
+  - The note "Your review posts under your first name and last initial:
+    {author name}." and "Keep to what happened to you: no private details of
+    anyone and no advertising."
   - `button[jb-button]` "Post review", the width of the screen under 640 px.
 - **Validation in the browser** — on "Post review": no star shows "Choose a
   star rating to post your review." under the stars; fewer than 40 trimmed
@@ -80,7 +79,7 @@ only (ADR 0035).
   `Idempotency-Key` header and a 10-second `timeout`. While it runs the button
   says "Posting…" with `aria-busy="true"`, the fields are disabled and a second
   press sends nothing (`L2-127`). The control carries `jbRequiresConnection`,
-  so it is disabled offline with the reason (`L2-239`).
+  so it is disabled offline with the reason (`L2-240`).
 - **Failed** — a `jb-alert` "We couldn’t post your review" with "Your review is
   still here. Try again." and the reason; on 429 "You’re doing that a lot. Try
   again in {n} minutes."; on 422 the field messages. Everything is kept, and a
@@ -104,7 +103,7 @@ only (ADR 0035).
   listing (slug, name, kind, category name and slug, owner name),
   the items and their legend (`service`, `product` or none) and the author's
   name, after `ReviewEligibility` agrees.
-- **`ReviewEligibility`** — the rule of `L2-225`: the listing is public; the
+- **`ReviewEligibility`** — the rule of `L2-226`: the listing is public; the
   caller is not its owner (`OWN_LISTING`); the caller has a request for it in
   `Confirmed` or `Completed` (`NOT_ELIGIBLE`); the caller has no live review of
   it (`ALREADY_REVIEWED`). A review removed by its author or taken down does not
@@ -118,17 +117,17 @@ only (ADR 0035).
   through `NotificationRules.Tell` (kind `review`, "New review of {name}",
   "{author} gave it {n} of 5 stars for {item}.", target `/b/{slug}`) and
   queues the e-mail through `EmailPolicy.Queue` under the "requests" category,
-  all in one `SaveChangesAsync` (`L2-234 AC1`).
+  all in one `SaveChangesAsync` (`L2-235 AC1`).
 - **`Review`** (`Jubilee.Domain`) — new entity: listing id, the product or
   service id when the item is one, the item's name, the author's subject, the
   author's name as first name and last initial and their initials (taken from
   the `Member` when written), the rating, the trimmed text, `CreatedAt`,
   `EditedAt`, the reply fields, `TakenDownAt`, `TakeDownReason` and the
   idempotency key. Its text is stored as text and rendered by interpolation,
-  never as markup (`L2-237 AC8`).
+  never as markup (`L2-238 AC8`).
 - **`ReviewTally`** — recounts `Stars1` to `Stars5` on the `Listing` and, when
   the item is a product, on the `Product`, from the live reviews, in the same
-  transaction (`L2-237 AC9`).
+  transaction (`L2-238 AC9`).
 - **Persistence** — `ReviewConfiguration` in `EntityConfigurations.cs`, a
   `Reviews` set on `IAppDbContext`, and one migration in
   `Jubilee.Infrastructure/Migrations` that adds `Reviews`, `ReviewReports`
@@ -137,11 +136,11 @@ only (ADR 0035).
 
 ### Open questions
 
-Every choice below is recorded in [ADR 0058](../../../adr/0058-reviews.md).
+Every choice below is recorded in [ADR 0066](../../../adr/0066-reviews.md).
 
 | Question | Decision | Why |
 |---|---|---|
-| Who may review, and what "Verified" means | A member with a request the owner confirmed or completed; nobody else (403 `NOT_ELIGIBLE`). Every review is Verified: "{name} confirmed the reviewer’s request on Jubilee." | Jubilee takes no payment; a confirmed request is the only proof of a dealing, and an unverified review is a false balance (Proverbs 11:1). |
+| Who may review | A member with a request the owner confirmed or completed; nobody else (403 `NOT_ELIGIBLE`). No review carries a "Verified" mark (ADR 0057). | Jubilee takes no payment; a confirmed request is the only proof of a dealing, and a review with no dealing behind it is a false balance (Proverbs 11:1). |
 | How many reviews per member and listing | One live review; a removed or taken-down one frees the place. An edit shows "Edited". | Keeps one voice per dealing and the change visible. |
 | The item | A service or product by id, its name kept; "Their service", "A purchase", "My stay" or "Renting here" when there is no choice. | As `reviewableItems` of the design; a renamed product keeps the review whole. |
 | The name shown | First name and last initial with initials; no church, neighbourhood or "Anonymous". | The home church is private (L1-020); a review stands by a name. |
@@ -158,12 +157,12 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 
 | L2 ID | Refines (L1) | Requirement |
 |-------|--------------|-------------|
-| `L2-225` | `L1-031` | A member shall write a review of a listing only after its owner confirmed or completed a request of theirs, once per listing, and every review shall be shown as Verified. |
-| `L2-226` | `L1-031` | The Write a review screen at `/b/{slug}/review` shall show the listing, "How was it?", the stars, the item choice, "Tell others about it" and the note on what is shown, with no line that asks for a good review. |
-| `L2-227` | `L1-031` | Posting shall check the rating and 40 characters, send once with an idempotency key, confirm with "Thanks, your review is live." and keep everything on a failure. |
-| `L2-234` | `L1-031` | The owner shall be told of a new review in the notification centre and by e-mail. |
-| `L2-237` | `L1-031` | The API shall store a review for the member of the session, validate every field, refuse an ineligible member, the owner and a second review, apply the limits and keep the star counts. |
-| `L2-239` | `L1-031` | The screen shall fit from 360 px, work by touch and keyboard, carry no state by colour alone, use the tokens and disable sending offline. |
+| `L2-226` | `L1-031` | A member shall write a review of a listing only after its owner confirmed or completed a request of theirs, once per listing; no review shall carry a "Verified" mark. |
+| `L2-227` | `L1-031` | The Write a review screen at `/b/{slug}/review` shall show the listing, "How was it?", the stars, the item choice, "Tell others about it" and the note on what is shown, with no line that asks for a good review. |
+| `L2-228` | `L1-031` | Posting shall check the rating and 40 characters, send once with an idempotency key, confirm with "Thanks, your review is live." and keep everything on a failure. |
+| `L2-235` | `L1-031` | The owner shall be told of a new review in the notification centre and by e-mail. |
+| `L2-238` | `L1-031` | The API shall store a review for the member of the session, validate every field, refuse an ineligible member, the owner and a second review, apply the limits and keep the star counts. |
+| `L2-240` | `L1-031` | The screen shall fit from 360 px, work by touch and keyboard, carry no state by colour alone, use the tokens and disable sending offline. |
 | `L2-126` | `L1-018` | A form shall validate on submit, show each message under its field and move focus to the first problem. |
 | `L2-127` | `L1-018` | While submitting, the primary button shall be busy and a second press shall send nothing. |
 | `L2-132` | `L1-018` | Each create request shall carry an idempotency key and a repeat shall return the first result. |

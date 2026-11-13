@@ -26,14 +26,14 @@ public static class ContentDefaults
     public static ContentDto? For(string slug) => slug switch
     {
         "statement-of-faith" => Make(slug, "Statement of faith",
-            "Jubilee is open to everyone as a customer. Businesses that list here agree to the commitments below, and every listing is verified before it goes live.",
+            "Jubilee is open to everyone as a customer. Businesses that list here agree to the commitments below.",
             [
                 new("What we believe", "what-we-believe",
                     "We believe in one God — Father, Son and Holy Spirit — and that Jesus Christ is Lord. We hold the Bible to be God’s word and our guide for faith and for work."),
                 new("How we do business", "how-we-do-business",
                     "- We tell the truth about what we sell, what it costs and when it will be ready.\n- We treat every customer with the same care, whatever their background or belief.\n- We keep our word, and we put it right when we fall short.\n- We see profit as something to steward: for our families, our churches and our city."),
-                new("How a listing is verified", "how-a-listing-is-verified",
-                    "Each owner agrees to these commitments when listing. The Jubilee verification team reviews every listing before it goes live. Read more in [Help](/help)."),
+                new("How listings stay honest", "how-listings-stay-honest",
+                    "Each owner agrees to these commitments when listing. Members can report a listing that isn't honest, and the Jubilee team takes down listings that misrepresent a business. Read more in [Help](/help)."),
             ]),
         "terms" => Make(slug, "Terms of use",
             "These terms cover using Jubilee as a member and as a listed business. Jubilee introduces buyers and businesses; the agreement to buy is between the two of you.",
@@ -60,8 +60,8 @@ public static class ContentDefaults
         "help" => Make(slug, "Help",
             "Answers to the questions members ask most.",
             [
-                new("How does a business get verified?", "how-does-a-business-get-verified",
-                    "The owner submits the listing and agrees to the statement of faith. The Jubilee verification team reviews it and publishes it, usually within two business days."),
+                new("How does Jubilee keep listings honest?", "how-does-jubilee-keep-listings-honest",
+                    "Every owner agrees to Jubilee's statement of faith and to deal honestly with every customer when they list. If a listing isn't honest about its business, report it from the listing page: the Jubilee team reads every report and takes down listings that misrepresent a business."),
                 new("Does Jubilee take payment?", "does-jubilee-take-payment",
                     "No. You send a booking, quote or order request, the business confirms it, and you pay the business directly in the way they offer."),
                 new("Is it free?", "is-it-free", "Yes. Joining, messaging and listing a business are all free."),

@@ -14,7 +14,7 @@ export interface ReportedReview {
   id: string;
 }
 
-/** Contract of the reviews endpoints (L2-237, ADR 0058). */
+/** Contract of the reviews endpoints (L2-238, ADR 0066). */
 export interface ReviewsApi {
   /** The reviews of a listing, or of one of its products; anyone reads them. */
   listingReviews(slug: string, product?: string): Observable<ListingReviews>;

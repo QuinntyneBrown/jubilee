@@ -16,7 +16,7 @@ the names the designs introduce.
 | Container | Technology | Responsibility |
 |---|---|---|
 | `Jubilee Web` | Angular single-page application | Pages, dialogs and notifications from `docs/mocks/` |
-| `Jubilee Admin Web` | Angular single-page application | The admin application: staff sign-in and the verification and moderation screens (ADR 0040) |
+| `Jubilee Admin Web` | Angular single-page application | The admin application: staff sign-in and the listings, moderation and featured screens of the Jubilee team (ADR 0040, ADR 0057) |
 | `Jubilee service worker` | Angular service worker | Offline cache and outgoing message queue |
 | `Jubilee API` | ASP.NET Core | JSON API under `/api`, real-time hub, authentication, authorization |
 | `Jubilee Worker` | .NET worker service | Background jobs, outbox dispatch, e-mail sending |
@@ -120,6 +120,20 @@ and observability are marked `<TO SUPPLY>` in the feature designs.
 | [Report a conversation](messaging/report-conversation/README.md) | `L2-063`, `L2-132`, `L2-133`, `L2-180` |
 | [Start a conversation](messaging/start-conversation/README.md) | `L2-055`, `L2-005`, `L2-126`, `L2-132` |
 
+### moderation
+
+The Jubilee team's side of listings, reports and featured businesses, in the
+admin application. Jubilee ships without verification (ADR 0057): an owner
+publishes a listing and it is live at once; the team looks through published
+listings and takes down one that misrepresents a business.
+
+| Feature | L2 requirements cited |
+|---|---|
+| [Browse listings](moderation/browse-listings/README.md) | `L2-098`, `L2-099`, `L2-133`, `L2-180`, `L2-118` |
+| [Feature businesses](moderation/feature-businesses/README.md) | `L2-106`, `L2-133`, `L2-180` |
+| [Handle reports](moderation/handle-reports/README.md) | `L2-105`, `L2-063`, `L2-133`, `L2-150`, `L2-180` |
+| [Take down a listing](moderation/take-down-listing/README.md) | `L2-100`, `L2-101`, `L2-098`, `L2-079`, `L2-150`, `L2-180` |
+
 ### notifications
 
 | Feature | L2 requirements cited |
@@ -144,7 +158,7 @@ and observability are marked `<TO SUPPLY>` in the feature designs.
 | [Describe a listing](onboarding/describe-listing/README.md) | `L2-071`, `L2-072`, `L2-073`, `L2-076`, `L2-005`, `L2-126`, `L2-133`, `L2-198` |
 | [Describe a space](onboarding/describe-space/README.md) | `L2-197`, `L2-198`, `L2-199`, `L2-200`, `L2-076`, `L2-077`, `L2-126`, `L2-133` |
 | [Save a draft](onboarding/save-draft/README.md) | `L2-077`, `L2-118`, `L2-133`, `L2-182` |
-| [Submit for verification](onboarding/submit-for-verification/README.md) | `L2-078`, `L2-079`, `L2-005`, `L2-126`, `L2-127`, `L2-132` |
+| [Publish a listing](onboarding/publish-listing/README.md) | `L2-078`, `L2-079`, `L2-028`, `L2-005`, `L2-126`, `L2-127`, `L2-132` |
 
 ### operations
 
@@ -213,16 +227,16 @@ and observability are marked `<TO SUPPLY>` in the feature designs.
 
 ### reviews
 
-Decisions in [ADR 0058](../adr/0058-reviews.md).
+Decisions in [ADR 0066](../adr/0066-reviews.md).
 
 | Feature | L2 requirements cited |
 |---|---|
-| [Edit and remove a review](reviews/edit-and-remove-a-review/README.md) | `L2-232`, `L2-237`, `L2-239`, `L2-128`, `L2-129`, `L2-130`, `L2-133` |
-| [Moderate reviews](reviews/moderate-reviews/README.md) | `L2-235`, `L2-236`, `L2-234`, `L2-237`, `L2-238`, `L2-105`, `L2-180` |
-| [Read reviews](reviews/read-reviews/README.md) | `L2-228`, `L2-229`, `L2-230`, `L2-231`, `L2-225`, `L2-237`, `L2-238`, `L2-239`, `L2-123`, `L2-125` |
-| [Reply to a review](reviews/reply-to-a-review/README.md) | `L2-233`, `L2-234`, `L2-228`, `L2-237`, `L2-064`, `L2-068` |
-| [Review data](reviews/review-data/README.md) | `L2-237`, `L2-238`, `L2-017`, `L2-018`, `L2-133`, `L2-136`, `L2-137`, `L2-148` |
-| [Write a review](reviews/write-a-review/README.md) | `L2-225`, `L2-226`, `L2-227`, `L2-234`, `L2-237`, `L2-239`, `L2-126`, `L2-127`, `L2-132`, `L2-137` |
+| [Edit and remove a review](reviews/edit-and-remove-a-review/README.md) | `L2-233`, `L2-238`, `L2-240`, `L2-128`, `L2-129`, `L2-130`, `L2-133` |
+| [Moderate reviews](reviews/moderate-reviews/README.md) | `L2-236`, `L2-237`, `L2-235`, `L2-238`, `L2-239`, `L2-105`, `L2-180` |
+| [Read reviews](reviews/read-reviews/README.md) | `L2-229`, `L2-230`, `L2-231`, `L2-232`, `L2-226`, `L2-238`, `L2-239`, `L2-240`, `L2-123`, `L2-125` |
+| [Reply to a review](reviews/reply-to-a-review/README.md) | `L2-234`, `L2-235`, `L2-229`, `L2-238`, `L2-064`, `L2-068` |
+| [Review data](reviews/review-data/README.md) | `L2-238`, `L2-239`, `L2-017`, `L2-018`, `L2-133`, `L2-136`, `L2-137`, `L2-148` |
+| [Write a review](reviews/write-a-review/README.md) | `L2-226`, `L2-227`, `L2-228`, `L2-235`, `L2-238`, `L2-240`, `L2-126`, `L2-127`, `L2-132`, `L2-137` |
 
 ### security
 
@@ -252,17 +266,6 @@ Decisions in [ADR 0058](../adr/0058-reviews.md).
 |---|---|
 | [Publish policy pages](trust-content/publish-policy-pages/README.md) | `L2-107`, `L2-108`, `L2-109`, `L2-110`, `L2-133` |
 | [Render the site chrome](trust-content/render-site-chrome/README.md) | `L2-112`, `L2-164`, `L2-065` |
-| [Show the verified mark](trust-content/show-verified-mark/README.md) | `L2-111`, `L2-028`, `L2-133` |
-
-### verification
-
-| Feature | L2 requirements cited |
-|---|---|
-| [Feature businesses](verification/feature-businesses/README.md) | `L2-106`, `L2-133`, `L2-180` |
-| [Handle reports](verification/handle-reports/README.md) | `L2-105`, `L2-063`, `L2-133`, `L2-150`, `L2-180` |
-| [Request changes](verification/request-changes/README.md) | `L2-102`, `L2-103`, `L2-104`, `L2-098`, `L2-180` |
-| [Review and approve a listing](verification/review-and-approve-listing/README.md) | `L2-100`, `L2-101`, `L2-098`, `L2-150`, `L2-180` |
-| [Work the verification queue](verification/work-verification-queue/README.md) | `L2-098`, `L2-099`, `L2-133`, `L2-180`, `L2-118` |
 
 ## Regenerating the diagrams
 

@@ -7,7 +7,7 @@ namespace Jubilee.Application.Directory;
 /// <summary>
 /// Chooses the "Featured this week" businesses (L2-106, L2-021 AC7): the public listings of the
 /// featured slots that are current in Toronto, in slot order, skipping any listing that is no
-/// longer public. When no slot is current, the most recently verified public listings.
+/// longer public. When no slot is current, the most recently published public listings.
 /// </summary>
 public sealed class FeaturedSelector(IAppDbContext db)
 {
@@ -22,7 +22,7 @@ public sealed class FeaturedSelector(IAppDbContext db)
         {
             return await publicListings
                 .WhereBusiness()
-                .OrderByDescending(l => l.ApprovedAt)
+                .OrderByDescending(l => l.PublishedAt)
                 .ThenBy(l => l.SortName)
                 .Take(limit)
                 .ToListAsync(cancellationToken);

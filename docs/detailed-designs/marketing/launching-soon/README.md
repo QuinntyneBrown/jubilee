@@ -21,7 +21,7 @@ The terms below are local to this feature.
 
 - **launching-soon state** — the state of the marketing page before Jubilee opens
 - **launch notification sign-up** — an e-mail address, with an optional first name, left to be told when Jubilee launches
-- **business pre-registration** — the details of a business an owner sends before launch; it neither lists nor verifies the business
+- **business pre-registration** — the details of a business an owner sends before launch; it does not list the business: once Jubilee opens, the owner publishes the listing (`L2-078`)
 - **consent** — the ticked checkbox of a form, stored with its time and the method "marketing site form"
 - **e-mail key** — the e-mail address in lower case, by which two sign-ups are compared
 - **bot challenge** — the privacy-respecting challenge of `L2-137`, shown only when a site key is configured
@@ -29,7 +29,7 @@ The terms below are local to this feature.
 - **marketing host** — the App Service `jubilee-to-www`, whose `server.js` serves the site's files
 - **kept submission** — a sign-up or a pre-registration the marketing host holds because the API could not take it, with the time it was received, until the API accepts it
 - **received time** — the time the marketing host received a submission; it is the consent time of the row
-- **Jubilee team** — the staff who read the submissions and contact owners; the verification team still verifies every listing (`L1-014`)
+- **Jubilee team** — the staff who read the submissions and contact owners; nobody verifies a listing before it goes live (ADR 0057), and the team looks after published listings (`L1-014`)
 
 The design amends ADR 0013: the site is no longer static, it has an HTTP client, and it has no
 `APP_URL`. It still has no router and no session. `L2-185` (links from the site to the app) is
@@ -218,8 +218,11 @@ Each changed component keeps its look where it was already used.
   answers 404 on the marketing host, so a public host never forwards a staff path. The proxy
   states the caller's address in `X-Jubilee-Client-Address` and proves itself with
   `X-Jubilee-Proxy-Key` (`PROXY_KEY`, the key of `StaffAccess:ProxyKey`); without that the limits
-  would count every visitor as the marketing host. Without `API_ORIGIN` the host serves files
-  only and the forms show their error state.
+  would count every visitor as the marketing host. The proxy replaces whatever address or key
+  the caller sent, and the API's `StaffProxyMiddleware` believes the address only with the key,
+  before the rate limiter reads it, so each visitor's address has its own 5 an hour of each form
+  (`L2-218` AC3). Without `API_ORIGIN` the host serves files only and answers `/api/launch` 404;
+  the page then keeps sending and says "Still sending." (`L2-216` AC6, `L2-217` AC6).
 - **Host of a forwarded request** — a request forwarded to an API on another host always names
   that host in `Host`, with or without `PROXY_KEY`: App Service's front end routes by it, and a
   request still addressed to `www.jubilee.to` would come back to the marketing site. Forwarding
@@ -259,10 +262,17 @@ Each changed component keeps its look where it was already used.
   three App Services when there is none); on `jubilee-to-app` `Launch__TeamEmail`. After the
   health check the script asks `https://www.jubilee.to/api/launch` for 200 and
   `https://www.jubilee.to/api/session` for 404, and fails the deployment otherwise. The
-  Turnstile widget lists `jubilee.to` and `www.jubilee.to` before a site key is set.
+  Turnstile widget lists `jubilee.to` and `www.jubilee.to` before a site key is set. The
+  owner's ordered checklist of these settings, each step with its command and how to check it
+  worked, is "The launching-soon forms" in `eng/azure/README.md` (ADR 0062).
 - **Tests** — `eng/azure/server.test.js` (`node --test`, run by CI) starts `server.js` against a
-  stand-in API and covers the `Host` rule, the pass-through answers, keeping, sending again and
-  the 12-month deletion.
+  stand-in API and covers the `Host` rule, the caller's address the proxy states in place of
+  the caller's own, the pass-through answers, keeping, sending again and the 12-month deletion.
+  `backend/tests/Jubilee.Api.Tests/LaunchTests*.cs` cover the endpoints, the limits per visitor
+  behind the proxy and the kept submissions; `backend/tests/Jubilee.Cli.Tests/LaunchCommandTests.cs`
+  the CLI; `e2e/tests/launch-notification.spec.ts` and `business-pre-registration.spec.ts` every
+  state of the two forms, the server's answer for a field and the bot challenge, against a
+  stand-in for Cloudflare's script.
 
 ## Requirements
 
@@ -273,7 +283,7 @@ launching-soon state.
 | L2 ID | Refines (L1) | Requirement |
 |-------|--------------|-------------|
 | `L2-215` | `L1-030`, `L1-026` | While Jubilee is launching soon, the marketing page shall say so in the opening and the top bar, shall show the sections "Be listed on launch day." and "Jubilee is launching soon." with their forms before the footer, shall say or imply nowhere that anyone can browse, message or book today, and shall hold no link to the app: every link moves within the page. |
-| `L2-216` | `L1-030` | The system shall let an owner send their business's details before launch through the form "Business pre-registration", shall validate them in the page and on the server, shall answer 202 and show a confirmation, and shall neither list nor verify the business; when a team address is configured, an e-mail with the details shall go to it through the outbox, once; a failure to reach Jubilee shall show no error: the page shall keep sending. |
+| `L2-216` | `L1-030` | The system shall let an owner send their business's details before launch through the form "Business pre-registration", shall validate them in the page and on the server, shall answer 202 and show a confirmation, and shall not list the business, which its owner publishes once Jubilee opens (`L2-078`); when a team address is configured, an e-mail with the details shall go to it through the outbox, once; a failure to reach Jubilee shall show no error: the page shall keep sending. |
 | `L2-217` | `L1-030` | The system shall let anyone leave an e-mail address through the form "Launch notification" to be told when Jubilee launches, shall keep one sign-up per address, shall answer a repeat sign-up as the first without saying whether the address was already there, and shall e-mail the team address once for each new sign-up, in the same transaction; a failure to reach Jubilee shall show no error: the page shall keep sending. |
 | `L2-218` | `L1-030`, `L1-020`, `L1-019` | What the two forms collect shall be stored with its consent (given, time, method "marketing site form"), accepted without a session but validated on the server, limited to 5 per IP address per hour per form, guarded by the bot challenge before anything else is checked, read only with `jubilee launch list` with an audit record of each run, and deleted after 12 months; a submission with consent that the API cannot take shall be kept by the marketing host with its received time, answered 202 and sent again until the API accepts it, and that time shall be its consent time. |
 | `L2-183` | `L1-026` | The marketing home page shall show the top bar with "Launching soon", the opening with the label "Launching soon" and a preview of the app that states no count and no reply time, the film section, the mission statement of L0-001, the benefits, the steps, five business cards that are not links, the section for businesses, "Be listed on launch day.", "Jubilee is launching soon." and the footer. |
@@ -373,7 +383,7 @@ found with the design.
 | What does a visitor see when Jubilee cannot be reached? | Never an error. The marketing host keeps what the API cannot take and answers 202; when the page cannot reach the marketing host it says "Still sending." and tries again every 5 seconds (ADR 0047). |
 | Where is a kept submission held? | One file each in `/home/data/launch-kept` on the marketing host, App Service's persistent storage. A queue or a second database would be one more resource to run for a state that should be rare and short. |
 | Which time is the consent time of a kept submission? | The time the marketing host received it, stated in `X-Jubilee-Received-At` and believed only with the proxy key. |
-| Is a kept submission asked for the bot challenge again? | No. Its token has expired, so the API skips the challenge for a submission the marketing host's proxy marks as kept; the per-address limit still counts it. |
+| Is a kept submission asked for the bot challenge again? | No. Its token has expired, so the API skips the challenge for a submission the marketing host's proxy marks as kept, and does not count it against the limit of its address: sending it again is the marketing host's doing (`L2-218` AC9). |
 | Is the team's e-mail of a sign-up mocked? | No. Like the e-mail of a pre-registration it is plain text for the team, not one of the member e-mails of `docs/mocks/emails/`. |
 | How long is the data kept? | 12 months, then `LaunchRetentionJob` deletes it. The launch is expected well inside that time. |
 | How does the page return to its launched state? | By reverting the marketing-site commits of this change and lifting the suspension of `L2-185`. The endpoints, the tables and the CLI stay until the data has been used and deleted. |

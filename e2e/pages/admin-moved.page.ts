@@ -2,7 +2,7 @@ import type { Locator, Page } from '@playwright/test';
 import type { Region, Screen } from '../fixtures/visual';
 import { ShellPage } from './shell.page';
 
-/** The app's `/admin/**`: the verification team's screens have moved to the admin application (L2-194). */
+/** The app's `/admin/**`: the Jubilee team's screens have moved to the admin application (L2-194). */
 export class AdminMovedPage extends ShellPage implements Screen {
   readonly heading: Locator;
   readonly text: Locator;

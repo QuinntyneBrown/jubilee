@@ -34,9 +34,7 @@ test.describe('browse home for a member (L2-021)', () => {
     await jb.open('browse');
     await expect.poll(() => browse.dataPage()).toBe('browse');
     await expect(browse.heading).toHaveText('Do business with Toronto’s Christian community.');
-    await expect(browse.subline).toHaveText(
-      '47 verified businesses — shops, advisors, trades and more.',
-    );
+    await expect(browse.subline).toHaveText('47 businesses — shops, advisors, trades and more.');
 
     // Category chips: "All" plus the eleven categories, "Rooms & rentals" second (L2-197)
     await expect(browse.categoryChips).toHaveText(['All', ...chipCategories.map((c) => c.name)]);
@@ -47,7 +45,7 @@ test.describe('browse home for a member (L2-021)', () => {
     await expect(browse.featuredCards).toHaveCount(5);
     await expect(browse.featuredCard(0).name).toHaveText('Legacy Financial');
     await expect(browse.featuredCard(4).name).toHaveText('WaterWorks Plumbing & Drains');
-    await expect(browse.featuredCard(4).verifiedMark).toHaveText('Verified');
+    await expect(browse.featuredCard(4).root).not.toContainText('Verified');
 
     // "From the shops": up to five products with "All shops"
     await expect(browse.productCards).toHaveCount(5);
@@ -85,12 +83,16 @@ test.describe('browse home for a member (L2-021)', () => {
     await expect(learning.seeAll).toHaveCount(0);
   });
 
-  test('a directory row links to the business and says it is verified', async ({ page, jb }) => {
+  test('a directory row links to the business and calls it nothing but its name', async ({
+    page,
+    jb,
+  }) => {
     const browse = new BrowsePage(page);
     await jb.open('browse');
     const row = browse.group('Shops').rows.first();
     await expect(row).toHaveAttribute('href', '/b/luzandre');
-    await expect(row).toHaveAccessibleName(/Luzandre\.com.*Verified/);
+    await expect(row).toHaveAccessibleName(/Luzandre\.com/);
+    await expect(row).not.toHaveAccessibleName(/Verified/);
   });
 
   test('AC4: a category with no live businesses has no group', async ({ page, jb }) => {
@@ -116,9 +118,9 @@ test.describe('browse home for a member (L2-021)', () => {
   }) => {
     const browse = new BrowsePage(page);
     await jb.open('browse.empty');
-    await expect(browse.subline).toHaveText('The first verified businesses are on their way.');
+    await expect(browse.subline).toHaveText('The first businesses are on their way.');
     await expect(browse.emptyState).toContainText('No businesses are listed yet');
-    await expect(browse.emptyState).toContainText('you’re live once we verify you.');
+    await expect(browse.emptyState).toContainText('you’re live as soon as you publish it.');
     await expect(browse.stateAction('List your business')).toHaveAttribute('href', '/list');
     await expect(browse.featured).toHaveCount(0);
     await expect(browse.groups).toHaveCount(0);
@@ -242,9 +244,7 @@ test.describe('card content rules (L2-027)', () => {
   test('AC4: a four-digit count has a thousands separator', async ({ page, jb }) => {
     const browse = new BrowsePage(page);
     await jb.open('browse.edge');
-    await expect(browse.subline).toHaveText(
-      '1,204 verified businesses — shops, advisors, trades and more.',
-    );
+    await expect(browse.subline).toHaveText('1,204 businesses — shops, advisors, trades and more.');
     await expect(browse.directoryHeading).toHaveText('All 1,204 businesses');
   });
 

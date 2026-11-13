@@ -225,4 +225,17 @@ export class ShellPage {
   dataPage(): Promise<string | null> {
     return this.page.locator('body').getAttribute('data-page');
   }
+
+  /** How long, in ms, the feedback launcher takes to answer a press or a hover (L2-161). */
+  async feedbackLauncherMotionMs(): Promise<number> {
+    return this.feedbackLauncher.evaluate((launcher) =>
+      Math.max(
+        ...getComputedStyle(launcher)
+          .transitionDuration.split(',')
+          .map((value) =>
+            value.trim().endsWith('ms') ? parseFloat(value) : parseFloat(value) * 1000,
+          ),
+      ),
+    );
+  }
 }

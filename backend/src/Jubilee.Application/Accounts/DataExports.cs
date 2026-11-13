@@ -244,7 +244,7 @@ internal static class DataArchive
         return JsonSerializer.Serialize(document, Options);
     }
 
-    /// <summary>Reviews with their replies (ADR 0058): the member's own, or those of the member's listings.</summary>
+    /// <summary>Reviews with their replies (ADR 0066): the member's own, or those of the member's listings.</summary>
     private static async Task<object> ReviewsOf(
         IAppDbContext db, System.Linq.Expressions.Expression<Func<Review, bool>> which, CancellationToken cancellationToken)
     {
@@ -266,7 +266,7 @@ internal static class DataArchive
         }).ToList();
     }
 
-    /// <summary>The reports of reviews the member sent (ADR 0058).</summary>
+    /// <summary>The reports of reviews the member sent (ADR 0066).</summary>
     private static async Task<object> ReviewReportsOf(IAppDbContext db, string subject, CancellationToken cancellationToken) =>
         (await db.ReviewReports.AsNoTracking().Where(r => r.ReporterSubject == subject).ToListAsync(cancellationToken))
             .OrderBy(r => r.CreatedAt)

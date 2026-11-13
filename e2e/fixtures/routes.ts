@@ -68,11 +68,15 @@ export type StubName =
   | 'launch-notify-recovering'
   | 'launch-notify-limited'
   | 'launch-notify-challenge'
+  | 'launch-notify-refused-field'
+  | 'launch-notify-unreachable'
   | 'launch-business-pending'
   | 'launch-business-failing'
   | 'launch-business-recovering'
   | 'launch-business-limited'
   | 'launch-business-challenge'
+  | 'launch-business-refused-fields'
+  | 'launch-business-unreachable'
   | 'join-created'
   | 'join-failing'
   | 'join-pending'
@@ -107,14 +111,14 @@ export type StubName =
   | 'request-detail-declined'
   | 'request-detail-cancelled'
   | 'request-detail-error'
+  | 'request-detail-unanswered'
   | 'incoming'
   | 'incoming-empty'
   | 'incoming-error'
+  | 'incoming-confirmed'
   | 'business'
-  | 'business-pending'
   | 'business-away'
   | 'business-switcher'
-  | 'business-changes'
   | 'business-empty'
   | 'business-retrying'
   | 'business-paused'
@@ -134,11 +138,14 @@ export type StubName =
   | 'notifications-error'
   | 'notifications-back-in-stock'
   | 'password-reset'
+  | 'password-reset-rate-limited'
   | 'reset-password'
   | 'reset-password-expired'
   | 'reset-password-error'
   | 'profile'
   | 'profile-error'
+  | 'profile-sessions-loading'
+  | 'profile-sessions-error'
   | 'preferences-error'
   | 'confirm-email-change'
   | 'confirm-email-change-expired'
@@ -165,15 +172,13 @@ export type StubName =
   | 'services-error'
   | 'services-hours-pending'
   | 'services-hours-failing'
-  | 'admin-queue'
-  | 'admin-queue-empty'
-  | 'admin-queue-error'
-  | 'admin-review'
-  | 'admin-review-approved'
-  | 'admin-review-changes-requested'
-  | 'admin-review-error'
-  | 'admin-review-space'
-  | 'admin-review-no-items'
+  | 'admin-listings'
+  | 'admin-listings-empty'
+  | 'admin-listings-error'
+  | 'admin-listing'
+  | 'admin-listing-taken-down'
+  | 'admin-listing-error'
+  | 'admin-listing-space'
   | 'moderation-reports'
   | 'moderation-reports-empty'
   | 'moderation-reports-error'
@@ -953,6 +958,12 @@ export const routes = {
     who: 'member',
     stub: 'request-detail-error',
   },
+  'request-detail.unanswered': {
+    app: '/requests/7a1e0000-0000-4000-8000-000000000002',
+    mock: 'pages/request-detail/unanswered.html',
+    who: 'member',
+    stub: 'request-detail-unanswered',
+  },
   'incoming-requests': {
     app: '/my-business/requests',
     mock: 'pages/incoming-requests/default.html',
@@ -970,6 +981,13 @@ export const routes = {
     mock: 'pages/incoming-requests/error.html',
     who: 'member',
     stub: 'incoming-error',
+  },
+  // The page object chooses the Confirmed tab before the state is read (L2-225).
+  'incoming-requests.confirmed': {
+    app: '/my-business/requests',
+    mock: 'pages/incoming-requests/confirmed.html',
+    who: 'member',
+    stub: 'incoming-confirmed',
   },
   'my-business': {
     app: '/my-business',
@@ -989,18 +1007,6 @@ export const routes = {
     who: 'member',
     stub: 'business-switcher',
   },
-  'my-business.pending': {
-    app: '/my-business',
-    mock: 'pages/my-business/pending.html',
-    who: 'member',
-    stub: 'business-pending',
-  },
-  'my-business.changes-requested': {
-    app: '/my-business',
-    mock: 'pages/my-business/changes-requested.html',
-    who: 'member',
-    stub: 'business-changes',
-  },
   'my-business.empty': {
     app: '/my-business',
     mock: 'pages/my-business/empty.html',
@@ -1015,7 +1021,7 @@ export const routes = {
   },
   'my-business.paused': {
     app: '/my-business',
-    mock: 'notifications/verification-banner/persistent.html',
+    mock: 'notifications/listing-banner/persistent.html',
     who: 'member',
     stub: 'business-paused',
   },
@@ -1121,6 +1127,12 @@ export const routes = {
     who: 'visitor',
     stub: 'password-reset',
   },
+  'forgot-password.rate-limited': {
+    app: '/forgot-password',
+    mock: 'pages/forgot-password/rate-limited.html',
+    who: 'visitor',
+    stub: 'password-reset-rate-limited',
+  },
   'reset-password': {
     app: '/reset-password/e2e-token',
     mock: 'pages/reset-password/default.html',
@@ -1145,6 +1157,24 @@ export const routes = {
     mock: 'pages/account/this-device-only.html',
     who: 'member',
     stub: 'profile-this-device-only',
+  },
+  'account.sessions-loading': {
+    app: '/account',
+    mock: 'pages/account/sessions-loading.html',
+    who: 'member',
+    stub: 'profile-sessions-loading',
+  },
+  'account.sessions-error': {
+    app: '/account',
+    mock: 'pages/account/sessions-error.html',
+    who: 'member',
+    stub: 'profile-sessions-error',
+  },
+  'account.session-ended': {
+    app: '/account',
+    mock: 'pages/account/session-ended.html',
+    who: 'member',
+    stub: 'profile',
   },
   'account.others-signed-out': {
     app: '/account',
@@ -1389,6 +1419,48 @@ export const routes = {
     who: 'member',
     stub: 'products-error',
   },
+  'my-products.reorder': {
+    app: '/my-business/products',
+    mock: 'pages/my-products/reorder.html',
+    who: 'member',
+    stub: 'products',
+  },
+  'product-editor.photo-uploading': {
+    app: '/my-business/products',
+    mock: 'dialogs/product-editor/photo-uploading.html',
+    who: 'member',
+    stub: 'products',
+  },
+  'product-editor.photo-added': {
+    app: '/my-business/products',
+    mock: 'dialogs/product-editor/photo-added.html',
+    who: 'member',
+    stub: 'products',
+  },
+  'product-editor.photo-failed': {
+    app: '/my-business/products',
+    mock: 'dialogs/product-editor/photo-failed.html',
+    who: 'member',
+    stub: 'products',
+  },
+  'product-editor.photo-too-large': {
+    app: '/my-business/products',
+    mock: 'dialogs/product-editor/photo-too-large.html',
+    who: 'member',
+    stub: 'products',
+  },
+  'product-editor.options': {
+    app: '/my-business/products',
+    mock: 'dialogs/product-editor/options.html',
+    who: 'member',
+    stub: 'products',
+  },
+  'product-editor.options-invalid': {
+    app: '/my-business/products',
+    mock: 'dialogs/product-editor/options-invalid.html',
+    who: 'member',
+    stub: 'products',
+  },
   'my-services': {
     app: '/my-business/services',
     mock: 'pages/my-services/default.html',
@@ -1406,6 +1478,12 @@ export const routes = {
     mock: 'pages/my-services/error.html',
     who: 'member',
     stub: 'services-error',
+  },
+  'my-services.reorder': {
+    app: '/my-business/services',
+    mock: 'pages/my-services/reorder.html',
+    who: 'member',
+    stub: 'services',
   },
   'meeting-hours': {
     app: '/my-business/services',
@@ -1437,68 +1515,54 @@ export const routes = {
     who: 'member',
     stub: 'services',
   },
-  'admin-verifications': {
-    app: '/verifications',
-    mock: 'pages/admin-verifications/default.html',
+  'admin-listings': {
+    app: '/listings',
+    mock: 'pages/admin-listings/default.html',
     who: 'visitor',
     site: 'admin',
-    stub: 'admin-queue',
+    stub: 'admin-listings',
   },
-  'admin-verifications.empty': {
-    app: '/verifications',
-    mock: 'pages/admin-verifications/empty.html',
+  'admin-listings.empty': {
+    app: '/listings',
+    mock: 'pages/admin-listings/empty.html',
     who: 'visitor',
     site: 'admin',
-    stub: 'admin-queue-empty',
+    stub: 'admin-listings-empty',
   },
-  'admin-verifications.error': {
-    app: '/verifications',
-    mock: 'pages/admin-verifications/error.html',
+  'admin-listings.error': {
+    app: '/listings',
+    mock: 'pages/admin-listings/error.html',
     who: 'visitor',
     site: 'admin',
-    stub: 'admin-queue-error',
+    stub: 'admin-listings-error',
   },
-  'admin-verification': {
-    app: '/verifications/3f1d2c4e-7a55-4c0e-9d3a-0a1b2c3d4e5f',
-    mock: 'pages/admin-verification/default.html',
+  'admin-listing': {
+    app: '/listings/3f1d2c4e-7a55-4c0e-9d3a-0a1b2c3d4e5f',
+    mock: 'pages/admin-listing/default.html',
     who: 'visitor',
     site: 'admin',
-    stub: 'admin-review',
+    stub: 'admin-listing',
   },
-  'admin-verification.approved': {
-    app: '/verifications/3f1d2c4e-7a55-4c0e-9d3a-0a1b2c3d4e5f',
-    mock: 'pages/admin-verification/approved.html',
+  'admin-listing.taken-down': {
+    app: '/listings/3f1d2c4e-7a55-4c0e-9d3a-0a1b2c3d4e5f',
+    mock: 'pages/admin-listing/taken-down.html',
     who: 'visitor',
     site: 'admin',
-    stub: 'admin-review-approved',
+    stub: 'admin-listing-taken-down',
   },
-  'admin-verification.changes-requested': {
-    app: '/verifications/3f1d2c4e-7a55-4c0e-9d3a-0a1b2c3d4e5f',
-    mock: 'pages/admin-verification/changes-requested.html',
+  'admin-listing.space': {
+    app: '/listings/3f1d2c4e-7a55-4c0e-9d3a-0a1b2c3d4e5f',
+    mock: 'pages/admin-listing/space.html',
     who: 'visitor',
     site: 'admin',
-    stub: 'admin-review-changes-requested',
+    stub: 'admin-listing-space',
   },
-  'admin-verification.no-items': {
-    app: '/verifications/3f1d2c4e-7a55-4c0e-9d3a-0a1b2c3d4e5f',
-    mock: 'pages/admin-verification/no-items.html',
+  'admin-listing.error': {
+    app: '/listings/3f1d2c4e-7a55-4c0e-9d3a-0a1b2c3d4e5f',
+    mock: 'pages/admin-listing/error.html',
     who: 'visitor',
     site: 'admin',
-    stub: 'admin-review-no-items',
-  },
-  'admin-verification.space': {
-    app: '/verifications/3f1d2c4e-7a55-4c0e-9d3a-0a1b2c3d4e5f',
-    mock: 'pages/admin-verification/space.html',
-    who: 'visitor',
-    site: 'admin',
-    stub: 'admin-review-space',
-  },
-  'admin-verification.error': {
-    app: '/verifications/3f1d2c4e-7a55-4c0e-9d3a-0a1b2c3d4e5f',
-    mock: 'pages/admin-verification/error.html',
-    who: 'visitor',
-    site: 'admin',
-    stub: 'admin-review-error',
+    stub: 'admin-listing-error',
   },
   'admin-reports': {
     app: '/reports',
@@ -1621,7 +1685,7 @@ export const routes = {
     stub: 'staff-signed-out',
   },
   'admin-shell.admin-only': {
-    app: '/verifications',
+    app: '/listings',
     mock: 'pages/admin-shell/admin-only.html',
     who: 'visitor',
     site: 'admin',
@@ -1632,7 +1696,7 @@ export const routes = {
     mock: 'pages/admin-shell/not-found.html',
     who: 'visitor',
     site: 'admin',
-    stub: 'admin-queue',
+    stub: 'admin-listings',
   },
   'admin-moved': {
     app: '/admin/verifications/3f1d2c4e-7a55-4c0e-9d3a-0a1b2c3d4e5f',
@@ -1750,6 +1814,36 @@ export const routes = {
     who: 'visitor',
     site: 'marketing',
     stub: 'launch-notify-challenge',
+  },
+  // The server finds a field the page let through (L2-217 AC2, L2-216 AC3): the invalid state.
+  'marketing-home.notify-server-invalid': {
+    app: '/',
+    mock: 'pages/marketing-home/notify-invalid.html',
+    who: 'visitor',
+    site: 'marketing',
+    stub: 'launch-notify-refused-field',
+  },
+  'marketing-home.business-server-invalid': {
+    app: '/',
+    mock: 'pages/marketing-home/business-invalid.html',
+    who: 'visitor',
+    site: 'marketing',
+    stub: 'launch-business-refused-fields',
+  },
+  // The send cannot be made at all (L2-217 AC6, L2-216 AC6): the still-sending state.
+  'marketing-home.notify-unreachable': {
+    app: '/',
+    mock: 'pages/marketing-home/notify-retrying.html',
+    who: 'visitor',
+    site: 'marketing',
+    stub: 'launch-notify-unreachable',
+  },
+  'marketing-home.business-unreachable': {
+    app: '/',
+    mock: 'pages/marketing-home/business-retrying.html',
+    who: 'visitor',
+    site: 'marketing',
+    stub: 'launch-business-unreachable',
   },
 } as const satisfies Record<string, ScreenRoute>;
 

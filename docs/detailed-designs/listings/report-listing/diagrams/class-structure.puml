@@ -66,11 +66,11 @@ class ReportSubmitted {
   +{static} Tell(db, team, listing, report, entry, now): void
 }
 
-class VerificationTeam {
+class JubileeTeam {
   +{static} Tell(db, settings, subject, body, now, correlationId): void
 }
 
-class VerificationSettings {
+class TeamSettings {
   +string? TeamEmail
   +string AdminBaseUrl
 }
@@ -98,7 +98,7 @@ ListingReport "0..*" --> "1" Listing : about
 ReportListingCommandHandler ..> ReportListingCommand : handles
 ReportListingCommandHandler --> ListingReport : creates or extends
 ReportListingCommandHandler ..> ReportSubmitted : tells the team through
-ReportSubmitted ..> VerificationTeam : uses
-VerificationTeam ..> VerificationSettings : reads
-VerificationTeam ..> OutboxMessage : writes
+ReportSubmitted ..> JubileeTeam : uses
+JubileeTeam ..> TeamSettings : reads
+JubileeTeam ..> OutboxMessage : writes
 @enduml

@@ -1,12 +1,12 @@
 namespace Jubilee.Domain;
 
-/// <summary>What a review is about: one of the listing's services or products, or the stay (L2-226 AC3).</summary>
+/// <summary>What a review is about: one of the listing's services or products, or the stay (L2-227 AC3).</summary>
 public sealed record ReviewItem(Guid? ServiceId, Guid? ProductId, string Name);
 
 /// <summary>
-/// One member's review of one listing (L1-031, ADR 0058). Only a member whose request the owner
-/// confirmed or completed writes one, so every review is Verified. It shows its author by first
-/// name and last initial only (L2-238). The owner's one public reply is kept on it.
+/// One member's review of one listing (L1-031, ADR 0066). Only a member whose request the owner
+/// confirmed or completed writes one. It shows its author by first
+/// name and last initial only (L2-239). The owner's one public reply is kept on it.
 /// </summary>
 public sealed class Review
 {
@@ -18,7 +18,7 @@ public sealed class Review
 
     public const int MaxReasonLength = 1000;
 
-    /// <summary>How long a taken-down review is kept for the record before it is deleted (L2-238 AC4).</summary>
+    /// <summary>How long a taken-down review is kept for the record before it is deleted (L2-239 AC4).</summary>
     public static readonly TimeSpan TakenDownKeptFor = TimeSpan.FromDays(365);
 
     private Review()
@@ -62,7 +62,7 @@ public sealed class Review
 
     public DateTimeOffset? ReplyEditedAt { get; private set; }
 
-    /// <summary>When the verification team took the review down; it is then shown nowhere (L2-236).</summary>
+    /// <summary>When the Jubilee team took the review down; it is then shown nowhere (L2-237).</summary>
     public DateTimeOffset? TakenDownAt { get; private set; }
 
     /// <summary>The reason the author was given.</summary>
@@ -74,7 +74,7 @@ public sealed class Review
 
     public static bool IsRating(int? rating) => rating is >= 1 and <= 5;
 
-    /// <summary>"Joanna A." of "Joanna Adeyemi"; one word stays as it is (L2-238 AC1).</summary>
+    /// <summary>"Joanna A." of "Joanna Adeyemi"; one word stays as it is (L2-239 AC1).</summary>
     public static string ShownName(string fullName)
     {
         var words = fullName.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
@@ -102,7 +102,7 @@ public sealed class Review
         IdempotencyKey = idempotencyKey,
     };
 
-    /// <summary>The author changes the review; the reply stays (L2-232 AC7).</summary>
+    /// <summary>The author changes the review; the reply stays (L2-233 AC7).</summary>
     public void Edit(ReviewItem item, int rating, string text, DateTimeOffset now)
     {
         ServiceId = item.ServiceId;
@@ -138,7 +138,7 @@ public sealed class Review
     }
 }
 
-/// <summary>Why a review is reported (L2-235 AC1).</summary>
+/// <summary>Why a review is reported (L2-236 AC1).</summary>
 public enum ReviewReportReason
 {
     NotARealDealing = 0,
@@ -148,7 +148,7 @@ public enum ReviewReportReason
     Other = 4,
 }
 
-/// <summary>A member's private report of a review to the verification team (L2-235). The author never learns who sent it.</summary>
+/// <summary>A member's private report of a review to the Jubilee team (L2-236). The author never learns who sent it.</summary>
 public sealed class ReviewReport
 {
     public const int MaxNoteLength = 1000;
@@ -165,7 +165,7 @@ public sealed class ReviewReport
 
     public string ReporterSubject { get; private set; } = string.Empty;
 
-    /// <summary>For the verification team only (L2-105 AC1).</summary>
+    /// <summary>For the Jubilee team only (L2-105 AC1).</summary>
     public string ReporterName { get; private set; } = string.Empty;
 
     public ReviewReportReason Reason { get; private set; }
@@ -214,14 +214,14 @@ public sealed class ReviewReport
 }
 
 /// <summary>
-/// The count of each star of a listing or a product, stored so a card needs no query (ADR 0058).
+/// The count of each star of a listing or a product, stored so a card needs no query (ADR 0066).
 /// <see cref="Stars"/> holds the counts of 5, 4, 3, 2 and 1 stars, in that order.
 /// </summary>
 public sealed record StarCounts(int Five, int Four, int Three, int Two, int One)
 {
     public static readonly StarCounts None = new(0, 0, 0, 0, 0);
 
-    /// <summary>A card shows a rating from this many reviews (L2-230).</summary>
+    /// <summary>A card shows a rating from this many reviews (L2-231).</summary>
     public const int CardMinimum = 3;
 
     public int Count => Five + Four + Three + Two + One;

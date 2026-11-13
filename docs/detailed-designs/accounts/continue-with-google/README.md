@@ -56,6 +56,13 @@ database`, with `Google Identity` as the external identity provider.
   carries `googleSignIn`, the value of `IGoogleIdentityClient.IsConfigured`,
   for a visitor and for a member. `SessionService.googleSignIn` exposes it to
   the two pages, and `SessionService.member()` carries `agreementRequired`.
+  A session request that fails tells the app nothing about Google sign-in, so
+  `SessionService` leaves `googleSignIn` false, the user a visitor, and asks
+  again after the waits of the connection check (`timings().backoff`: 5, 10,
+  20, 40, then 60 seconds) until `GET /api/session` is answered. The first
+  answer sets the session and `googleSignIn`; both are signals, so the pages
+  show the Google button without a reload and keep what was typed (`L2-003`
+  AC9).
 - **`GoogleSignInController`** — ASP.NET Core controller in `Jubilee.Api` with
   two anonymous endpoints. `Start` at `GET /api/auth/google/start` creates the
   `OidcTransaction`, saves it, and redirects to Google with `state`, `nonce`
@@ -133,7 +140,16 @@ Without `Google:ClientId` and `Google:ClientSecret` the session answer carries
 `googleSignIn: false`, and the join and sign-in pages show neither the Google
 button nor the "or use email" divider. A start request made all the same saves
 nothing, sends nothing to Google, and is redirected with `?error=google` to the
-page named by `from` (ADR 0037). The place and the words of the Google button
+page named by `from` (ADR 0037).
+
+The pages also show no Google button while the app does not know the answer:
+for the minutes Jubilee takes to start after a deployment, the app's host
+answers `GET /api/session` with 503 "Jubilee is starting." (`eng/azure/server.js`).
+A page opened then looks like the `google-unavailable` mock until
+`SessionService` gets its answer, and like the `default` mock after; there is
+no state between the two, so no mock is added.
+
+The place and the words of the Google button
 on the two pages follow ADR 0038, which leaves the flow as ADR 0037 defines it.
 A Google sign-in whose verified e-mail matches an account that is still
 unconfirmed is linked, and `LinkGoogle` removes the password of the account and
@@ -147,7 +163,7 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 
 | L2 ID | Refines (L1) | Requirement |
 |-------|--------------|-------------|
-| `L2-003` | `L1-001` | The system shall let visitors join or sign in with Google using OpenID Connect. When Google sign-in is not configured, "Sign up with Google" and "Continue with Google" shall not be shown, nor the "or use email" divider under them, and no request shall leave for Google; a request to start a Google sign-in all the same shall return the visitor to where they started with the sign-in error state. A visitor who cancels at Google shall be back on the page they started from (`/join` or `/sign-in`) with "You didn’t finish with Google. Try again, or use your e-mail and password.", and the place they were going to shall be kept. A Google sign-in started from `/join` that fails or is refused shall show its message on `/join`, not on `/sign-in`. |
+| `L2-003` | `L1-001` | The system shall let visitors join or sign in with Google using OpenID Connect. When Google sign-in is not configured, "Sign up with Google" and "Continue with Google" shall not be shown, nor the "or use email" divider under them, and no request shall leave for Google; a request to start a Google sign-in all the same shall return the visitor to where they started with the sign-in error state. A visitor who cancels at Google shall be back on the page they started from (`/join` or `/sign-in`) with "You didn’t finish with Google. Try again, or use your e-mail and password.", and the place they were going to shall be kept. A Google sign-in started from `/join` that fails or is refused shall show its message on `/join`, not on `/sign-in`. A page opened while the request for the session went unanswered shall ask again after 5, 10, 20, 40 and then every 60 seconds, and shall show the Google button and the divider once an answer says Google sign-in is configured, without a reload and keeping what was typed. |
 | `L2-010` | `L1-001` | Sessions shall be server-side, and a new session identifier shall be issued when a member signs in. |
 | `L2-012` | `L1-001` | A return URL used after sign-in shall be accepted only when it is a same-origin relative path; any other value shall fall back to `/`. |
 | `L2-135` | `L1-019` | A session shall be an opaque random identifier of at least 128 bits in a cookie with `Secure`, `HttpOnly`, `SameSite=Lax`, `Path=/` and the `__Host-` prefix, `__Host-jubilee.session`; only the Development environment shall issue it as `jubilee.session` without the prefix. A state-changing request that carries a session cookie shall carry the matching anti-CSRF token or be rejected with `403`. |

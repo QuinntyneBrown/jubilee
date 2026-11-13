@@ -16,7 +16,7 @@ export interface ProductCardView {
   perUnit: boolean;
   tile: { tint: TileTint; icon: IconName };
   soldOut?: boolean;
-  /** The average and count from three reviews; absent below three (L2-230). */
+  /** The average and count from three reviews; absent below three (L2-231). */
   rating?: { average: number; count: number } | null;
 }
 

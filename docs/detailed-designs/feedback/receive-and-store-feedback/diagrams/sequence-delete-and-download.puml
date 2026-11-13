@@ -16,33 +16,39 @@ skinparam package {
 }
 actor "Member" as actor
 box "Backend — Jubilee API" #D1FADF
-  participant "Account endpoints" as controller
+  participant "AccountController" as controller
+end box
+box "Backend — Jubilee Worker" #F4EBFF
+  participant "WorkerHost" as worker
 end box
 box "Backend — Jubilee Application and Domain" #ECFDF3
   participant "DeleteAccountCommandHandler" as delete
-  participant "AccountErasure" as erasure
   participant "DataExportBuilder" as export
+  participant "DataArchive" as archive
 end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
   database "Jubilee database" as db
 end box
 alt Member deletes their account (L2-017)
-  actor -> controller : Confirm the deletion with DELETE
+  actor -> controller : DELETE /api/account after typing DELETE
   controller -> delete : Send DeleteAccountCommand
-  delete -> erasure : Erase the member's data
-  erasure -> db : Delete the Feedback rows of the member's subject
-  erasure -> db : Delete the FeedbackScreenshots rows of the member's subject
-  db --> erasure : Commit result
-  erasure --> delete : Erased
+  delete -> db : Remove the FeedbackScreenshots rows the member uploaded
+  delete -> db : Remove the Feedback rows of the member's subject
+  delete -> db : Save with the deletion of the account
+  db --> delete : Commit result
   delete --> controller : Done
   controller --> actor : Account deleted with its feedback and screenshots (L2-214)
 else Member downloads their data (L2-018)
-  actor -> controller : Request the data download
-  controller -> export : Have the archive of the request built
-  export -> db : Load the member's Feedback of all four kinds
-  db --> export : Feedback rows
-  export -> export : Add the feedback to the archive
-  export --> controller : Archive ready
+  actor -> controller : POST /api/account/data-exports
+  controller --> actor : Export requested
+  worker -> export : BuildDueAsync
+  export -> archive : BuildAsync(member)
+  archive -> db : Load the member's Feedback of all four kinds and count the screenshots of each report
+  db --> archive : Feedback rows and counts
+  archive -> archive : Add "feedback", oldest first, with a count of screenshots and not the pictures
+  archive --> export : Archive
+  export -> db : Mark the export ready and queue its e-mail
+  actor -> controller : GET /api/account/data-exports/{token}
   controller --> actor : Archive that includes the feedback (L2-214)
 end
 @enduml

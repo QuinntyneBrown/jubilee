@@ -69,7 +69,7 @@ Playwright `route`, and change nothing else. The space pages' terms need no arg:
 own card. The full-page 360 px captures show the phone tab bar where the first viewport ended, as
 the earlier 360 px captures do.
 
-The reviews frames (ADR 0058) are reached the same way: from the home, the Legacy Financial card
+The reviews frames (ADR 0066) are reached the same way: from the home, the Legacy Financial card
 opens the Listing frame, whose Reviews section follows the services, and its "Write a review"
 opens Write a Review. Nothing is chosen or typed, so the posted state, a pressed star bar and the
 sort are not captured; the mocks draw them from the frames' source (`components/Reviews.tsx`,
@@ -80,6 +80,30 @@ The published Sign up and home have changed since `sign-up-*.png` and `home-*.pn
 (Sign up now asks "I'm here to", the home heading now reads "Hire, shop and find a place to live
 …" and has the rooms shelf); those files are kept until their parity crops are checked against a
 new capture. `sign-up-intents-1280.png` and `browse-rooms-shelf-*.png` show the current frames.
+
+## Captures of one component (ADR 0060)
+
+A component the frames above do not show is compared with the reference as soon as its capture is
+here, with no change to its parity spec. Each capture is an image of one case of the component
+alone, cropped to the component's bounds, captured as the frames are (Chromium, locale `en-CA`,
+light theme, the viewport at the width the file names), and saved as
+`components/<component>/<case>-<width>.png`. `e2e/fixtures/parity.ts` finds it by that name and
+compares the whole image with the same region of the app, from its top left corner, within 3 %.
+
+The Feedback frames are the first expected this way. Export each case below at 360 px and at
+1280 px (for example `components/star-scale/unrated-360.png` and
+`components/star-scale/unrated-1280.png`):
+
+| Component | Cases | What each shows |
+|---|---|---|
+| `feedback-launcher` | `launcher` | the round button above the tab bar (360 px), the "Feedback" pill (1280 px) |
+| `star-scale` | `unrated`, `rated`, `large`, `large-invalid` | the panel's stars before and after a choice; the feedback page's stars, and with "Choose a rating from 1 to 5." |
+| `score-scale` | `part`, `wide`, `wide-chosen` | one part's 1 to 5 score on the feedback page; a check-in's five scores, before and after a choice |
+| `score-rows` | `parts` | the four parts of Jubilee under "And each part of it" |
+| `moment-check` | `asked`, `low`, `thanks` | the check-in after a listing is published: the question, a low score with "What got in the way?", "Thanks, that helps us." |
+| `feedback-history` | `list`, `empty`, `error` | "Your feedback" with items and a reply, with nothing yet, and when it fails to load |
+
+Until a file is here the case is compared with its mock only, and its test says so.
 
 ## What the reference does not hold
 
@@ -129,7 +153,7 @@ decision (ADR 0043):
 | Frame | Product | Why |
 |---|---|---|
 | "Rooms & rentals", "Request to rent", "rental", "host", "space" | "business", "request", "listing" | The specifications have no rentals; the words are those of `docs/specs/` |
-| Four rating areas named for rentals | "Finding businesses", "Listing your business", "Messages and requests", "Trust and verification" | The product's real areas |
+| Four rating areas named for rentals | "Finding businesses", "Listing your business", "Messages and requests", "Trust and safety" | The product's real areas |
 | "Logged as JB-1042. We'll message you in Jubilee when it's fixed." | "Logged as {reference}. Follow it under Your feedback." | Telling the member about a status change is deferred; the reference is real |
 | "We've passed your note to Legacy Financial. It will appear on their page once they've seen it." and "Show this on their Jubilee page with my first name" | "Thank you. We've kept your note for {business}." and "Jubilee may show this on their page with my first name" | Showing kudos on a business page is deferred; the consent is stored |
 | "Include a screenshot of this screen" in the panel | absent; the page's "Add screenshots" stays | A page cannot capture itself reliably on every phone browser |
@@ -139,25 +163,31 @@ decision (ADR 0043):
 
 ## Reviews: what the product changes from the frames
 
-ADR 0058 records why. The parity specs of the reviews components carry these as known differences.
+ADR 0066 records why. The parity specs of the reviews components carry these as known differences.
 
 | Frame | Product | Why |
 |---|---|---|
-| "What did they do well? …" and the placeholder "They were on time, explained everything…" | "What did they do, and how did it go? …" and "Say what happened, as you would tell a friend." | The frame leads towards praise; no line asks for a good review (L2-226 AC6) |
-| "Your review will show as Verified because you booked through Jubilee." | "… because {name} confirmed your request on Jubilee.", and a second line "Keep to what happened to you: no private details of anyone and no advertising." | Jubilee takes no payment; a review needs a confirmed request of any kind, not a booking (L2-225) |
-| "Verified means the reviewer made a booking through Jubilee." | "Verified means {name} confirmed the reviewer’s request on Jubilee." | The same |
-| "Add photos (optional)" on Write a Review, a photo on a review | absent | Photos on reviews are deferred (ADR 0058) |
+| "What did they do well? …" and the placeholder "They were on time, explained everything…" | "What did they do, and how did it go? …" and "Say what happened, as you would tell a friend." | The frame leads towards praise; no line asks for a good review (L2-227 AC6) |
+| "Your review will show as Verified because you booked through Jubilee." | No such line: "Your review posts under your first name and last initial: {name}", and a second line "Keep to what happened to you: no private details of anyone and no advertising." | Jubilee shows no "Verified" mark anywhere (ADR 0057, ADR 0066) |
+| "Verified means the reviewer made a booking through Jubilee." | absent, as is "Verified" on each review | The same |
+| "Add photos (optional)" on Write a Review, a photo on a review | absent | Photos on reviews are deferred (ADR 0066) |
 | "Helpful · 24" on each review | absent | Helpful is deferred; "Most relevant" ranks without votes |
 | A context line under the name ("Trinity Annex", "Sanctuary Toronto", "Markham") | the date alone | The home church is private (L1-020); Jubilee collects no neighbourhood |
-| Relative dates ("1 week ago") | "3 Nov 2026", with "Edited" when changed | L2-131 and L2-228 AC3 |
+| Relative dates ("1 week ago") | "3 Nov 2026", with "Edited" when changed | L2-131 and L2-229 AC3 |
 | The stars with no visible label | the legend "Your rating" above the stars | The star scale’s legend is its accessible name; the system shows it (Star scale) |
 | The chosen service chip filled ink | filled gold (`.chip` with a checked radio), the chips wrapping in a cluster as the frame does | The system’s one chosen-chip colour |
 | "Write a review" a filled ink button | an outlined button with the pen icon | The listing’s one primary action stays booking, requesting or messaging |
-| 4.8 from 137 reviews, 118 of them 5 stars; ratings on the Deeks Insurance and JD Smith cards | the seeded sample: 4.6 from 5 reviews; no rating on a card below 3 reviews | The mocks, the seed and the e2e recording share one sample (ADR 0058) |
+| 4.8 from 137 reviews, 118 of them 5 stars; ratings on the Deeks Insurance and JD Smith cards | the seeded sample: 4.6 from 5 reviews; no rating on a card below 3 reviews | The mocks, the seed and the e2e recording share one sample (ADR 0066) |
 | Select with a chevron ("Most relevant") | the system select with its drawn arrow | Select component |
 | The posted state, filters, edit, remove, reply and report | drawn in the mocks only | The frames have no such states |
 
 ## Known differences
+
+**No Verified mark (ADR 0057).** Jubilee ships without listing verification, so the "Verified"
+marks the captures show (a tick and the word "Verified" beside a business or host name, or a
+count of "verified businesses") are intentionally not built: the design system, the mocks and
+the app show the same layout without them. The captures are kept as captured; where a parity
+crop includes such a mark, the spec carries it as `knownDifference`.
 
 Where the design system and the mocks differ from the reference, the difference is listed here
 and the parity spec carries it as `knownDifference`, so the comparison is reported as a known
@@ -192,7 +222,7 @@ it changes how the product looks, which a component move must not do.
 | House rules (`space-short-stay-1280.png`) | a lighter rule beside each line, wider spacing | `--color-border-strong`, `--space-2` between rules |
 | Household (`space-room-1280.png`) | each member listed with an initial | the household as the owner wrote it, one text (L2-199) |
 | Host card (`space-short-stay-1280.png`) | a 362 px side column, the name in Inter | the split’s wider side column, the name in `--text-h4` |
-| Space card preview (`list-a-space-1280.png`) | a photo, “From Mar 1”, nothing marked pending | the tinted tile by term until the owner adds photos, “Pending verification” until approved (L2-198 AC3) |
+| Space card preview (`list-a-space-1280.png`) | a photo, “From Mar 1”, nothing marked pending | the tinted tile by term until the owner adds photos, “Not published yet” until the owner publishes it (L2-198 AC3) |
 
 ## Refreshing
 

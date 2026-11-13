@@ -16,7 +16,7 @@ export interface ReportActionData {
   reportId: string;
   kind: ReportActionKind;
   listingName: string;
-  /** The author of a reported review, named by the take-down (L2-236). */
+  /** The author of a reported review, named by the take-down (L2-237). */
   author?: string | null;
 }
 
@@ -41,7 +41,7 @@ const NOTE_HINT =
 
 /**
  * The dialog that collects the required resolution note (and the message text) for a report action
- * (L2-105 AC2). Taking a review down also asks for the reason its author reads (L2-236 AC3).
+ * (L2-105 AC2). Taking a review down also asks for the reason its author reads (L2-237 AC3).
  */
 @Component({
   selector: 'jb-report-action-dialog',
@@ -83,7 +83,7 @@ export class ReportActionDialog {
       case 'message-reporter':
         return {
           title: 'Message the reporter',
-          text: 'Sent to the member who reported, in the name of the Jubilee verification team. The report stays in review.',
+          text: 'Sent to the member who reported, in the name of the Jubilee team. The report stays in review.',
           cta: 'Send message',
           danger: false,
           messages: true,
@@ -91,7 +91,7 @@ export class ReportActionDialog {
       case 'message-owner':
         return {
           title: 'Message the owner',
-          text: 'Sent in the name of the Jubilee verification team. The owner is never told who reported the listing.',
+          text: 'Sent in the name of the Jubilee team. The owner is never told who reported the listing.',
           cta: 'Send message',
           danger: false,
           messages: true,

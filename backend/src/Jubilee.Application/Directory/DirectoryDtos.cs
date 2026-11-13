@@ -17,13 +17,12 @@ public sealed record BusinessCardDto(
     string Tagline,
     string? Highlight,
     string CategorySlug,
-    bool Verified,
     string? CoverPhoto,
     bool RepliesFast)
 {
     /// <summary>
-    /// <c>Verified</c> comes from <see cref="VerifiedListingSpecification"/> (L2-111). <paramref name="fast"/> holds the
-    /// listings that carry the "Replies fast" badge (L2-054 AC1); a space never does (AC3).
+    /// <paramref name="fast"/> holds the listings that carry the "Replies fast" badge (L2-054 AC1); a space never does
+    /// (AC3). No card says a listing is verified (ADR 0057).
     /// </summary>
     public static BusinessCardDto From(Listing listing, IReadOnlySet<Guid> fast) => new(
         listing.Slug,
@@ -31,14 +30,13 @@ public sealed record BusinessCardDto(
         listing.Tagline,
         listing.Highlight,
         listing.CategorySlug,
-        VerifiedListingSpecification.IsSatisfiedBy(listing),
         CoverPhoto: null, // Photo upload arrives with the listing form; cards show the category tile.
         RepliesFast: listing.Kind != ListingKind.Space && fast.Contains(listing.Id))
     {
         Rating = CardRatingDto.From(listing.Stars),
     };
 
-    /// <summary>The average and count from <see cref="StarCounts.CardMinimum"/> reviews; null below (L2-230).</summary>
+    /// <summary>The average and count from <see cref="StarCounts.CardMinimum"/> reviews; null below (L2-231).</summary>
     public CardRatingDto? Rating { get; init; }
 }
 
@@ -75,7 +73,7 @@ public sealed record SpaceCardDto(
         };
     }
 
-    /// <summary>The average and count from <see cref="StarCounts.CardMinimum"/> reviews; null below (L2-230).</summary>
+    /// <summary>The average and count from <see cref="StarCounts.CardMinimum"/> reviews; null below (L2-231).</summary>
     public CardRatingDto? Rating { get; init; }
 }
 
@@ -110,15 +108,14 @@ public sealed record ProductCardDto(
         Rating = CardRatingDto.From(product.Stars),
     };
 
-    /// <summary>The average and count of the reviews about the product, from three (L2-230 AC2).</summary>
+    /// <summary>The average and count of the reviews about the product, from three (L2-231 AC2).</summary>
     public CardRatingDto? Rating { get; init; }
 }
 
 /// <summary>The compact one-line entry inside a category group (L2-027 AC3).</summary>
-public sealed record DirectoryRowDto(string Slug, string Name, string Tagline, bool Verified)
+public sealed record DirectoryRowDto(string Slug, string Name, string Tagline)
 {
-    public static DirectoryRowDto From(Listing listing) =>
-        new(listing.Slug, listing.Name, listing.Tagline, VerifiedListingSpecification.IsSatisfiedBy(listing));
+    public static DirectoryRowDto From(Listing listing) => new(listing.Slug, listing.Name, listing.Tagline);
 }
 
 public sealed record CategoryGroupDto(

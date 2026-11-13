@@ -14,11 +14,11 @@ marketing site, e-mail, pitch) from it, and quote Scripture word for word with i
 
 ## Project overview
 
-Jubilee is Toronto's Christian marketplace: a directory of verified Christian-owned businesses
+Jubilee is Toronto's Christian marketplace: a directory of Christian-owned businesses
 where members find a business, message it, book a meeting, ask for a quote or request a product,
 and the business confirms or declines. Jubilee does not take payment; members pay the business
 directly. The .NET backend owns accounts, listings, requests, messaging, notifications and
-verification; the Angular frontend provides the app, and Playwright covers behaviour (and, run by
+moderation; the Angular frontend provides the app, and Playwright covers behaviour (and, run by
 hand, visual parity with the design reference).
 
 The mission is in `docs/specs/L0.md`. Roles, requirements and the journeys to build are in
@@ -100,7 +100,7 @@ jubilee/
 │       │   └── models/
 │       ├── components/src/lib/        every `jb-*` presentation component, one folder each, plus `styles/`
 │       ├── marketing/src/app/         the marketing site: one page, one folder per section
-│       └── admin/src/app/             the admin application: the verification team's screens (ADR 0040)
+│       └── admin/src/app/             the admin application: the Jubilee team's screens (ADR 0040, 0057)
 ├── e2e/
 │   ├── playwright.config.ts
 │   ├── fixtures/                      `jb-test.ts`, `routes.ts`, data fixtures
@@ -135,7 +135,7 @@ Non-obvious rules:
 - Keep request logging outside the exception-handling middleware so handled response statuses
   are logged correctly.
 - Owned data must stay scoped to its owner: a member sees and changes only their own data, an
-  owner only their own listings, and only the verification team reaches the admin endpoints.
+  owner only their own listings, and only the Jubilee team reaches the admin endpoints.
 - Errors are ProblemDetails with a `code` extension where a client needs to branch on them.
 
 ### Tests
@@ -151,7 +151,7 @@ adding coverage; `pwsh eng/Test-Backend.ps1` runs the suite as CI does.
 Workspace has five projects under `frontend/projects/`: `jubilee` (the app), `marketing` (the
 public marketing site: one page, no router or session; ADR 0013; while Jubilee is launching soon
 it sends two forms to `/api/launch` and links nowhere outside itself, ADR 0044), `admin` (the admin
-application at `admin.jubilee.to`: staff sign-in and the verification team's screens, with a staff
+application at `admin.jubilee.to`: staff sign-in and the Jubilee team's screens, with a staff
 session of its own; ADR 0040), `api` (service contracts, implementations, view models, pure
 helpers) and `components` (`jb-*` UI atoms, the design system).
 

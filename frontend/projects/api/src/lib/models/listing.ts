@@ -4,7 +4,7 @@ import { BusinessCard, CategoryLink, ProductCard, SpaceCard, SpaceTerm } from '.
 export type ListingKind = 'services' | 'shop' | 'space';
 
 /** The caller's relation to the listing, decided by the server from the session. */
-export type ViewerRelation = 'visitor' | 'member' | 'owner' | 'verifier';
+export type ViewerRelation = 'visitor' | 'member' | 'owner' | 'moderator';
 
 /** The "Replies" band; null when there are too few replies to say (L2-033 AC5). */
 export type ReplyTimeBand = 'few-hours' | 'day' | 'few-days';
@@ -57,10 +57,9 @@ export interface SpaceDetails {
 
 /**
  * Where a listing stands for the public (L2-219): `live`, or why its page is a preview that only
- * its owner and the verification team can open.
+ * its owner and the Jubilee team can open.
  */
-export type ListingStatus =
-  'live' | 'draft' | 'ready-to-review' | 'changes-requested' | 'declined' | 'paused' | 'on-hold';
+export type ListingStatus = 'live' | 'draft' | 'paused' | 'on-hold';
 
 /** One photo of a listing on its public page (L2-221): the key of its renditions under `/media`. */
 export interface ListingPagePhoto {
@@ -77,7 +76,6 @@ export interface ListingPage {
   kind: ListingKind;
   name: string;
   category: CategoryLink;
-  verified: boolean;
   stage: string;
   status: ListingStatus;
   viewerRelation: ViewerRelation;

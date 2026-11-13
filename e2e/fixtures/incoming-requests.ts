@@ -15,7 +15,7 @@ export interface FakeRow {
   detail: string;
   sentAt: string;
   status: string;
-  statusLabel: 'New' | 'Confirmed' | 'Declined';
+  statusLabel: 'New' | 'Confirmed' | 'Declined' | 'Completed';
   total: string | null;
   when: string | null;
 }
@@ -30,6 +30,8 @@ export interface FakeIncoming {
   undo: Outcome;
   /** `cancelled` answers as if the customer had cancelled a moment earlier (409). */
   decline: Outcome | 'cancelled';
+  /** `cancelled` answers as if the customer had cancelled the order a moment earlier (409). */
+  fulfil: Outcome | 'cancelled';
   /**
    * The event stream (L2-070): `ok` answers with what arrived since the browser last asked and is asked
    * again at once, as a stream that stays up; `down` refuses every attempt to connect.
@@ -41,6 +43,7 @@ export interface FakeIncoming {
   confirms: string[];
   undos: string[];
   declines: { id: string; reason: string; message: string }[];
+  fulfils: string[];
   /** Adds a new request, as if a member had just sent one: the owner's notification goes down the stream. */
   arrive: (row?: Partial<FakeRow>) => FakeRow;
   /** The customer cancels a request, as the stream tells the owner. */
@@ -52,7 +55,7 @@ export const naomi = {
   firstName: 'Naomi',
   displayName: 'Naomi Laurent',
   initials: 'NL',
-  isVerifier: false,
+  isModerator: false,
 };
 
 const problem = (status: number, body: object) => ({
@@ -114,6 +117,43 @@ export function seedRows(): FakeRow[] {
   ];
 }
 
+export const GRACE = '5d0b1c2e-0000-4000-8000-000000000004';
+export const JOANNA = '5d0b1c2e-0000-4000-8000-000000000005';
+
+/** A confirmed order the owner can mark fulfilled, and a confirmed booking, which completes by itself (L2-225). */
+export function confirmedRows(): FakeRow[] {
+  return [
+    {
+      id: GRACE,
+      kind: 'order',
+      kindLabel: 'Order',
+      customerName: 'Grace Adeyemi',
+      customerInitials: 'GA',
+      title: 'Gold cross stoneware mug × 2',
+      detail: 'Pickup in Leslieville · $48.00 + tax',
+      sentAt: '2026-11-09T10:00:00-05:00',
+      status: 'Confirmed',
+      statusLabel: 'Confirmed',
+      total: '$48.00 + tax',
+      when: null,
+    },
+    {
+      id: JOANNA,
+      kind: 'booking',
+      kindLabel: 'Booking',
+      customerName: 'Joanna Adeyemi',
+      customerInitials: 'JA',
+      title: 'Brand photography session',
+      detail: 'Thu 12 Nov, 10:00 · In person, Leslieville studio',
+      sentAt: '2026-11-08T10:00:00-05:00',
+      status: 'Confirmed',
+      statusLabel: 'Confirmed',
+      total: null,
+      when: 'Thu 12 Nov, 10:00',
+    },
+  ];
+}
+
 export async function stubIncoming(
   page: Page,
   initial: Partial<FakeIncoming> = {},
@@ -143,6 +183,7 @@ export async function stubIncoming(
     confirmDelayMs: 0,
     undo: 'ok',
     decline: 'ok',
+    fulfil: 'ok',
     stream: 'ok',
     repliesFast: false,
     rows: seedRows(),
@@ -150,6 +191,7 @@ export async function stubIncoming(
     confirms: [],
     undos: [],
     declines: [],
+    fulfils: [],
     arrive: (extra = {}) => {
       arrivals += 1;
       const row: FakeRow = {
@@ -187,8 +229,7 @@ export async function stubIncoming(
     unreadNotificationCount: 3,
     newRequestCount: count('New'),
     ownsListing: true,
-    isVerifier: false,
-    verificationCount: 0,
+    isModerator: false,
   });
 
   await page.route('**/api/session', (r) => r.fulfill({ json: member }));
@@ -234,7 +275,7 @@ export async function stubIncoming(
       const all = fake.list === 'empty' ? 0 : count();
       return route.fulfill({
         json: {
-          listing: { name: 'Luzandre.com', slug: 'luzandre-com', verified: true },
+          listing: { name: 'Luzandre.com', slug: 'luzandre-com' },
           tab,
           counts:
             fake.list === 'empty'
@@ -260,6 +301,22 @@ export async function stubIncoming(
       }
       row.statusLabel = 'New';
       return route.fulfill({ json: decision(row, 'New') });
+    }
+    if (action === 'fulfil') {
+      if (fake.fulfil === 'fails') return route.fulfill(problem(500, { code: 'SERVER_ERROR' }));
+      if (fake.fulfil === 'cancelled') {
+        fake.rows.splice(fake.rows.indexOf(row), 1);
+        return route.fulfill(
+          problem(409, {
+            code: 'INVALID_TRANSITION',
+            detail: `${row.customerName} cancelled this request.`,
+            requestStatus: 'cancelled',
+          }),
+        );
+      }
+      fake.fulfils.push(id);
+      row.statusLabel = 'Completed';
+      return route.fulfill({ json: decision(row, 'Completed') });
     }
     if (action === 'confirm') {
       if (fake.confirmDelayMs) await new Promise((done) => setTimeout(done, fake.confirmDelayMs));

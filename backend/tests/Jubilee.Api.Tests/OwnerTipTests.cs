@@ -121,7 +121,7 @@ public sealed class OwnerTipTests : IClassFixture<JubileeApiFactory>, IAsyncLife
         var ruth = Confirmed("ruth@example.com", "Ruth", "Mensah");
         var hers = ListingMother.Public("ruth-bakes", "shops", "Ruth Bakes");
         hers.AssignOwner(ruth.Id.ToString());
-        var draft = ListingMother.NonPublic(NonPublicState.ReadyToReview, "joanna-designs", "shops");
+        var draft = ListingMother.NonPublic(NonPublicState.Draft, "joanna-designs", "shops");
         draft.AssignOwner(_joanna.Id.ToString());
         await _factory.Arrange(ruth, hers, draft);
 

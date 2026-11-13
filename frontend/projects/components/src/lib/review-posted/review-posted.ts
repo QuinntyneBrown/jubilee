@@ -10,7 +10,7 @@ import { Icon } from '../icon/icon';
 import { Stars } from '../stars/stars';
 
 /**
- * The posted state of the Write a review screen (L2-227 AC4): a round check, "Thanks, your review
+ * The posted state of the Write a review screen (L2-228 AC4): a round check, "Thanks, your review
  * is live.", what happens next, the review in short and the ways on, projected as
  * `[slot=actions]`. The heading takes focus when it appears.
  *

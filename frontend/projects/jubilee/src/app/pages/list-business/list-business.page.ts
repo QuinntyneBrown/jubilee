@@ -18,7 +18,7 @@ import {
   ListingDraftBody,
   OfferKind,
   SpaceTerm,
-  SubmittedListing,
+  PublishedListing,
 } from 'api';
 import { FormsModule } from '@angular/forms';
 import {
@@ -43,12 +43,9 @@ import {
   ChoiceCard,
   ChoiceCards,
   Skeleton,
-  Card,
   ItemList,
   ItemListItem,
   ItemListName,
-  Timeline,
-  TimelineStep,
   Price,
   EmptyState,
   BusinessCardPreview,
@@ -134,8 +131,8 @@ export function messageFor(field: FieldName, code: string, space = false): strin
       return 'Choose a category.';
     case 'agreed':
       return space
-        ? 'Agree to the statement of faith and the rental terms to submit your space.'
-        : 'Agree to the statement of faith to submit your listing.';
+        ? 'Agree to the statement of faith and the rental terms to publish your space.'
+        : 'Agree to the statement of faith to publish your listing.';
   }
 }
 
@@ -157,8 +154,8 @@ function summaryFor(field: FieldName, code: string, space: boolean): string {
 
 /**
  * ListBusinessPage (L2-071 to L2-079): the member writes the listing, sees how it will look, saves a
- * draft and submits it for verification. Products and services are added through their editors
- * (L2-073), which keep them with the draft: no listing exists until it is submitted.
+ * draft and publishes it: it is live at once (ADR 0057). Products and services are added through their
+ * editors (L2-073), which keep them with the draft: no listing exists until it is published.
  */
 @Component({
   selector: 'jb-list-business-page',
@@ -179,12 +176,9 @@ function summaryFor(field: FieldName, code: string, space: boolean): string {
     ChoiceCard,
     ChoiceCards,
     Skeleton,
-    Card,
     ItemList,
     ItemListItem,
     ItemListName,
-    Timeline,
-    TimelineStep,
     Price,
     EmptyState,
     BusinessCardPreview,
@@ -252,7 +246,13 @@ export class ListBusinessPage {
   protected readonly failed = signal('');
   protected readonly busy = signal(false);
   protected readonly savedAt = signal<string | null>(null);
-  protected readonly submitted = signal<SubmittedListing | null>(null);
+  protected readonly published = signal<PublishedListing | null>(null);
+  /** Where members find the listing just published (L2-078 AC1, L2-200 AC2). */
+  protected readonly publishedIn = computed(() =>
+    this.isSpace()
+      ? 'Rooms & rentals'
+      : (CATEGORIES.find((c) => c.slug === this.categorySlug())?.name ?? ''),
+  );
 
   protected readonly tile = computed(() => categoryTile(this.categorySlug()));
   protected readonly isServices = computed(() => this.kind() === 'services');
@@ -429,7 +429,7 @@ export class ListBusinessPage {
     }
   }
 
-  protected submit(): void {
+  protected publish(): void {
     if (this.busy() || this.session.unconfirmed()) return;
     this.failed.set('');
     const codes = this.check();
@@ -442,7 +442,7 @@ export class ListBusinessPage {
       .pipe(
         switchMap((draft) => {
           this.draftId = draft.id;
-          return this.api.submit(draft.id, body);
+          return this.api.publish(draft.id, body);
         }),
         // The idempotency key makes the retry safe if the first try did arrive (L2-132).
         timeout(SUBMIT_TIMEOUT_MS),
@@ -450,7 +450,7 @@ export class ListBusinessPage {
       .subscribe({
         next: (listing) => {
           this.busy.set(false);
-          this.submitted.set(listing);
+          this.published.set(listing);
           window.scrollTo({ top: 0 });
         },
         error: (error) => {

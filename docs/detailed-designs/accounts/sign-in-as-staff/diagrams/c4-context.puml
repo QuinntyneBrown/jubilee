@@ -3,7 +3,7 @@
 LAYOUT_WITH_LEGEND()
 title System Context — Sign in as staff
 
-Person(staff, "Staff member", "Verifier or administrator on an allowed network")
+Person(staff, "Staff member", "Moderator or administrator on an allowed network")
 Person(owner, "Jubilee administrator", "Runs the CLI with the database connection")
 System(jubilee, "Jubilee", "Toronto's Christian marketplace")
 System_Ext(entra, "Microsoft Entra ID", "Staff directory - OpenID Connect provider with a second factor")

@@ -15,8 +15,8 @@ box "Frontend — Jubilee Admin Web" #E0F2FE
 end box
 actor -> router : Open /admin/verifications/{id}
 router -> page : Route admin/** (shell app)
-page -> page : Map the path to /verifications/{id} - any other path to /verifications (L2-194)
+page -> page : Map /admin/verifications/{id} to /listings/{id} - any unknown path to /listings (L2-194)
 page --> actor : "This page has moved" - "Open the admin application" - "Back to browse"
-actor -> guard : Follow ADMIN_URL + /verifications/{id}
-guard --> actor : Staff sign-in or the review (L2-188)
+actor -> guard : Follow ADMIN_URL + /listings/{id}
+guard --> actor : Staff sign-in or the listing (L2-188)
 @enduml

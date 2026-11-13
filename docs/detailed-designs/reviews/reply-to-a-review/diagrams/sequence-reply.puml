@@ -24,7 +24,7 @@ actor -> page : Press "Reply" on a review of their listing
 page -> dialog : Open "Reply to {author}"
 actor -> dialog : Type the reply and press "Post reply"
 alt Empty
-  dialog --> actor : "Write your reply." nothing sent (L2-233 AC2)
+  dialog --> actor : "Write your reply." nothing sent (L2-234 AC2)
 else Text
   dialog --> actor : Busy
   dialog -> client : reply(id, text)
@@ -32,12 +32,12 @@ else Text
   controller -> handler : Send with the member of the session
   handler -> db : Live review and its listing
   alt Caller does not own the listing
-    handler --> controller : 403 NOT_OWNER (L2-233 AC6)
+    handler --> controller : 403 NOT_OWNER (L2-234 AC6)
   else Owner
     handler -> handler : Trim, REQUIRED or TOO_LONG, hourly limit
     handler -> handler : Review.Reply(from, text, now)
     alt First reply
-      handler -> db : Notification to the author "{name} replied to your review" and the e-mail (L2-234 AC2)
+      handler -> db : Notification to the author "{name} replied to your review" and the e-mail (L2-235 AC2)
     else Changed reply
       handler -> handler : Set ReplyEditedAt, tell nobody
     end
@@ -47,9 +47,9 @@ else Text
   controller --> client : 200
   dialog --> page : Close
   page -> client : list(slug)
-  page --> actor : Reply under the review, toast "Reply posted", focus to "Edit reply" (L2-233 AC3)
+  page --> actor : Reply under the review, toast "Reply posted", focus to "Edit reply" (L2-234 AC3)
 end
 opt Fails
-  dialog --> actor : "We couldn’t post your reply" and the text kept (L2-233 AC7)
+  dialog --> actor : "We couldn’t post your reply" and the text kept (L2-234 AC7)
 end
 @enduml

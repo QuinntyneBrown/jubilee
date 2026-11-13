@@ -4,7 +4,6 @@ using Jubilee.Application.Directory;
 using Jubilee.Application.Errors;
 using Jubilee.Application.Notifications;
 using Jubilee.Application.Reviews;
-using Jubilee.Application.Verification;
 using Jubilee.Domain;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -29,7 +28,7 @@ public sealed record ReportedConversationDto(string MemberName, IReadOnlyList<Re
 
 public sealed record ReportActionDto(string Kind, string ResolutionNote, string? MessageText, string By, DateTimeOffset At);
 
-/// <summary>A reported review as it stands, for the verification team (L2-236 AC2).</summary>
+/// <summary>A reported review as it stands, for the Jubilee team (L2-237 AC2).</summary>
 public sealed record ReportedReviewDto(
     string Author, string Initials, int Rating, string ItemName, string Text, DateTimeOffset CreatedAt, DateTimeOffset? EditedAt,
     ReviewReplyDto? Reply, bool TakenDown);
@@ -72,12 +71,12 @@ public static class ReportWire
         _ => null,
     };
 
-    /// <summary>The actions a report of a review takes; the listing's actions do not apply to it (L2-236 AC2).</summary>
+    /// <summary>The actions a report of a review takes; the listing's actions do not apply to it (L2-237 AC2).</summary>
     public static bool AppliesTo(ReportActionKind kind, bool isReview) => isReview
         ? kind is ReportActionKind.Dismiss or ReportActionKind.MessageReporter or ReportActionKind.TakeDownReview
         : kind is not ReportActionKind.TakeDownReview;
 
-    /// <summary>The reason of a review report as the reporter chose it (L2-235 AC1).</summary>
+    /// <summary>The reason of a review report as the reporter chose it (L2-236 AC1).</summary>
     public static string ReasonLabel(ReviewReportReason reason) => reason switch
     {
         ReviewReportReason.NotARealDealing => "It isn’t about a real dealing with them",
@@ -249,7 +248,7 @@ internal static class ReportStore
         ConversationReport = report,
     };
 
-    /// <summary>A report of a review, with every report of that review as its entries (L2-236 AC2).</summary>
+    /// <summary>A report of a review, with every report of that review as its entries (L2-237 AC2).</summary>
     private static LoadedReport From(ReviewReport report, IEnumerable<ReviewReport> ofTheReview) => new()
     {
         Id = report.Id,
@@ -300,7 +299,7 @@ internal static class ReportStore
             report.CurrentNote, review);
     }
 
-    /// <summary>A verifier cannot work on a report of their own listing (L2-098 AC5).</summary>
+    /// <summary>A moderator cannot work on a report of their own listing (L2-098 AC5).</summary>
     public static void EnsureNotOwn(Reviewer reviewer, Listing listing)
     {
         if (listing.OwnerId == reviewer.Subject)
@@ -310,7 +309,7 @@ internal static class ReportStore
     }
 }
 
-/// <summary>The reports the verification team reviews, oldest first (L2-105 AC1, AC4).</summary>
+/// <summary>The reports the Jubilee team reviews, oldest first (L2-105 AC1, AC4).</summary>
 public sealed record GetReportsQuery(string? Status) : IRequest<ReportListDto>;
 
 public sealed class GetReportsQueryHandler(IAppDbContext db, TimeProvider clock) : IRequestHandler<GetReportsQuery, ReportListDto>
@@ -370,7 +369,7 @@ public sealed class OpenReportCommandHandler(IAppDbContext db, TimeProvider cloc
     }
 }
 
-/// <summary>One of the six actions on a report, with the note the verifier must write (L2-105 AC2).</summary>
+/// <summary>One of the six actions on a report, with the note the moderator must write (L2-105 AC2).</summary>
 public sealed record ApplyReportActionCommand(Reviewer Reviewer, Guid ReportId, string? Kind, string? ResolutionNote, string? MessageText)
     : IRequest<ReportDetailDto>;
 
@@ -378,7 +377,7 @@ public sealed class ApplyReportActionCommandHandler(IAppDbContext db, TimeProvid
     : IRequestHandler<ApplyReportActionCommand, ReportDetailDto>
 {
     public const string HoldTitle = "We’ve paused your listing while we look into a report";
-    public const string TeamTitle = "Message from the Jubilee verification team";
+    public const string TeamTitle = "Message from the Jubilee team";
 
     public async Task<ReportDetailDto> Handle(ApplyReportActionCommand request, CancellationToken cancellationToken)
     {
@@ -457,7 +456,7 @@ public sealed class ApplyReportActionCommandHandler(IAppDbContext db, TimeProvid
                 listing.PlaceModerationHold();
                 NotificationRules.Tell(
                     db, listing.OwnerId, "listing-paused", HoldTitle,
-                    "Your listing is hidden from the public until the verification team has finished. We’ll tell you what we decide.",
+                    "Your listing is hidden from the public until the Jubilee team has finished. We’ll tell you what we decide.",
                     "/my-business", now);
                 AuditLog.Record(db, reviewer, "listing.held", "listing", listing.Id.ToString(), before, ReportWire.ListingState(listing), note, now);
                 break;
@@ -466,7 +465,7 @@ public sealed class ApplyReportActionCommandHandler(IAppDbContext db, TimeProvid
                 report.Resolve(note, now);
                 NotificationRules.Tell(
                     db, listing.OwnerId, "listing-removed", "We’ve removed your listing",
-                    "The verification team removed your listing from Jubilee. You can write to us if you have questions.", "/my-business", now);
+                    "The Jubilee team removed your listing from Jubilee. You can write to us if you have questions.", "/my-business", now);
                 AuditLog.Record(db, reviewer, "listing.removed", "listing", listing.Id.ToString(), before, ReportWire.ListingState(listing), note, now);
                 break;
             case ReportActionKind.LiftHold:
@@ -479,7 +478,7 @@ public sealed class ApplyReportActionCommandHandler(IAppDbContext db, TimeProvid
                 report.Resolve(note, now);
                 NotificationRules.Tell(
                     db, listing.OwnerId, "listing-live", "Your listing is live again",
-                    "The verification team finished looking into a report and your listing is public again.", "/my-business", now);
+                    "The Jubilee team finished looking into a report and your listing is public again.", "/my-business", now);
                 AuditLog.Record(db, reviewer, "listing.hold-lifted", "listing", listing.Id.ToString(), before, ReportWire.ListingState(listing), note, now);
                 break;
             case ReportActionKind.TakeDownReview:
@@ -500,7 +499,7 @@ public sealed class ApplyReportActionCommandHandler(IAppDbContext db, TimeProvid
 
     /// <summary>
     /// The review leaves the page, the average, the count and the cards; every report of it is resolved; its author
-    /// is told the reason and nobody else is told anything (L2-236 AC3, L2-234 AC3).
+    /// is told the reason and nobody else is told anything (L2-237 AC3, L2-235 AC3).
     /// </summary>
     private async Task TakeDownAsync(
         ReviewReport reported, Listing listing, Reviewer reviewer, string note, string reason, DateTimeOffset now, CancellationToken cancellationToken)

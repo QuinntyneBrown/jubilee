@@ -16,7 +16,7 @@ export interface LaunchApi {
   settings(): Observable<LaunchFormSettings>;
   /** Signs up for the launch notice. A repeat is answered as the first time (L2-217 AC5). */
   notify(request: LaunchNotificationRequest): Observable<void>;
-  /** Sends a business's details for launch day. Nothing is listed or verified by it (L2-216 AC9). */
+  /** Sends a business’s details for launch day. Nothing is listed by it (L2-216 AC9). */
   preRegister(request: BusinessPreRegistrationRequest): Observable<void>;
 }
 

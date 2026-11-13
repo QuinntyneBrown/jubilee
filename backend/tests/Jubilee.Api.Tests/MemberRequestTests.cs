@@ -363,6 +363,43 @@ public sealed class MemberRequestTests : IClassFixture<JubileeApiFactory>, IAsyn
         });
     }
 
+    private async Task<List<JsonElement>> NotificationsOf(HttpClient client) =>
+        [.. (await _factory.GetJson("/api/notifications", client)).GetProperty("items").EnumerateArray()];
+
+    private HttpClient Wanda() => _factory.CreateMemberClient("Wanda Reid", _wanda.Id.ToString());
+
+    // L2-049 AC2: the business is notified in the app
+    [Fact]
+    public async Task L2_049_AC2_cancelling_notifies_the_owner_in_the_app_with_a_link_to_their_requests_and_nobody_else()
+    {
+        Assert.Equal(HttpStatusCode.OK, (await Cancel(_drain)).StatusCode);
+
+        var told = Assert.Single(await NotificationsOf(Wanda()));
+        Assert.Equal("request", told.GetProperty("kind").GetString());
+        Assert.Equal("Joanna Adeyemi cancelled a quote request", told.GetProperty("title").GetString());
+        Assert.Equal("Kitchen drain is slow and gurgling", told.GetProperty("detail").GetString());
+        Assert.Equal("/my-business/requests", told.GetProperty("target").GetString());
+        Assert.False(told.GetProperty("read").GetBoolean());
+        Assert.Equal(1, (await _factory.GetJson("/api/me/navigation", Wanda())).GetProperty("unreadNotificationCount").GetInt32());
+        Assert.Empty(await NotificationsOf(Joanna()));
+        Assert.Empty(await NotificationsOf(_factory.CreateMemberClient("Trevor Okafor", _trevor.Id.ToString())));
+    }
+
+    // L2-049 AC3: the business is told in the app that the cancellation was withdrawn
+    [Fact]
+    public async Task L2_049_AC3_undo_tells_the_owner_in_the_app_that_the_cancellation_was_withdrawn()
+    {
+        await Cancel(_drain);
+        _factory.Clock.Advance(TimeSpan.FromSeconds(3));
+
+        Assert.Equal(HttpStatusCode.OK, (await Undo(_drain)).StatusCode);
+
+        var titles = (await NotificationsOf(Wanda())).Select(n => n.GetProperty("title").GetString()).ToList();
+        Assert.Equal(["Joanna Adeyemi withdrew the cancellation", "Joanna Adeyemi cancelled a quote request"], titles);
+        Assert.All(await NotificationsOf(Wanda()), n => Assert.Equal("/my-business/requests", n.GetProperty("target").GetString()));
+        Assert.Empty(await NotificationsOf(Joanna()));
+    }
+
     [Fact]
     public async Task L2_049_a_confirmed_booking_can_be_cancelled()
     {

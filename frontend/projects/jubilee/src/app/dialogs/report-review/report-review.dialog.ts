@@ -54,7 +54,7 @@ const MESSAGES: Record<string, string> = {
 };
 
 /**
- * ReportReviewDialog (L2-235): a member tells the verification team what is wrong with a review.
+ * ReportReviewDialog (L2-236): a member tells the Jubilee team what is wrong with a review.
  * A retry reuses the idempotency key (L2-132), a refusal sits under its field (L2-126), and a
  * failure keeps what was typed (L2-128). The author is never told who reported it.
  */

@@ -8,13 +8,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Jubilee.Api.Tests;
 
-// Reporting a review and taking it down: L2-234 AC3; L2-235 AC4, AC5, AC6; L2-236; L2-237 AC5, AC6.
+// Reporting a review and taking it down: L2-235 AC3; L2-236 AC4, AC5, AC6; L2-237; L2-238 AC5, AC6.
 public sealed partial class ReviewTests
 {
     private const string TeamNote = "Checked the review against the review rules.";
     private const string TakeDownReason = "Your review named another family and their street.";
 
-    private HttpClient AsMiriam() => _factory.CreateStaffClient("Miriam Castillo", "member|miriam", "verifier");
+    private HttpClient AsMiriam() => _factory.CreateStaffClient("Miriam Castillo", "member|miriam", "moderator");
 
     private static Task<HttpResponseMessage> ReportReview(HttpClient client, Guid review, string? reason = "private-details", string? note = "It names the family next door.", string? key = null)
     {
@@ -26,7 +26,7 @@ public sealed partial class ReviewTests
     private static Task<HttpResponseMessage> Act(HttpClient client, Guid report, string kind, string? text = null) =>
         client.PostAsJsonAsync($"/api/admin/reports/{report}/actions", new { kind, resolutionNote = TeamNote, messageText = text });
 
-    // L2-235 AC3, AC5, L2-237 AC5
+    // L2-236 AC3, AC5, L2-238 AC5
     [Fact]
     public async Task L2_232_AC3_a_member_reports_a_review_and_it_stays_shown()
     {
@@ -43,7 +43,7 @@ public sealed partial class ReviewTests
         Assert.Single((await Reviews()).GetProperty("items").EnumerateArray());
     }
 
-    // L2-235 AC4, AC2, L2-237 AC7
+    // L2-236 AC4, AC2, L2-238 AC7
     [Fact]
     public async Task L2_232_AC4_an_author_cannot_report_their_own_review_and_a_reason_is_needed()
     {
@@ -63,7 +63,7 @@ public sealed partial class ReviewTests
         Assert.Equal(HttpStatusCode.Created, owner.StatusCode);
     }
 
-    // L2-235 AC6, L2-237 AC6
+    // L2-236 AC6, L2-238 AC6
     [Fact]
     public async Task L2_232_AC6_more_than_ten_reports_in_a_day_are_slowed_down()
     {
@@ -79,7 +79,7 @@ public sealed partial class ReviewTests
         Assert.Equal(HttpStatusCode.TooManyRequests, answers[10]);
     }
 
-    // L2-236 AC1, AC2
+    // L2-237 AC1, AC2
     [Fact]
     public async Task L2_233_AC1_a_review_report_joins_the_reports_and_opens_with_the_review()
     {
@@ -106,7 +106,7 @@ public sealed partial class ReviewTests
         Assert.Equal(1, await Read(db => db.AuditRecords.CountAsync(a => a.Action == "report.opened")));
     }
 
-    // L2-236 AC3, AC5, L2-234 AC3, L2-230 AC5
+    // L2-237 AC3, AC5, L2-235 AC3, L2-231 AC5
     [Fact]
     public async Task L2_233_AC3_the_team_takes_a_review_down_with_a_reason_the_author_reads()
     {
@@ -135,7 +135,7 @@ public sealed partial class ReviewTests
         Assert.NotEqual(Guid.Empty, second);
     }
 
-    // L2-236 AC4
+    // L2-237 AC4
     [Fact]
     public async Task L2_233_AC4_dismissing_a_review_report_leaves_the_review()
     {
@@ -149,7 +149,7 @@ public sealed partial class ReviewTests
         Assert.Equal(0, await Read(db => db.Notifications.CountAsync()));
     }
 
-    // L2-236 AC2: the listing actions do not apply to a review report
+    // L2-237 AC2: the listing actions do not apply to a review report
     [Theory]
     [InlineData("hold")]
     [InlineData("remove")]
@@ -165,14 +165,14 @@ public sealed partial class ReviewTests
         Assert.Equal("INVALID", (await Json(response)).GetProperty("errors").GetProperty("kind").GetString());
     }
 
-    // L2-236 AC6
+    // L2-237 AC6
     [Fact]
-    public async Task L2_233_AC6_a_verifier_does_not_handle_a_report_of_their_own_listing()
+    public async Task L2_233_AC6_a_moderator_does_not_handle_a_report_of_their_own_listing()
     {
         var review = await JoannasReview();
         var id = (await Json(await ReportReview(AsDavid(), review.Id))).GetProperty("id").GetGuid();
 
-        var response = await _factory.CreateStaffClient("Trevor Chew", Trevor, "verifier").PostAsync($"/api/admin/reports/{id}/open", null);
+        var response = await _factory.CreateStaffClient("Trevor Chew", Trevor, "moderator").PostAsync($"/api/admin/reports/{id}/open", null);
 
         Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
         Assert.Equal("OWN_LISTING", (await Json(response)).GetProperty("code").GetString());

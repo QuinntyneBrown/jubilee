@@ -81,6 +81,7 @@
         "loading",
         "error",
         "invalid",
+        "rate-limited",
         "submitting",
         "success"
       ],
@@ -283,7 +284,7 @@
         "saved-hearts"
       ],
       "requirements": [
-        "L2-230"
+        "L2-231"
       ]
     },
     {
@@ -304,7 +305,7 @@
         "rooms-rentals-error"
       ],
       "requirements": [
-        "L2-230"
+        "L2-231"
       ]
     },
     {
@@ -321,7 +322,7 @@
         "spaces"
       ],
       "requirements": [
-        "L2-230"
+        "L2-231"
       ]
     },
     {
@@ -349,13 +350,13 @@
         "reviews-not-eligible"
       ],
       "requirements": [
-        "L2-225",
-        "L2-228",
+        "L2-226",
         "L2-229",
-        "L2-232",
+        "L2-230",
         "L2-233",
-        "L2-235",
-        "L2-239"
+        "L2-234",
+        "L2-236",
+        "L2-240"
       ]
     },
     {
@@ -369,8 +370,8 @@
         "L2-205",
         "L2-206",
         "L2-208",
-        "L2-228",
-        "L2-230"
+        "L2-229",
+        "L2-231"
       ],
       "states": [
         "short-stay",
@@ -401,8 +402,8 @@
         "sold-out"
       ],
       "requirements": [
-        "L2-228",
-        "L2-230"
+        "L2-229",
+        "L2-231"
       ]
     },
     {
@@ -423,8 +424,8 @@
         "empty": "A product page shows one item; it has no collection that could be empty."
       },
       "requirements": [
-        "L2-230",
-        "L2-231"
+        "L2-231",
+        "L2-232"
       ]
     },
     {
@@ -433,10 +434,10 @@
       "title": "Write a review",
       "route": "/b/:slug/review",
       "requirements": [
-        "L2-225",
         "L2-226",
         "L2-227",
-        "L2-239"
+        "L2-228",
+        "L2-240"
       ],
       "states": [
         "default",
@@ -531,7 +532,8 @@
         "declined",
         "cancelled",
         "space-awaiting",
-        "space-confirmed"
+        "space-confirmed",
+        "unanswered"
       ],
       "not_applicable": {
         "empty": "A request page shows one request; it has no collection that could be empty."
@@ -566,7 +568,10 @@
         "data-requested",
         "data-failed",
         "this-device-only",
-        "others-signed-out"
+        "others-signed-out",
+        "sessions-loading",
+        "sessions-error",
+        "session-ended"
       ],
       "not_applicable": {
         "empty": "A form page has no collection that could be empty."
@@ -608,37 +613,27 @@
     },
     {
       "id": "feedback",
-      "kind": "page",
-      "title": "Feedback",
-      "route": "/feedback/:tab",
+      "kind": "dialog",
+      "title": "Feedback panel",
+      "opens_from": "browse",
       "requirements": [
-        "L2-212",
-        "L2-213"
+        "L2-210"
       ],
       "states": [
         "default",
-        "rate-invalid",
+        "rate-chosen",
         "bug",
-        "bug-invalid",
-        "bug-screenshots",
+        "bug-ready",
         "kudos",
-        "kudos-business",
-        "kudos-no-business",
-        "kudos-invalid",
-        "sending",
+        "kudos-ready",
+        "busy",
         "failed",
         "sent-rating",
         "sent-bug",
-        "sent-kudos-team",
-        "sent-kudos-business",
-        "history-empty",
-        "history-loading",
-        "history-error"
+        "sent-kudos"
       ],
       "not_applicable": {
-        "loading": "The form needs no data and shows at once; only Your feedback loads, and that is the state history-loading.",
-        "empty": "The only collection is Your feedback; with nothing in it the page is the state history-empty.",
-        "error": "The form cannot fail to load; a failed load of Your feedback is the state history-error and a failed send is the state failed."
+        "invalid": "The send button is disabled until there is something to send, so the panel has nothing to mark invalid."
       }
     },
     {
@@ -680,8 +675,6 @@
         "loading",
         "empty",
         "error",
-        "pending",
-        "changes-requested",
         "away",
         "businesses",
         "statement-due",
@@ -714,6 +707,7 @@
       "route": "/my-business/products",
       "states": [
         "default",
+        "reorder",
         "loading",
         "empty",
         "error"
@@ -726,6 +720,7 @@
       "route": "/my-business/services",
       "states": [
         "default",
+        "reorder",
         "loading",
         "empty",
         "error"
@@ -742,7 +737,8 @@
         "empty",
         "error",
         "no-results",
-        "space"
+        "space",
+        "confirmed"
       ]
     },
     {
@@ -756,7 +752,9 @@
         "not-found"
       ],
       "requirements": [
-        "L2-188"
+        "L2-188",
+        "L2-105",
+        "L2-190"
       ],
       "not_applicable": {
         "loading": "The shell renders with the staff session it was opened with; each screen inside it has its own loading state.",
@@ -808,10 +806,10 @@
       }
     },
     {
-      "id": "admin-verifications",
+      "id": "admin-listings",
       "kind": "page",
-      "title": "Verification queue",
-      "route": "/verifications (admin application)",
+      "title": "Listings",
+      "route": "/listings (admin application)",
       "states": [
         "default",
         "loading",
@@ -821,21 +819,19 @@
       ]
     },
     {
-      "id": "admin-verification",
+      "id": "admin-listing",
       "kind": "page",
-      "title": "Verify listing",
-      "route": "/verifications/:id (admin application)",
+      "title": "Listing",
+      "route": "/listings/:id (admin application)",
       "states": [
         "default",
         "loading",
         "error",
-        "approved",
-        "changes-requested",
-        "space",
-        "no-items"
+        "taken-down",
+        "space"
       ],
       "not_applicable": {
-        "empty": "A review page shows one listing; it has no collection that could be empty."
+        "empty": "The page shows one listing; it has no collection that could be empty."
       }
     },
     {
@@ -1085,6 +1081,20 @@
       ]
     },
     {
+      "id": "fulfil-request",
+      "kind": "dialog",
+      "title": "Fulfil request",
+      "opens_from": "incoming-requests",
+      "states": [
+        "default",
+        "busy",
+        "failed"
+      ],
+      "not_applicable": {
+        "invalid": "This dialog has no inputs to validate."
+      }
+    },
+    {
       "id": "product-editor",
       "kind": "dialog",
       "title": "Product editor",
@@ -1095,6 +1105,12 @@
         "invalid",
         "failed",
         "edit",
+        "photo-uploading",
+        "photo-added",
+        "photo-failed",
+        "photo-too-large",
+        "options",
+        "options-invalid",
         "onboarding"
       ]
     },
@@ -1181,58 +1197,16 @@
       ]
     },
     {
-      "id": "approve-listing",
+      "id": "take-down-listing",
       "kind": "dialog",
-      "title": "Approve listing",
-      "opens_from": "admin-verification",
+      "title": "Take down listing",
+      "opens_from": "admin-listing",
       "states": [
         "default",
-        "busy",
-        "failed",
-        "note-required"
-      ],
-      "not_applicable": {
-        "invalid": "This dialog has no inputs to validate."
-      }
-    },
-    {
-      "id": "request-changes",
-      "kind": "dialog",
-      "title": "Request changes",
-      "opens_from": "admin-verification",
-      "states": [
-        "default",
-        "busy",
         "invalid",
-        "failed"
-      ]
-    },
-    {
-      "id": "decline-listing",
-      "kind": "dialog",
-      "title": "Decline listing",
-      "opens_from": "admin-verification",
-      "states": [
-        "default",
         "busy",
-        "invalid",
-        "failed"
+        "error"
       ]
-    },
-    {
-      "id": "statement-agreement",
-      "kind": "dialog",
-      "title": "Statement of faith agreement",
-      "opens_from": "my-business",
-      "states": [
-        "default",
-        "busy",
-        "failed",
-        "lapsed"
-      ],
-      "not_applicable": {
-        "invalid": "This dialog has no inputs to validate."
-      }
     },
     {
       "id": "sign-out",
@@ -1361,17 +1335,19 @@
       ]
     },
     {
-      "id": "verification-banner",
+      "id": "listing-banner",
       "kind": "notification",
-      "title": "Verification banner",
+      "title": "Listing banner",
       "opens_from": "my-business",
       "states": [
-        "info",
-        "success",
-        "warning",
-        "danger",
-        "persistent"
-      ]
+        "persistent",
+        "success"
+      ],
+      "not_applicable": {
+        "info": "The listing banner has one lasting condition, a paused listing, which is the persistent state; there is no neutral message to give.",
+        "warning": "A paused listing is the persistent state; nothing else about a live listing needs the owner's attention in a banner.",
+        "danger": "Nothing about a listing fails in a way a banner must hold: a failed pause or resume is said in its dialog, and a takedown is e-mailed and notified."
+      }
     },
     {
       "id": "verify-email-banner",
@@ -1400,7 +1376,7 @@
         "no-results"
       ],
       "requirements": [
-        "L2-236"
+        "L2-237"
       ]
     },
     {
@@ -1420,7 +1396,7 @@
         "empty": "A report page shows one report; it has no collection that could be empty."
       },
       "requirements": [
-        "L2-236"
+        "L2-237"
       ]
     },
     {
@@ -1451,7 +1427,7 @@
         "take-down"
       ],
       "requirements": [
-        "L2-236"
+        "L2-237"
       ]
     },
     {
@@ -1466,13 +1442,28 @@
       ]
     },
     {
+      "id": "statement-agreement",
+      "kind": "dialog",
+      "title": "Statement of faith agreement",
+      "opens_from": "my-business",
+      "states": [
+        "default",
+        "busy",
+        "failed",
+        "lapsed"
+      ],
+      "not_applicable": {
+        "invalid": "This dialog has no inputs to validate."
+      }
+    },
+    {
       "id": "edit-review",
       "kind": "dialog",
       "title": "Edit review",
       "opens_from": "business",
       "requirements": [
-        "L2-232",
-        "L2-239"
+        "L2-233",
+        "L2-240"
       ],
       "states": [
         "default",
@@ -1490,8 +1481,8 @@
       "title": "Remove review",
       "opens_from": "business",
       "requirements": [
-        "L2-232",
-        "L2-239"
+        "L2-233",
+        "L2-240"
       ],
       "states": [
         "default",
@@ -1509,8 +1500,8 @@
       "title": "Reply to review",
       "opens_from": "business",
       "requirements": [
-        "L2-233",
-        "L2-239"
+        "L2-234",
+        "L2-240"
       ],
       "states": [
         "default",
@@ -1529,8 +1520,8 @@
       "title": "Report review",
       "opens_from": "business",
       "requirements": [
-        "L2-235",
-        "L2-239"
+        "L2-236",
+        "L2-240"
       ],
       "states": [
         "default",
@@ -1547,7 +1538,7 @@
       "title": "Review notification",
       "opens_from": "notifications",
       "requirements": [
-        "L2-234"
+        "L2-235"
       ],
       "states": [
         "new-review",
@@ -1555,10 +1546,10 @@
         "taken-down"
       ],
       "not_applicable": {
-        "info": "A review notification is an item in the notification centre (L2-234), not a toast or banner with a tone; its states are its three events.",
-        "success": "A review notification is an item in the notification centre (L2-234), not a toast or banner with a tone; its states are its three events.",
-        "warning": "A review notification is an item in the notification centre (L2-234), not a toast or banner with a tone; its states are its three events.",
-        "danger": "A review notification is an item in the notification centre (L2-234), not a toast or banner with a tone; its states are its three events."
+        "info": "A review notification is an item in the notification centre (L2-235), not a toast or banner with a tone; its states are its three events.",
+        "success": "A review notification is an item in the notification centre (L2-235), not a toast or banner with a tone; its states are its three events.",
+        "warning": "A review notification is an item in the notification centre (L2-235), not a toast or banner with a tone; its states are its three events.",
+        "danger": "A review notification is an item in the notification centre (L2-235), not a toast or banner with a tone; its states are its three events."
       }
     }
   ]

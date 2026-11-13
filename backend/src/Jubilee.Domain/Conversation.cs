@@ -185,7 +185,7 @@ public sealed class MessageAttachment
     };
 }
 
-/// <summary>A participant's report of a conversation to the verification team (L2-063).</summary>
+/// <summary>A participant's report of a conversation to the Jubilee team (L2-063).</summary>
 public sealed class ConversationReport
 {
     private ConversationReport()

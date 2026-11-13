@@ -207,8 +207,6 @@ public class JubileeApiFactory : WebApplicationFactory<Program>
             db.RemoveRange(db.ListingDrafts);
             db.RemoveRange(db.ListingSubmissions);
             db.RemoveRange(db.StatementAgreements);
-            db.RemoveRange(db.ReviewTicks);
-            db.RemoveRange(db.ListingDecisions);
             db.RemoveRange(db.AuditRecords);
             db.RemoveRange(db.ResponseTimeStats);
             db.RemoveRange(db.JobRuns);
@@ -225,6 +223,7 @@ public class JubileeApiFactory : WebApplicationFactory<Program>
             db.RemoveRange(db.BusinessPreRegistrations);
             db.RemoveRange(db.LinkTokens);
             db.RemoveRange(db.PasswordResetRequests);
+            db.RemoveRange(db.SecurityAlerts);
             db.RemoveRange(db.Members);
             db.RemoveRange(db.RecentSearches);
             db.RemoveRange(db.StockAlerts);

@@ -14,7 +14,7 @@ skinparam package {
   FontColor #101828
   BackgroundColor #F9FAFB
 }
-actor "Verification team member" as actor
+actor "Jubilee administrator" as actor
 box "Frontend — Jubilee Web" #E0F2FE
   participant "Content editing screen <TO SUPPLY>" as page
   participant "ContentApi" as client

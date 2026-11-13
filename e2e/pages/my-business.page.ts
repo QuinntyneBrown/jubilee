@@ -20,12 +20,10 @@ export class MyBusinessPage extends ShellPage implements Screen {
   readonly changeAway: Locator;
   readonly resume: Locator;
   readonly pausedBanner: Locator;
-  readonly liveBanner: Locator;
   /** The banner of an agreement owed to the updated statement of faith (L2-075 AC5, AC6). */
   readonly statementBanner: Locator;
   readonly readAndAgree: Locator;
   readonly alert: Locator;
-  readonly timeline: Locator;
   readonly empty: Locator;
   readonly reference: Locator;
   readonly tryAgain: Locator;
@@ -54,11 +52,9 @@ export class MyBusinessPage extends ShellPage implements Screen {
     this.changeAway = this.awayRow.getByRole('button', { name: 'Change away period' });
     this.resume = page.getByRole('button', { name: 'Resume listing' });
     this.pausedBanner = page.locator('.banner').filter({ hasText: 'Your listing is paused.' });
-    this.liveBanner = page.locator('.banner').filter({ hasText: 'is verified and live.' });
     this.statementBanner = page.locator('.banner').filter({ hasText: 'statement of faith' });
     this.readAndAgree = this.statementBanner.getByRole('button', { name: 'Read and agree' });
     this.alert = this.main.locator('.alert[role="status"], .alert[role="alert"]');
-    this.timeline = this.main.locator('ol.timeline > li');
     this.empty = this.main.locator('.empty');
     this.reference = this.main.locator('code');
     this.tryAgain = this.main.getByRole('button', { name: 'Try again' });

@@ -8,7 +8,7 @@ Container_Boundary(web, "Jubilee Web") {
   Component(product, "ProductPage", "Page container", "Reviews of one product")
   Component(link, "jb-rating-link", "Library component", "Stars, average and n reviews under the name")
   Component(reviews, "jb-reviews", "Library component", "Section, filter, sort, first three and Show all, empty state")
-  Component(summary, "jb-rating-summary", "Library component", "Average, stars, count, five bars, Verified note")
+  Component(summary, "jb-rating-summary", "Library component", "Average, stars, count, five bars")
   Component(review, "jb-review", "Library component", "One review with its actions and the reply")
   Component(stars, "jb-stars", "Library component", "Five stars filled to a value")
   Component(inline, "jb-rating-inline", "Library component", "Star, average and count on a card")

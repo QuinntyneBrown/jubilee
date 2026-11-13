@@ -10,6 +10,7 @@ What is left, from an audit of the code and its tests against the acceptance cri
 
 - `directory/browse-home` and `directory/view-welcome-page`: the directory read cache is invalidated by an EF interceptor that stands in for the outbox-driven `DirectoryCacheInvalidator` in `Jubilee.Worker` the designs name (ADR 0003). Build the designed path or change the design and ADR to what is built, with a test that a published, paused or featured change reaches the cached pages within the stated bound.
 - `L2-021` AC4 has an API test only; give it a Playwright behaviour spec.
+- ADR 0057: business cards, directory rows and space cards on the welcome page, Browse and the category page carry no "Verified" mark, counts read "{n} businesses", and "Newest" orders by the date a listing was published (`PublishedAt`).
 - `directory/view-welcome-page` is recorded at 90% with no named gap. Check every criterion of `L2-020`, `L2-106`, `L2-027` and `L2-028` and close what you find.
 
 The audit read test titles and spot-checked assertions. Verify each gap against the code before you plan, and treat any other acceptance criterion of the requirements below that has no implementation or no acceptance test as part of this work.

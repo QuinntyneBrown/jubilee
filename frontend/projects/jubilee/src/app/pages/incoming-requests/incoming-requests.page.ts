@@ -48,6 +48,10 @@ import {
   DeclineRequestDialog,
   DeclineResult,
 } from '../../dialogs/decline-request/decline-request.dialog';
+import {
+  FulfilRequestData,
+  FulfilRequestDialog,
+} from '../../dialogs/fulfil-request/fulfil-request.dialog';
 import { ClockService } from 'api';
 import { LoadState, errorReference } from 'api';
 import { threadTime } from 'api';
@@ -222,6 +226,27 @@ export class IncomingRequestsPage implements OnInit {
 
   protected isNew(row: IncomingRequestRow): boolean {
     return row.statusLabel === 'New';
+  }
+
+  /** A confirmed order is closed by its owner; a booking completes by itself (L2-225 AC1). */
+  protected canFulfil(row: IncomingRequestRow): boolean {
+    return row.kind === 'order' && row.statusLabel === 'Confirmed';
+  }
+
+  protected openFulfil(row: IncomingRequestRow): void {
+    const ref = this.dialog.open<RequestDecision, FulfilRequestData>(FulfilRequestDialog, {
+      data: { request: row },
+      ...this.dialogOptions(),
+    });
+    ref.closed.subscribe((decision) => {
+      this.refresh();
+      if (!decision) return;
+      this.toasts.show({
+        tone: 'success',
+        title: 'Order fulfilled',
+        text: `${decision.customerFirstName} has been told.`,
+      });
+    });
   }
 
   protected openConfirm(row: IncomingRequestRow): void {

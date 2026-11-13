@@ -13,7 +13,7 @@ Container_Boundary(api, "Jubilee API and Application") {
   Component(handler, "ReportListingCommandHandler", "MediatR handler", "Checks the key, the rules and the rate; creates a report or adds to one")
   Component(report, "ListingReport", "Domain entity", "Owns entries and the 24-hour addition rule")
   Component(notice, "ReportSubmitted", "Application notice", "Writes the team's e-mail of a report")
-  Component(team, "VerificationTeam", "Application service", "Decides who on the team is told (VerificationSettings)")
+  Component(team, "JubileeTeam", "Application service", "Decides who on the team is told (TeamSettings)")
 }
 Container_Boundary(worker, "Jubilee Worker") {
   Component(job, "OutboxDispatcherJob", "Background job", "Sends due outbox e-mails")

@@ -16,7 +16,7 @@ test.describe('owner viewing their own listing (L2-037)', () => {
       'This is how members see your listing',
     );
     await expect(business.ownerBanner).toContainText(
-      'It’s live and verified. Changes you make are published straight away.',
+      'It’s live. Changes you make are published straight away.',
     );
     await expect(business.goToMyBusiness).toHaveAttribute('href', '/my-business');
   });

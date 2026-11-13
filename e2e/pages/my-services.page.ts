@@ -14,6 +14,8 @@ export class MyServicesPage extends ShellPage implements Screen {
   readonly reference: Locator;
   readonly tryAgain: Locator;
   readonly loading: Locator;
+  /** "Drag a service by its handle, or use the arrows, to change the order." (L2-090 AC2) */
+  readonly dragHelp: Locator;
 
   constructor(page: Page) {
     super(page);
@@ -27,6 +29,7 @@ export class MyServicesPage extends ShellPage implements Screen {
     this.reference = this.main.locator('code');
     this.tryAgain = this.main.getByRole('button', { name: 'Try again' });
     this.loading = this.main.getByRole('status').filter({ hasText: 'Loading your services' });
+    this.dragHelp = this.main.getByText('Drag a service by its handle, or use the arrows');
   }
 
   row(name: string | RegExp): Locator {
@@ -51,6 +54,30 @@ export class MyServicesPage extends ShellPage implements Screen {
 
   moveDown(name: string): Locator {
     return this.main.getByRole('button', { name: `Move ${name} down` });
+  }
+
+  /** The handle a service is dragged by: a pointer affordance, hidden from the keyboard and assistive technology. */
+  dragHandle(name: string): Locator {
+    return this.row(name).locator('.cdk-drag-handle');
+  }
+
+  /**
+   * Drags the service named `from` by its handle and drops it on the row of `to`, as a hand does: press,
+   * move in steps so the drag starts, release.
+   */
+  async drag(from: string, to: string): Promise<void> {
+    const handle = await this.dragHandle(from).boundingBox();
+    const source = await this.row(from).boundingBox();
+    const target = await this.row(to).boundingBox();
+    if (!handle || !source || !target)
+      throw new Error('The service to drag, or the place to drop it, is not on screen.');
+    const start = { x: handle.x + handle.width / 2, y: handle.y + handle.height / 2 };
+    const end = { x: start.x, y: target.y + (start.y - source.y) };
+    await this.page.mouse.move(start.x, start.y);
+    await this.page.mouse.down();
+    await this.page.mouse.move(start.x + 4, start.y + 8, { steps: 4 });
+    await this.page.mouse.move(end.x, end.y, { steps: 12 });
+    await this.page.mouse.up();
   }
 
   async names(): Promise<string[]> {

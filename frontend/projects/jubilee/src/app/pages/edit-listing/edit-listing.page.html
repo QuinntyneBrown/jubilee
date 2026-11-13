@@ -34,13 +34,7 @@
     @let e = view.value;
     <jb-workspace-header
       [heading]="e.name"
-      [subtitle]="
-        e.stage === 'live'
-          ? e.paused
-            ? 'Verified · paused, not public'
-            : 'Verified · live'
-          : 'Not public yet'
-      "
+      [subtitle]="e.subtitle"
       current="listing"
       [slug]="e.slug"
       [live]="e.stage === 'live' && !e.paused"
@@ -48,15 +42,9 @@
     <div style="margin-top: var(--space-6)">
       <div class="split">
         <form jb-card jbDraft="listing" class="form" novalidate (ngSubmit)="save()" #form="ngForm">
-          @if (saved(); as done) {
+          @if (saved()) {
             <div jb-alert tone="success" heading="Listing updated">
-              <div>
-                Your changes are live now.
-                @if (done.recheck) {
-                  Because you changed the name or category, the verification team will take another
-                  look within two business days. Your listing stays live.
-                }
-              </div>
+              <div>Your changes are live now.</div>
 
               <a slot="actions" [routerLink]="['/b', e.slug]">View public listing</a>
 
@@ -529,7 +517,7 @@
             <div
               jb-space-card-preview
               [space]="spacePreview()"
-              [verified]="e.stage === 'live'"
+              [published]="e.stage === 'live'"
             ></div>
           } @else {
             <a jb-business-card [business]="preview()" [routerLink]="['/b', e.slug]"></a>

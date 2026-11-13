@@ -1,20 +1,20 @@
 import type { Page, Route } from '@playwright/test';
 import { stubAdmin } from './admin';
-import { miriam, type StaffMember } from './staff';
+import { miriam, type FakeStaff, type StaffMember } from './staff';
 
-// A stand-in for the verification team's reports and featured businesses (L2-105, L2-106). The
+// A stand-in for the Jubilee team's reports and featured businesses (L2-105, L2-106). The
 // requests the app makes are kept so a test can prove what it sent (ADR 0009).
 
 export const REPORT_ID = '5b0c7a10-2d4e-4f6a-8b1c-0123456789ab';
 export const CONVERSATION_REPORT_ID = '6c1d8b21-3e5f-4a7b-9c2d-123456789abc';
 export const REVIEW_REPORT_ID = '7d2e9c32-4f60-4b8c-8d3e-23456789abcd';
 
-/** The actions the API takes on a report of a review; the listing's are refused (L2-236 AC2). */
+/** The actions the API takes on a report of a review; the listing's are refused (L2-237 AC2). */
 const REVIEW_ACTIONS = ['dismiss', 'message-reporter', 'take-down'];
 
 export interface FakeModeration {
   reports: 'ok' | 'empty' | 'fails';
-  /** The list also holds a report of a review (L2-236). */
+  /** The list also holds a report of a review (L2-237). */
   reviewReport: boolean;
   /** The reported review was taken down. */
   takenDown: boolean;
@@ -26,6 +26,8 @@ export interface FakeModeration {
   opened: string[];
   actions: { id: string; kind: string; resolutionNote: string; messageText: string | null }[];
   saved: { startDate: string; ids: string[] }[];
+  /** The staff session the admin bar reads its count from (L2-190 AC7). */
+  staff: FakeStaff;
 }
 
 const problem = (status: number, body: object) => ({
@@ -80,9 +82,10 @@ export async function stubModeration(
     opened: [],
     actions: [],
     saved: [],
+    staff: undefined as unknown as FakeStaff,
     ...initial,
   };
-  await stubAdmin(page, {}, staff);
+  fake.staff = (await stubAdmin(page, {}, staff)).staff;
 
   const actionsOf = (id: string) =>
     fake.actions
@@ -95,7 +98,7 @@ export async function stubModeration(
         at: '2026-11-11T09:00:00-05:00',
       }));
 
-  // A report of a review: the review as it stands and every report of it (L2-236 AC2).
+  // A report of a review: the review as it stands and every report of it (L2-237 AC2).
   const reviewDetail = () => ({
     id: REVIEW_REPORT_ID,
     type: 'review',

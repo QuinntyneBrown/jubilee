@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Jubilee.Api.Tests;
 
-// Reading reviews: L2-225 AC1, AC2, AC4, AC5, AC7; L2-228; L2-231 AC4; L2-237 AC1; L2-238 AC1.
+// Reading reviews: L2-226 AC1, AC2, AC4, AC5, AC7; L2-229; L2-232 AC4; L2-238 AC1; L2-239 AC1.
 public sealed partial class ReviewTests : IClassFixture<JubileeApiFactory>, IAsyncLifetime
 {
     private const string Joanna = "member|joanna";
@@ -80,7 +80,7 @@ public sealed partial class ReviewTests : IClassFixture<JubileeApiFactory>, IAsy
     private async Task<JsonElement> Reviews(HttpClient? client = null, string slug = "legacy-financial") =>
         await _factory.GetJson($"/api/listings/{slug}/reviews", client);
 
-    // L2-237 AC1, L2-228 AC2, AC3, L2-238 AC1
+    // L2-238 AC1, L2-229 AC2, AC3, L2-239 AC1
     [Fact]
     public async Task L2_234_AC1_anyone_reads_the_summary_and_the_reviews_newest_first()
     {
@@ -113,7 +113,7 @@ public sealed partial class ReviewTests : IClassFixture<JubileeApiFactory>, IAsy
         Assert.Equal("sign-in", page.GetProperty("writing").GetString());
     }
 
-    // L2-228 AC6
+    // L2-229 AC6
     [Fact]
     public async Task L2_225_AC6_a_listing_without_reviews_answers_an_empty_summary()
     {
@@ -124,7 +124,7 @@ public sealed partial class ReviewTests : IClassFixture<JubileeApiFactory>, IAsy
         Assert.Empty(page.GetProperty("items").EnumerateArray());
     }
 
-    // L2-225 AC1
+    // L2-226 AC1
     [Theory]
     [InlineData(RequestStatus.Confirmed)]
     [InlineData(RequestStatus.Completed)]
@@ -138,7 +138,7 @@ public sealed partial class ReviewTests : IClassFixture<JubileeApiFactory>, IAsy
         Assert.Equal("eligible", page.GetProperty("writing").GetString());
     }
 
-    // L2-225 AC2
+    // L2-226 AC2
     [Theory]
     [InlineData(RequestStatus.New)]
     [InlineData(RequestStatus.Declined)]
@@ -152,7 +152,7 @@ public sealed partial class ReviewTests : IClassFixture<JubileeApiFactory>, IAsy
         Assert.Equal("not-eligible", page.GetProperty("writing").GetString());
     }
 
-    // L2-225 AC4
+    // L2-226 AC4
     [Fact]
     public async Task L2_222_AC4_the_owner_is_told_it_is_their_listing()
     {
@@ -162,7 +162,7 @@ public sealed partial class ReviewTests : IClassFixture<JubileeApiFactory>, IAsy
         Assert.Equal("owner", page.GetProperty("writing").GetString());
     }
 
-    // L2-225 AC5, L2-228 AC7
+    // L2-226 AC5, L2-229 AC7
     [Fact]
     public async Task L2_222_AC5_a_member_with_a_review_has_written_and_their_review_is_marked_mine()
     {
@@ -175,7 +175,7 @@ public sealed partial class ReviewTests : IClassFixture<JubileeApiFactory>, IAsy
         Assert.False((await Reviews(AsDavid())).GetProperty("items")[0].GetProperty("mine").GetBoolean());
     }
 
-    // L2-236 AC3, AC5
+    // L2-237 AC3, AC5
     [Fact]
     public async Task L2_233_AC5_a_review_taken_down_is_shown_nowhere()
     {
@@ -190,7 +190,7 @@ public sealed partial class ReviewTests : IClassFixture<JubileeApiFactory>, IAsy
         Assert.Equal("eligible", page.GetProperty("writing").GetString());
     }
 
-    // L2-225 AC7
+    // L2-226 AC7
     [Fact]
     public async Task L2_222_AC7_the_reviews_of_a_listing_that_is_not_public_are_not_found()
     {
@@ -201,7 +201,7 @@ public sealed partial class ReviewTests : IClassFixture<JubileeApiFactory>, IAsy
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
     }
 
-    // L2-231 AC4
+    // L2-232 AC4
     [Fact]
     public async Task L2_228_AC4_the_reviews_of_one_product_are_answered_by_its_slug()
     {

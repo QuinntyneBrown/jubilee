@@ -19,7 +19,7 @@ body:
         - Visitor
         - Member
         - Owner
-        - Verification team
+        - Jubilee team
     validations:
       required: true
   - type: textarea

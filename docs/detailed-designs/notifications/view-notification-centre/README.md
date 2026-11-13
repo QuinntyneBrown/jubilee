@@ -2,7 +2,7 @@
 
 ## Overview
 
-Jubilee is Toronto's Christian marketplace, in which members message verified
+Jubilee is Toronto's Christian marketplace, in which members message
 businesses and send them booking, quote and order requests. The notifications
 subsystem tells members and owners about events that concern them. This feature
 covers the in-app part that a member reads on demand: the notification centre at
@@ -88,18 +88,20 @@ only (ADR 0025).
   an unread notification is withdrawn with that request.
 - **Events that create a notification** — a request created (owner); a request
   confirmed, declined or cancelled (other party); a new message (other
-  participant); a listing verified or changes requested (owner); the e-mail
-  confirmed (member); a product back in stock (subscribed member, through
+  participant); a listing taken down, placed on hold or live again (owner,
+  written by the moderation handlers in the same save as the action: a takedown
+  and a report's removal write `listing-removed`, a hold `listing-paused` and a
+  lifted hold `listing-live`); the e-mail confirmed (member); a product back in stock (subscribed member, through
   `StockAlertNotifier`); a meeting reminder (member and owner, through
   `MeetingReminders`, L2-069); a new business in a browsed category.
 - **`NewBusinessNotifier`** — static rule called by
-  `ApproveListingCommandHandler` the first time a listing is approved
-  (L2-222, ADR 0053). `TellAsync` tells each member whose
+  `PublishListingCommandHandler` when a listing is published (L2-222, ADR 0053,
+  ADR 0057). `TellAsync` tells each member whose
   `EmailNewBusinesses` switch is on and who browsed the listing's category,
   except the owner. The notification has kind `business`, the title
   "New in {category}: {business}", the business's tagline as its detail, and
-  the business page `/b/{slug}` as its target. The approving handler saves,
-  so the notifications exist exactly when the approval does.
+  the business page `/b/{slug}` as its target. The publishing handler saves,
+  so the notifications exist exactly when the published listing does.
 - **`BrowsedCategories`** — static rule that reads what a member browsed from
   the `ListingView` rows kept for the owner's statistics: a view within
   `90 days` (`Within`) whose `VisitorKey` is the member's key. No other record
@@ -116,7 +118,7 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 |-------|--------------|-------------|
 | `L2-064` | `L1-010` | The page `/notifications` shall list events for the member, newest first. |
 | `L2-065` | `L1-010` | "Messages" shall carry a badge with the number of unread conversations and the owner's "Requests" tab shall carry the number of new requests. A count above 99 shall read "99+", and a badge shall follow a change made on another device within 5 seconds while the page is open. |
-| `L2-222` | `L1-010` | A member who turned on "New businesses" shall hear of newly verified businesses in the categories they have browsed: in the app as each one is approved, and by e-mail in one weekly note. |
+| `L2-222` | `L1-010` | A member who turned on "New businesses" shall hear of newly published businesses in the categories they have browsed: in the app as each one is published, and by e-mail in one weekly note. |
 | `L2-118` | `L1-016` | Every load-error state shall show a reference the user can quote to support. |
 | `L2-133` | `L1-019` | The server shall check the caller's role and ownership of the specific object on every API call, and shall return 404 for another member's notification. |
 
@@ -169,7 +171,7 @@ every unread mark, the count in the subtitle and the badge.
 
 A command handler adds the notification through `NotificationRules.Tell` and
 saves it with its state change. `EventsController` finds the new row at its
-next read and sends it to the recipient's open page. An approved listing is
+next read and sends it to the recipient's open page. A published listing is
 told to the members who browsed its category by `NewBusinessNotifier`.
 
 ![Sequence diagram for creating a notification from an event](diagrams/sequence-create-notification.png)

@@ -48,13 +48,14 @@ people who knew whose business it really was.
 prosper with purpose and resource His Kingdom.*
 
 **We can only do it together.**
-Jubilee is a directory of verified Christian-owned businesses in Toronto. Believers find you,
+Jubilee is a directory of Christian-owned businesses in Toronto. Believers find you,
 message you, book you and buy from you. "As we have opportunity, let's do what is good toward all
 men, and especially toward those who are of the household of the faith." (Galatians 6:10)
 
 **What we are asking**
-Stand with us. List your business, get verified by our team, and help build something that is
-still bearing fruit when our children's children are running it. (Proverbs 13:22)
+Stand with us. List your business free, agree to our statement of faith, and be live straight
+away. Help build something that is still bearing fruit when our children's children are running
+it. (Proverbs 13:22)
 
 **Leave a legacy. Resource His Kingdom. In Jesus' name.**
 Join us at jubilee.to

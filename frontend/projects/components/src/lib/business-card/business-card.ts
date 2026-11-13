@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { categoryTile } from '../media-tile/category-tile';
 import { MediaTile } from '../media-tile/media-tile';
-import { VerifiedMark } from '../verified-mark/verified-mark';
 import { Perk } from '../perk/perk';
 import { Badge } from '../badge/badge';
 import { RatingInline } from '../rating-inline/rating-inline';
@@ -12,10 +11,9 @@ export interface BusinessCardView {
   tagline: string;
   highlight: string | null;
   categorySlug: string;
-  verified: boolean;
   /** The business answers within a day: the card says "Replies fast" (L2-054). */
   repliesFast?: boolean;
-  /** The average and count from three reviews; absent below three (L2-230). */
+  /** The average and count from three reviews; absent below three (L2-231). */
   rating?: { average: number; count: number } | null;
 }
 
@@ -26,7 +24,7 @@ export interface BusinessCardView {
  */
 @Component({
   selector: 'a[jb-business-card]',
-  imports: [MediaTile, VerifiedMark, Perk, Badge, RatingInline],
+  imports: [MediaTile, Perk, Badge, RatingInline],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'biz-card' },
   templateUrl: './business-card.html',

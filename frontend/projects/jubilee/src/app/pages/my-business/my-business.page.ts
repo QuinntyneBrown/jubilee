@@ -26,7 +26,6 @@ import {
   EmptyState,
   Icon,
   Button,
-  CloseButton,
   Alert,
   RowListSkeleton,
   Select,
@@ -44,9 +43,6 @@ import {
   WorkspaceHeader,
   Stat,
   StatGrid,
-  Timeline,
-  TimelineStep,
-  TimelineStepState,
 } from 'components';
 import {
   ConfirmRequestData,
@@ -72,7 +68,7 @@ import { ToastService } from 'components';
 /** How long an owner can take back a confirmation (L2-052 AC4). */
 const UNDO_MS = 8000;
 
-/** My business at /my-business (L2-085, L2-086): the week in numbers, what needs a reply, where verification stands. */
+/** My business at /my-business (L2-085, L2-086): the week in numbers, what needs a reply, how the listing stands. */
 @Component({
   selector: 'jb-my-business-page',
   imports: [
@@ -82,7 +78,6 @@ const UNDO_MS = 8000;
     Icon,
     WorkspaceHeader,
     Button,
-    CloseButton,
     Alert,
     RowListSkeleton,
     Select,
@@ -98,8 +93,6 @@ const UNDO_MS = 8000;
     Section,
     Stat,
     StatGrid,
-    Timeline,
-    TimelineStep,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'jb-page container page' },
@@ -124,7 +117,6 @@ export class MyBusinessPage implements OnInit {
 
   protected readonly skeleton = [1, 2, 3];
   protected readonly state = signal<LoadState<MyBusiness>>({ status: 'loading' });
-  protected readonly bannerDismissed = signal(false);
   protected readonly resuming = signal(false);
   protected readonly resumeFailed = signal(false);
 
@@ -211,44 +203,6 @@ export class MyBusinessPage implements OnInit {
     return `${stats.views.change > 0 ? '↑' : '↓'} ${percent}% on last week`;
   }
 
-  /** "today", "yesterday" or "3 days ago": the end of the subtitle the API words. */
-  /** "Two changes needed before we can publish" (L2-086 AC3). */
-  protected changesHeading(count: number): string {
-    const words = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine'];
-    const needed = count === 1 ? 'change needed' : 'changes needed';
-    return count > 0
-      ? `${words[count] ?? count} ${needed} before we can publish`
-      : 'Changes needed before we can publish';
-  }
-
-  protected readonly day = dayLabel;
-
-  protected submittedWords(business: MyBusiness): string {
-    return business.subtitle.split('submitted ')[1] ?? 'recently';
-  }
-
-  /** The three steps to live and where the listing stands in them. */
-  protected steps(
-    business: MyBusiness,
-  ): { title: string; meta: string; state: TimelineStepState }[] {
-    const state = business.state;
-    const reviewNote =
-      state === 'changes-requested'
-        ? 'Changes requested'
-        : state === 'declined'
-          ? 'Declined'
-          : 'Within two business days';
-    return [
-      {
-        title: 'Listing submitted',
-        meta: this.submittedWords(business),
-        state: 'complete',
-      },
-      { title: 'Review by Jubilee', meta: reviewNote, state: 'current' },
-      { title: 'Live on Jubilee', meta: '', state: 'upcoming' },
-    ];
-  }
-
   protected awayDay(until: string): string {
     return dayLabel(until);
   }
@@ -295,21 +249,13 @@ export class MyBusinessPage implements OnInit {
     this.resuming.set(true);
     this.resumeFailed.set(false);
     this.api.resume().subscribe({
-      next: (result) => {
+      next: () => {
         this.resuming.set(false);
-        this.toasts.show(
-          result.needsReview
-            ? {
-                tone: 'info',
-                title: 'Back in the verification queue',
-                text: 'It was paused for a year, so we check it again before it’s public.',
-              }
-            : {
-                tone: 'success',
-                title: 'Listing resumed',
-                text: 'Members can find you again within a minute.',
-              },
-        );
+        this.toasts.show({
+          tone: 'success',
+          title: 'Listing resumed',
+          text: 'Members can find you again within a minute.',
+        });
         this.fetch();
       },
       error: () => {

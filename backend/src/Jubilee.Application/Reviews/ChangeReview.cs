@@ -27,7 +27,7 @@ internal static class ReviewLookup
     private static NotFoundException NotFound() => new(NotFoundCode, "There is no such review.");
 }
 
-/// <summary>The author changes their review; the reply stays and nobody is told (L2-232 AC3, AC7, L2-234 AC4).</summary>
+/// <summary>The author changes their review; the reply stays and nobody is told (L2-233 AC3, AC7, L2-235 AC4).</summary>
 public sealed record EditReviewCommand(Guid Id, string Subject, int? Rating, Guid? ItemId, string? Text) : IRequest<ReviewDto>;
 
 public sealed class EditReviewCommandHandler(IAppDbContext db, TimeProvider clock, IDirectoryReadCache cache) : IRequestHandler<EditReviewCommand, ReviewDto>
@@ -49,7 +49,7 @@ public sealed class EditReviewCommandHandler(IAppDbContext db, TimeProvider cloc
     }
 }
 
-/// <summary>The author removes their review, with its reply and its reports (L2-232 AC5).</summary>
+/// <summary>The author removes their review, with its reply and its reports (L2-233 AC5).</summary>
 public sealed record RemoveReviewCommand(Guid Id, string Subject) : IRequest;
 
 public sealed class RemoveReviewCommandHandler(IAppDbContext db, IDirectoryReadCache cache) : IRequestHandler<RemoveReviewCommand>
@@ -65,14 +65,14 @@ public sealed class RemoveReviewCommandHandler(IAppDbContext db, IDirectoryReadC
     }
 }
 
-/// <summary>The owner's one public reply; the first tells the author, a change tells nobody (L2-233, L2-234 AC2).</summary>
+/// <summary>The owner's one public reply; the first tells the author, a change tells nobody (L2-234, L2-235 AC2).</summary>
 public sealed record ReplyToReviewCommand(Guid Id, string Subject, string? Text) : IRequest<ReviewDto>;
 
 public sealed class ReplyToReviewCommandHandler(IAppDbContext db, TimeProvider clock, AccountSettings settings) : IRequestHandler<ReplyToReviewCommand, ReviewDto>
 {
     public const string NotOwnerCode = "NOT_OWNER";
 
-    /// <summary>How much of the reply the author's notification carries (L2-234 AC2).</summary>
+    /// <summary>How much of the reply the author's notification carries (L2-235 AC2).</summary>
     public const int NoticeLength = 120;
 
     public async Task<ReviewDto> Handle(ReplyToReviewCommand request, CancellationToken cancellationToken)

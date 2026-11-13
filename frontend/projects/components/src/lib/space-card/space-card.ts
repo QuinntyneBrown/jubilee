@@ -14,7 +14,7 @@ export interface SpaceCardView {
   neighbourhood: string;
   available: string;
   coverPhoto?: string | null;
-  /** The average and count from three reviews; absent below three (L2-230). */
+  /** The average and count from three reviews; absent below three (L2-231). */
   rating?: { average: number; count: number } | null;
 }
 

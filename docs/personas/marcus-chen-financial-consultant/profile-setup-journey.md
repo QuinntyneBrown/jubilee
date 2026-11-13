@@ -34,7 +34,7 @@ everything once, at 7:00 a.m., than be interrupted in a client meeting.
 Then, in My business under Listing:
 
 - **Photos:** two. One of his office, one of him at his desk. He has no "products or work" to
-  photograph and wonders what the verification team expects of an adviser.
+  photograph and wonders what members expect to see of an adviser.
 - **About:** "I'm Marcus Chen. I worked in a bank for fourteen years and have advised families
   independently since 2017. I am a licensed life insurance agent in Ontario and a mutual fund
   representative; ask me for my licence numbers and check them with the regulators before we
@@ -49,7 +49,8 @@ Then, in My business under Listing:
 
 - **"Free".** Three of his services cost the client nothing, and he is paid by commission if they
   buy. "Free" is true and could still mislead, so he explains how he is paid in the About text.
-  The checklist line "Tagline and description are honest and clear" is the one he writes for.
+  The promise he made when he listed, to deal honestly with every customer, is the one he writes
+  for.
 - **Licences.** He finds no field in the editor for a licence or a designation. He puts them in
   the About text, where they read as a claim and not as something checked.
 - **"No pressure" in the one line.** Compliance questioned it. He kept it because it is a
@@ -61,7 +62,7 @@ Then, in My business under Listing:
 
 ## What the profile cannot say
 
-- His licences and designations as labelled facts the verification team has seen.
+- His licences and designations as labelled facts a member can check against the public register.
 - The disclosures his profession requires, in a place of their own that a member cannot miss.
 - That he will not discuss business at church, and that members of his own congregation are
   welcome to see someone else.

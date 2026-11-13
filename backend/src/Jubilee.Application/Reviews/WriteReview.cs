@@ -13,10 +13,10 @@ public sealed record ReviewFormListingDto(string Slug, string Name, string Kind,
 
 public sealed record ReviewItemOptionDto(Guid Id, string Name);
 
-/// <summary>What the Write a review screen needs (L2-237 AC2): <c>ItemLegend</c> is null when nothing is chosen.</summary>
+/// <summary>What the Write a review screen needs (L2-238 AC2): <c>ItemLegend</c> is null when nothing is chosen.</summary>
 public sealed record ReviewFormDto(ReviewFormListingDto Listing, IReadOnlyList<ReviewItemOptionDto> Items, string? ItemLegend, string AuthorName);
 
-/// <summary>What a review may be about (L2-226 AC3).</summary>
+/// <summary>What a review may be about (L2-227 AC3).</summary>
 public sealed record ReviewItems(IReadOnlyList<ReviewItemOptionDto> Options, string? Legend, ReviewItem? Only)
 {
     public const string ServiceLegend = "service";
@@ -68,7 +68,7 @@ public sealed record ReviewItems(IReadOnlyList<ReviewItemOptionDto> Options, str
     }
 }
 
-/// <summary>The form of a new review, for a member who may write one (L2-237 AC2).</summary>
+/// <summary>The form of a new review, for a member who may write one (L2-238 AC2).</summary>
 public sealed record GetReviewFormQuery(string Slug, string Subject, string MemberName) : IRequest<ReviewFormDto>;
 
 public sealed class GetReviewFormQueryHandler(IAppDbContext db) : IRequestHandler<GetReviewFormQuery, ReviewFormDto>
@@ -88,14 +88,14 @@ public sealed class GetReviewFormQueryHandler(IAppDbContext db) : IRequestHandle
     }
 }
 
-/// <summary>An eligible member posts a review (L2-227, L2-237 AC3, AC4, AC6).</summary>
+/// <summary>An eligible member posts a review (L2-228, L2-238 AC3, AC4, AC6).</summary>
 public sealed record WriteReviewCommand(string Slug, string Subject, string MemberName, int? Rating, Guid? ItemId, string? Text, string? IdempotencyKey)
     : IRequest<ReviewDto>;
 
 public sealed class WriteReviewCommandHandler(IAppDbContext db, TimeProvider clock, IDirectoryReadCache cache, AccountSettings settings)
     : IRequestHandler<WriteReviewCommand, ReviewDto>
 {
-    /// <summary>New reviews one member may post in a day (L2-237 AC6).</summary>
+    /// <summary>New reviews one member may post in a day (L2-238 AC6).</summary>
     public const int PerDay = 5;
 
     public async Task<ReviewDto> Handle(WriteReviewCommand request, CancellationToken cancellationToken)
@@ -131,7 +131,7 @@ public sealed class WriteReviewCommandHandler(IAppDbContext db, TimeProvider clo
     }
 }
 
-/// <summary>What members are told of reviews, in the app and by e-mail under "Request updates" (L2-234, ADR 0058).</summary>
+/// <summary>What members are told of reviews, in the app and by e-mail under "Request updates" (L2-235, ADR 0066).</summary>
 public static class ReviewNotices
 {
     public const string Kind = "review";

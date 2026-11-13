@@ -2,7 +2,7 @@
 
 ## Overview
 
-Jubilee is Toronto's Christian marketplace: a directory of verified
+Jubilee is Toronto's Christian marketplace: a directory of
 Christian-owned businesses that members browse, message and send requests to.
 Most visits arrive on mid-range phones over mobile networks, so each page shall
 load and respond within fixed limits. This feature is the set of frontend,
@@ -54,9 +54,9 @@ The slice runs from the build pipeline through the browser to the
   `<TO SUPPLY>`. It also asserts that no owner workspace or admin chunk is part
   of the initial bundle.
 - **`app.routes.ts`** — Angular router configuration. Routes beyond the first
-  are lazy-loaded: the owner workspace under `/my-business` and the admin area
-  under `/admin` each load through `loadChildren`, guarded by `OwnerGuard` and
-  `VerifierGuard`.
+  are lazy-loaded: the owner workspace under `/my-business` loads through
+  `loadChildren`, guarded by `OwnerGuard`. The staff screens are not in the app
+  but in the admin application (`admin/run-admin-application`).
 - **`Jubilee service worker`** — Angular service worker. Its `ngsw-config.json`
   declares the app shell as a prefetched asset group, so a repeat visit serves
   the shell from cache and first content renders in under `1 s`.

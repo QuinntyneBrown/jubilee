@@ -14,6 +14,8 @@ export interface FakeMemberRequest {
   businessSlug: string;
   detail: string | null;
   sentAt: string;
+  /** When a confirmed booking starts; the meeting step carries it (L2-047). */
+  startsAt?: string;
   status: Status;
   previous: Status;
   details: { label: string; value: string }[];
@@ -34,12 +36,24 @@ export interface FakeMemberRequests {
   detail: 'ok' | 'fails' | 'missing';
   cancel: 'ok' | 'fails' | 'conflict';
   undo: 'ok' | 'fails';
+  /**
+   * The event stream (L2-070): `ok` answers with what arrived since the browser last asked and is asked
+   * again soon, as a stream that stays up; `down` refuses every attempt to connect.
+   */
+  stream: 'ok' | 'down';
   requests: FakeMemberRequest[];
   listRequests: string[];
+  /** Every read of one request, by id. */
+  detailRequests: string[];
   cancels: string[];
   undos: string[];
-  /** Changes a request's status, as if the owner had answered it. */
+  /**
+   * Changes a request's status, as if the owner had answered it. A confirm, decline or fulfil tells the
+   * member down the stream, as the API does; a cancel is the member's own and tells them nothing.
+   */
   answer: (id: string, status: Status) => void;
+  /** The owner takes back a confirmation: the request is new again and the member's unread notification goes. */
+  takeBack: (id: string) => void;
 }
 
 export const joanna = {
@@ -47,7 +61,7 @@ export const joanna = {
   firstName: 'Joanna',
   displayName: 'Joanna Adeyemi',
   initials: 'JA',
-  isVerifier: false,
+  isModerator: false,
 };
 
 const problem = (status: number, body: object) => ({
@@ -92,6 +106,7 @@ export function seedRequests(): FakeMemberRequest[] {
       businessSlug: 'legacy-financial',
       detail: 'Thu 12 Nov, 10:00 a.m. · Video',
       sentAt: '2026-11-09T20:40:00-05:00',
+      startsAt: '2026-11-12T10:00:00-05:00',
       status: 'confirmed',
       previous: 'new',
       details: [
@@ -217,7 +232,8 @@ function timeline(r: FakeMemberRequest) {
     steps.push({ title: 'Meeting', meta: null, at: null, state: 'upcoming' });
   } else if (r.status === 'confirmed') {
     steps.push({ title: `${r.business} confirmed`, meta: null, at: r.sentAt, state: 'complete' });
-    steps.push({ title: 'Meeting', meta: null, at: null, state: 'current' });
+    // As the API does, the meeting step of a confirmed booking carries when it starts.
+    steps.push({ title: 'Meeting', meta: null, at: r.startsAt ?? null, state: 'current' });
     steps.push({ title: 'Completed', meta: null, at: null, state: 'upcoming' });
   } else if (r.status === 'declined') {
     steps.push({ title: `${r.business} declined`, meta: null, at: r.sentAt, state: 'stopped' });
@@ -234,38 +250,85 @@ export async function stubMemberRequests(
   initial: Partial<FakeMemberRequests> = {},
   member = joanna,
 ): Promise<FakeMemberRequests> {
+  let ticks = 2_000;
+  const events: { id: string; requestId: string; item: object }[] = [];
+  const NOUN = { booking: 'booking', quote: 'quote request', order: 'order', space: 'request' };
+  const TOLD: Partial<Record<Status, (business: string, noun: string) => string>> = {
+    confirmed: (business, noun) => `${business} confirmed your ${noun}`,
+    declined: (business, noun) => `${business} declined your ${noun}`,
+    completed: (business, noun) => `${business} marked your ${noun} fulfilled`,
+  };
   const fake: FakeMemberRequests = {
     list: 'ok',
     detail: 'ok',
     cancel: 'ok',
     undo: 'ok',
+    stream: 'ok',
     requests: seedRequests(),
     listRequests: [],
+    detailRequests: [],
     cancels: [],
     undos: [],
     answer: (id, status) => {
       const request = fake.requests.find((r) => r.id === id);
-      if (request) {
-        request.previous = request.status;
-        request.status = status;
-      }
+      if (!request) return;
+      request.previous = request.status;
+      request.status = status;
+      const told = TOLD[status];
+      if (!told) return;
+      ticks += 1;
+      events.push({
+        id: String(ticks),
+        requestId: id,
+        item: {
+          id: `c4000000-0000-4000-8000-0000000${ticks}`,
+          kind: 'request',
+          title: told(request.business, NOUN[request.kind]),
+          detail: request.title,
+          target: `/requests/${id}`,
+          at: '2026-11-10T10:00:00-05:00',
+          read: false,
+        },
+      });
+    },
+    takeBack: (id) => {
+      const request = fake.requests.find((r) => r.id === id);
+      if (!request) return;
+      request.status = 'new';
+      request.previous = 'new';
+      const told = events.findIndex((entry) => entry.requestId === id);
+      if (told >= 0) events.splice(told, 1);
     },
     ...initial,
   };
 
+  const navigation = () => ({
+    unreadConversationCount: 0,
+    unreadNotificationCount: events.length,
+    newRequestCount: 0,
+    ownsListing: false,
+    isModerator: false,
+  });
+
   await page.route('**/api/session', (r) => r.fulfill({ json: member }));
-  await page.route('**/api/me/navigation', (r) =>
-    r.fulfill({
-      json: {
-        unreadConversationCount: 0,
-        unreadNotificationCount: 0,
-        newRequestCount: 0,
-        ownsListing: false,
-        isVerifier: false,
-        verificationCount: 0,
-      },
-    }),
-  );
+  await page.route('**/api/me/navigation', (r) => r.fulfill({ json: navigation() }));
+
+  // The stream is asked again soon after every answer, as a browser does, and says what it last received.
+  await page.route('**/api/events', (route: Route) => {
+    if (fake.stream === 'down') return route.abort('connectionrefused');
+    const last = route.request().headers()['last-event-id'];
+    const frames = events
+      .filter((entry) => last === undefined || Number(entry.id) > Number(last))
+      .map(
+        (entry) => `id: ${entry.id}\nevent: notification\ndata: ${JSON.stringify(entry.item)}\n\n`,
+      )
+      .join('');
+    return route.fulfill({
+      status: 200,
+      contentType: 'text/event-stream',
+      body: `: connected\nretry: 300\n\n${frames}event: counts\ndata: ${JSON.stringify(navigation())}\n\n`,
+    });
+  });
 
   const decision = (r: FakeMemberRequest) => ({
     id: r.id,
@@ -282,6 +345,7 @@ export async function stubMemberRequests(
     const [id, action, sub] = parts;
     const found = fake.requests.find((r) => r.id === id);
     if (!action) {
+      fake.detailRequests.push(id);
       if (fake.detail === 'fails') return route.fulfill(problem(503, { reference: 'JB-REQ-502' }));
       if (fake.detail === 'missing' || !found) return route.fulfill(problem(404, {}));
       return route.fulfill({

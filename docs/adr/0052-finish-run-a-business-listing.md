@@ -1,6 +1,6 @@
 # 0052. Finish running a business listing
 
-Status: accepted
+Status: accepted. The re-check e-mail and notice are superseded by ADR 0057, 12 November 2026: Jubilee ships without verification; a listing goes live when its owner publishes it, there is no Verified mark, and the verification team is the Jubilee team (`moderator` role).
 
 ## Context
 

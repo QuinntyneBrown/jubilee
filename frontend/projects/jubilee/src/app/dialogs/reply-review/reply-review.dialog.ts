@@ -38,7 +38,7 @@ const MESSAGES: Record<string, string> = {
 };
 
 /**
- * ReplyReviewDialog (L2-233): the owner posts one public reply to a review, or edits the one they
+ * ReplyReviewDialog (L2-234): the owner posts one public reply to a review, or edits the one they
  * posted. The review stands above the field; a failure keeps what was typed (L2-128).
  */
 @Component({

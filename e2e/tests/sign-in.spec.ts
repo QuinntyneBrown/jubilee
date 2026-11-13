@@ -2,7 +2,7 @@ import type { Page } from '@playwright/test';
 import { joanna } from '../fixtures/cast';
 import { expect, test } from '../fixtures/jb-test';
 import { AccountMenuDialog } from '../pages/account-menu.dialog';
-import { refuseAsExpired } from '../fixtures/session';
+import { refuseAsExpired, stubStarting } from '../fixtures/session';
 import { SearchPage } from '../pages/search.page';
 import { ProductPage } from '../pages/product.page';
 import {
@@ -479,6 +479,28 @@ test.describe('continue with Google: off, cancelled or refused (L2-003)', () => 
     await expect(signIn.divider).toHaveCount(0);
   });
 
+  test('AC9: a page opened while Jubilee is starting shows the Google button once Jubilee answers', async ({
+    page,
+    jb,
+  }) => {
+    // The session is asked for again after 200 ms here, not 5 seconds.
+    await page.addInitScript(() => {
+      Object.assign((globalThis as { __jbTimings?: object }).__jbTimings ?? {}, { backoff: [200] });
+    });
+    const jubilee = await stubStarting(page);
+    const signIn = new SignInPage(page);
+    await jb.goto('/sign-in');
+    await expect(signIn.signIn).toBeVisible();
+    await expect(signIn.google).toHaveCount(0);
+    await signIn.email.fill('joanna.adeyemi@example.com');
+
+    await jubilee.ready();
+
+    await expect(signIn.google).toBeVisible();
+    await expect(signIn.divider).toHaveText('or use email');
+    await expect(signIn.email).toHaveValue('joanna.adeyemi@example.com');
+  });
+
   test('AC6: a visitor who cancelled at Google is told so calmly and keeps their place', async ({
     page,
     jb,
@@ -625,8 +647,8 @@ test.describe('several calls refused for one ended session (L2-116 AC2)', () => 
     await jb.signInAs('member');
     await jb.goto('/');
     await expect.poll(() => expired.dataPage()).toBe('browse');
-    // The account page reads the profile and the data download together; both are refused, the
-    // second a moment after the page has already opened.
+    // The account page reads the profile, where the member is signed in and the data download
+    // together; all three are refused, the later ones after the page has already opened.
     const refused = await refuseAsExpired(page, /\/api\/account(\/.*)?$/, 400);
     const opened: string[] = [];
     page.on('framenavigated', (frame) => {
@@ -638,7 +660,7 @@ test.describe('several calls refused for one ended session (L2-116 AC2)', () => 
     await new AccountMenuDialog(page).item('Your account').click();
 
     await expect.poll(() => expired.dataPage()).toBe('session-expired');
-    await expect.poll(() => refused.answered).toBe(2);
+    await expect.poll(() => refused.answered).toBe(3);
     await expect(expired.signIn).toHaveAttribute('href', '/sign-in?returnUrl=%2Faccount');
     expect(opened).toEqual(['?returnUrl=%2Faccount']);
     // Going back leaves the page in one step: it was put in the history once.

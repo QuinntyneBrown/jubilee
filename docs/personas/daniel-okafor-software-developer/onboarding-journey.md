@@ -13,8 +13,8 @@ the link on his phone on the streetcar home.
 
 | Step | What Daniel does | What Jubilee shows | What Daniel thinks or feels |
 |---|---|---|---|
-| 1 | Opens the shared link as a Visitor | The listing page: "Verified Christian business · Financial & insurance", the services with prices, "Book a meeting" and "Message" | "No sign-up wall. Good." He reads the services before anything else |
-| 2 | Presses the "Verified Christian business" label | The Help answer to "How does a business get verified?" | He wanted to know what was checked. The answer is plain, though shorter than he hoped |
+| 1 | Opens the shared link as a Visitor | The listing page: "Financial & insurance", the services with prices, "Book a meeting" and "Message" | "No sign-up wall. Good." He reads the services before anything else |
+| 2 | Opens Help from the footer | The Help answer to "How does Jubilee keep listings honest?" | He wanted to know who stands behind a listing. Owners agree to deal honestly and the Jubilee team takes down listings that misrepresent a business. Plain, shorter than he hoped, and it does not pretend to more |
 | 3 | Presses "Book a meeting" | The sign-in prompt, with "Sign in" and "Join free" | Expected. He presses "Join free" |
 | 4 | Chooses "Sign up with Google" on `/join` | "Join Jubilee", "Free for everyone in Toronto’s Christian community.", the Google button first, then "or use email" | One tap. No password to invent, no e-mail to confirm |
 | 5 | Reads and accepts the agreement | The statement of faith and terms agreement, shown before the account can be used | He opens the statement of faith and reads all of it. He agrees with it, and is glad it was not hidden behind a pre-ticked box |
@@ -32,5 +32,6 @@ already used, four minutes after opening a link.
 - If Google sign-in were not offered, Daniel would have closed the tab at step 4 and e-mailed the
   accountant from her website. He does not create passwords for things he has not yet used.
 - If the booking dialog had not reopened at step 6, he would have assumed the request was lost.
-- If the Help answer on verification were vague, he would have treated "Verified" as decoration.
+- If the Help answer on how listings stay honest were vague, he would have treated every listing as an
+  advert.
 - If the accountant had taken three days to answer, the church group chat would have heard.

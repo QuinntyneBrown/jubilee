@@ -18,7 +18,7 @@ test.describe('statement of faith (L2-107)', () => {
     await expect(policy.sectionHeadings).toHaveText([
       'What we believe',
       'How we do business',
-      'How a listing is verified',
+      'How listings stay honest',
     ]);
     await expect(policy.bullets).toHaveCount(4);
     await expect(policy.link('Help')).toHaveAttribute('href', '/help');
@@ -97,7 +97,7 @@ test.describe('help (L2-110)', () => {
 
     await expect(help.title).toHaveText('Help');
     await expect(help.questions).toHaveText([
-      'How does a business get verified?',
+      'How does Jubilee keep listings honest?',
       'Does Jubilee take payment?',
       'Is it free?',
       'Who can see my messages?',
@@ -135,7 +135,7 @@ test.describe('help (L2-110)', () => {
       'true',
     );
     await expect(help.answer('How do I report a listing?')).toContainText('Reports are private');
-    await expect(help.question('How does a business get verified?')).toHaveAttribute(
+    await expect(help.question('How does Jubilee keep listings honest?')).toHaveAttribute(
       'aria-expanded',
       'false',
     );

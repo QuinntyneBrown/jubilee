@@ -109,7 +109,7 @@ test.describe('moment check-ins (L2-211)', () => {
     ]);
   });
 
-  test('AC2: after a listing is submitted the question is about listing', async ({ page, jb }) => {
+  test('AC2: after a listing is published the question is about listing', async ({ page, jb }) => {
     const list = new ListBusinessPage(page);
     const check = new MomentCheck(page);
     await list.setWidth(1280);
@@ -118,8 +118,8 @@ test.describe('moment check-ins (L2-211)', () => {
     const fake = await stubFeedback(page);
     await jb.goto('/list');
     await list.fillValid();
-    await list.submit.click();
-    await expect(list.doneHeading).toHaveText('Luzandre.com is in for verification');
+    await list.publish.click();
+    await expect(list.doneHeading).toHaveText('Luzandre.com is live');
 
     await expect(check.question).toHaveText('How easy was it to list your business?');
     await expect(check.scores).toHaveAccessibleName(

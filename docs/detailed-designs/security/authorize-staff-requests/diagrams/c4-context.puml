@@ -3,7 +3,7 @@
 LAYOUT_WITH_LEGEND()
 title System Context — Authorize staff requests
 
-Person(staff, "Staff member", "Verifier or administrator on an allowed network")
+Person(staff, "Staff member", "Moderator or administrator on an allowed network")
 Person(member, "Member", "Signed in to the app")
 System(jubilee, "Jubilee", "Toronto's Christian marketplace")
 Rel(staff, jubilee, "Calls /api/admin/* with a staff session", "HTTPS")

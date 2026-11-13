@@ -18,7 +18,7 @@ Ten scenes of three bars each at 90 BPM (1 bar = 2.67 s, 1 scene = 8.0 s).
 | # | Scene | In | Out | Picture | On screen |
 |---|---|---|---|---|---|
 | 01 | Toronto | 0:00 | 0:08 | `toronto-dusk` full bleed, slow push | Who can we trust? |
-| 02 | Vouched for | 0:08 | 0:16 | `vouch` with `owner`, `plumbing`, `roofing`, `law` tiles; the seal stamps | Christian-owned. Vouched for. |
+| 02 | Dealing honestly | 0:08 | 0:16 | `vouch` with `owner`, `plumbing`, `roofing`, `law` tiles; the seal stamps | Christian-owned. Dealing honestly. |
 | 03 | Find, message, book | 0:16 | 0:24 | `flowers`, `film-still`, `advisor` as three full-height panels | Find · Message · Book · Pay the business directly |
 | 04 | Launch | 0:24 | 0:32 | `sunday` full bleed | Beta · Feb 1 · 200 founding businesses · April 6, 2027 |
 | 05 | How businesses pay | 0:32 | 0:40 | `mug`, `owner`, `roofing` as three panels | Basic Free · Plus $29 · Pro $79 · Founding businesses: Plus free |

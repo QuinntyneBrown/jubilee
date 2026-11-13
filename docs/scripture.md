@@ -122,13 +122,12 @@ family. Jubilee speaks of freedom and of community, and of Jesus as the one who 
 
 ## How Jubilee does business
 
-These passages ground how the platform behaves: verification, honest listings, plain prices and
-plain words.
+These passages ground how the platform behaves: honest listings, plain prices and plain words.
 
 | Passage | Text (WEB) | What it asks of the platform |
 |---|---|---|
 | Proverbs 11:1 | "A false balance is an abomination to Yahweh, but accurate weights are his delight." | Honest measures. Listings, prices, counts and claims are accurate, including Jubilee's own. |
-| Proverbs 22:1 | "A good name is more desirable than great riches, and loving favor is better than silver and gold." | Why every business is verified: a good name is worth protecting. |
+| Proverbs 22:1 | "A good name is more desirable than great riches, and loving favor is better than silver and gold." | A good name is worth protecting, a business's and Jubilee's. Every owner agrees to deal honestly with every customer, and the Jubilee team takes down listings that misrepresent a business. Jubilee never calls a business verified: a mark that promises a check nobody made would not be honest (Proverbs 11:1). |
 | Matthew 5:37 | "But let your 'Yes' be 'Yes' and your 'No' be 'No.' Whatever is more than these is of the evil one." | Plain speech. A business confirms or declines; Jubilee does not hedge, hype or hide terms. |
 | Matthew 5:16 | "Even so, let your light shine before men; that they may see your good works, and glorify your Father who is in heaven." | Good work done in the open points to the Father, not to the business or to Jubilee. |
 | John 13:35 | "By this everyone will know that you are my disciples, if you have love for one another." | How members and businesses treat one another is the witness. |
@@ -155,6 +154,9 @@ Scripture gives cautions beside its promises. They bind every line of copy.
   pay as its reason.
 - **Never speak against those outside.** Galatians 6:10 says "toward all men" before it says
   "especially".
+- **Never claim a check nobody made.** Jubilee does not call a business verified, approved or
+  vetted. Owners agree to the statement of faith and to deal honestly, and the Jubilee team takes
+  down listings that misrepresent a business; Jubilee says that and no more (Proverbs 11:1).
 - **Never measure faith by wealth.** A small business run faithfully has heard "well done"
   (Matthew 25:21) as surely as a large one.
 

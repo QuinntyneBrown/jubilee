@@ -1,0 +1,67 @@
+WEBVTT
+
+00:00:00.650 --> 00:00:03.752
+Journey twenty: manage profile and settings.
+
+00:00:03.752 --> 00:00:08.757
+A member edits their profile, changes their e-mail or password, chooses
+
+00:00:08.757 --> 00:00:12.986
+which e-mails arrive, and now sees where they are signed in.
+
+00:00:13.862 --> 00:00:18.644
+Your account holds the profile. The home church address is shown to no
+
+00:00:18.644 --> 00:00:23.358
+one, and pronouns are used only in what the Jubilee team writes about
+
+00:00:23.358 --> 00:00:24.110
+the member.
+
+00:00:24.816 --> 00:00:27.786
+New in this run: Where you're signed in.
+
+00:00:27.786 --> 00:00:32.687
+This device comes first. Every other device shows its browser, the
+
+00:00:32.687 --> 00:00:37.736
+network it came from with the last part hidden, and when it was last
+
+00:00:37.736 --> 00:00:38.256
+active.
+
+00:00:38.958 --> 00:00:42.193
+Sign out ends that one device at once.
+
+00:00:42.193 --> 00:00:46.110
+The row goes, and this device stays signed in.
+
+00:00:47.446 --> 00:00:52.250
+In the admin application, the Jubilee team sees the owner's pronouns
+
+00:00:52.250 --> 00:00:56.488
+beside their name, so the team words what it writes rightly.
+
+00:00:56.488 --> 00:00:59.950
+No business, member or public page is given them.
+
+00:01:01.010 --> 00:01:05.245
+Behind the screen, the tests prove that each password and e-mail change
+
+00:01:05.245 --> 00:01:09.362
+is logged with the member, the address and the outcome, a refused one
+
+00:01:09.362 --> 00:01:13.299
+too; that another member's session is not found and the attempt is
+
+00:01:13.299 --> 00:01:17.117
+logged; and that no other reader is given the home church or its
+
+00:01:17.117 --> 00:01:17.594
+address.
+
+00:01:18.463 --> 00:01:23.420
+Journey twenty is complete. The daily summary and promotional e-mail it
+
+00:01:23.420 --> 00:01:26.911
+once waited for were built with journey seventeen.

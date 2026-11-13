@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
 import { Stars } from '../stars/stars';
 
 /**
- * The rating under a listing's name (L2-228 AC1): the stars, the average and "{n} reviews", one
+ * The rating under a listing's name (L2-229 AC1): the stars, the average and "{n} reviews", one
  * link to the Reviews section; with no reviews, the plain line "No reviews yet".
  *
  *     <a jb-rating-link [average]="4.6" [count]="5" routerLink="." fragment="reviews"></a>

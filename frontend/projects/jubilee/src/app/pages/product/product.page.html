@@ -45,6 +45,12 @@
           [tint]="product.tile.tint"
           [icon]="product.tile.icon"
           [tag]="product.soldOut ? 'Sold out' : ''"
+          [photoKey]="product.photo?.key ?? null"
+          [photoAlt]="product.photo?.alt ?? ''"
+          [photoWidth]="product.photo?.width ?? null"
+          [photoHeight]="product.photo?.height ?? null"
+          sizes="(min-width: 64rem) 36rem, 100vw"
+          priority
         ></div>
       </div>
       <div jb-detail-head>
@@ -87,9 +93,6 @@
         </p>
         <p jb-detail-head-kicker>
           Sold by <a [routerLink]="['/b', product.shop.slug]">{{ product.shop.name }}</a>
-          @if (product.shop.verified) {
-            <svg jb-icon name="verified"></svg>Verified
-          }
         </p>
         @if (requestView(); as view) {
           <jb-product-request-form

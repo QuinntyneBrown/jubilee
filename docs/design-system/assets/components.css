@@ -115,7 +115,7 @@ hr, .divider { border: 0; border-top: var(--border-width-hairline) solid var(--c
 .btn--sm { min-height: var(--control-height-sm); padding-inline: var(--space-3); font-size: var(--font-size-sm); }
 .btn--lg { min-height: var(--control-height-lg); padding-inline: var(--space-6); font-size: var(--font-size-lg); }
 .btn--block { display: flex; width: 100%; }
-/* Full width on a phone, its own width from 640px (a form's one submit, L2-226 AC7). */
+/* Full width on a phone, its own width from 640px (a form's one submit, L2-227 AC7). */
 .btn--block-narrow { display: flex; width: 100%; }
 @media (min-width: 40rem) { .btn--block-narrow { display: inline-flex; width: auto; align-self: flex-start; } }
 .btn--icon { padding: 0; width: var(--control-height-md); flex: none; }
@@ -478,8 +478,6 @@ button.avatar { border: 0; padding: 0; cursor: pointer; }
 .price--lg { font-size: var(--font-size-2xl); }
 .price { font-weight: var(--font-weight-bold); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .perk { color: var(--color-success-fg); font-weight: var(--font-weight-semibold); }
-.verified { display: inline-flex; align-items: center; gap: var(--space-1); color: var(--color-fg-muted); }
-.verified .icon { width: var(--icon-size-sm); height: var(--icon-size-sm); color: var(--color-success-icon); }
 .back-link { display: inline-flex; align-items: center; gap: var(--space-2); min-height: var(--target-comfortable); font: var(--text-body-sm); color: var(--color-fg-muted); text-decoration: none; }
 .back-link:hover, .back-link[data-state="hover"] { color: var(--color-fg-default); text-decoration: underline; }
 .link--standalone { display: inline-flex; align-items: center; gap: var(--space-1); min-height: var(--target-min); font: var(--text-label); }
@@ -617,7 +615,6 @@ a[data-state="hover"] { color: var(--color-fg-link-hover); text-decoration-thick
 .dir-row:active, .dir-row[data-state="active"] { background: var(--color-bg-subtle-hover); }
 .dir-row__body { flex: 1; min-width: 0; }
 .dir-row__name { display: flex; align-items: center; gap: var(--space-2); font: var(--text-label); font-size: var(--font-size-md); }
-.dir-row__name .icon { width: var(--icon-size-sm); height: var(--icon-size-sm); color: var(--color-success-icon); }
 .dir-row__tagline { display: block; font: var(--text-body-sm); color: var(--color-fg-muted); }
 .dir-row > .icon { color: var(--color-fg-subtle); }
 .dir-more { display: inline-flex; align-items: center; min-height: var(--target-comfortable); font: var(--text-label); }
@@ -632,7 +629,6 @@ a[data-state="hover"] { color: var(--color-fg-link-hover); text-decoration-thick
 }
 .detail-head { display: flex; flex-direction: column; gap: var(--space-3); }
 .detail-head__kicker { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-1) var(--space-2); font: var(--text-body-sm); color: var(--color-fg-muted); }
-.detail-head__kicker .icon { width: var(--icon-size-sm); height: var(--icon-size-sm); color: var(--color-success-icon); }
 .detail-head__actions { display: flex; gap: var(--space-2); align-items: center; }
 .detail-head__actions .btn--primary { flex: 1; }
 .tag { display: inline-flex; align-items: center; padding: var(--space-1) var(--space-3); border: var(--border-width-hairline) solid var(--color-border-default); border-radius: var(--radius-md); background: var(--color-bg-surface); font: var(--text-body-sm); font-weight: var(--font-weight-medium); }
@@ -1062,8 +1058,6 @@ a[data-state="hover"] { color: var(--color-fg-link-hover); text-decoration-thick
 .host-card { display: flex; flex-direction: column; gap: var(--space-1); padding: var(--space-5); border: var(--border-width-hairline) solid var(--color-border-default); border-radius: var(--radius-xl); background: var(--color-bg-surface); }
 .host-card__label { font: var(--text-body-sm); color: var(--color-fg-muted); }
 .host-card__name { font: var(--text-h4); font-size: var(--font-size-lg); }
-.host-card__verified { display: inline-flex; align-items: center; gap: var(--space-1); font: var(--text-caption); color: var(--color-fg-muted); }
-.host-card__verified .icon { width: var(--icon-size-sm); height: var(--icon-size-sm); color: var(--color-success-icon); }
 .host-card__about { margin-top: var(--space-2); }
 
 /* Booking card: the rent, the minimum stay and the one thing to do. The request itself is a dialog. */
@@ -1089,7 +1083,7 @@ a[data-state="hover"] { color: var(--color-fg-link-hover); text-decoration-thick
 @media (max-width: 47.99rem) { body:has(.tabbar):has(.booking-bar) { padding-bottom: calc(var(--layout-tabbar-height) + var(--control-height-lg) + var(--space-6) + env(safe-area-inset-bottom)); } }
 
 /* ==========================================================================
-   Reviews (L1-031, L2-225 to L2-239, ADR 0058). One contiguous region per
+   Reviews (L1-031, L2-226 to L2-240, ADR 0066). One contiguous region per
    block, opened by "=== block: <name> ===" and closed by "=== end: <name> ===",
    so each can be lifted into its component's stylesheet whole. No block styles
    another: a block that holds stars holds a .stars, styled here once.
@@ -1133,7 +1127,7 @@ a.rating-link:hover .rating-link__count, a.rating-link[data-state="hover"] .rati
 
 /* === block: rating-summary === */
 /* The summary of a listing's reviews: the average large, its stars and the count; one bar for each
-   of 5 to 1 stars, each a toggle that filters the list (aria-pressed); and what "Verified" means. */
+   of 5 to 1 stars, each a toggle that filters the list (aria-pressed). */
 .rating-summary { display: flex; flex-direction: column; gap: var(--space-5); min-width: 0; }
 .rating-summary__score { display: flex; align-items: flex-end; gap: var(--space-3); }
 .rating-summary__average { margin: 0; font-family: var(--font-family-display); font-weight: var(--font-weight-bold); font-stretch: var(--font-stretch-wide); font-size: var(--font-size-5xl); line-height: 1; letter-spacing: var(--letter-spacing-tight); font-variant-numeric: tabular-nums; }
@@ -1150,13 +1144,11 @@ a.rating-link:hover .rating-link__count, a.rating-link[data-state="hover"] .rati
 .rating-summary__fill { display: block; height: 100%; border-radius: var(--radius-full); background: var(--color-accent); }
 .rating-summary__bar-count { flex: none; min-width: 2rem; text-align: right; color: var(--color-fg-muted); font-variant-numeric: tabular-nums; }
 .rating-summary__bar[aria-pressed="true"] .rating-summary__bar-count { color: var(--color-fg-default); font-weight: var(--font-weight-semibold); }
-.rating-summary__note { display: flex; gap: var(--space-2); align-items: flex-start; margin: 0; font: var(--text-body-sm); color: var(--color-fg-muted); }
-.rating-summary__note .icon { width: var(--icon-size-sm); height: var(--icon-size-sm); flex: none; margin-top: var(--space-0-5); color: var(--color-success-icon); }
 @media (forced-colors: active) { .rating-summary__fill { background: CanvasText; } .rating-summary__bar[aria-pressed="true"] { outline: var(--border-width-thick) solid Highlight; } }
 /* === end: rating-summary === */
 
 /* === block: review === */
-/* One review: the author's initials, name and date; the stars, the item and "Verified"; the text as
+/* One review: the author's initials, name and date; the stars and the item; the text as
    written; the actions of the viewer; and the owner's reply set off by a rule. .review--mine is the
    member's own review, on a tinted ground and labelled "Your review". */
 .review { display: flex; flex-direction: column; gap: var(--space-3); min-width: 0; }
@@ -1169,8 +1161,6 @@ a.rating-link:hover .rating-link__count, a.rating-link[data-state="hover"] .rati
 .review__meta { margin: 0; font: var(--text-body-sm); color: var(--color-fg-muted); }
 .review__rating { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-1) var(--space-3); font: var(--text-body-sm); }
 .review__item { color: var(--color-fg-default); overflow-wrap: anywhere; }
-.review__verified { display: inline-flex; align-items: center; gap: var(--space-1); font-weight: var(--font-weight-medium); color: var(--color-success-fg); }
-.review__verified .icon { width: var(--icon-size-sm); height: var(--icon-size-sm); }
 .review__text { margin: 0; max-width: 42rem; font: var(--text-body); white-space: pre-line; overflow-wrap: anywhere; }
 .review__actions { display: flex; flex-wrap: wrap; gap: var(--space-2); }
 .review__reply { display: flex; flex-direction: column; gap: var(--space-1); margin-top: var(--space-1); padding-left: var(--space-4); border-left: var(--border-width-thick) solid var(--color-border-strong); }

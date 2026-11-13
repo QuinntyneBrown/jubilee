@@ -49,6 +49,16 @@ export class IncomingRequestsPage extends ShellPage implements Screen {
     return this.main.getByRole('button', { name: `Decline request from ${customer}` });
   }
 
+  /** "Mark fulfilled" on a customer's confirmed order (L2-225). */
+  fulfilButton(customer: string): Locator {
+    return this.main.getByRole('button', { name: `Mark order from ${customer} fulfilled` });
+  }
+
+  /** Every "Mark fulfilled" on the page. */
+  get fulfilButtons(): Locator {
+    return this.main.getByRole('button', { name: /^Mark order from .* fulfilled$/ });
+  }
+
   /** Lets time pass with the page open and nothing done. */
   async idle(ms: number): Promise<void> {
     await this.page.waitForTimeout(ms);
@@ -60,5 +70,14 @@ export class IncomingRequestsPage extends ShellPage implements Screen {
 
   regions(): Region[] {
     return [...this.chromeRegions(), { name: 'main', locator: this.main }];
+  }
+}
+
+/** The Confirmed tab of `/my-business/requests`, where a confirmed order offers "Mark fulfilled" (L2-225). */
+export class IncomingConfirmedTab extends IncomingRequestsPage {
+  async ready(): Promise<void> {
+    await super.ready();
+    await this.statusTab(/^Confirmed/).click();
+    await this.fulfilButtons.first().waitFor();
   }
 }

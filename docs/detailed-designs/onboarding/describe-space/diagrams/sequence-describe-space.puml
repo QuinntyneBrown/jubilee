@@ -37,7 +37,7 @@ rules --> page : "Price per month", "Move-in date", "Minimum stay"
 page --> actor : "List a space", "Listing title", space fields, no Category (L2-198)
 actor -> page : Type the title, line and space fields
 page -> preview : Form values
-preview --> actor : "How renters see it" space card, "Pending verification" (L2-076)
+preview --> actor : "How renters see it" space card, "Not published yet" (L2-076)
 opt Member chooses another term
   actor -> page : Choose "Short stay"
   page -> rules : Labels for Short stay

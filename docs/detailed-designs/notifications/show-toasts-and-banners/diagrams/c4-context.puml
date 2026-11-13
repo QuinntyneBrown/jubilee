@@ -4,7 +4,7 @@ LAYOUT_WITH_LEGEND()
 title System Context — Show toasts and banners
 
 Person(member, "Member", "Sees toasts after actions and events and banners for lasting conditions")
-Person(owner, "Owner", "Sees listing verification and paused-listing banners")
+Person(owner, "Owner", "Sees paused-listing and listing-resumed banners")
 System(jubilee, "Jubilee", "Toronto's Christian marketplace")
 
 Rel(member, jubilee, "Receives toasts and banners from")

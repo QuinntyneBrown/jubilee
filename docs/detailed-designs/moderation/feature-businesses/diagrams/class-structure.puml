@@ -1,0 +1,66 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Feature businesses
+class FeaturedSlot {
+  +Guid Id
+  +Guid ListingId
+  +int Position
+  +DateOnly StartsOn
+  +{static} int DurationDays = 7
+  +{static} Create(listingId, position, startsOn): FeaturedSlot
+}
+class Listing {
+  +Guid Id
+  +string Name
+  +string Slug
+  +bool IsPaused
+  +bool IsUnderModerationHold
+  +DateTimeOffset? DeletedAt
+}
+class SetFeaturedWeekCommand {
+  +Reviewer Reviewer
+  +DateOnly StartDate
+  +IReadOnlyList<Guid>? ListingIds
+}
+class SetFeaturedWeekCommandHandler {
+  +{static} int MaxSlots = 5
+  +Handle(command): Task<FeaturedWeekDto>
+}
+class FeaturedSelector {
+  +SelectAsync(now, limit, cancellationToken): Task<IReadOnlyList<Listing>>
+}
+class GetWelcomeQueryHandler {
+  +{static} int FeaturedLimit = 4
+}
+class GetBrowseHomeQueryHandler {
+  +{static} int FeaturedLimit = 5
+}
+class FeaturedWeekDto {
+  +string StartDate
+  +string EndDate
+  +bool Active
+  +IReadOnlyList<FeaturedListingDto> Listings
+}
+class DirectoryCacheInvalidationInterceptor {
+  +SavedChangesAsync(...): ValueTask<int>
+}
+
+SetFeaturedWeekCommandHandler ..> SetFeaturedWeekCommand : handles
+SetFeaturedWeekCommandHandler --> FeaturedSlot : replaces
+SetFeaturedWeekCommandHandler --> FeaturedWeekDto : returns
+FeaturedSlot "*" --> "1" Listing
+GetWelcomeQueryHandler ..> FeaturedSelector
+GetBrowseHomeQueryHandler ..> FeaturedSelector
+FeaturedSelector ..> FeaturedSlot : reads current
+DirectoryCacheInvalidationInterceptor ..> FeaturedSlot : watches
+DirectoryCacheInvalidationInterceptor ..> Listing : watches
+@enduml

@@ -77,6 +77,8 @@ public sealed class OutageAwareDbContext(AppDbContext inner, DatabaseOutage outa
 
     public DbSet<ListingPhoto> ListingPhotos => Use(inner.ListingPhotos);
 
+    public DbSet<ProductPhoto> ProductPhotos => Use(inner.ProductPhotos);
+
     public DbSet<RecentSearch> RecentSearches => Use(inner.RecentSearches);
 
     public DbSet<Notification> Notifications => Use(inner.Notifications);
@@ -86,6 +88,8 @@ public sealed class OutageAwareDbContext(AppDbContext inner, DatabaseOutage outa
     public DbSet<LinkToken> LinkTokens => Use(inner.LinkTokens);
 
     public DbSet<PasswordResetRequest> PasswordResetRequests => Use(inner.PasswordResetRequests);
+
+    public DbSet<SecurityAlert> SecurityAlerts => Use(inner.SecurityAlerts);
 
     public DbSet<OutboxMessage> OutboxMessages => Use(inner.OutboxMessages);
 
@@ -108,10 +112,6 @@ public sealed class OutageAwareDbContext(AppDbContext inner, DatabaseOutage outa
     public DbSet<ListingSubmission> ListingSubmissions => Use(inner.ListingSubmissions);
 
     public DbSet<StatementAgreement> StatementAgreements => Use(inner.StatementAgreements);
-
-    public DbSet<ReviewTick> ReviewTicks => Use(inner.ReviewTicks);
-
-    public DbSet<ListingDecision> ListingDecisions => Use(inner.ListingDecisions);
 
     public DbSet<AuditRecord> AuditRecords => Use(inner.AuditRecords);
 

@@ -126,18 +126,18 @@
     <header class="ds-header">
       <p class="ds-kicker">Pattern</p>
       <h1>Notifications</h1>
-      <p class="ds-lead">Jubilee’s messages run on a request lifecycle: a member asks, a business confirms or declines, Jubilee verifies listings. Each change reaches the right person once, in the channel that fits how urgent and how lasting it is.</p>
+      <p class="ds-lead">Jubilee’s messages run on a request lifecycle: a member asks, a business confirms or declines, an owner publishes a listing and the Jubilee team takes down one that misrepresents a business. Each change reaches the right person once, in the channel that fits how urgent and how lasting it is.</p>
       <div class="ds-meta"><span class="ds-pill ds-pill--ok">WCAG 2.2 AA</span><span class="ds-pill">Pattern</span></div>
       <ul class="ds-toc"><li><a href="#overview">Overview</a></li><li><a href="#when">When to use</a></li><li><a href="#structure">Structure</a></li><li><a href="#states">States</a></li><li><a href="#responsive">Responsive behaviour</a></li><li><a href="#accessibility">Accessibility</a></li><li><a href="#content">Content</a></li><li><a href="#do-dont">Do and don't</a></li><li><a href="#sources">Sources</a></li></ul>
     </header>
     <section class="ds-section" id="overview"><h2><a href="#overview">Overview</a></h2>
-      <p>Five channels, from most fleeting to most lasting: the <a href="../components/toast.html">Toast</a> (a result or a live event, gone in 8 seconds), the <a href="../components/alert.html">banner</a> (<code>.alert.banner</code>, a condition that holds until it changes: offline, e-mail not confirmed, listing pending or paused), the inline <a href="../components/alert.html">Alert and banner</a> (a fact about this page: a decline reason, a draft saved), the <a href="../components/notification-item.html">notification centre</a> (the record of every event) and the count <a href="../components/badge.html">Badge</a> on the bell, Messages and Requests. E-mail mirrors the centre and is set in Notification settings.</p>
+      <p>Five channels, from most fleeting to most lasting: the <a href="../components/toast.html">Toast</a> (a result or a live event, gone in 8 seconds), the <a href="../components/alert.html">banner</a> (<code>.alert.banner</code>, a condition that holds until it changes: offline, e-mail not confirmed), the inline <a href="../components/alert.html">Alert and banner</a> (a fact about this page: a decline reason, a draft saved), the <a href="../components/notification-item.html">notification centre</a> (the record of every event) and the count <a href="../components/badge.html">Badge</a> on the bell, Messages and Requests. E-mail mirrors the centre and is set in Notification settings.</p>
       <h3>Events and where they go</h3>
       <div class="ds-table-wrap"><table class="ds-table"><thead><tr><th scope="col">Event</th><th scope="col">Who</th><th scope="col">Toast</th><th scope="col">Banner</th><th scope="col">Centre</th><th scope="col">Badge</th></tr></thead><tbody>
         <tr><td>Request confirmed / declined</td><td>Member</td><td>If on Jubilee</td><td>—</td><td>Yes</td><td>Bell</td></tr>
         <tr><td>New request</td><td>Business owner</td><td>If on Jubilee</td><td>—</td><td>Yes</td><td>Requests tab, bell</td></tr>
         <tr><td>New message</td><td>Both</td><td>If not in that conversation</td><td>—</td><td>Yes</td><td>Messages</td></tr>
-        <tr><td>Listing pending, changes requested, verified, paused</td><td>Owner</td><td>On the change</td><td>On My business until resolved</td><td>Yes</td><td>Bell</td></tr>
+        <tr><td>Listing taken down</td><td>Owner</td><td>On the change</td><td>—</td><td>Yes</td><td>Bell</td></tr>
         <tr><td>E-mail not confirmed</td><td>Member</td><td>—</td><td>Every page until confirmed</td><td>—</td><td>—</td></tr>
         <tr><td>Offline / back online / service down</td><td>Everyone</td><td>—</td><td>Top of page while true</td><td>—</td><td>—</td></tr>
         <tr><td>Saved, cancelled, product added</td><td>The actor</td><td>Yes, with Undo or View</td><td>—</td><td>—</td><td>—</td></tr>
@@ -146,8 +146,8 @@
     <section class="ds-section" id="when"><h2><a href="#when">When to use</a></h2>
       <ul>
         <li><b>Toast</b> when the event is timely but not lasting, and the member is already doing something else: "New message from Legacy Financial", "Request cancelled · Undo".</li>
-        <li><b>Banner</b> when a condition limits what the member can do across pages and lasts until something changes. It sits under the top bar, full width, and is dismissible only when the condition is informational (back online, verified and live).</li>
-        <li><b>Inline alert</b> when the fact belongs to the content of one page: the decline reason on the request, "We’re reviewing Luzandre.com" on My business.</li>
+        <li><b>Banner</b> when a condition limits what the member can do across pages and lasts until something changes. It sits under the top bar, full width, and is dismissible only when the condition is informational (back online, a listing just published).</li>
+        <li><b>Inline alert</b> when the fact belongs to the content of one page: the decline reason on the request, "This is how members see your listing" on the owner’s own listing.</li>
         <li><b>Notification centre</b> for every event a person might want to find again. Toasts and e-mail point here; nothing appears only in a toast.</li>
         <li><b>Never</b> a dialog for a notification. Dialogs are for decisions.</li>
       </ul>
@@ -187,26 +187,23 @@
   &lt;li&gt;&lt;a class="notif notif--unread" href="../../mocks/pages/conversation/default.html"&gt;&lt;span class="notif__icon" aria-hidden="true"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/&gt;&lt;/svg&gt;&lt;/span&gt;&lt;span class="notif__body"&gt;&lt;span class="notif__title" style="display: block;"&gt;&lt;span class="visually-hidden"&gt;Unread. &lt;/span&gt;New message from WaterWorks Plumbing &amp;amp; Drains&lt;/span&gt;&lt;span class="notif__meta" style="display: block;"&gt;“We can come Saturday morning for the kitchen drain.”&lt;/span&gt;&lt;span class="text-caption"&gt;Yesterday, 6:02 p.m.&lt;/span&gt;&lt;/span&gt;&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a class="notif" href="../../mocks/pages/request-detail/confirmed.html"&gt;&lt;span class="notif__icon" aria-hidden="true"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M4 19V5a2 2 0 0 1 2-2h12v18H6a2 2 0 0 1-2-2zM8 7h6"/&gt;&lt;/svg&gt;&lt;/span&gt;&lt;span class="notif__body"&gt;&lt;span class="notif__title" style="display: block;"&gt;Christian Bookstores confirmed your order&lt;/span&gt;&lt;span class="notif__meta" style="display: block;"&gt;Leather journaling Bible, ESV · pickup Fri 13 Nov&lt;/span&gt;&lt;span class="text-caption"&gt;Sat 7 Nov&lt;/span&gt;&lt;/span&gt;&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;</code></pre></details></div>
-      <h3>Banners for the verification flow</h3>
+      <h3>Banners for a listing</h3>
       <div class="ds-example"><div class="ds-example__canvas">
         <div class="stack" style="width: 100%;">
-          <div class="alert" role="status"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><div class="alert__body"><div class="alert__title">We’re reviewing Luzandre.com</div><div>You submitted it today at 9:40 a.m. We review and publish within two business days.</div></div></div>
-          <div class="alert alert--danger" role="alert"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 16h.01"/></svg><div class="alert__body"><div class="alert__title">We couldn’t verify Luzandre.com</div><div>Read the reason we e-mailed you, then submit again when it’s fixed.</div><div class="alert__actions"><a href="../../mocks/pages/edit-listing/default.html">Edit listing</a></div></div></div>
-          <div class="alert alert--success" role="status"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg><div class="alert__body"><div class="alert__title">Luzandre.com is verified and live</div><div>Members can find you in Shops.</div></div><button class="close" type="button" aria-label="Dismiss"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+          <div class="alert" role="status"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg><div class="alert__body"><div class="alert__title">This is how members see your listing</div><div>It’s live. Changes you make are published straight away.</div></div></div>
+          <div class="alert alert--success" role="status"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg><div class="alert__body"><div class="alert__title">Luzandre.com is live</div><div>Members can find you in Shops now.</div></div><button class="close" type="button" aria-label="Dismiss"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
         </div>
       </div>
-        <div class="ds-example__caption"><span>Pending (info, not dismissible), not verified (danger, not dismissible), live (success, dismissible). The same messages appear as full-width banners above My business.</span></div>
+        <div class="ds-example__caption"><span>The owner viewing their live listing (info, not dismissible) and a listing just published (success, dismissible). A listing goes live as soon as its owner publishes it (ADR 0057), so there is no pending or declined banner.</span></div>
         <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;div class="stack" style="width: 100%;"&gt;
-  &lt;div class="alert" role="status"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;circle cx="12" cy="12" r="9"/&gt;&lt;path d="M12 7v5l3 2"/&gt;&lt;/svg&gt;&lt;div class="alert__body"&gt;&lt;div class="alert__title"&gt;We’re reviewing Luzandre.com&lt;/div&gt;&lt;div&gt;You submitted it today at 9:40 a.m. We review and publish within two business days.&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
-  &lt;div class="alert alert--danger" role="alert"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;circle cx="12" cy="12" r="9"/&gt;&lt;path d="M12 7v6M12 16h.01"/&gt;&lt;/svg&gt;&lt;div class="alert__body"&gt;&lt;div class="alert__title"&gt;We couldn’t verify Luzandre.com&lt;/div&gt;&lt;div&gt;Read the reason we e-mailed you, then submit again when it’s fixed.&lt;/div&gt;&lt;div class="alert__actions"&gt;&lt;a href="../../mocks/pages/edit-listing/default.html"&gt;Edit listing&lt;/a&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
-  &lt;div class="alert alert--success" role="status"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;circle cx="12" cy="12" r="9"/&gt;&lt;path d="m8 12 3 3 5-6"/&gt;&lt;/svg&gt;&lt;div class="alert__body"&gt;&lt;div class="alert__title"&gt;Luzandre.com is verified and live&lt;/div&gt;&lt;div&gt;Members can find you in Shops.&lt;/div&gt;&lt;/div&gt;&lt;button class="close" type="button" aria-label="Dismiss"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M6 6l12 12M18 6 6 18"/&gt;&lt;/svg&gt;&lt;/button&gt;&lt;/div&gt;
+  &lt;div class="alert" role="status"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;circle cx="12" cy="12" r="9"/&gt;&lt;path d="M12 11v5M12 8h.01"/&gt;&lt;/svg&gt;&lt;div class="alert__body"&gt;&lt;div class="alert__title"&gt;This is how members see your listing&lt;/div&gt;&lt;div&gt;It’s live. Changes you make are published straight away.&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+  &lt;div class="alert alert--success" role="status"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;circle cx="12" cy="12" r="9"/&gt;&lt;path d="m8 12 3 3 5-6"/&gt;&lt;/svg&gt;&lt;div class="alert__body"&gt;&lt;div class="alert__title"&gt;Luzandre.com is live&lt;/div&gt;&lt;div&gt;Members can find you in Shops now.&lt;/div&gt;&lt;/div&gt;&lt;button class="close" type="button" aria-label="Dismiss"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M6 6l12 12M18 6 6 18"/&gt;&lt;/svg&gt;&lt;/button&gt;&lt;/div&gt;
 &lt;/div&gt;</code></pre></details></div>
     </section>
     <section class="ds-section" id="states"><h2><a href="#states">States</a></h2>
       <div class="ds-table-wrap"><table class="ds-table"><thead><tr><th scope="col">Channel</th><th scope="col">States</th><th scope="col">Mock</th></tr></thead><tbody>
         <tr><td>Toast</td><td>info, success, warning, danger, with action, stacked, leaving (<code>data-state="leaving"</code>)</td><td><a href="../../mocks/notifications/toast/stacked.html">toast/stacked</a>, <a href="../../mocks/notifications/request-toast/danger.html">request-toast/danger</a></td></tr>
         <tr><td>Connection banner</td><td>warning (offline, persistent), success (back online, dismissible), danger (service unreachable)</td><td><a href="../../mocks/notifications/offline-banner/persistent.html">offline-banner/persistent</a></td></tr>
-        <tr><td>Verification banner</td><td>info (pending), warning (changes needed), danger (could not verify), success (live), persistent (paused)</td><td><a href="../../mocks/notifications/verification-banner/warning.html">verification-banner/warning</a></td></tr>
         <tr><td>E-mail banner</td><td>persistent (confirm your e-mail), success (confirmed), danger (could not deliver), limit (too many links asked for; says when to try again)</td><td><a href="../../mocks/notifications/verify-email-banner/persistent.html">verify-email-banner/persistent</a></td></tr>
         <tr><td>Centre</td><td>default (3 unread), read, loading, empty ("You’re all caught up"), error</td><td><a href="../../mocks/pages/notifications/default.html">notifications</a>, <a href="../../mocks/pages/notifications/read.html">notifications/read</a></td></tr>
       </tbody></table></div>
@@ -262,7 +259,7 @@
         <li>The second line carries the detail that makes it actionable: the time, the quote, the item and pickup day.</li>
         <li>Toast titles are four to six words; the toast text one sentence; the action one or two words (Undo, View in shop, Try again).</li>
         <li>Banners start with the condition in bold, then what it means: "<strong>You’re offline.</strong> Showing the directory saved at 8:42 a.m."</li>
-        <li>Request outcomes use the lifecycle words consistently: requested, confirmed, declined, cancelled, completed. Never "approved" for a request (that word belongs to listings) and never "paid".</li>
+        <li>Request outcomes use the lifecycle words consistently: requested, confirmed, declined, cancelled, completed. Never "approved" (nothing on Jubilee waits for approval) and never "paid".</li>
       </ul>
     </section>
     <section class="ds-section" id="do-dont"><h2><a href="#do-dont">Do and don't</a></h2>
@@ -279,7 +276,6 @@
         <li><a href="../../mocks/notifications/toast/stacked.html">notifications/toast/stacked</a> (toast stack)</li>
         <li><a href="../../mocks/notifications/request-toast/danger.html">notifications/request-toast/danger</a> (error toast, no timeout)</li>
         <li><a href="../../mocks/notifications/offline-banner/persistent.html">notifications/offline-banner/persistent</a> (connection banner)</li>
-        <li><a href="../../mocks/notifications/verification-banner/warning.html">notifications/verification-banner/warning</a> (verification flow on My business)</li>
         <li><a href="../../mocks/notifications/verify-email-banner/persistent.html">notifications/verify-email-banner/persistent</a> (e-mail banner)</li>
         <li><a href="../../mocks/pages/notifications/default.html">pages/notifications/default</a> (notification centre)</li>
       </ul>

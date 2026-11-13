@@ -5,7 +5,7 @@ title System Context — Publish policy pages
 
 Person(visitor, "Visitor", "Anyone not signed in")
 Person(member, "Member", "Signed-in account holder")
-Person(admin, "Verification team member", "Jubilee staff with the Admin role")
+Person(admin, "Jubilee administrator", "Jubilee staff with the Admin role")
 System(jubilee, "Jubilee", "Toronto's Christian marketplace")
 
 Rel(visitor, jubilee, "Reads policy pages and agrees to the terms when joining", "HTTPS")

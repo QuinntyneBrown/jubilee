@@ -27,7 +27,6 @@ import {
   DescriptionList,
   DescriptionItem,
 } from 'components';
-import { interval } from 'rxjs';
 import {
   CancelRequestData,
   CancelRequestDialog,
@@ -36,10 +35,8 @@ import { ClockService } from 'api';
 import { LoadState, errorReference } from 'api';
 import { threadTime } from 'api';
 import { STATUS_TONE, statusChangeToast } from '../../services/request-status';
+import { requestUpdates } from '../../services/request-updates';
 import { ToastService } from 'components';
-
-/** How often the page looks again, so a status change shows without a reload (L2-070). */
-const POLL_MS = 5000;
 
 /** How long a member can take back a cancel (L2-049 AC3). */
 const UNDO_MS = 8000;
@@ -87,11 +84,12 @@ export class RequestDetailPage implements OnInit {
   protected readonly state = signal<LoadState<MemberRequestDetail>>({ status: 'loading' });
   protected readonly tone = STATUS_TONE;
 
+  /** A notification about this request, over the event stream, or the fallback timer (L2-070 AC6). */
+  private readonly updates = requestUpdates((target) => target === `/requests/${this.id}`);
+
   ngOnInit(): void {
     this.load();
-    interval(POLL_MS)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => this.refresh());
+    this.updates.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => this.refresh());
   }
 
   protected load(): void {
@@ -112,16 +110,15 @@ export class RequestDetailPage implements OnInit {
 
   /** Asks again without the loading state and announces a change of status. */
   private refresh(): void {
-    const before = this.state();
-    if (before.status !== 'loaded') return;
+    if (this.state().status !== 'loaded') return;
     this.api.get(this.id).subscribe({
       next: (detail) => {
-        const toast = statusChangeToast(
-          detail.business,
-          detail.kind,
-          before.value.status,
-          detail.status,
-        );
+        // What is on screen when the answer comes, so two reads close together announce once.
+        const before = this.state();
+        const toast =
+          before.status === 'loaded'
+            ? statusChangeToast(detail.business, detail.kind, before.value.status, detail.status)
+            : null;
         if (toast) this.toasts.show(toast);
         this.state.set({ status: 'loaded', value: detail });
       },

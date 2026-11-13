@@ -1,0 +1,61 @@
+@startuml
+title UML sequence behaviour — mark an order fulfilled
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Owner" as actor
+actor "Member" as member
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "IncomingRequestsPage" as page
+  participant "FulfilRequestDialog" as dialog
+  participant "IncomingRequestsApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "IncomingRequestsController" as controller
+  participant "EventsController" as events
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "FulfilRequestCommandHandler" as handler
+  participant "Request" as entity
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+actor -> page : Press "Mark fulfilled" on a confirmed order (L2-225)
+page -> dialog : Open with the customer, the order and the total
+dialog --> actor : Ask "Mark {first name}'s order fulfilled?" with focus on "Not yet" (L2-129)
+actor -> dialog : Press "Mark fulfilled"
+dialog -> client : fulfil(id)
+client -> controller : POST /api/my-business/requests/{id}/fulfil
+controller -> handler : Send FulfilRequestCommand
+handler -> db : Load the request of the caller's own listing (403 otherwise, L2-133)
+handler -> entity : Complete(owner, now) (L2-043 AC5)
+alt confirmed order
+  entity --> handler : Status Completed, RequestTransition recorded
+  handler -> db : Save the request, the customer's notification and e-mail in one unit of work
+  handler --> controller : RequestDecisionDto
+  controller --> client : 200 OK
+  client --> dialog : Fulfilled
+  dialog --> page : Close
+  page --> actor : Toast "Order fulfilled. {first name} has been told." and read the list again
+  events -> member : Notification "{Business} marked your order fulfilled"; an open request page reads again (L2-070)
+else not a confirmed order (cancelled, a booking or a quote)
+  entity --> handler : InvalidTransitionException
+  controller --> client : 409 INVALID_TRANSITION with the server's sentence
+  dialog --> actor : Show the sentence; nothing changed
+else request fails
+  client --> dialog : Error
+  dialog --> actor : "We couldn't mark it fulfilled. The order is still confirmed." with "Try again" (L2-128)
+end
+@enduml

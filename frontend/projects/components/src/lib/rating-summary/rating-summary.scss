@@ -107,23 +107,6 @@
   font-variant-numeric: tabular-nums;
 }
 
-.rating-summary__note {
-  display: flex;
-  gap: var(--space-2);
-  align-items: flex-start;
-  margin: 0;
-  font: var(--text-body-sm);
-  color: var(--color-fg-muted);
-}
-
-.rating-summary__note-icon {
-  width: var(--icon-size-sm);
-  height: var(--icon-size-sm);
-  flex: none;
-  margin-top: var(--space-0-5);
-  color: var(--color-success-icon);
-}
-
 @media (forced-colors: active) {
   .rating-summary__fill {
     background: CanvasText;

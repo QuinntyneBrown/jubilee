@@ -26,7 +26,7 @@ box "Backend — Jubilee Application and Domain" #ECFDF3
   participant "ReportListingCommandHandler" as handler
   participant "ListingReport" as entity
   participant "ReportSubmitted" as notice
-  participant "VerificationTeam" as team
+  participant "JubileeTeam" as team
 end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
   database "Jubilee database" as db

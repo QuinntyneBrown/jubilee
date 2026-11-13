@@ -43,6 +43,8 @@ public interface IAppDbContext
 
     DbSet<ListingPhoto> ListingPhotos { get; }
 
+    DbSet<ProductPhoto> ProductPhotos { get; }
+
     DbSet<RecentSearch> RecentSearches { get; }
 
     DbSet<Notification> Notifications { get; }
@@ -52,6 +54,8 @@ public interface IAppDbContext
     DbSet<LinkToken> LinkTokens { get; }
 
     DbSet<PasswordResetRequest> PasswordResetRequests { get; }
+
+    DbSet<SecurityAlert> SecurityAlerts { get; }
 
     DbSet<OutboxMessage> OutboxMessages { get; }
 
@@ -78,10 +82,6 @@ public interface IAppDbContext
     DbSet<ListingSubmission> ListingSubmissions { get; }
 
     DbSet<StatementAgreement> StatementAgreements { get; }
-
-    DbSet<ReviewTick> ReviewTicks { get; }
-
-    DbSet<ListingDecision> ListingDecisions { get; }
 
     DbSet<AuditRecord> AuditRecords { get; }
 

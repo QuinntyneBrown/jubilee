@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Jubilee.Application.Reviews;
 
-/// <summary>The words the API uses for who may write a review (L2-225, L2-237 AC1).</summary>
+/// <summary>The words the API uses for who may write a review (L2-226, L2-238 AC1).</summary>
 public static class ReviewWriting
 {
     public const string SignIn = "sign-in";
@@ -16,7 +16,7 @@ public static class ReviewWriting
     public const string Owner = "owner";
 }
 
-/// <summary>The rules every review handler shares (ADR 0058).</summary>
+/// <summary>The rules every review handler shares (ADR 0066).</summary>
 public static class ReviewRules
 {
     public const string NotFoundCode = "listing_not_found";
@@ -24,12 +24,12 @@ public static class ReviewRules
     public const string OwnListingCode = "OWN_LISTING";
     public const string AlreadyReviewedCode = "ALREADY_REVIEWED";
 
-    /// <summary>The listing whose reviews are asked for, as the caller may see it: public, or theirs or the team's to preview (L2-225 AC7).</summary>
+    /// <summary>The listing whose reviews are asked for, as the caller may see it: public, or theirs or the team's to preview (L2-226 AC7).</summary>
     public static async Task<Listing> ListingAsync(IAppDbContext db, string slug, Viewer viewer, CancellationToken cancellationToken)
     {
         slug = slug.Trim().ToLowerInvariant();
         var listing = await db.Listings.AsNoTracking().SingleOrDefaultAsync(l => l.Slug == slug && l.DeletedAt == null, cancellationToken);
-        if (listing is null || !(listing.IsPublic() || (viewer.Subject is { } subject && listing.OwnerId == subject) || viewer.IsVerifier))
+        if (listing is null || !(listing.IsPublic() || (viewer.Subject is { } subject && listing.OwnerId == subject) || viewer.IsModerator))
         {
             throw new NotFoundException(NotFoundCode, "There is no such business.");
         }
@@ -37,13 +37,13 @@ public static class ReviewRules
         return listing;
     }
 
-    /// <summary>A request the owner confirmed or completed makes a member eligible (L2-225 AC1).</summary>
+    /// <summary>A request the owner confirmed or completed makes a member eligible (L2-226 AC1).</summary>
     public static Task<bool> HasConfirmedRequestAsync(IAppDbContext db, Guid listingId, string subject, CancellationToken cancellationToken) =>
         db.Requests.AsNoTracking().AnyAsync(
             r => r.ListingId == listingId && r.MemberSubject == subject && (r.Status == RequestStatus.Confirmed || r.Status == RequestStatus.Completed),
             cancellationToken);
 
-    /// <summary>The member's review of the listing that is shown, if they have one (L2-225 AC5).</summary>
+    /// <summary>The member's review of the listing that is shown, if they have one (L2-226 AC5).</summary>
     public static Task<Review?> OwnReviewAsync(IAppDbContext db, Guid listingId, string subject, CancellationToken cancellationToken) =>
         db.Reviews.SingleOrDefaultAsync(r => r.ListingId == listingId && r.AuthorSubject == subject && r.TakenDownAt == null, cancellationToken);
 
@@ -67,7 +67,7 @@ public static class ReviewRules
         return await HasConfirmedRequestAsync(db, listing.Id, subject, cancellationToken) ? ReviewWriting.Eligible : ReviewWriting.NotEligible;
     }
 
-    /// <summary>Refuses the owner, a member with no confirmed request and a member who has a review shown (L2-225 AC2, AC4, AC5).</summary>
+    /// <summary>Refuses the owner, a member with no confirmed request and a member who has a review shown (L2-226 AC2, AC4, AC5).</summary>
     public static async Task EnsureMayWriteAsync(IAppDbContext db, Listing listing, string subject, CancellationToken cancellationToken)
     {
         switch (await WritingAsync(db, listing, new Viewer(subject, false), cancellationToken))
@@ -81,7 +81,7 @@ public static class ReviewRules
         }
     }
 
-    /// <summary>The rating and the trimmed text, or HTTP 422 with a code per field (L2-237 AC4).</summary>
+    /// <summary>The rating and the trimmed text, or HTTP 422 with a code per field (L2-238 AC4).</summary>
     public static string Validate(int? rating, string? text, bool itemUnknown)
     {
         var errors = new Dictionary<string, string>();
@@ -108,14 +108,14 @@ public static class ReviewRules
         return errors.Count > 0 ? throw new ValidationFailedException(errors) : trimmed;
     }
 
-    /// <summary>Who the reply is from: the owner's name without credentials, or the listing's name (L2-228 AC5).</summary>
+    /// <summary>Who the reply is from: the owner's name without credentials, or the listing's name (L2-229 AC5).</summary>
     public static string ReplyFrom(Listing listing) =>
         listing.Kind == ListingKind.Space || string.IsNullOrWhiteSpace(listing.OwnerName)
             ? listing.Kind == ListingKind.Space && !string.IsNullOrWhiteSpace(listing.OwnerName) ? listing.OwnerName.Trim() : listing.Name
             : listing.OwnerName.Split(',')[0].Trim();
 
     /// <summary>
-    /// Recounts the stars of the review's listing and of the products it is or was about (L2-237 AC9), before the
+    /// Recounts the stars of the review's listing and of the products it is or was about (L2-238 AC9), before the
     /// caller saves, so the counts are written in the same transaction as the change. <paramref name="changed"/> is
     /// the review as it will be stored; <paramref name="gone"/> says it is being deleted.
     /// </summary>

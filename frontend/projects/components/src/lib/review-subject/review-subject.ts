@@ -3,7 +3,7 @@ import { Icon } from '../icon/icon';
 import { categoryTile } from '../media-tile/category-tile';
 
 /**
- * What a review is about, at the top of the Write a review screen (L2-226 AC1): the category
+ * What a review is about, at the top of the Write a review screen (L2-227 AC1): the category
  * tile, the listing's name and, under it, `meta` (its category, or "Hosted by …" for a space).
  *
  *     <div jb-review-subject name="Legacy Financial" meta="Financial & insurance"

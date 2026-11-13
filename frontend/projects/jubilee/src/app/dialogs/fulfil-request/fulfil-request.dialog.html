@@ -1,0 +1,47 @@
+<jb-dialog
+  heading="Mark {{ firstName }}’s order fulfilled?"
+  description="Only mark it fulfilled once {{ firstName }} has it."
+  icon="check"
+  [busy]="busy()"
+  (closed)="close()"
+>
+  <div jb-dialog-body class="stack">
+    @if (view() === 'failed') {
+      <div jb-alert tone="danger" heading="We couldn’t mark it fulfilled" role="alert">
+        <div>The order is still confirmed. Check your connection and try again.</div>
+      </div>
+    }
+    @if (view() === 'conflict') {
+      <div jb-alert tone="danger" [heading]="conflict()" role="alert">
+        <div>Nothing was changed.</div>
+      </div>
+    }
+    <div jb-card variant="well">
+      <dl jb-description-list>
+        <div jb-description-item term="Customer" [value]="request.customerName"></div>
+        <div jb-description-item term="Order" [value]="request.title"></div>
+        @if (request.total) {
+          <div jb-description-item term="Total">
+            <span jb-price>{{ request.total }}</span>
+          </div>
+        }
+      </dl>
+    </div>
+    <p class="text-muted">{{ firstName }} is told it’s done and the order moves to Completed.</p>
+  </div>
+  <div jb-dialog-footer>
+    <button jb-button type="button" cdkFocusInitial [disabled]="busy()" (click)="close()">
+      Not yet
+    </button>
+    <button
+      jb-button
+      variant="primary"
+      type="button"
+      [disabled]="busy() || view() === 'conflict'"
+      [busy]="busy()"
+      (click)="fulfil()"
+    >
+      {{ view() === 'failed' ? 'Try again' : 'Mark fulfilled' }}
+    </button>
+  </div>
+</jb-dialog>

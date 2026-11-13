@@ -24,7 +24,7 @@ Container_Boundary(worker, "Jubilee Worker") {
   Component(sumjob, "DailySummaryJob", "Hosted job", "Every 5 minutes")
   Component(sum, "SendDailySummariesCommandHandler", "MediatR handler", "One e-mail per member from the held rows")
   Component(notejob, "NewBusinessNoteJob", "Hosted job", "Weekly note, Monday 7:00 a.m. Toronto")
-  Component(note, "SendNewBusinessNotesCommandHandler", "MediatR handler", "Listings approved in 7 days in browsed categories")
+  Component(note, "SendNewBusinessNotesCommandHandler", "MediatR handler", "Listings published in 7 days in browsed categories")
   Component(tipjob, "OwnerTipJob", "Hosted job", "Monthly tip, first day 7:00 a.m. Toronto")
   Component(tips, "SendOwnerTipsCommandHandler", "MediatR handler", "Next tip of OwnerTips.Series")
   Component(jobs, "ScheduledJobs", "Application service", "Runs work once per occurrence through JobRun")

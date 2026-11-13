@@ -14,8 +14,8 @@ using Microsoft.Extensions.DependencyInjection;
 namespace Jubilee.Api.Tests;
 
 // New businesses (L2-222, L2-064 AC6, L2-149 AC1). Joanna turned "New businesses" on and opened the
-// page of Legacy Financial, so she browsed "Financial & insurance"; Naomi's Cornerstone Bookkeeping
-// waits for the verification team in that category. The tests start on Tuesday 10 November 2026.
+// page of Legacy Financial, so she browsed "Financial & insurance"; Naomi is about to publish
+// Cornerstone Bookkeeping in that category, and it is new the moment she does (ADR 0057). The tests start on Tuesday 10 November 2026.
 public sealed class NewBusinessTests : IClassFixture<JubileeApiFactory>, IAsyncLifetime
 {
     private static readonly DateTimeOffset MondaySeven = new(2026, 11, 16, 12, 0, 0, TimeSpan.Zero);
@@ -35,11 +35,9 @@ public sealed class NewBusinessTests : IClassFixture<JubileeApiFactory>, IAsyncL
         _naomi = Confirmed("naomi@example.com", "Naomi", "Laurent");
         _peter = Confirmed("peter@example.com", "Peter", "Okafor");
         var legacy = ListingMother.Public("legacy-financial", "financial-insurance", "Legacy Financial", ListingMother.Now.AddDays(-60));
-        _waiting = ListingMother.NonPublic(NonPublicState.ReadyToReview, "cornerstone-bookkeeping", "financial-insurance");
-        _waiting.AssignOwner(_naomi.Id.ToString());
-        await _factory.Arrange(
-            _joanna, _naomi, _peter, legacy, _waiting,
-            ListingSubmission.Record(_waiting.Id, _naomi.Id.ToString(), Guid.NewGuid().ToString(), [], ListingMother.Now));
+        // What Naomi will publish; it is not in the directory until she does.
+        _waiting = ListingMother.NonPublic(NonPublicState.Draft, "cornerstone-bookkeeping", "financial-insurance");
+        await _factory.Arrange(_joanna, _naomi, _peter, legacy);
         await TurnOn(_joanna);
         await Browse(_joanna, "legacy-financial");
     }
@@ -61,11 +59,25 @@ public sealed class NewBusinessTests : IClassFixture<JubileeApiFactory>, IAsyncL
     private async Task Browse(Member member, string slug) =>
         Assert.True((await Client(member).PostAsync($"/api/listings/{slug}/views", null)).IsSuccessStatusCode);
 
-    private async Task Approve(Listing listing)
+    /// <summary>Naomi lists the business and publishes it: it is live at once (L2-078).</summary>
+    private async Task Publish(Listing listing)
     {
-        var verifier = _factory.CreateStaffClient("Esther Mensah", "member|esther", "verifier");
-        var approved = await verifier.PostAsJsonAsync($"/api/admin/verifications/{listing.Id}/approve", new { note = "Reviewed with the owner." });
-        Assert.True(approved.IsSuccessStatusCode, await approved.Content.ReadAsStringAsync());
+        var naomi = Client(_naomi);
+        var body = new Dictionary<string, object?>
+        {
+            ["kind"] = listing.CategorySlug == "shops" ? "products" : "services",
+            ["name"] = listing.Name,
+            ["tagline"] = listing.Tagline,
+            ["categorySlug"] = listing.CategorySlug,
+            ["highlight"] = null,
+            ["place"] = "Toronto",
+            ["agreed"] = true,
+            ["items"] = Array.Empty<object>(),
+            ["idempotencyKey"] = Guid.NewGuid().ToString(),
+        };
+        var draft = JsonDocument.Parse(await (await naomi.PostAsJsonAsync("/api/listing-drafts", body)).Content.ReadAsStringAsync()).RootElement;
+        var published = await naomi.PostAsJsonAsync($"/api/listing-drafts/{draft.GetProperty("id").GetGuid()}/publish", body);
+        Assert.True(published.IsSuccessStatusCode, await published.Content.ReadAsStringAsync());
     }
 
     private async Task<List<JsonElement>> Notifications(Member member)
@@ -96,9 +108,9 @@ public sealed class NewBusinessTests : IClassFixture<JubileeApiFactory>, IAsyncL
 
     // L2-222 AC1, L2-064 AC6
     [Fact]
-    public async Task L2_222_AC1_a_member_who_opted_in_and_browsed_the_category_is_told_of_a_newly_approved_business()
+    public async Task L2_222_AC1_a_member_who_opted_in_and_browsed_the_category_is_told_of_a_newly_published_business()
     {
-        await Approve(_waiting);
+        await Publish(_waiting);
 
         var item = Assert.Single(await Notifications(_joanna));
         Assert.Equal($"New in Financial & insurance: {_waiting.Name}", item.GetProperty("title").GetString());
@@ -122,7 +134,7 @@ public sealed class NewBusinessTests : IClassFixture<JubileeApiFactory>, IAsyncL
         await _factory.Arrange(ruth);
         await Browse(ruth, "legacy-financial");
 
-        await Approve(_waiting);
+        await Publish(_waiting);
 
         Assert.Empty(await Notifications(_naomi));
         Assert.Empty(await Notifications(_peter));
@@ -136,7 +148,7 @@ public sealed class NewBusinessTests : IClassFixture<JubileeApiFactory>, IAsyncL
     {
         _factory.Clock.Advance(TimeSpan.FromDays(91));
 
-        await Approve(_waiting);
+        await Publish(_waiting);
 
         Assert.Empty(await Notifications(_joanna));
     }
@@ -146,7 +158,7 @@ public sealed class NewBusinessTests : IClassFixture<JubileeApiFactory>, IAsyncL
     public async Task L2_222_AC2_on_monday_at_seven_the_member_gets_one_note_of_the_weeks_new_businesses_with_the_address_and_an_unsubscribe()
     {
         await NoteTick(); // The week that has begun is served; the next note is Monday's.
-        await Approve(_waiting);
+        await Publish(_waiting);
 
         GoTo(MondaySeven.AddMinutes(-1));
         Assert.Null(await NoteTick());
@@ -156,6 +168,7 @@ public sealed class NewBusinessTests : IClassFixture<JubileeApiFactory>, IAsyncL
         Assert.Equal(1, await NoteTick());
 
         var note = Assert.Single(NotesTo(_joanna));
+        Assert.Contains("These businesses joined Jubilee this week in categories you’ve browsed.", note.Body);
         Assert.Contains($"{_waiting.Name} (Financial & insurance)\nhttps://jubilee.test/b/cornerstone-bookkeeping", note.Body);
         Assert.Contains("Jubilee, 1 Example Street, Toronto, ON M5H 0A1", note.Body);
         Assert.Contains("Jubilee, 1 Example Street, Toronto, ON M5H 0A1", note.Html);
@@ -175,10 +188,8 @@ public sealed class NewBusinessTests : IClassFixture<JubileeApiFactory>, IAsyncL
     public async Task L2_222_AC2_a_week_with_no_new_business_in_a_browsed_category_sends_no_note()
     {
         await NoteTick();
-        var elsewhere = ListingMother.NonPublic(NonPublicState.ReadyToReview, "olive-print", "shops");
-        elsewhere.AssignOwner(_naomi.Id.ToString());
-        await _factory.Arrange(elsewhere, ListingSubmission.Record(elsewhere.Id, _naomi.Id.ToString(), Guid.NewGuid().ToString(), [], ListingMother.Now));
-        await Approve(elsewhere);
+        var elsewhere = ListingMother.NonPublic(NonPublicState.Draft, "olive-print", "shops");
+        await Publish(elsewhere);
 
         GoTo(MondaySeven);
         Assert.Equal(0, await NoteTick());
@@ -192,7 +203,7 @@ public sealed class NewBusinessTests : IClassFixture<JubileeApiFactory>, IAsyncL
     {
         await NoteTick();
         await Client(_joanna).PatchAsJsonAsync("/api/account/notification-preferences", new { setting = "frequency", frequency = "daily-summary" });
-        await Approve(_waiting);
+        await Publish(_waiting);
 
         GoTo(MondaySeven);
         await NoteTick();
@@ -205,7 +216,7 @@ public sealed class NewBusinessTests : IClassFixture<JubileeApiFactory>, IAsyncL
     public async Task L2_149_AC1_without_a_mailing_address_no_note_is_sent()
     {
         await NoteTick();
-        await Approve(_waiting);
+        await Publish(_waiting);
         GoTo(MondaySeven);
 
         await using (var scope = _factory.Services.CreateAsyncScope())
@@ -226,7 +237,7 @@ public sealed class NewBusinessTests : IClassFixture<JubileeApiFactory>, IAsyncL
     public async Task L2_222_AC4_two_instances_that_reach_monday_send_one_note_and_the_run_records_its_success()
     {
         await NoteTick();
-        await Approve(_waiting);
+        await Publish(_waiting);
         GoTo(MondaySeven);
 
         var ran = await NoteTick();

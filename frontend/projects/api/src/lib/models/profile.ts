@@ -26,6 +26,18 @@ export interface ProfileForm {
   pronouns: string | null;
 }
 
+/** One session of "Where you're signed in" (`GET /api/account/sessions`, L2-143 AC3). */
+export interface MemberSessionView {
+  id: string;
+  /** The browser and system, "Chrome on Windows". */
+  device: string;
+  /** The network with the last part of its address hidden, "203.0.113.x"; null when unknown. */
+  network: string | null;
+  lastActiveAt: string;
+  /** True for the session of this browser. */
+  current: boolean;
+}
+
 export interface EmailChangeRequest {
   email: string;
   currentPassword: string;

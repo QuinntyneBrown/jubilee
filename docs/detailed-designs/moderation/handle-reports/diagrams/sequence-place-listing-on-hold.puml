@@ -1,0 +1,63 @@
+@startuml
+title UML sequence behaviour — Place a listing on hold
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Jubilee team member" as actor
+actor "Visitor" as visitor
+box "Frontend — Admin application" #E0F2FE
+  participant "AdminReportPage" as page
+  participant "ReportActionDialog" as dialog
+  participant "AdminApi" as client
+  participant "StaffSessionService" as session
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "AdminReportsController" as controller
+  participant "DirectoryController and SearchController" as directory
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "ApplyReportActionCommandHandler" as handler
+  participant "Listing" as listing
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  participant "DirectoryCacheInvalidationInterceptor" as icpt
+  database "Jubilee database" as db
+  database "Cache" as cache
+end box
+actor -> page : Choose "Place on hold"
+page -> dialog : Open
+actor -> dialog : Enter the resolution note and confirm
+dialog -> client : applyReportAction(id, hold, note, null)
+client -> controller : POST /api/admin/reports/{id}/actions
+controller -> handler : Send ApplyReportActionCommand
+alt resolution note is empty
+  handler --> client : 422 ProblemDetails with the field code (L2-105)
+  client --> dialog : Field error
+else note present
+  handler -> db : Load report and listing
+  handler -> listing : PlaceModerationHold()
+  handler -> db : Add the owner's notification "We've paused your listing while we look into a report", no reporter (L2-105)
+  handler -> db : Save report, listing, ReportAction and audit entry (L2-180) in one unit of work
+  db -> icpt : Saved a changed Listing
+  icpt -> cache : Drop the directory read cache (ADR 0003)
+  handler --> client : 200 with the report
+  client --> dialog : Applied
+  dialog --> page : Close
+  page -> session : refresh()
+  page --> actor : Show the listing as on hold
+  visitor -> directory : Next read of welcome, Browse, category or search
+  directory -> db : Public listings only; search reads the database (ADR 0011)
+  directory --> visitor : Without the held listing (L2-105 AC3)
+end
+@enduml

@@ -1,0 +1,43 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Handle reports
+Container_Boundary(web, "Admin application") {
+  Component(bar, "AdminBar", "Angular component", "Shows Reports with the unresolved count")
+  Component(session, "StaffSessionService", "Angular service", "Reads the staff session after each navigation and action")
+  Component(list, "AdminReportsPage", "Angular page", "Lists reports with status and overdue mark")
+  Component(detail, "AdminReportPage", "Angular page", "Shows one report and its actions")
+  Component(dialog, "ReportActionDialog", "CDK dialog", "Collects the resolution note and any message text")
+  Component(client, "AdminApi", "Typed HTTP client", "Calls the /api/admin/reports endpoints")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(ctrl, "AdminReportsController", "ASP.NET Core controller", "List, open and action endpoints")
+  Component(sctrl, "StaffSessionController", "ASP.NET Core controller", "GET /api/staff/session")
+  Component(sh, "GetStaffSessionQueryHandler", "MediatR handler", "Counts unresolved reports")
+  Component(rh, "ReportConversationCommandHandler", "MediatR handler", "Files a conversation report")
+  Component(team, "JubileeTeam", "Static class", "Decides who on the team is told")
+  Component(lh, "GetReportsQueryHandler", "MediatR handler", "Lists reports and marks overdue ones")
+  Component(oh, "OpenReportCommandHandler", "MediatR handler", "Moves a report to in review and audits the access")
+  Component(ah, "ApplyReportActionCommandHandler", "MediatR handler", "Applies one action with its resolution note")
+  Component(listing, "Listing", "Domain entity", "Hold, lift and delete transitions")
+  Component(icpt, "DirectoryCacheInvalidationInterceptor", "EF Core interceptor", "Drops the directory read cache after a save")
+}
+ContainerDb(db, "Jubilee database", "SQL Server", "Reports, listings, audit and outbox")
+
+Rel(bar, session, "Reads the counts from")
+Rel(session, sctrl, "Calls", "JSON/HTTPS")
+Rel(sctrl, sh, "Sends GetStaffSessionQuery")
+Rel(list, client, "Loads reports through")
+Rel(detail, dialog, "Opens")
+Rel(dialog, client, "Applies an action through")
+Rel(client, ctrl, "Calls", "JSON/HTTPS")
+Rel(ctrl, lh, "Sends GetReportsQuery")
+Rel(ctrl, oh, "Sends OpenReportCommand")
+Rel(ctrl, ah, "Sends ApplyReportActionCommand")
+Rel(rh, team, "Tells the team through")
+Rel(team, db, "Adds an e-mail to the outbox", "EF Core")
+Rel(ah, listing, "Calls PlaceModerationHold, LiftModerationHold or Delete on")
+Rel(ah, db, "Saves report, listing, action and audit", "EF Core")
+Rel(icpt, db, "Watches saves to")
+Rel(sh, db, "Counts", "EF Core")
+@enduml

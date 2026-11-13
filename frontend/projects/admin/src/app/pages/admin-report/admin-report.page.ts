@@ -38,6 +38,7 @@ import {
 import { ClockService } from 'api';
 import { LoadState, errorReference } from 'api';
 import { clockTime, dayHeading, dayKey, threadTime } from 'api';
+import { StaffSessionService } from '../../services/staff-session.service';
 
 const REASON_STATE: Record<string, string> = {
   live: 'Live',
@@ -61,7 +62,7 @@ const ACTION_TITLE: Record<ReportActionKind, string> = {
  * One report at /reports/:id (L2-105): opening it moves it to review, and a reported conversation is
  * shown with it while the report is unresolved (L2-063 AC3). A reported review is shown as it stands
  * with every report of it, and its actions are Dismiss, Message the reporter and Take the review down
- * (L2-236). Each action opens a dialog for the note.
+ * (L2-237). Each action opens a dialog for the note.
  */
 @Component({
   selector: 'jb-admin-report-page',
@@ -95,6 +96,7 @@ export class AdminReportPage implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly dialog = inject(Dialog);
   private readonly clock = inject(ClockService);
+  private readonly session = inject(StaffSessionService);
 
   protected readonly state = signal<LoadState<ReportDetail>>({ status: 'loading' });
   protected readonly skeleton = [1, 2, 3];
@@ -209,6 +211,8 @@ export class AdminReportPage implements OnInit {
           review: result.review ?? report.review,
         },
       });
+      // The action may have resolved the report: the admin bar's count is read again (ADR 0058).
+      this.session.refresh();
     });
   }
 }

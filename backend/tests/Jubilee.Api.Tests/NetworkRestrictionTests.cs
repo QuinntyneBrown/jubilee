@@ -45,7 +45,7 @@ public sealed class NetworkRestrictionTests : IClassFixture<JubileeApiFactory>, 
 
     // L2-192 AC1, L2-189 AC8
     [Theory]
-    [InlineData("/api/admin/verifications")]
+    [InlineData("/api/admin/listings")]
     [InlineData("/api/admin/reports")]
     [InlineData("/api/staff/session")]
     [InlineData("/api/staff/sign-in/start")]
@@ -62,11 +62,11 @@ public sealed class NetworkRestrictionTests : IClassFixture<JubileeApiFactory>, 
     [Fact]
     public async Task L2_192_AC1_the_network_is_checked_before_any_session()
     {
-        var member = _factory.CreateMemberClient("Joanna Adeyemi", "member|joanna", "verifier");
-        var staff = _factory.CreateStaffClient("Esther Mensah", "member|esther", "verifier");
+        var member = _factory.CreateMemberClient("Joanna Adeyemi", "member|joanna", "moderator");
+        var staff = _factory.CreateStaffClient("Esther Mensah", "member|esther", "moderator");
 
-        var asMember = await member.SendAsync(From(Outside, "/api/admin/verifications"));
-        var asStaff = await staff.SendAsync(From(Outside, "/api/admin/verifications"));
+        var asMember = await member.SendAsync(From(Outside, "/api/admin/listings"));
+        var asStaff = await staff.SendAsync(From(Outside, "/api/admin/listings"));
 
         Assert.Equal("NETWORK_NOT_ALLOWED", await Code(asMember));
         Assert.Equal("NETWORK_NOT_ALLOWED", await Code(asStaff));
@@ -81,9 +81,9 @@ public sealed class NetworkRestrictionTests : IClassFixture<JubileeApiFactory>, 
     [InlineData("::1")]
     public async Task L2_192_AC1_a_caller_inside_the_allow_list_reaches_the_staff_endpoint(string address)
     {
-        var staff = _factory.CreateStaffClient("Esther Mensah", "member|esther", "verifier");
+        var staff = _factory.CreateStaffClient("Esther Mensah", "member|esther", "moderator");
 
-        var response = await staff.SendAsync(From(address, "/api/admin/verifications"));
+        var response = await staff.SendAsync(From(address, "/api/admin/listings"));
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
@@ -108,9 +108,9 @@ public sealed class NetworkRestrictionTests : IClassFixture<JubileeApiFactory>, 
     [InlineData(Outside, "10.1.2.3", false)] // not from the loopback proxy: the header is not believed
     public async Task L2_192_AC4_only_the_trusted_proxy_decides_the_callers_address(string peer, string forwardedFor, bool allowed)
     {
-        var staff = _factory.CreateStaffClient("Esther Mensah", "member|esther", "verifier");
+        var staff = _factory.CreateStaffClient("Esther Mensah", "member|esther", "moderator");
 
-        var response = await staff.SendAsync(From(peer, "/api/admin/verifications", ("X-Forwarded-For", forwardedFor)));
+        var response = await staff.SendAsync(From(peer, "/api/admin/listings", ("X-Forwarded-For", forwardedFor)));
 
         Assert.Equal(allowed ? HttpStatusCode.OK : HttpStatusCode.Forbidden, response.StatusCode);
     }
@@ -124,11 +124,11 @@ public sealed class NetworkRestrictionTests : IClassFixture<JubileeApiFactory>, 
     public async Task L2_192_AC2_the_admin_hosts_proxy_states_the_staff_members_address_only_with_the_key(
         string key, string clientAddress, bool allowed)
     {
-        var staff = _factory.CreateStaffClient("Esther Mensah", "member|esther", "verifier");
+        var staff = _factory.CreateStaffClient("Esther Mensah", "member|esther", "moderator");
 
         var response = await staff.SendAsync(From(
             "127.0.0.1",
-            "/api/admin/verifications",
+            "/api/admin/listings",
             ("X-Forwarded-For", AdminHostOutbound),
             ("X-Jubilee-Client-Address", clientAddress),
             ("X-Jubilee-Proxy-Key", key)));

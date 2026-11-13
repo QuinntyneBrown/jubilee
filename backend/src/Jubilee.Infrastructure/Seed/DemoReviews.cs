@@ -1,7 +1,7 @@
 namespace Jubilee.Infrastructure.Seed;
 
 /// <summary>
-/// The sample reviews of the mocks (ADR 0058): the same authors, ratings, items, texts, dates and replies as
+/// The sample reviews of the mocks (ADR 0066): the same authors, ratings, items, texts, dates and replies as
 /// <c>docs/mocks/pages/business</c>, <c>shop</c> and <c>space</c>. An item names a service or a product of the listing
 /// by name, or is the stay of a space. Dates are fixed so the recording and the mocks agree.
 /// </summary>

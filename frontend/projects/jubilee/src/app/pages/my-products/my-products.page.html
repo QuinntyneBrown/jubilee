@@ -33,7 +33,8 @@
         <span class="visually-hidden" role="status">{{ announcement() }}</span>
         @if (list.rows.length === 0) {
           <div jb-empty-state icon="bag" heading="No products yet">
-            Add your first product and it shows on your public listing straight away.
+            Add what you sell with a photo and a price. Members can request an item and you confirm
+            it.
             <button slot="actions" jb-button variant="primary" type="button" (click)="add(list)">
               Add product
             </button>
@@ -59,22 +60,41 @@
                   <th jb-table-cell scope="col"><span class="visually-hidden">Actions</span></th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody
+                cdkDropList
+                cdkDropListLockAxis="y"
+                [cdkDropListData]="list.rows"
+                [cdkDropListDisabled]="moving()"
+                (cdkDropListDropped)="drop(list, $event)"
+              >
                 @for (
                   product of list.rows;
                   track product.id;
                   let first = $first;
                   let last = $last
                 ) {
-                  <tr>
+                  <tr cdkDrag [cdkDragData]="product">
                     <td jb-table-cell>
                       <div class="cluster" style="flex-wrap: nowrap">
-                        <div
-                          jb-media-tile
-                          size="thumb"
-                          [tint]="tint(product)"
-                          [icon]="icon(product)"
-                        ></div>
+                        @if (product.photo; as photo) {
+                          <div
+                            jb-media-tile
+                            size="thumb"
+                            [tint]="tint(product)"
+                            [photoKey]="photo.key"
+                            [photoAlt]="product.name"
+                            [photoWidth]="photo.width"
+                            [photoHeight]="photo.height"
+                            sizes="4rem"
+                          ></div>
+                        } @else {
+                          <div
+                            jb-media-tile
+                            size="thumb"
+                            [tint]="tint(product)"
+                            [icon]="icon(product)"
+                          ></div>
+                        }
                         <span>{{ title(product) }}</span>
                       </div>
                     </td>
@@ -92,6 +112,19 @@
                         class="cluster cluster--end"
                         style="flex-wrap: nowrap; gap: var(--space-1)"
                       >
+                        <button
+                          jb-button
+                          iconOnly
+                          variant="ghost"
+                          size="sm"
+                          type="button"
+                          cdkDragHandle
+                          tabindex="-1"
+                          aria-hidden="true"
+                          title="Drag to reorder"
+                        >
+                          ⋮⋮
+                        </button>
                         <button
                           jb-button
                           iconOnly
@@ -145,6 +178,7 @@
               </tbody>
             </table>
           </div>
+          <p jb-field-help>Drag a product by its handle, or use the arrows, to change the order.</p>
         }
       </div>
     }

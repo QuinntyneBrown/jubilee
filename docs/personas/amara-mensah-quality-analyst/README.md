@@ -33,8 +33,8 @@ during night feeds, with the brightness down and one thumb free.
 
 ## What worries her
 
-- What "verified" means, exactly. She will want to read how verification works before she relies
-  on it.
+- Who stands behind a listing, exactly. Nobody checks a business before it goes live, so she will
+  want to read how Jubilee keeps listings honest before she relies on one.
 - That a listing is all she can go on: there are no reviews or star ratings of businesses.
 - That her feedback will vanish into a form, as it does in most apps.
 

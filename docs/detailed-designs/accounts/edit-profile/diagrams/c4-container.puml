@@ -8,11 +8,9 @@ Person(member, "Member", "Edits the profile and opens the account menu")
 System_Boundary(jubilee, "Jubilee") {
   Container(web, "Jubilee Web", "Angular single-page application", "Account menu and account page")
   Container(api, "Jubilee API", "ASP.NET Core", "Account endpoints under /api/account")
-  ContainerDb(db, "Jubilee database", "SQL Server", "Members and requests")
-  ContainerDb(cache, "Cache", "Redis", "Sessions")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Members, requests and MemberSession rows (ADR 0046)")
 }
 Rel(member, web, "Uses", "HTTPS")
 Rel(web, api, "GET /api/account and PUT /api/account/profile", "JSON/HTTPS")
-Rel(api, cache, "Resolves the session cookie", "Redis protocol")
-Rel(api, db, "Reads and writes the member", "EF Core")
+Rel(api, db, "Resolves the session cookie and reads and writes the member", "EF Core")
 @enduml

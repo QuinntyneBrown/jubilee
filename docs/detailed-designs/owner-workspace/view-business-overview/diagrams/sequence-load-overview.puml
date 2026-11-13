@@ -44,15 +44,12 @@ alt Caller owns nothing
   client --> page : MyBusiness
   page --> actor : Show "List your business free" with "List your business" (L2-086 AC1)
 else Caller owns a listing
-  handler -> db : Read the owner's drafts, the submission and the listing's requests
+  handler -> db : Read the owner's drafts and the listing's requests
   db --> handler : Rows
   opt Listing is live
     handler -> db : Read ListingView of 14 days, unread conversations, saved items, products and services
     db --> handler : Rows
     handler -> handler : Build MyBusinessStatsDto and MyBusinessSummaryDto (L2-085 AC2 and AC6)
-  end
-  opt Stage is ChangesRequested or Declined
-    handler -> handler : Send GetOwnerVerificationQuery for the reviewer's words
   end
   handler -> rules : State and Subtitle (L2-097 AC3)
   handler --> controller : MyBusinessDto with Businesses
@@ -60,8 +57,8 @@ else Caller owns a listing
   client --> page : MyBusiness
   alt Stats present
     page --> actor : Show the header, four stats, "Needs your reply" and "Your listing" (L2-085)
-  else Listing not live
-    page --> actor : Show the alert of the stage, "Verification progress" and "How members see you" (L2-086)
+  else Only a draft
+    page --> actor : Open the listing form with the draft (L2-086 AC2)
   end
   opt More than one entry in Businesses
     page --> actor : Show the select "Business" with the one shown selected (L2-079 AC4)

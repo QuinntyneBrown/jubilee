@@ -29,6 +29,15 @@ export interface FakePreferences {
   frequency: 'as-it-happens' | 'daily-summary';
 }
 
+/** One session of "Where you're signed in" (`GET /api/account/sessions`, L2-143 AC3). */
+export interface FakeMemberSession {
+  id: string;
+  device: string;
+  network: string | null;
+  lastActiveAt: string;
+  current: boolean;
+}
+
 export interface FakeProfile {
   /** `fails` answers the account load with a 503. */
   load: 'ok' | 'fails';
@@ -44,6 +53,14 @@ export interface FakeProfile {
   preferencesLoad: 'ok' | 'fails';
   /** How many of the next preference saves fail with a 503. */
   preferenceFailures: number;
+  /** `fails` answers the session list with a 503; `pending` never answers it. */
+  sessionsLoad: 'ok' | 'fails' | 'pending';
+  /** `fails` answers signing one device out with a 503. */
+  sessionEnd: 'ok' | 'fails';
+  /** The member's live sessions, this device first. */
+  sessions: FakeMemberSession[];
+  /** The ids of the sessions the app signed out, in order. */
+  endedSessions: string[];
   account: FakeAccount;
   preferences: FakePreferences;
   profiles: Record<string, unknown>[];
@@ -68,6 +85,23 @@ export const ACCOUNT: FakeAccount = {
   profileSavedAt: '2026-11-09T15:00:00Z',
   hasPassword: true,
   passwordChangedAt: '2026-10-14T15:00:00Z',
+};
+
+/** This phone, and a laptop last active two hours before the mocks' clock (ADR 0065). */
+export const THIS_DEVICE: FakeMemberSession = {
+  id: '6b1c2f9e-0d4a-4c7e-9a51-3f2b8e7d1a01',
+  device: 'Safari on iPhone',
+  network: '203.0.113.x',
+  lastActiveAt: '2026-11-10T14:00:00Z',
+  current: true,
+};
+
+export const OTHER_DEVICE: FakeMemberSession = {
+  id: '9d4e7a21-5b3c-4f8e-b2a6-1c0d9e8f7a02',
+  device: 'Chrome on Windows',
+  network: '198.51.100.x',
+  lastActiveAt: '2026-11-10T12:00:00Z',
+  current: false,
 };
 
 export const PREFERENCES: FakePreferences = {
@@ -107,6 +141,9 @@ export async function stubProfile(
       | 'confirm'
       | 'preferencesLoad'
       | 'preferenceFailures'
+      | 'sessionsLoad'
+      | 'sessionEnd'
+      | 'sessions'
     >
   > & { account?: Partial<FakeAccount>; preferences?: Partial<FakePreferences> } = {},
 ): Promise<FakeProfile> {
@@ -118,6 +155,9 @@ export async function stubProfile(
     confirm: 'confirmed',
     preferencesLoad: 'ok',
     preferenceFailures: 0,
+    sessionsLoad: 'ok',
+    sessionEnd: 'ok',
+    sessions: [THIS_DEVICE, OTHER_DEVICE],
     ...initial,
     account: { ...ACCOUNT, ...initial.account },
     preferences: { ...PREFERENCES, ...initial.preferences },
@@ -126,6 +166,7 @@ export async function stubProfile(
     passwordChanges: [],
     confirmed: [],
     preferenceCalls: [],
+    endedSessions: [],
   };
   const body = (route: Route) => (route.request().postDataJSON() ?? {}) as Record<string, unknown>;
 
@@ -218,6 +259,28 @@ export async function stubProfile(
       fake.preferences = { ...fake.preferences, [SETTING_KEYS[setting]]: sent['enabled'] === true };
     }
     return route.fulfill({ json: fake.preferences });
+  });
+
+  await page.route('**/api/account/sessions', (route) => {
+    if (fake.sessionsLoad === 'pending') return; // never answered: the list stays loading
+    return fake.sessionsLoad === 'fails'
+      ? route.fulfill(problem(503, { reference: 'JB-ACC-526' }))
+      : route.fulfill({ json: fake.sessions });
+  });
+
+  await page.route('**/api/account/sessions/*', (route) => {
+    const id = decodeURIComponent(new URL(route.request().url()).pathname.split('/').pop() ?? '');
+    fake.endedSessions.push(id);
+    if (fake.sessionEnd === 'fails')
+      return route.fulfill(problem(503, { reference: 'JB-ACC-527' }));
+    fake.sessions = fake.sessions.filter((s) => s.id !== id);
+    return route.fulfill({ status: 204, body: '' });
+  });
+
+  // "Sign out of other devices" leaves this device only; the session stub answers the request itself.
+  await page.route('**/api/session/others', (route) => {
+    fake.sessions = fake.sessions.filter((s) => s.current);
+    return route.fallback();
   });
 
   // The account page also asks where the data export stands; the default is that none was asked for.

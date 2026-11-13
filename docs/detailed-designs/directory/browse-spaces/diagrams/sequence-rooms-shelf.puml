@@ -38,7 +38,7 @@ handler -> cache : Get browse home
 alt Cached
   cache --> handler : BrowseHomeDto
 else Not cached
-  handler -> db : Public spaces newest first by ApprovedAt (L2-028)
+  handler -> db : Public spaces newest first by PublishedAt (L2-028)
   db --> handler : Listings with SpaceDetails
   handler -> handler : Count, newest 4 overall plus newest 4 per term
   handler -> handler : SpaceCardDto.From each, no address (L2-208)

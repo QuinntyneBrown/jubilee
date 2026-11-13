@@ -27,11 +27,11 @@ public sealed class RateLimitOptions
     /// <summary>Business pre-registrations allowed per client IP address per hour (L2-137 AC1).</summary>
     public int LaunchPreRegistrationsPerHour { get; set; } = 5;
 
-    /// <summary>Changes to reviews and replies to them allowed per member per hour (L2-237 AC6).</summary>
+    /// <summary>Changes to reviews and replies to them allowed per member per hour (L2-238 AC6).</summary>
     public int ReviewChangesPerHour { get; set; } = 30;
 }
 
-/// <summary>Edits of reviews and owners' replies: 30 an hour per member (L2-237 AC6, ADR 0058).</summary>
+/// <summary>Edits of reviews and owners' replies: 30 an hour per member (L2-238 AC6, ADR 0066).</summary>
 public static class ReviewRateLimit
 {
     public const string Changes = "review-changes";
