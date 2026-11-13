@@ -11,6 +11,8 @@ export class AdminShellPage extends ShellPage implements Screen {
   readonly adminBar: Locator;
   readonly tag: Locator;
   readonly staffNav: Locator;
+  /** Every link of the staff navigation, in order. */
+  readonly navLinks: Locator;
   readonly staffName: Locator;
   readonly staffRole: Locator;
   readonly signOut: Locator;
@@ -22,6 +24,7 @@ export class AdminShellPage extends ShellPage implements Screen {
     this.adminBar = page.locator('header.admin-bar');
     this.tag = this.adminBar.locator('.admin-bar__tag');
     this.staffNav = this.adminBar.getByRole('navigation', { name: 'Staff' });
+    this.navLinks = this.staffNav.getByRole('link');
     this.staffName = this.adminBar.locator('.admin-bar__name');
     this.staffRole = this.adminBar.locator('.admin-bar__role');
     this.signOut = page.getByRole('button', { name: 'Sign out' });
