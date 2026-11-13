@@ -1,5 +1,5 @@
 @startuml
-title UML sequence behaviour — Open an uncached page offline
+title UML sequence behaviour — Open a page with no saved copy offline
 skinparam backgroundColor #FFFFFF
 skinparam shadowing false
 skinparam roundcorner 12
@@ -15,38 +15,49 @@ skinparam package {
   BackgroundColor #F9FAFB
 }
 actor "Member" as actor
+participant "Browser" as browser
 box "Frontend — Jubilee Web" #E0F2FE
-  participant "Angular Router" as router
-  participant "OfflineNavigationHandler" as navh
-  participant "OfflinePage" as page
+  participant "Category page" as page
+  participant "connectionInterceptor" as icpt
   participant "ConnectionService" as conn
-end box
-box "Frontend — Jubilee service worker" #E0F2FE
-  participant "Jubilee service worker" as sw
+  participant "OfflineNavigation" as nav
+  participant "Angular Router" as router
+  participant "OfflinePage" as offline
 end box
 box "Backend — Jubilee API" #D1FADF
+  participant "HealthController" as health
   participant "Jubilee API" as api
 end box
-actor -> router : Open a page that is not cached
-router -> sw : GET page data
-sw -> sw : Network fails, no cached response
-sw --> router : 504 Gateway Timeout
-router -> navh : handle(error, attemptedUrl)
-navh -> conn : isOffline()
-conn --> navh : true
-navh -> page : Render with returnUrl, keep the address (L2-122)
-page --> actor : "You're offline. Jubilee needs a connection to load this page." with "Try again" and "Open messages"
+actor -> page : Open a category page while offline
+page -> icpt : GET /api/categories/{slug}/listings
+icpt --> page : No answer (status 0)
+icpt -> conn : reportNetworkFailure()
+icpt -> conn : isOffline()
+conn --> icpt : true
+icpt -> icpt : Not OWN_OFFLINE_FALLBACK, not a background read
+icpt -> nav : show()
+nav -> router : navigate /offline, skipLocationChange, state returnUrl (L2-122)
+router -> offline : Render
+offline --> actor : "You're offline. Jubilee needs a connection to load this page. ..." with "Try again" and "Open messages"
 alt Connection returns
-  conn -> page : state becomes Online
-  page -> router : navigateByUrl(returnUrl) (L2-122)
-  router -> sw : GET page data
-  sw -> api : Forward request
-  api --> sw : 200 OK
-  sw --> router : Response
+  browser -> conn : online event
+  conn -> health : GET /api/health/ping
+  health --> conn : 204 No Content
+  conn -> conn : state online, returned + 1
+  conn --> offline : returned changed
+  offline -> router : navigateByUrl(returnUrl) (L2-122)
+  router -> api : GET /api/categories/{slug}/listings
+  api --> router : 200 OK
   router --> actor : Show the original page
+else Member presses "Try again"
+  actor -> offline : Press "Try again"
+  offline -> conn : check()
+  conn --> offline : state
+  opt State is not offline
+    offline -> router : navigateByUrl(returnUrl)
+  end
 else Member presses "Open messages"
-  actor -> page : Press "Open messages"
-  page -> router : navigate /messages
-  router --> actor : Show conversations read from the conversations cache
+  actor -> offline : Press "Open messages"
+  offline -> router : navigate /messages
 end
 @enduml

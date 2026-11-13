@@ -1,6 +1,6 @@
 # ADR 0032: Use Jubilee offline
 
-Status: accepted
+Status: accepted; its deferrals are settled by ADR 0068
 
 ## Context
 
@@ -25,3 +25,7 @@ Journey 24 (L2-119 to L2-122) keeps Jubilee useful with no connection: the last 
 - **Realtime reconnect** after the connection returns (the SSE client reconnects on its own schedule).
 - **Clearing the device on sign-out.** `OfflineSnapshotStore.clear` and `OutgoingMessageQueue.clear` exist but are not called, because the app has no sign-out yet (journey 05).
 - **A browse offline route entry and a visual state for “Waiting to send”** in the sweeps: the queue lives in IndexedDB and has no network stub.
+
+## Amended by ADR 0068
+
+The deferrals above are settled. The Angular service worker (`@angular/service-worker`, production builds only) caches the app shell so Jubilee opens with no connection; it never caches an `/api` answer, which stays in IndexedDB as decided here; a page load goes to the network first and the cached `index.html` answers only when the network fails; a new version is used the next time Jubilee is opened. Background Sync sends the queue while the app is closed, with the in-page drainer as the fallback. Signing out clears the saved pages and the queue. The realtime reconnect was built by journey 18 (ADR 0053). The status page address is set at build time and remains an owner step.

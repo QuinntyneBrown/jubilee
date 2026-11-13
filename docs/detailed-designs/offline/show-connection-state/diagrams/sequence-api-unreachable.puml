@@ -16,38 +16,37 @@ skinparam package {
 }
 actor "Member" as actor
 box "Frontend — Jubilee Web" #E0F2FE
-  participant "ConnectionBanner" as banner
-  participant "SlowRequestInterceptor" as slow
+  participant "App and ConnectionBanner" as banner
+  participant "connectionInterceptor" as icpt
   participant "ConnectionService" as conn
-  participant "ReachabilityProbe" as probe
 end box
 box "Backend — Jubilee API" #D1FADF
   participant "Jubilee API" as api
   participant "HealthController" as health
 end box
 participant "Status page" as status
-slow -> api : API request
-api --> slow : Network error or 503 Service Unavailable
-slow -> conn : reportNetworkFailure()
-conn -> conn : navigator.onLine is true
-conn -> probe : check()
-probe -> health : GET /api/health/ping
+icpt -> api : API request
+api --> icpt : No answer (status 0, 502, 504, or 503 that is not MAINTENANCE)
+icpt -> conn : reportNetworkFailure()
+conn -> conn : navigator.onLine is true, state is not unreachable
+conn -> health : check(): GET /api/health/ping
 alt API does not answer
-  health --> probe : Network error or 502, 503, 504
-  probe --> conn : ServiceUnreachable
-  conn -> conn : Set state ServiceUnreachable, schedule next probe with back-off
-  conn --> banner : ServiceUnreachable
-  banner --> actor : "We can't reach Jubilee. This is on our side." with "Check status" (L2-121)
+  health --> conn : Network error, timeout after 5 s, or 502, 503, 504
+  conn -> conn : state unreachable, wait 5 s, then 10, 20, 40, 60 s (L2-121 AC3)
+  conn --> banner : unreachable, countdown = n
+  banner --> actor : "We can't reach Jubilee. This is on our side. Your messages are kept and will send when we're back." "Reconnecting… Trying again in {n} seconds." with "Check status" (L2-121 AC2)
+  loop Each second
+    conn --> banner : countdown - 1
+  end
+  conn -> health : check() when the wait ends
   opt Member presses "Check status"
     actor -> banner : Press "Check status"
-    banner -> status : Open in a new tab
+    banner -> status : Open STATUS_URL in a new tab
     status --> actor : Current service status
   end
 else API answers
-  health --> probe : 204 No Content
-  probe --> conn : Reachable
-  conn -> conn : Keep state Online
-  conn --> banner : Online
-  banner --> actor : No banner
+  health --> conn : 204 No Content
+  conn -> conn : state online
+  conn --> banner : No connection banner
 end
 @enduml

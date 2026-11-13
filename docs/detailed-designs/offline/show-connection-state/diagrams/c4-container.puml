@@ -6,11 +6,11 @@ title Containers — Show connection state
 Person(member, "Member", "Uses Jubilee on a mobile network")
 System_Boundary(jubilee, "Jubilee") {
   Container(web, "Jubilee Web", "Angular single-page application", "Detects the connection state. Shows the banner and the slow-request toast")
-  Container(api, "Jubilee API", "ASP.NET Core", "Probe endpoint /api/health/ping and real-time hub")
+  Container(api, "Jubilee API", "ASP.NET Core", "Probe endpoint /api/health/ping and event stream /api/events")
 }
-System_Ext(status, "Status page", "Public service status. Hosted apart from the API; address in ADR 0032")
+System_Ext(status, "Status page", "Public service status. Hosted apart from the API; address from environment.statusUrl")
 Rel(member, web, "Uses", "HTTPS")
-Rel(web, api, "Probes reachability of", "JSON/HTTPS")
-Rel(web, api, "Holds a persistent connection to", "WebSocket or server-sent events")
+Rel(web, api, "Probes reachability of", "HTTPS")
+Rel(web, api, "Holds the event stream of, reopened when the device is online again", "Server-sent events")
 Rel(web, status, "Links to", "HTTPS")
 @enduml

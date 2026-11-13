@@ -14,83 +14,103 @@ skinparam class {
 title Class structure — Browse offline
 
 enum ConnectionState {
-  Online
-  Offline
-  Reconnecting
-  ServiceUnreachable
-  Slow
+  online
+  offline
+  unreachable
+  slow
 }
 
 class ConnectionService {
   +state: Signal<ConnectionState>
-  +isOffline(): boolean
-  +retryNow(): void
+  +isOffline: Signal<boolean>
+  +returned: Signal<number>
+  +detail: WritableSignal<string | null>
+  +check(): Promise<void>
 }
 
-class BrowseStore {
-  +home: Signal<BrowseHomeDto>
-  +fromCache: Signal<boolean>
-  +savedAt: Signal<Date>
-  +load(): Promise<void>
-  +reload(): Promise<void>
-}
-
-class BrowseHomeDto {
-  +featuredBusinesses: BusinessCardDto[]
-  +featuredProducts: ProductCardDto[]
-  +categories: CategoryDto[]
-  +businessCount: number
-}
-
-class SnapshotStamp {
-  +resourceKey: string
-  +savedAt: Date
+class "Snapshot<T>" as Snapshot {
+  +key: string
+  +savedAt: string
+  +touchedAt: number
+  +data: T
 }
 
 class OfflineSnapshotStore {
-  +stamp(resourceKey: string, savedAt: Date): Promise<void>
-  +read(resourceKey: string): Promise<SnapshotStamp>
+  +save(key: string, data: T): Promise<void>
+  +read(key: string): Promise<Snapshot<T> | null>
   +clear(): Promise<void>
+  -keepLastConversations(db: IDBDatabase): Promise<void>
+}
+
+class DirectoryStore {
+  +state: Signal<LoadState<BrowseHome>>
+  +savedAt: Signal<string | null>
+  +load(): void
+  -failed(error: unknown): Promise<void>
 }
 
 class BrowsePage {
-  +showOfflineBanner(savedAt: Date): void
-  +tryAgain(): void
+  #offline: Signal<boolean>
+  #needsConnection: string
+}
+
+class ConversationPage {
+  #open(): void
+  -showSaved(): Promise<void>
+}
+
+class OfflineNavigation {
+  +show(returnUrl: string): void
 }
 
 class OfflinePage {
-  +returnUrl: string
-  +tryAgain(): void
-  +openMessages(): void
+  -returnUrl: string
+  #tryAgain(): Promise<void>
+  -leave(): void
 }
 
-class OfflineNavigationHandler {
-  +handle(error: unknown, attemptedUrl: string): void
+class RequiresConnection <<directive jbRequiresConnection>> {
 }
 
-class RequiresConnectionDirective {
-  +explanationId: string
-  +onStateChange(state: ConnectionState): void
+class connectionInterceptor <<HttpInterceptorFn>> {
 }
 
-class OfflineDataCleaner {
-  +clearPersonalData(): Promise<void>
+class SessionService {
+  +signOut(): Observable<void>
+}
+
+class OutgoingMessageQueue {
+  +clear(): Promise<void>
 }
 
 class GetBrowseHomeQueryHandler {
   +Handle(query: GetBrowseHomeQuery, ct: CancellationToken): Task<BrowseHomeDto>
 }
 
-ConnectionService --> ConnectionState : exposes
-BrowsePage --> BrowseStore : reads
-BrowseStore "1" --> "0..1" BrowseHomeDto : holds
-BrowseStore ..> OfflineSnapshotStore : stamps / reads
-BrowseStore ..> ConnectionService : reads
-OfflineSnapshotStore "1" *-- "*" SnapshotStamp : stores
-OfflineNavigationHandler ..> OfflinePage : renders
-OfflineNavigationHandler ..> ConnectionService : reads
-OfflinePage ..> ConnectionService : waits for Online
-RequiresConnectionDirective ..> ConnectionService : reads
-OfflineDataCleaner ..> OfflineSnapshotStore : clears
+class BrowseHomeDto {
+  +LiveBusinessCount: int
+  +Categories: IReadOnlyList<CategoryLinkDto>
+  +Featured: IReadOnlyList<BusinessCardDto>
+  +Products: IReadOnlyList<ProductCardDto>
+  +Groups: IReadOnlyList<CategoryGroupDto>
+  +Rooms: RoomsShelfDto
+}
+
+ConnectionService --> ConnectionState : holds
+OfflineSnapshotStore "1" *-- "*" Snapshot : stores
+BrowsePage *-- DirectoryStore : provides
+BrowsePage ..> ConnectionService : writes detail
+DirectoryStore ..> OfflineSnapshotStore : saves / reads browse-home
+DirectoryStore ..> ConnectionService : reads isOffline
+DirectoryStore ..> OfflineNavigation : shows offline page
+ConversationPage ..> OfflineSnapshotStore : saves / reads conversation:{id}
+ConversationPage ..> OfflineNavigation : shows offline page
+connectionInterceptor ..> OfflineNavigation : shows offline page
+connectionInterceptor ..> ConnectionService : reads isOffline
+OfflineNavigation ..> OfflinePage : navigates to
+OfflinePage ..> ConnectionService : waits for returned
+RequiresConnection ..> ConnectionService : reads isOffline
+SessionService ..> OfflineSnapshotStore : clears
+SessionService ..> OutgoingMessageQueue : clears
 GetBrowseHomeQueryHandler ..> BrowseHomeDto : returns
 @enduml

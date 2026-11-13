@@ -16,28 +16,33 @@ skinparam package {
 }
 actor "Member" as actor
 box "Frontend — Jubilee Web" #E0F2FE
-  participant "MessageComposer" as composer
-  participant "ConversationStore" as store
-  participant "IdempotencyKeyFactory" as keys
+  participant "ConversationPage" as page
   participant "ConnectionService" as conn
   participant "OutgoingMessageQueue" as queue
 end box
-box "Frontend — Jubilee service worker" #E0F2FE
-  participant "OutboxSyncHandler" as sync
+box "Frontend — Device" #E0F2FE
+  database "jubilee-outbox" as idb
 end box
-actor -> composer : Write a message and press "Send"
-composer -> store : send(body)
-store -> keys : create()
-keys --> store : Idempotency key (L2-132)
-store -> conn : isOffline()
-conn --> store : true
-store -> queue : enqueue(QueuedMessage in state WaitingToSend)
-queue -> queue : Assign next sequence, set queuedAt in UTC
-queue --> store : Stored on the device (L2-120)
-opt Browser supports Background Sync
-  store -> sync : Register sync tag jubilee-outbox
-  sync --> store : Registered
+box "Frontend — Jubilee service worker" #E0F2FE
+  participant "ServiceWorkerRegistration.sync" as sync
+end box
+actor -> page : Write a message and press "Send"
+page -> page : key = newKey() (L2-132)
+page -> conn : cannotDeliver()
+conn --> page : true (offline or unreachable)
+alt Text message
+  page -> queue : enqueue(conversationId, body, key)
+  queue -> idb : add { conversationId, body, idempotencyKey, queuedAt in UTC, state 'waiting' }
+  idb --> queue : Next sequence assigned
+  queue -> queue : Reload items in sequence order
+  opt Browser has SyncManager
+    queue -> sync : register('jubilee-outbox') (L2-120 AC5)
+    sync --> queue : Registered
+  end
+  queue --> page : items changed
+  page --> actor : Show the message marked "Waiting to send" (L2-120 AC1)
+else Message with a photo
+  page -> page : Not queued; the send fails with no answer
+  page --> actor : "Not sent. Check your connection." with "Try again" and "Delete" (L2-120 AC4)
 end
-store --> composer : Thread with the queued message
-composer --> actor : Show the message marked "Waiting to send"
 @enduml

@@ -17,33 +17,26 @@ skinparam package {
 actor "Member" as actor
 box "Frontend — Jubilee Web" #E0F2FE
   participant "ConversationPage" as page
-  participant "ConversationStore" as store
-  participant "QueueExpiryMonitor" as expiry
-  participant "OutgoingMessageQueue" as queue
   participant "QueueDrainer" as drainer
+  participant "OutgoingMessageQueue" as queue
 end box
-expiry -> queue : sweep(now)
-queue -> queue : Find WaitingToSend messages with queuedAt older than 24 hours
-queue -> queue : markNotSent(id) (L2-120)
-queue --> expiry : Expired messages
-expiry --> store : Queue changed
-store --> page : Thread with the message in state NotSent
+drainer -> queue : expire(now), every 60 s and before each drain
+queue -> queue : Find 'waiting' messages with queuedAt more than 24 hours ago
+queue -> queue : Mark each 'not-sent' (L2-120 AC3)
+queue --> drainer : Number marked
+queue --> page : items changed
 page --> actor : Show "Not sent" with "Try again" and "Delete"
 alt Member presses "Try again"
   actor -> page : Press "Try again"
-  page -> store : retry(id)
-  store -> queue : retry(id), keep the idempotency key, reset queuedAt
-  queue --> store : State WaitingToSend
-  store -> drainer : drain()
-  drainer --> store : Sent count
-  store --> page : Updated thread
-  page --> actor : Show the message as sent or "Waiting to send"
+  page -> queue : retry(message): state 'waiting', new queuedAt, same idempotencyKey
+  queue --> page : items changed
+  page -> drainer : drain(false)
+  drainer --> page : delivered + 1 when it was sent
+  page --> actor : Show the message as sent, or "Waiting to send"
 else Member presses "Delete"
   actor -> page : Press "Delete"
-  page -> store : delete(id)
-  store -> queue : remove(id)
-  queue --> store : Removed
-  store --> page : Updated thread
+  page -> queue : remove(message)
+  queue --> page : items changed
   page --> actor : Remove the message from the thread
 end
 @enduml

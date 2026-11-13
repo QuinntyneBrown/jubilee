@@ -5,87 +5,134 @@
 Jubilee is Toronto's Christian marketplace: a directory of
 Christian-owned businesses that members browse, message and send requests to.
 Members open it on phones and mobile networks, where the connection drops
-without warning. This feature keeps the directory readable when there is no
-connection at all.
+without warning. This feature keeps Jubilee opening, and the directory and the
+conversations a member has opened readable, when there is no connection at all.
 
-The feature rests on the `Jubilee service worker`, a script the browser installs
-alongside `Jubilee Web` and runs between the application and the network. Three
-terms are used throughout:
+The feature rests on two stores on the device. The `Jubilee service worker`, a
+script the browser installs beside `Jubilee Web`, keeps the files that start the
+application. The `jubilee-offline` IndexedDB database keeps the data of the
+pages that can be read offline. The service worker never stores an answer of
+`Jubilee API` (ADR 0032, ADR 0068). Four terms are used throughout:
 
-- **app shell** — static files (HTML, scripts, styles, fonts, icons) that start `Jubilee Web` without a network request
-- **cached directory** — last browse home response the device stored, together with the time it was saved
+- **app shell** — static files (`index.html`, scripts, styles, the icon) that start `Jubilee Web` without a network request
+- **saved page** — the last answer of the browse home, or of one opened conversation, kept in `jubilee-offline` with the time it was saved
 - **offline page** — full-page state shown in place of a page whose data is not on the device
+- **background read** — a request the application makes for itself (the session, `/api/me/`, health), which never replaces a page with the offline page
 
-When a member who has opened the browse home before opens it offline, the
-service worker answers from its cache. `BrowsePage` renders the cached directory
-under a persistent banner that names the time it was saved (L2-119). Controls
-that depend on the server (search, save, request and send actions) are disabled
-with an explanation. Sending a message is the one exception: the message is
-queued on the device (L2-120).
+When a member opens Jubilee with no connection, the service worker answers the
+page load with the cached `index.html`, so the application starts. When a
+member who has opened the browse home before opens it offline, `BrowsePage`
+renders the saved directory under the persistent banner that names the time it
+was saved (L2-119). Controls that depend on the server (search, save, book,
+quote, message and review actions) are disabled with an explanation. Sending a
+message in a conversation is the one exception: the message is queued on the
+device (L2-120, see the queue messages offline design).
 
-When the member opens a page that is not on the device, the offline page appears
-at the same address. It reloads the original page automatically when the
-connection returns (L2-122). Cached personal data leaves the device when the
-member signs out.
+When the member opens a page that has no saved copy, the offline page appears at
+the same address. It opens the original page when the connection returns
+(L2-122). When the member signs out, the saved pages and the outgoing queue are
+cleared from the device; the service worker's caches hold only the public app
+shell and stay.
 
 ## Description
 
-The slice runs from the browser cache to the two read endpoints whose responses
-the service worker stores.
+The slice runs from the browser's caches and IndexedDB to the two read endpoints
+whose answers are saved.
 
-- **`ngsw-config.json`** — build-time configuration of the `Jubilee service
-  worker`. It declares the asset group `app-shell` (install mode `prefetch`), the
-  data group `browse-home` for `GET /api/directory/home`, and the data group
-  `conversations` for `GET /api/conversations/{conversationId}` with
-  `maxSize: 20`. Both data groups use the `freshness` strategy: network first,
-  cache when the network fails. The network timeout before the cache answers is
-  5 seconds (ADR 0032).
-- **`conversations` data group** — least-recently-used cache holding the last
-  `20` opened conversations. Opening a twenty-first conversation evicts the
-  conversation opened longest ago.
-- **`ConnectionService`** — Angular service that exposes the connection state as
-  a signal. `BrowsePage`, `OfflinePage` and `RequiresConnectionDirective` read
-  `isOffline()` from it. The detection rules belong to the connection banner
-  feature (L2-121).
-- **`OfflineSnapshotStore`** — IndexedDB store `jubilee-offline` that records a
-  `SnapshotStamp` (resource key and `savedAt` in UTC) each time `BrowseStore`
-  receives a browse home response from the network.
-- **`BrowseStore`** — signal store behind `BrowsePage`. It loads the browse home
-  through `DirectoryApi`, marks the result as `fromCache` when the device is
-  offline, and exposes `savedAt` from `OfflineSnapshotStore`.
-- **`BrowsePage`** — page at `/browse`. Offline, it renders the cached directory
-  and asks `ConnectionBanner` for the persistent banner "You're offline. Showing
-  the directory saved at {time}. Search and messages will work again when you're
-  connected." with the action "Try again". The time is shown in
-  `America/Toronto` (L2-131).
-- **`ConnectionBanner`** — shared banner from the mock
-  `notifications/offline-banner`. The persistent variant has no dismiss button.
-  "Try again" calls `BrowseStore.reload()`.
-- **`RequiresConnectionDirective`** — attribute directive `jbRequiresConnection`
-  placed on search, save, request and send controls. Offline, it sets
-  `aria-disabled="true"`, blocks activation, and links an explanation through
-  `aria-describedby`. The explanation copy is “Needs a connection. It works again when you’re back online.” (ADR 0032). The message composer
-  does not carry the directive.
-- **`OfflineNavigationHandler`** — router error handler. A route whose data
-  request fails while `ConnectionService.isOffline()` is true is replaced by
-  `OfflinePage` with `skipLocationChange`, so the address bar keeps the original
-  URL. The handler passes that URL as `returnUrl`.
-- **`OfflinePage`** — page from the mock `pages/offline`. It shows "You're
-  offline. Jubilee needs a connection to load this page. Messages you already
-  opened are still readable, and anything you send is kept and delivered when
-  you're back." with "Try again" and "Open messages" (`/messages`). An effect on
-  `ConnectionService` navigates to `returnUrl` when the connection returns.
-- **`OfflineDataCleaner`** — service called by `SessionService.signOut()`. It
-  deletes the `conversations` data-group caches from Cache Storage, the
-  `jubilee-offline` database and the outgoing message queue. The app shell and
-  the public browse home stay cached.
+- **`provideServiceWorker`** — registration in `app.config.ts`:
+  `provideServiceWorker('jubilee-sw.js', { enabled: !isDevMode(), registrationStrategy: 'registerWhenStable:30000' })`.
+  The service worker runs in production builds only; a development server and
+  the Playwright suite run without it (ADR 0068).
+- **`jubilee-sw.js`** — the registered script, in
+  `frontend/projects/jubilee/public/`. It first adds a `fetch` listener that
+  leaves every `/api/` request to the network (`event.stopImmediatePropagation()`
+  and no `respondWith`), then loads the Angular service worker with
+  `importScripts('./ngsw-worker.js')`, then adds the `sync` listener for the tag
+  `jubilee-outbox` that the queue messages offline design describes.
+- **`ngsw-config.json`** — build-time configuration of the Angular service
+  worker. The asset group `app` (install mode `prefetch`) holds `/index.html`,
+  `/*.css`, `/*.js` and `/jubilee-icon.svg`; the asset group `assets` (install
+  mode `lazy`, update mode `prefetch`) holds `/static/**` and `/*.png`. There
+  are no data groups, so no `/api/**` answer is cached by the service worker.
+  `navigationRequestStrategy` is `freshness`: a page load goes to the network
+  first, so the server's status answers (404, 301 and the 503 maintenance page,
+  ADR 0056) still arrive, and the cached `index.html` answers only when the
+  network fails. A new version is fetched in the background and used the next
+  time Jubilee is opened, without a prompt.
+- **`eng/azure/server.js`** — serves `ngsw-worker.js`, `jubilee-sw.js`,
+  `safety-worker.js` and `ngsw.json` with `Cache-Control: no-cache`, so a new
+  deployment reaches devices that have the service worker installed.
+- **`ConnectionService`** — Angular service that holds the connection state as
+  a signal. This feature reads `isOffline()` (no network), `returned` (a count
+  that rises each time the connection comes back) and `detail` (the sentence
+  the offline banner adds). The detection rules belong to the show connection
+  state design (L2-121).
+- **`OfflineSnapshotStore`** — IndexedDB database `jubilee-offline`, object
+  store `snapshots` keyed by `key`. Each `Snapshot` holds `key`, `savedAt` (ISO
+  time in UTC), `touchedAt` and `data`. `save(key, data)` writes a snapshot;
+  `read(key)` returns it or `null`; `clear()` empties the store. A key that
+  starts with `conversation:` is a conversation, and `save` keeps only the
+  `KEPT_CONVERSATIONS` (`20`) most recently saved ones, deleting the rest. A
+  failure to read or write is swallowed: the page then has nothing saved.
+- **`DirectoryStore`** — store behind `BrowsePage`, provided by the page. `load()`
+  reads the browse home through `DIRECTORY_API.getHome()`, which marks the
+  request `OWN_OFFLINE_FALLBACK` so the page decides about the offline page
+  itself. A fresh answer is shown and saved under the key `browse-home`, and
+  `savedAt` becomes `null`. A request with no answer (status `0`), or any
+  failure while offline, reads the `browse-home` snapshot: when there is one,
+  the directory is shown from it and `savedAt` is set to its time; when there is
+  none and the device is offline, `OfflineNavigation.show()` opens the offline
+  page.
+- **`BrowsePage`** — page at `/browse`. An effect writes `ConnectionService.detail`
+  as "Showing the directory saved at {time}. Search and messages will work again
+  when you're connected." while `savedAt` is set, with the time formatted by
+  `clockTime` in `America/Toronto` (L2-131). Each rise of `returned` loads the
+  directory again. Offline, the search box of the hero is disabled and carries
+  the explanation `REQUIRES_CONNECTION`.
+- **`ConversationPage`** — page at `/messages/:conversationId`. Each conversation
+  that arrives from the network is saved under `conversation:{conversationId}`.
+  A read with no answer, or while offline, shows the saved copy; with none saved
+  and the device offline, it opens the offline page.
+- **`ConnectionBanner`** — `div[jb-connection-banner]` from the `components`
+  library, mounted once by the application shell `App` (mock
+  `notifications/offline-banner`). The `offline` kind reads "You're offline."
+  followed by `detail`, has no dismiss button, and offers "Try again", which
+  calls `ConnectionService.check()`.
+- **`RequiresConnection`** — attribute directive `jbRequiresConnection` on the
+  save, book, quote and message actions of a listing, the review actions of a
+  listing and "Post review". While offline it sets `disabled`,
+  `aria-disabled="true"`, `title` and `aria-description` to
+  `REQUIRES_CONNECTION`, "Needs a connection. It works again when you're back
+  online." (ADR 0032), and stops the click of a link. The message composer does
+  not carry it.
+- **`connectionInterceptor`** — HTTP interceptor of every request. A `GET` that
+  gets no answer while the device is offline opens the offline page through
+  `OfflineNavigation`, unless the request is marked `OWN_OFFLINE_FALLBACK` or is
+  a background read (`isBackgroundRead`).
+- **`OfflineNavigation`** — `show(returnUrl)` navigates to `/offline` with
+  `skipLocationChange`, so the address bar keeps the original URL, and passes
+  `returnUrl` in the navigation state. It does nothing when the offline page is
+  already shown.
+- **`OfflinePage`** — page at `/offline` from the mock `pages/offline`. It shows
+  "You're offline. Jubilee needs a connection to load this page. Messages you
+  already opened are still readable, and anything you send is kept and
+  delivered when you're back." with "Try again" and "Open messages"
+  (`/messages`). "Try again" calls `ConnectionService.check()` and opens
+  `returnUrl` unless the state is still `offline`; an effect on `returned` opens
+  `returnUrl` when the connection returns by itself. The inbox at `/messages`
+  has no saved copy; a saved conversation opens at its own address.
+- **`SessionService`** — `signOut()` calls `DELETE /api/session`. Once the server
+  has ended the session it clears `OfflineSnapshotStore` and
+  `OutgoingMessageQueue`, so nothing personal stays on the device (L2-119). The
+  service worker's caches hold only the public app shell and are kept. Drafts
+  (`DraftRegistry`, ADR 0046, L2-011 AC3) are kept, keyed by member.
 - **`DirectoryController`** and **`GetBrowseHomeQueryHandler`** — `Jubilee API`
-  endpoint `GET /api/directory/home` and its MediatR handler. The handler returns
-  a `BrowseHomeDto` with featured businesses, featured products and categories.
+  endpoint `GET /api/directory/home` and its MediatR handler, which returns a
+  `BrowseHomeDto` (`LiveBusinessCount`, `Categories`, `Featured`, `Products`,
+  `Groups`, `Rooms`).
 - **`ConversationsController`** and **`GetConversationQueryHandler`** — endpoint
-  `GET /api/conversations/{conversationId}`. The response for a signed-in member
-  carries `Cache-Control: private`; only the service worker's `conversations`
-  group stores it.
+  `GET /api/conversations/{conversationId}`, which returns a `ConversationDto`
+  to a participant of the conversation.
 
 ## Requirements
 
@@ -94,10 +141,9 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 
 | L2 ID | Refines (L1) | Requirement |
 |-------|--------------|-------------|
-| `L2-119` | `L1-017` | The system shall show the last cached directory with the persistent offline banner and "Try again" when a member who has opened the browse home before opens it offline. While offline, search, save, request and send controls shall be disabled with an explanation, except sending messages; the service worker shall cache the app shell, the browse home data and the last 20 opened conversations, and cached personal data shall be cleared on sign-out. |
-| `L2-122` | `L1-017` | The system shall show the offline page with "Try again" and "Open messages" when a member opens a page that is not cached while offline. The original page shall load automatically when the connection returns. |
-| `L2-120` | `L1-017` | A message written while offline shall be stored on the device marked "Waiting to send" and sent automatically, in order, when the connection returns. |
-| `L2-121` | `L1-017` | The persistent offline banner shall show within 2 seconds of the browser going offline. |
+| `L2-119` | `L1-017` | AC1. Given the member has opened the browse home before, when they open it offline, then the last cached directory is shown with the persistent banner "You're offline. Showing the directory saved at {time}. Search and messages will work again when you're connected." and "Try again". AC2. Given offline, when the member uses search, save, request or send actions, then those controls are disabled with an explanation, except sending messages, which are queued (L2-120). AC3. Given a service worker, when the app is installed, then it caches the app shell, so Jubilee opens with no connection; the browse home and the last 20 opened conversations are kept on the device (IndexedDB), and the service worker caches no `/api` answer. When the member signs out, the saved pages and the outgoing queue are cleared from the device. |
+| `L2-122` | `L1-017` | AC1. Given the member opens a page that is not cached while offline, when it fails, then the offline page shows "You're offline. Jubilee needs a connection to load this page. Messages you already opened are still readable, and anything you send is kept and delivered when you're back." with "Try again" and "Open messages". AC2. Given the connection returns while the offline page is shown, when detected, then the original page loads automatically. |
+| `L2-131` | `L1-018` | AC3. Given all stored times, when saved, then they are stored in UTC and displayed in America/Toronto, handling daylight saving changes correctly. |
 
 ## Diagrams
 
@@ -110,50 +156,50 @@ connection. The feature involves no external system.
 
 ### Containers
 
-`Jubilee Web` sends every request through the `Jubilee service worker`, which
-answers from its cache when `Jubilee API` is out of reach. `Jubilee API` reads
-the directory and conversations from the `Jubilee database`.
+The `Jubilee service worker` answers page loads with the cached app shell when
+the network fails and leaves every `/api/` request to the network. `Jubilee Web`
+saves the browse home and opened conversations in the `jubilee-offline`
+database on the device and reads them back when `Jubilee API` gives no answer.
 
 ![C4 container view for browsing offline](diagrams/c4-container.png)
 
 ### Components
 
-`BrowsePage` and `OfflinePage` read the connection state from
-`ConnectionService`. `BrowseStore` loads the browse home through `DirectoryApi`
-and stamps each fresh response in `OfflineSnapshotStore`; `OfflineDataCleaner`
-empties the personal caches at sign-out.
+`DirectoryStore` and `ConversationPage` save each fresh answer in
+`OfflineSnapshotStore` and read it back offline. `connectionInterceptor` and the
+two stores open `OfflinePage` through `OfflineNavigation` when nothing is saved;
+`SessionService` clears the device at sign-out.
 
 ![C4 component view for browsing offline](diagrams/c4-component.png)
 
 ### Class structure
 
-`BrowseStore` holds a `BrowseHomeDto` and a `SnapshotStamp`. `OfflinePage` and
-`RequiresConnectionDirective` depend on `ConnectionService`, and
-`OfflineDataCleaner` clears what `OfflineSnapshotStore` and the service worker
-caches hold.
+`OfflineSnapshotStore` holds `Snapshot` records. `DirectoryStore`,
+`ConversationPage`, `OfflinePage` and `RequiresConnection` depend on
+`ConnectionService`, and `SessionService` clears both stores on the device.
 
 ![Class diagram for browsing offline](diagrams/class-structure.png)
 
-### Behaviour — open the cached directory
+### Behaviour — open the saved directory
 
-Online, the service worker stores the browse home response and `BrowseStore`
-records the time. Offline, the service worker answers from the `browse-home`
-cache and `BrowsePage` shows the persistent banner with the saved time.
+Online, `DirectoryStore` saves the browse home as it arrives. Offline, the
+service worker starts Jubilee from the cached app shell, the request for the
+browse home gets no answer, and `BrowsePage` shows the saved directory under the
+persistent banner with its time.
 
-![Sequence diagram for opening the cached directory](diagrams/sequence-open-cached-directory.png)
+![Sequence diagram for opening the saved directory](diagrams/sequence-open-cached-directory.png)
 
-### Behaviour — open an uncached page offline
+### Behaviour — open a page with no saved copy offline
 
-The service worker has no cached response, so `OfflineNavigationHandler` shows
+A read with no answer while offline makes `connectionInterceptor` show
 `OfflinePage` at the original address. When `ConnectionService` reports the
-connection again, `OfflinePage` loads the original page.
+connection again, `OfflinePage` opens the original page.
 
-![Sequence diagram for opening an uncached page offline](diagrams/sequence-open-uncached-page.png)
+![Sequence diagram for opening a page with no saved copy offline](diagrams/sequence-open-uncached-page.png)
 
-### Behaviour — clear cached personal data on sign-out
+### Behaviour — clear the device on sign-out
 
-`SessionService` ends the session on the server and then calls
-`OfflineDataCleaner`, which removes cached conversations, snapshot stamps and
-queued messages from the device.
+`SessionService` ends the session on the server and then clears
+`OfflineSnapshotStore` and `OutgoingMessageQueue`. Drafts and the app shell stay.
 
-![Sequence diagram for clearing cached personal data on sign-out](diagrams/sequence-clear-on-sign-out.png)
+![Sequence diagram for clearing the device on sign-out](diagrams/sequence-clear-on-sign-out.png)
