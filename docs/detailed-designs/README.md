@@ -104,9 +104,12 @@ and observability are marked `<TO SUPPLY>` in the feature designs.
 
 | Feature | L2 requirements cited |
 |---|---|
+| [Give a listing an address](listings/give-listing-an-address/README.md) | `L2-241`, `L2-242`, `L2-245`, `L2-072`, `L2-113` |
+| [Open a listing by its address](listings/open-listing-by-address/README.md) | `L2-243`, `L2-245`, `L2-113`, `L2-028`, `L2-037` |
 | [Report a listing](listings/report-listing/README.md) | `L2-039`, `L2-126`, `L2-128`, `L2-132`, `L2-133` |
 | [Save a listing](listings/save-listing/README.md) | `L2-041`, `L2-042`, `L2-005`, `L2-012`, `L2-118`, `L2-133` |
 | [Share a listing](listings/share-listing/README.md) | `L2-038`, `L2-028`, `L2-130` |
+| [Share the address of a listing](listings/share-listing-address/README.md) | `L2-244`, `L2-245`, `L2-038`, `L2-078`, `L2-085`, `L2-087` |
 | [View a business page](listings/view-business-page/README.md) | `L2-033`, `L2-034`, `L2-037`, `L2-040`, `L2-028`, `L2-118`, `L2-133`, `L2-205` |
 | [View a product](listings/view-product/README.md) | `L2-035`, `L2-036`, `L2-028`, `L2-118` |
 | [View a space](listings/view-space/README.md) | `L2-205`, `L2-206`, `L2-208`, `L2-012`, `L2-028`, `L2-037`, `L2-118` |
@@ -245,6 +248,7 @@ Decisions in [ADR 0066](../adr/0066-reviews.md).
 | [Assure security](security/assure-security/README.md) | `L2-142`, `L2-143`, `L2-144`, `L2-180`, `L2-133` |
 | [Authorize requests](security/authorize-requests/README.md) | `L2-133`, `L2-143` |
 | [Authorize staff requests](security/authorize-staff-requests/README.md) | `L2-191`, `L2-098`, `L2-133` |
+| [Keep addresses safe](security/keep-addresses-safe/README.md) | `L2-246`, `L2-242`, `L2-135`, `L2-137`, `L2-139` |
 | [Limit abuse](security/limit-abuse/README.md) | `L2-137`, `L2-141`, `L2-007`, `L2-008`, `L2-143` |
 | [Protect credentials and sessions](security/protect-credentials-and-sessions/README.md) | `L2-134`, `L2-135`, `L2-010`, `L2-009` |
 | [Restrict staff access by network](security/restrict-staff-network/README.md) | `L2-192`, `L2-189` |

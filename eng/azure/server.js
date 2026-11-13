@@ -13,6 +13,10 @@
 // Where the folder holds routes.json (the app's host), a page load gets its status first: the address
 // is matched against routes.json and the API is asked (GET /api/documents/status) for a 404, 403 or
 // 301; maintenance answers 503 and an unhandled failure 500 with static pages (ADR 0056).
+// With ADDRESS_DOMAIN and APP_ORIGIN set (the app's host), a request whose Host is one label under that domain is a
+// listing's own address, https://{slug}.jubilee.to: it is answered 301 to the listing's page on APP_ORIGIN, which
+// the API decides (GET /api/addresses/{label}), or with the static not-found page; never with a file, the API or a
+// cookie. A Host that is neither one of OWN_HOSTS nor under the domain is refused with 400 (ADR 0071).
 // server.test.js beside this file holds its tests: `node --test eng/azure/server.test.js`.
 'use strict';
 
@@ -577,6 +581,124 @@ async function pageLoad(req, res, known, urlPath) {
   return preview ? proxy(req, res, preview) : serve(req, res);
 }
 
+// ---- A listing's own address: https://{slug}.{ADDRESS_DOMAIN} (L2-242 AC6, L2-243, L2-246, ADR 0071) ----
+
+// Off unless both are set: the domain addresses sit under, and the origin of the app they lead to.
+const addressDomain = (process.env.ADDRESS_DOMAIN || '').trim().replace(/^\.+|\.+$/g, '').toLowerCase();
+const appOrigin = (process.env.APP_ORIGIN || '').trim().replace(/\/+$/, '');
+const addresses = addressDomain !== '' && /^https?:\/\/[^/\s]+$/.test(appOrigin);
+// The hosts Jubilee serves itself from this site: OWN_HOSTS and the name App Service gave it.
+const ownHosts = new Set(
+  `${process.env.OWN_HOSTS || ''},${process.env.WEBSITE_HOSTNAME || ''}`
+    .split(',')
+    .map((entry) => entry.trim().toLowerCase())
+    .filter(Boolean),
+);
+// What a slug can be: 3 to 40 of a to z, 0 to 9 and single hyphens (AddressRules in the API).
+const wellFormed = /^(?=.{3,40}$)[a-z0-9]+(-[a-z0-9]+)*$/;
+const ADDRESS_PATH = '/api/addresses/';
+
+// Whose request this is: { kind: 'own' }, { kind: 'address', label }, { kind: 'malformed' } (under the domain but
+// not one well-formed label) or { kind: 'foreign' }. A loopback name or an IP literal is the platform's own probe.
+function hostKind(req) {
+  const name = String(req.headers.host || '')
+    .trim()
+    .toLowerCase()
+    .replace(/:\d+$/, '')
+    .replace(/\.$/, '');
+  if (name === '' || name === 'localhost' || ownHosts.has(name) || /^[\d.]+$/.test(name) || /^\[[0-9a-f:.]+\]$/.test(name)) {
+    return { kind: 'own' };
+  }
+  if (!name.endsWith('.' + addressDomain)) {
+    return { kind: 'foreign' };
+  }
+  const label = name.slice(0, -addressDomain.length - 1);
+  return wellFormed.test(label) ? { kind: 'address', label } : { kind: 'malformed' };
+}
+
+// The static not-found page, its links, icon and font pointed at the app: an address serves no file of its own.
+function addressNotFound(req, res) {
+  let html;
+  try {
+    html = fs.readFileSync(path.join(root, 'static', 'not-found.html'), 'utf8');
+  } catch {
+    return plain(req, res, 404, 'Not found.');
+  }
+  html = html.replace(/(href=|url\()"\/(?!\/)/g, `$1"${appOrigin}/`);
+  secure(req, res);
+  res.writeHead(404, { 'Content-Type': types['.html'], 'Cache-Control': 'no-store' });
+  return res.end(req.method === 'HEAD' ? undefined : html);
+}
+
+// Asks the API where the address leads. Resolves with its answer, or null when it did not answer in time. No cookie
+// is passed: an address reads none (L2-246 AC3).
+function askAddress(req, label, urlPath) {
+  return new Promise((resolve) => {
+    const headers = stamp({ host: api.host, accept: 'application/json' }, callerAddress(req));
+    for (const name of ['x-forwarded-for', 'x-forwarded-proto', 'x-correlation-id']) {
+      if (req.headers[name]) {
+        headers[name] = req.headers[name];
+      }
+    }
+    const client = api.protocol === 'https:' ? https : http;
+    const target = `${ADDRESS_PATH}${label}?path=${encodeURIComponent(urlPath)}`;
+    const upstream = client.request(upstreamOptions('GET', target, headers), (answer) => {
+      const chunks = [];
+      answer.on('data', (chunk) => chunks.push(chunk));
+      answer.on('end', () => {
+        clearTimeout(timer);
+        let body = null;
+        try {
+          body = JSON.parse(Buffer.concat(chunks).toString('utf8'));
+        } catch {
+          // Not JSON: only the status is read.
+        }
+        resolve({ status: answer.statusCode || 502, headers: answer.headers, body });
+      });
+      answer.on('error', () => resolve(null));
+    });
+    const timer = setTimeout(() => upstream.destroy(new Error('The API did not answer in time.')), statusTimeoutMs);
+    upstream.on('error', () => {
+      clearTimeout(timer);
+      resolve(null);
+    });
+    upstream.end();
+  });
+}
+
+// Answers a listing's address: 301 to its page in the app, or the not-found page. The target is APP_ORIGIN, a
+// setting, then a path under /b/ the API built, then the query as it came; nothing of the request can name another
+// site (L2-246 AC6).
+async function openAddress(req, res, label) {
+  const url = req.url || '/';
+  const urlPath = url.split('?')[0];
+  if (!api || (req.method !== 'GET' && req.method !== 'HEAD') || urlPath === '/api' || urlPath.startsWith('/api/')) {
+    return addressNotFound(req, res);
+  }
+  const answer = await askAddress(req, label, urlPath);
+  if (!answer || answer.status >= 500) {
+    secure(req, res);
+    res.writeHead(503, { 'Content-Type': 'text/plain; charset=utf-8', 'Retry-After': '5', 'Cache-Control': 'no-store' });
+    return res.end(req.method === 'HEAD' ? undefined : 'Jubilee is starting.');
+  }
+  if (answer.status === 429) {
+    secure(req, res);
+    res.writeHead(429, {
+      'Content-Type': 'text/plain; charset=utf-8',
+      'Retry-After': String(answer.headers['retry-after'] || 60),
+      'Cache-Control': 'no-store',
+    });
+    return res.end(req.method === 'HEAD' ? undefined : 'You’re doing that a lot. Try again shortly.');
+  }
+  const location = answer.status === 200 && answer.body && typeof answer.body.location === 'string' ? answer.body.location : '';
+  if (!/^\/b\/[A-Za-z0-9%._~-]+(\/[A-Za-z0-9%._~!$&'()*+,;=:@-]+)*$/.test(location) || /(^|\/)\.\.?(\/|$)/.test(location)) {
+    return addressNotFound(req, res);
+  }
+  secure(req, res);
+  res.writeHead(301, { Location: appOrigin + location + (url.includes('?') ? url.slice(url.indexOf('?')) : ''), 'Cache-Control': 'no-store' });
+  return res.end();
+}
+
 function locate(urlPath) {
   let decoded;
   try {
@@ -630,6 +752,10 @@ function serve(req, res) {
   res.setHeader('Content-Type', type);
   res.setHeader('ETag', etag);
   res.setHeader('Last-Modified', found.mtime.toUTCString());
+  if (ext === '.woff2' || ext === '.woff') {
+    // A font is fetched with CORS: the not-found page of a listing's address draws Archivo from the app (ADR 0071).
+    res.setHeader('Access-Control-Allow-Origin', '*');
+  }
   res.setHeader(
     'Cache-Control',
     ext === '.html' || worker.test(file) ? 'no-cache' : hashed.test(file) ? 'public, max-age=31536000, immutable' : 'public, max-age=3600',
@@ -674,6 +800,18 @@ function serve(req, res) {
 }
 
 const server = http.createServer((req, res) => {
+  if (addresses) {
+    const whose = hostKind(req);
+    if (whose.kind === 'address') {
+      return openAddress(req, res, whose.label);
+    }
+    if (whose.kind === 'malformed') {
+      return addressNotFound(req, res);
+    }
+    if (whose.kind === 'foreign') {
+      return plain(req, res, 400, 'Bad request.');
+    }
+  }
   const urlPath = (req.url || '/').split('?')[0];
   if (urlPath === '/api' || urlPath.startsWith('/api/')) {
     // Without an API, or outside API_PATHS, an /api path is never answered with the page.

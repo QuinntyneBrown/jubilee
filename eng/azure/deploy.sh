@@ -9,6 +9,9 @@
 #
 # Every deployment also applies the app settings the launching-soon forms need (ADR 0047) and
 # fails unless the marketing host forwards /api/launch and nothing else. No setting is made by hand.
+#
+# ADDRESS_DOMAIN=jubilee.to turns on listing addresses (https://{slug}.jubilee.to, ADR 0071). Give it only after
+# the wildcard DNS record and certificate of README.md, "Listing addresses", exist.
 set -euo pipefail
 
 GROUP=${GROUP:-rg-jubilee-prod}
@@ -164,6 +167,14 @@ ensure_settings "$APP_APP" "Launch__TeamEmail=$LAUNCH_TEAM_EMAIL"
 # The deletion ledger and the export store live on the app's persistent storage, outside the database and
 # outside the deployed folder, so a restore of the database or a new deployment keeps them (L2-017 AC7, ADR 0069).
 ensure_settings "$APP_APP" "Deletions__LedgerPath=/home/data/deletions/ledger.jsonl" "Exports__Root=/home/data/exports"
+
+# A listing's own address, https://{slug}.$ADDRESS_DOMAIN (ADR 0071): set only when ADDRESS_DOMAIN is given, which
+# the owner does once the wildcard DNS record and certificate exist (README.md, "Listing addresses"). The host
+# answers the addresses and the API hands them out; without it every shared link stays the app's.
+if [[ -n "${ADDRESS_DOMAIN:-}" ]]; then
+  ensure_settings "$APP_APP" "ADDRESS_DOMAIN=$ADDRESS_DOMAIN" "APP_ORIGIN=$API_URL" "OWN_HOSTS=${API_URL#https://}" \
+    "Addresses__Domain=$ADDRESS_DOMAIN"
+fi
 
 az webapp restart -g "$GROUP" -n "$APP_APP"
 

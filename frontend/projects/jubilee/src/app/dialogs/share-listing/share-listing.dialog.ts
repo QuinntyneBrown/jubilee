@@ -10,9 +10,12 @@ import {
   DialogBody,
   DialogFooter,
 } from 'components';
+import { listingAddress } from 'api';
 
 export interface ShareListingData {
   slug: string;
+  /** The listing's address, where the API states one (L2-244). */
+  address?: string | null;
   businessName: string;
 }
 
@@ -20,7 +23,7 @@ export interface ShareListingData {
 const COPIED_MS = 2000;
 
 /**
- * ShareListingDialog (L2-038): the listing's canonical link with "Copy", "E-mail", "WhatsApp"
+ * ShareListingDialog (L2-038, L2-244): the listing's address with "Copy", "E-mail", "WhatsApp"
  * and, where the device has a share sheet, "More…". Anyone can share, signed in or not.
  */
 @Component({
@@ -35,8 +38,12 @@ export class ShareListingDialog {
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
   protected readonly data = inject<ShareListingData>(DIALOG_DATA);
 
-  /** The canonical link: https://{host}/b/{slug}. */
-  protected readonly url = `${this.document.location.origin}/b/${this.data.slug}`;
+  /** The listing's address, or its page on this host where it has none (L2-244 AC1, AC6). */
+  protected readonly url = listingAddress(
+    this.data.address,
+    this.data.slug,
+    this.document.location.origin,
+  ).url;
   protected readonly mailto = `mailto:?subject=${encodeURIComponent(`${this.data.businessName} on Jubilee`)}&body=${encodeURIComponent(this.url)}`;
   protected readonly whatsapp = `https://wa.me/?text=${encodeURIComponent(`${this.data.businessName} on Jubilee ${this.url}`)}`;
   /** Whether this device has a share sheet; "More…" is hidden where it has none (L2-038 AC3). */

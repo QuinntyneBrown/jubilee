@@ -1,6 +1,7 @@
 import type { Locator, Page } from '@playwright/test';
 import type { Region, Screen } from '../fixtures/visual';
 import { SpaceFields } from './list-business.page';
+import { AddressField } from './address-field';
 import { ShellPage } from './shell.page';
 
 /** `/my-business/listing`: the listing editor (L2-087, L2-088). */
@@ -22,6 +23,8 @@ export class EditListingPage extends ShellPage implements Screen {
   readonly status: Locator;
   readonly summary: Locator;
   readonly success: Locator;
+  /** "Your address": the listing's address as text that cannot be edited (L2-244 AC4). */
+  readonly address: AddressField;
   readonly conflict: Locator;
   readonly preview: Locator;
   readonly photoTiles: Locator;
@@ -56,6 +59,7 @@ export class EditListingPage extends ShellPage implements Screen {
     this.status = this.form.locator('.inline-status');
     this.summary = this.form.locator('.form-summary');
     this.success = this.form.locator('.alert--success');
+    this.address = new AddressField(this.form);
     this.conflict = this.form
       .locator('.alert--danger')
       .filter({ hasText: 'changed since you opened' });

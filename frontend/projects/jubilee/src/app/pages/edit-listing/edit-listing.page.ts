@@ -50,7 +50,8 @@ import {
   InputAddon,
   SpaceCardPreview,
 } from 'components';
-import { LoadState, errorReference } from 'api';
+import { ListingLink, LoadState, errorReference, listingAddress } from 'api';
+import { DOCUMENT } from '@angular/common';
 import {
   INCLUSIONS,
   PLACES,
@@ -139,6 +140,15 @@ export class EditListingPage implements OnInit {
   );
   protected readonly saving = signal<Saving>('idle');
   protected readonly saved = signal(false);
+  /** The address after and before the last save, when the save moved it (L2-245 AC4). */
+  protected readonly moved = signal<{ now: string; before: string } | null>(null);
+  private readonly origin = inject(DOCUMENT).location.origin;
+
+  /** The listing's address as the editor shows it: text that cannot be edited (L2-244 AC4). */
+  protected listingLink(editor: ListingEditor): ListingLink {
+    return listingAddress(editor.address, editor.slug, this.origin);
+  }
+
   protected readonly failure = signal<'conflict' | 'failed' | null>(null);
   protected readonly photoError = signal<string | null>(null);
   protected readonly photoBusy = signal(false);
@@ -366,6 +376,13 @@ export class EditListingPage implements OnInit {
     this.api.save(changes).subscribe({
       next: (next) => {
         this.saving.set('idle');
+        // A new name moved the address; the old one keeps working (L2-245 AC4).
+        const before = this.state();
+        this.moved.set(
+          before.status === 'loaded' && before.value.slug !== next.slug
+            ? { now: this.listingLink(next).text, before: this.listingLink(before.value).text }
+            : null,
+        );
         this.adopt(next);
         this.saved.set(true);
       },

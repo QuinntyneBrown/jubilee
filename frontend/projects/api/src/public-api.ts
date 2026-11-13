@@ -51,6 +51,7 @@ export * from './lib/helpers/clock.service';
 export * from './lib/helpers/load-state';
 export * from './lib/helpers/rate-limit';
 export * from './lib/helpers/message-time';
+export * from './lib/helpers/listing-address';
 export * from './lib/api/feedback-api';
 export * from './lib/models/feedback';
 export * from './lib/api/launch-api';

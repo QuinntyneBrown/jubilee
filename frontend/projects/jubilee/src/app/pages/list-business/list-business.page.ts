@@ -19,7 +19,9 @@ import {
   OfferKind,
   SpaceTerm,
   PublishedListing,
+  listingAddress,
 } from 'api';
+import { DOCUMENT } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
   Chip,
@@ -41,6 +43,7 @@ import {
   Select,
   Checkbox,
   ChoiceCard,
+  Card,
   ChoiceCards,
   Skeleton,
   ItemList,
@@ -52,6 +55,7 @@ import {
   MomentCheck,
   Section,
 } from 'components';
+import { CopyLink } from '../../services/copy-link';
 import { ProductEditorDialog } from '../../dialogs/product-editor/product-editor.dialog';
 import { ServiceEditorDialog } from '../../dialogs/service-editor/service-editor.dialog';
 import { SessionService } from '../../services/session.service';
@@ -174,6 +178,7 @@ function summaryFor(field: FieldName, code: string, space: boolean): string {
     Select,
     Checkbox,
     ChoiceCard,
+    Card,
     ChoiceCards,
     Skeleton,
     ItemList,
@@ -190,6 +195,7 @@ function summaryFor(field: FieldName, code: string, space: boolean): string {
     InputGroup,
     InputAddon,
   ],
+  providers: [CopyLink],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './list-business.page.html',
 })
@@ -247,6 +253,13 @@ export class ListBusinessPage {
   protected readonly busy = signal(false);
   protected readonly savedAt = signal<string | null>(null);
   protected readonly published = signal<PublishedListing | null>(null);
+  /** "Your address" of the listing just published, with its "Copy" (L2-244 AC2). */
+  protected readonly copyLink = inject(CopyLink);
+  private readonly origin = inject(DOCUMENT).location.origin;
+  protected readonly listingLink = computed(() => {
+    const done = this.published();
+    return done ? listingAddress(done.address, done.slug, this.origin) : null;
+  });
   /** Where members find the listing just published (L2-078 AC1, L2-200 AC2). */
   protected readonly publishedIn = computed(() =>
     this.isSpace()

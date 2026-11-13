@@ -1,0 +1,45 @@
+@startuml
+title UML sequence behaviour — Refuse an unsafe or excessive address request
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Caller" as caller
+box "App host" #E0F2FE
+  participant "server.js" as host
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "Rate limiter" as limiter
+  participant "AddressesController" as controller
+  participant "ResolveAddressQueryHandler" as handler
+end box
+caller -> host : GET https://{slug}.jubilee.to/..%2F..%2Fsign-in?next=https://evil.example
+host -> limiter : GET /api/addresses/{slug}?path=/..%2F..%2Fsign-in\n(caller's address stated, no cookie)
+alt More than 120 a minute from this caller (L2-246 AC8)
+  limiter --> host : 429 with Retry-After
+  host --> caller : 429 with Retry-After
+else Within the limit
+  limiter -> controller : Pass
+  controller -> handler : Send ResolveAddressQuery
+  handler -> handler : Decode each segment; refuse an empty, "." or ".." segment,\na backslash or a control character (L2-246 AC6)
+  alt Unsafe path
+    handler --> controller : NotFoundException
+    controller --> host : 404
+    host --> caller : 404 static not-found page
+  else Safe path
+    handler --> controller : Location /b/{slug}/{segments encoded again}
+    controller --> host : 200
+    host --> caller : 301 APP_ORIGIN + location + the query unchanged\n(the target host is a setting, never the request)
+  end
+end
+@enduml

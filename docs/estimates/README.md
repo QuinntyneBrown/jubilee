@@ -1,6 +1,6 @@
 # Estimates
 
-- Overall effort: 415 days
+- Overall effort: 425 days
 - Complete: 77%
 
 | Subsystem | Effort | Complete |
@@ -11,9 +11,9 @@
 | [design-system](design-system.md) | 6 days | 30% |
 | [interaction-states](interaction-states.md) | 17 days | 5% |
 | [system-pages](system-pages.md) | 10 days | 100% |
-| [listings](listings.md) | 20 days | 100% |
+| [listings](listings.md) | 28 days | 99% |
 | [accounts](accounts.md) | 50 days | 99% |
-| [security](security.md) | 34 days | 34% |
+| [security](security.md) | 36 days | 37% |
 | [messaging](messaging.md) | 17 days | 98% |
 | [requests](requests.md) | 39 days | 100% |
 | [notifications](notifications.md) | 16 days | 100% |

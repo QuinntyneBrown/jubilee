@@ -1,0 +1,12 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Keep addresses safe
+
+Person(person, "Visitor or Member", "Opens the address of a listing")
+Person_Ext(prober, "Probing program", "Walks addresses or sends a crafted host or path")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace")
+
+Rel(person, jubilee, "Opens https://{slug}.jubilee.to in", "HTTPS")
+Rel(prober, jubilee, "Sends many or crafted address requests to", "HTTPS")
+@enduml

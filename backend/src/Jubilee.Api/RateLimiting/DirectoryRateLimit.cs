@@ -29,6 +29,18 @@ public sealed class RateLimitOptions
 
     /// <summary>Changes to reviews and replies to them allowed per member per hour (L2-238 AC6).</summary>
     public int ReviewChangesPerHour { get; set; } = 30;
+
+    /// <summary>Listing addresses resolved per client IP address per minute (L2-246 AC8).</summary>
+    public int AddressesPerMinute { get; set; } = 120;
+}
+
+/// <summary>
+/// Listing addresses have their own budget of 120 a minute per caller, so they cannot be walked to list the
+/// businesses on Jubilee faster than the directory allows (L2-246 AC8, ADR 0071).
+/// </summary>
+public static class AddressRateLimit
+{
+    public const string Policy = "addresses";
 }
 
 /// <summary>Edits of reviews and owners' replies: 30 an hour per member (L2-238 AC6, ADR 0066).</summary>
@@ -96,6 +108,17 @@ public static class DirectoryRateLimit
                 return RateLimitPartition.GetFixedWindowLimiter(client, _ => new FixedWindowRateLimiterOptions
                 {
                     PermitLimit = Math.Max(1, limit.SearchesPerMinute),
+                    Window = TimeSpan.FromMinutes(1),
+                    QueueLimit = 0,
+                });
+            });
+            limiter.AddPolicy(AddressRateLimit.Policy, context =>
+            {
+                var limit = context.RequestServices.GetRequiredService<IOptions<RateLimitOptions>>().Value;
+                var client = context.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+                return RateLimitPartition.GetFixedWindowLimiter($"address:{client}", _ => new FixedWindowRateLimiterOptions
+                {
+                    PermitLimit = Math.Max(1, limit.AddressesPerMinute),
                     Window = TimeSpan.FromMinutes(1),
                     QueueLimit = 0,
                 });

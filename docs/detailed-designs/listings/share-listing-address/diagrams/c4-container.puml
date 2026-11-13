@@ -1,0 +1,17 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Share the address of a listing
+
+Person(owner, "Owner", "Copies the address of their listing")
+Person(member, "Visitor or Member", "Shares a listing")
+System_Boundary(jubilee, "Jubilee") {
+  Container(web, "Jubilee Web", "Angular single-page application", "Share dialog, publish success, My business and the listing editor show and copy the address")
+  Container(api, "Jubilee API", "ASP.NET Core", "Makes the address from the slug and the address domain")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Listing slugs")
+}
+Rel(owner, web, "Uses", "HTTPS")
+Rel(member, web, "Uses", "HTTPS")
+Rel(web, api, "Reads listings with their address from", "JSON/HTTPS")
+Rel(api, db, "Reads the slug from", "EF Core")
+@enduml

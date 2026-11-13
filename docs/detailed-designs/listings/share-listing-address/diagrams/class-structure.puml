@@ -1,0 +1,101 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Share the address of a listing
+
+interface IAddressed {
+  +Slug: string?
+  +Address: string?
+}
+
+class AddressBehavior {
+  +Handle(request, next): Task<TResponse>
+}
+
+class AddressSettings {
+  +Domain: string
+  +AddressOf(slug: string): string?
+}
+
+class ListingPageDto {
+  +string Slug
+  +string? Address
+}
+
+class PublishedListingDto {
+  +string Slug
+  +string? Address
+}
+
+class MyBusinessDto {
+  +string? Slug
+  +string? Address
+  +string State
+  +bool Paused
+}
+
+class ListingEditorDto {
+  +string Slug
+  +string? Address
+}
+
+class ListingLink {
+  +url: string
+  +text: string
+}
+
+class "listingAddress()" as Helper <<function>> {
+  +listingAddress(address, slug, origin): ListingLink
+}
+
+class CopyLink {
+  +copied: Signal<boolean>
+  +copy(url: string, field?: HTMLInputElement): Promise<void>
+  +stop(): void
+}
+
+class ShareListingDialog {
+  +url: string
+  +copy(): Promise<void>
+  +more(): Promise<void>
+}
+
+class ListBusinessPage {
+  +listingLink: Signal<ListingLink | null>
+}
+
+class MyBusinessPage {
+  +address(business): ListingLink | null
+}
+
+class EditListingPage {
+  +listingLink(editor): ListingLink
+  +moved: Signal<{ now: string, before: string } | null>
+}
+
+ListingPageDto ..|> IAddressed
+PublishedListingDto ..|> IAddressed
+MyBusinessDto ..|> IAddressed
+ListingEditorDto ..|> IAddressed
+AddressBehavior ..> IAddressed : writes Address on
+AddressBehavior ..> AddressSettings : AddressOf(slug)
+Helper --> ListingLink : answers
+ShareListingDialog ..> Helper
+ListBusinessPage ..> Helper
+MyBusinessPage ..> Helper
+EditListingPage ..> Helper
+ListBusinessPage --> CopyLink
+MyBusinessPage --> CopyLink
+ListBusinessPage ..> PublishedListingDto : reads
+MyBusinessPage ..> MyBusinessDto : reads
+EditListingPage ..> ListingEditorDto : reads
+ShareListingDialog ..> ListingPageDto : reads
+@enduml

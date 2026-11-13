@@ -5,6 +5,7 @@
 | assure-security | 4 days | 0% |
 | authorize-requests | 3 days | 10% |
 | authorize-staff-requests | 4 days | 100% |
+| keep-addresses-safe | 2 days | 85% |
 | limit-abuse | 5 days | 20% |
 | protect-credentials-and-sessions | 4 days | 0% |
 | restrict-staff-network | 4 days | 95% |
@@ -33,3 +34,5 @@ re-encoded and kept by the media store.
 What is left: a running `clamd` and the cookieless media domain (owner steps, `eng/azure/README.md`);
 the scan for listing photos and feedback screenshots; re-encoding message photos; product photo
 uploads, which do not exist yet (journey 16).
+
+keep-addresses-safe (L2-246, ADR 0071): the classification of the host (own, address, foreign with 400), an address answering only a redirect or the not-found page with no cookie in or out, the redirect target built from a setting and a path the API encodes, the 404 for a path that tries to leave the listing, the limit of 120 addresses a minute and the origin rule are done with tests (`eng/azure/server.test.js`, `AddressResolutionTests`, `AddressRateLimitTests`, `ListingAddressTests`). Left, as owner steps of `eng/azure/README.md`: the wildcard certificate with its expiry alert and "HTTPS only" (L2-246 AC1, AC2).

@@ -341,6 +341,84 @@ test.describe('list your business (L2-071 to L2-079)', () => {
     await expect(list.fieldError).toHaveText(['Shorten this to 90 characters. It has 95.']);
   });
 
+  test('L2-244 AC2: the success state shows the address under "Your address" and copies it', async ({
+    page,
+    jb,
+    context,
+  }) => {
+    await context.grantPermissions(['clipboard-read', 'clipboard-write']);
+    const list = new ListBusinessPage(page);
+    await list.setWidth(1280);
+    await jb.signInAs('member');
+    await stubListingDrafts(page, { address: 'https://luzandre-com.jubilee.to' });
+    await jb.goto('/list');
+    await list.fillValid();
+    await list.publish.click();
+
+    await expect(list.addressHeading).toBeVisible();
+    await expect(list.address.value).toHaveValue('luzandre-com.jubilee.to');
+    await expect(list.address.value).toHaveAttribute('readonly', '');
+    await expect(list.address.help).toHaveText(
+      'Share this address anywhere. It opens your listing on Jubilee.',
+    );
+    await expect(list.address.status).toHaveText('');
+    await list.address.copy.click();
+
+    expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(
+      'https://luzandre-com.jubilee.to',
+    );
+    await expect(list.address.copy).toHaveText('Copied ✓');
+    await expect(list.address.status).toHaveText('Address copied');
+    await expect(list.address.status).toHaveAttribute('aria-live', 'polite');
+    await expect(list.address.copy).toBeFocused();
+    await expect(list.address.copy).toHaveText('Copy', { timeout: 5000 });
+  });
+
+  test('L2-244 AC6: with no address domain, the address is the listing’s page on this host', async ({
+    page,
+    jb,
+    context,
+  }) => {
+    await context.grantPermissions(['clipboard-read', 'clipboard-write']);
+    const list = new ListBusinessPage(page);
+    await list.setWidth(1280);
+    await jb.signInAs('member');
+    await stubListingDrafts(page);
+    await jb.goto('/list');
+    await list.fillValid();
+    await list.publish.click();
+
+    await expect(list.address.value).toHaveValue(/^localhost:\d+\/b\/luzandre-com$/);
+    await list.address.copy.click();
+    expect(await page.evaluate(() => navigator.clipboard.readText())).toMatch(
+      /^http:\/\/localhost:\d+\/b\/luzandre-com$/,
+    );
+  });
+
+  test('L2-244 AC7: at 360 px the address fits, keeps its full text and "Copy" is 44 px tall', async ({
+    page,
+    jb,
+  }) => {
+    const list = new ListBusinessPage(page);
+    await list.setWidth(360);
+    await jb.signInAs('member');
+    await stubListingDrafts(page, {
+      address: 'https://abundant-life-renovations-and-plumbing-s.jubilee.to',
+    });
+    await jb.goto('/list');
+    await list.fillValid();
+    await list.publish.click();
+
+    await expect(list.address.value).toHaveValue(
+      'abundant-life-renovations-and-plumbing-s.jubilee.to',
+    );
+    expect(await list.overflowsHorizontally()).toBe(false);
+    expect((await list.address.copy.boundingBox())?.height).toBeGreaterThanOrEqual(44);
+    await list.address.copy.focus();
+    await page.keyboard.press('Enter');
+    await expect(list.address.copy).toHaveText('Copied ✓');
+  });
+
   test('L2-078 AC1: a valid listing is published and live straight away', async ({ page, jb }) => {
     const list = new ListBusinessPage(page);
     await list.setWidth(1280);

@@ -1,0 +1,53 @@
+@startuml
+title UML sequence behaviour — Open the address of a listing
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Person" as person
+box "App host" #E0F2FE
+  participant "server.js" as host
+end box
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "BusinessPage" as page
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "AddressesController" as controller
+  participant "ResolveAddressQueryHandler" as handler
+  participant "GetDocumentStatusQueryHandler" as status
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+person -> host : GET https://Luzandre-Com.jubilee.to/p/faith-tee?utm_source=card
+host -> host : hostKind: one well-formed label under the domain,\nlower-cased (L2-243 AC3)
+host -> controller : GET /api/addresses/luzandre-com?path=/p/faith-tee\n(no cookie, L2-246 AC3)
+controller -> handler : Send ResolveAddressQuery
+handler -> db : Current slug of the public listing that kept the label
+db --> handler : slug or none
+handler --> controller : Location /b/{current slug or label}/p/faith-tee\n(L2-243 AC2, L2-245 AC2)
+controller --> host : 200 AddressDto
+host --> person : 301 https://app.jubilee.to/b/luzandre-com/p/faith-tee?utm_source=card\n(the same for a known, unknown or hidden listing, L2-243 AC4)
+person -> host : GET https://app.jubilee.to/b/luzandre-com/p/faith-tee (with the session cookie)
+host -> status : GET /api/documents/status?path=/b/luzandre-com/p/faith-tee
+status -> db : Public listing, or one the caller owns or moderates
+alt Public, or the owner's or the team's preview (L2-243 AC1, AC5)
+  status --> host : 200
+  host --> person : 200 the app
+  person -> page : The listing page shows
+  page -> page : Set the canonical link (L2-243 AC7)\nand record one listing view (L2-037)
+else Missing or not public (L2-243 AC4, L2-028)
+  status --> host : 404
+  host --> person : 404 the app, which shows the not-found page
+end
+@enduml

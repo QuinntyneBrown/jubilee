@@ -1,0 +1,51 @@
+@startuml
+title UML sequence behaviour — Publish a listing and receive an address
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Owner" as owner
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "ListBusinessPage" as page
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "ListingDraftsController" as controller
+  participant "PublishListingCommandHandler" as handler
+  participant "ListingSlugs" as slugs
+  participant "AddressRules" as rules
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+owner -> page : Press "Publish listing"
+page -> controller : POST /api/listing-drafts/{id}/publish
+controller -> handler : Send PublishListingCommand
+loop at most five times
+  handler -> slugs : UniqueAsync(name, kind)
+  slugs -> rules : SlugOf(name, kind) (L2-241 AC2, AC3; L2-242 AC5)
+  rules --> slugs : slug, numbered or not
+  slugs -> db : Slugs in use and kept that start with the slug
+  db --> slugs : taken slugs
+  slugs --> handler : first slug neither taken nor reserved,\nsuffix within 40 characters (L2-241 AC4; L2-242 AC2, AC4)
+  handler -> db : Save the listing with its slug
+  alt Saved
+    db --> handler : ok
+  else Another publish took the slug (unique index)
+    db --> handler : DbUpdateException
+    note right of handler : The listing is detached and the\nloop asks for a slug again (L2-242 AC3)
+  end
+end
+handler --> controller : PublishedListingDto with slug and address
+controller --> page : 200
+page --> owner : "{name} is live" and "Your address"
+@enduml

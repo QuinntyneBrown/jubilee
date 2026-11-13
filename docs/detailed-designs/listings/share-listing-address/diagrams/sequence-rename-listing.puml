@@ -1,0 +1,40 @@
+@startuml
+title UML sequence behaviour — Rename a listing and see the new address
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Owner" as owner
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "EditListingPage" as page
+  participant "listingAddress" as helper
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "SaveListingCommandHandler" as handler
+  participant "ListingSlugs" as slugs
+  participant "AddressBehavior" as behavior
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+owner -> page : Change the business name and press "Save changes"
+page -> handler : PUT /api/my-business/listing
+handler -> slugs : FollowNameAsync (L2-245 AC1)
+slugs -> db : Keep the old slug; move the listing to the new one
+handler -> db : SaveChanges
+handler --> behavior : ListingEditorDto with the new slug
+behavior --> page : ListingEditorDto with the new slug and address
+page -> helper : listingAddress(address, slug, origin)
+helper --> page : the new link; the page still holds the link shown before the save
+page --> owner : "Listing updated. Your changes are live now."\n"Your address is now {new address}. {old address} still opens your listing." (L2-245 AC4)
+@enduml

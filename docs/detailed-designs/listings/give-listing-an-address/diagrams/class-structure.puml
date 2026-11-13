@@ -1,0 +1,73 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Give a listing an address
+
+class AddressRules <<static>> {
+  +MinLength: int = 3
+  +MaxLength: int = 40
+  +SlugOf(name: string, kind: ListingKind): (string Slug, bool Numbered)
+  +WithNumber(slug: string, n: int): string
+  +IsWellFormed(label: string): bool
+}
+
+class AddressSettings {
+  +Domain: string
+  +Reserved: IReadOnlySet<string>
+  +IsReserved(label: string): bool
+  +AddressOf(slug: string): string?
+}
+
+class ListingSlugs <<static>> {
+  +UniqueAsync(db, settings, name, kind, listingId): Task<string>
+  +FollowNameAsync(db, settings, listing, now): Task
+  +CurrentOfAsync(db, slug): Task<string?>
+}
+
+class PublishListingCommandHandler {
+  +Handle(command): Task<PublishedListingDto>
+}
+
+class SaveListingCommandHandler {
+  +Handle(command): Task<ListingEditorDto>
+}
+
+class RealignListingSlugsCommand
+
+class RealignListingSlugsCommandHandler {
+  +Handle(command): Task<int>
+}
+
+class Listing {
+  +Guid Id
+  +string Slug
+  +string Name
+  +ListingKind Kind
+  +MoveTo(slug: string)
+}
+
+class ListingSlug {
+  +string Slug
+  +Guid ListingId
+  +DateTimeOffset RetiredAt
+  +{static} Keep(slug, listingId, now): ListingSlug
+}
+
+ListingSlugs ..> AddressRules : shapes slugs with
+ListingSlugs ..> AddressSettings : reads reserved words
+ListingSlugs --> Listing : reads slugs in use
+ListingSlugs --> ListingSlug : reads and writes kept slugs
+PublishListingCommandHandler ..> ListingSlugs : UniqueAsync
+SaveListingCommandHandler ..> ListingSlugs : FollowNameAsync
+RealignListingSlugsCommandHandler ..> RealignListingSlugsCommand : handles
+RealignListingSlugsCommandHandler ..> ListingSlugs : FollowNameAsync
+ListingSlug --> "1" Listing : kept for
+@enduml

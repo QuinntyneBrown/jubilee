@@ -1,0 +1,55 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Keep addresses safe
+
+class "server.js" as Server {
+  +addressDomain: string  (ADDRESS_DOMAIN)
+  +appOrigin: string  (APP_ORIGIN)
+  +ownHosts: Set<string>  (OWN_HOSTS, WEBSITE_HOSTNAME)
+  +hostKind(req): own | address | malformed | foreign
+  +openAddress(req, res, label)
+  +secure(req, res)
+}
+
+class RateLimitOptions {
+  +AddressesPerMinute: int = 120
+}
+
+class AddressRateLimit <<static>> {
+  +Policy: string = "addresses"
+}
+
+class AddressesController {
+  +Get(label: string, path: string?): Task<AddressDto>
+}
+
+class ResolveAddressQueryHandler {
+  +Handle(query): Task<AddressDto>
+  -SafePath(path: string?): string?
+}
+
+class AddressDto {
+  +string Location
+}
+
+class AddressSettings {
+  +Domain: string
+  +IsReserved(label: string): bool
+}
+
+Server ..> AddressesController : asks without a cookie
+AddressesController ..> AddressRateLimit : limited by
+AddressRateLimit ..> RateLimitOptions : reads
+AddressesController ..> ResolveAddressQueryHandler : sends the query to
+ResolveAddressQueryHandler ..> AddressSettings : checks reserved words
+ResolveAddressQueryHandler --> AddressDto : answers /b/{slug}{path}
+@enduml

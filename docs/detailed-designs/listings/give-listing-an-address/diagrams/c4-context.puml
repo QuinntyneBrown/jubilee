@@ -1,0 +1,12 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Give a listing an address
+
+Person(owner, "Owner", "Publishes a listing and may change its business name")
+Person(team, "Jubilee team", "Deploys Jubilee and runs its command line")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace")
+
+Rel(owner, jubilee, "Publishes or renames a listing in", "HTTPS")
+Rel(team, jubilee, "Runs jubilee migrate against")
+@enduml

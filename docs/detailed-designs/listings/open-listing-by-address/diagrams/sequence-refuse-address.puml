@@ -1,0 +1,42 @@
+@startuml
+title UML sequence behaviour — Open an address that cannot be a listing
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Person" as person
+box "App host" #E0F2FE
+  participant "server.js" as host
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "AddressesController" as controller
+  participant "ResolveAddressQueryHandler" as handler
+end box
+person -> host : GET an address
+alt More than one label deep, or a label that is not well formed (L2-243 AC6)
+  host --> person : 404 static not-found page (the API is not asked)
+else /api/** or a method other than GET and HEAD (L2-246 AC4)
+  host --> person : 404 static not-found page
+else One well-formed label
+  host -> controller : GET /api/addresses/{label}?path={path}
+  controller -> handler : Send ResolveAddressQuery
+  alt Reserved word, or a path with "..", "//" or a backslash
+    handler --> controller : NotFoundException (no database call, L2-243 AC8, L2-246 AC6)
+    controller --> host : 404 problem details
+    host --> person : 404 static not-found page
+  else More than 120 addresses a minute from one caller (L2-246 AC8)
+    controller --> host : 429 with Retry-After
+    host --> person : 429 with Retry-After
+  end
+end
+@enduml

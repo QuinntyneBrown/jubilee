@@ -1,0 +1,15 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Share the address of a listing
+
+Person(owner, "Owner", "Copies the address of their listing")
+Person(member, "Visitor or Member", "Shares a listing with a friend")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace")
+System_Ext(outside, "Card, sign, e-mail or chat app", "Carries the address to other people")
+
+Rel(owner, jubilee, "Copies the address in", "HTTPS")
+Rel(member, jubilee, "Opens the share dialog in", "HTTPS")
+Rel(owner, outside, "Puts the address on")
+Rel(member, outside, "Sends the address through")
+@enduml

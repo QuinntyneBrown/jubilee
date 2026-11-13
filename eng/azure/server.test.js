@@ -3,7 +3,8 @@
 // the environment, against a stand-in for the Jubilee API. Nothing but Node's standard library.
 //
 // Traces to: L2-218 (AC8, AC9), L2-216 (AC6, AC10), L2-217 (AC6), L2-186, L2-038 (AC4), L2-113 (AC1 to AC3),
-// L2-114 (AC1), L2-115 (AC3), L2-117 (AC1), L2-119 (AC3); ADR 0040, ADR 0044, ADR 0047, ADR 0055, ADR 0056, ADR 0068.
+// L2-114 (AC1), L2-115 (AC3), L2-117 (AC1), L2-119 (AC3), L2-242 (AC6), L2-243, L2-245 (AC2), L2-246; ADR 0040, ADR 0044,
+// ADR 0047, ADR 0055, ADR 0056, ADR 0068, ADR 0071.
 'use strict';
 
 const { test, after } = require('node:test');
@@ -790,4 +791,209 @@ test('Given a kept submission 12 months old, when the round runs, then it is del
   await until(() => kept(dir).length === 0, 'the old submission was deleted');
   await until(() => /Deleted 1 kept launch submission 12 months old\./.test(site.log), 'the log says one was deleted');
   assert.equal(api.requests.length, 0);
+});
+
+// ---- A listing's own address (L2-242 AC6, L2-243, L2-245 AC2, L2-246; ADR 0071) ----
+
+const LUZANDRE = 'luzandre-com.jubilee.test';
+const located = (location) => () => ({ status: 200, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location }) });
+
+/** The app's host with addresses on, as the deployment sets it; the stand-in answers /api/addresses. */
+async function addressHost(answer = located('/b/luzandre-com'), settings = {}) {
+  const api = await standIn('127.0.0.1', (seen) =>
+    seen.url.startsWith('/api/addresses/')
+      ? answer(seen)
+      : seen.url.startsWith('/api/documents/status')
+        ? { status: 200, headers: { 'Content-Type': 'application/json' }, body: '{"status":200}' }
+        : { status: 200, headers: { 'Content-Type': 'application/json' }, body: '{"from":"the API"}' },
+  );
+  const site = await host({
+    API_ORIGIN: api.origin,
+    ADDRESS_DOMAIN: 'jubilee.test',
+    APP_ORIGIN: 'https://app.jubilee.test',
+    OWN_HOSTS: 'app.jubilee.test, jubilee-app.azurewebsites.test',
+    ...settings,
+  });
+  fs.copyFileSync(path.join(PUBLIC, 'routes.json'), path.join(site.root, 'routes.json'));
+  fs.mkdirSync(path.join(site.root, 'static'));
+  fs.copyFileSync(path.join(PUBLIC, 'static', 'not-found.html'), path.join(site.root, 'static', 'not-found.html'));
+  fs.writeFileSync(path.join(site.root, 'main-ABCDEFGH.js'), 'console.log("the app")');
+  return { api, site, asked: () => api.requests.filter((r) => r.url.startsWith('/api/addresses/')) };
+}
+
+const at = (site, hostName, path_ = '/', more = {}) =>
+  call(site, { path: path_, ...more, headers: { Host: hostName, 'X-Forwarded-Proto': 'https', 'X-Forwarded-For': '203.0.113.5:51234', ...more.headers } });
+
+function isNotFoundPage(answer) {
+  assert.equal(answer.status, 404);
+  assert.match(answer.headers['content-type'], /text\/html/);
+  assert.match(answer.body, /We can’t find that page/);
+  assert.match(answer.body, /href="https:\/\/app\.jubilee\.test\/"[^>]*>Back to browse/);
+  assert.match(answer.body, /href="https:\/\/app\.jubilee\.test\/search"/);
+  assert.doesNotMatch(answer.body, /<script/i);
+  assert.equal(answer.headers['set-cookie'], undefined);
+}
+
+test('L2-243 AC1: Given the address of a listing, when it is opened, then it answers 301 to the listing’s page in the app and asks the API without the cookie', async () => {
+  const { site, asked } = await addressHost();
+
+  const answer = await at(site, LUZANDRE, '/', { headers: { Cookie: '__Host-jubilee.session=secret', 'X-Correlation-ID': 'card-1' } });
+
+  assert.equal(answer.status, 301);
+  assert.equal(answer.headers.location, 'https://app.jubilee.test/b/luzandre-com');
+  assert.equal(answer.headers['cache-control'], 'no-store');
+  assert.equal(answer.body, '');
+  // L2-246 AC2, AC3: the headers of L2-139, and no cookie in either direction.
+  assert.equal(answer.headers['set-cookie'], undefined);
+  assert.equal(answer.headers['x-content-type-options'], 'nosniff');
+  assert.equal(answer.headers['strict-transport-security'], 'max-age=31536000; includeSubDomains');
+  const [request] = asked();
+  assert.equal(request.url, '/api/addresses/luzandre-com?path=%2F');
+  assert.equal(request.headers.cookie, undefined);
+  assert.equal(request.headers['x-correlation-id'], 'card-1');
+  assert.equal(request.headers['x-forwarded-for'], '203.0.113.5:51234');
+});
+
+test('L2-243 AC2, AC3: Given an address with capitals, a port, a path and a query, when it is opened, then the label is lower-cased and the path and query are kept', async () => {
+  const { site, asked } = await addressHost(located('/b/luzandre-com/p/faith-tee'));
+
+  const answer = await at(site, 'Luzandre-Com.Jubilee.Test:443', '/p/faith-tee?utm_source=card&next=https://evil.example');
+
+  assert.equal(answer.status, 301);
+  assert.equal(answer.headers.location, 'https://app.jubilee.test/b/luzandre-com/p/faith-tee?utm_source=card&next=https://evil.example');
+  assert.equal(asked()[0].url, '/api/addresses/luzandre-com?path=%2Fp%2Ffaith-tee');
+});
+
+test('L2-245 AC2: Given an old address, when it is opened, then one redirect leads to the current slug the API names', async () => {
+  const { site } = await addressHost(located('/b/luzandre-print-co/review'));
+
+  const answer = await at(site, LUZANDRE, '/review');
+
+  assert.equal(answer.headers.location, 'https://app.jubilee.test/b/luzandre-print-co/review');
+});
+
+test('L2-243 AC7: Given a HEAD or a link-preview fetcher, when it requests an address, then it is redirected like anyone', async () => {
+  const { site } = await addressHost();
+
+  const head = await at(site, LUZANDRE, '/', { method: 'HEAD' });
+  const fetcher = await at(site, LUZANDRE, '/', { headers: { 'User-Agent': FETCHERS.Facebook } });
+
+  assert.equal(head.status, 301);
+  assert.equal(fetcher.status, 301);
+  assert.equal(fetcher.headers.location, 'https://app.jubilee.test/b/luzandre-com');
+});
+
+test('L2-243 AC6: Given the API says the address leads nowhere, when it is opened, then the static not-found page shows with 404 and names nothing of the request', async () => {
+  const { site } = await addressHost(() => ({ status: 404, headers: { 'Content-Type': 'application/problem+json' }, body: '{"status":404}' }));
+
+  const answer = await at(site, 'admin-console.jubilee.test', '/secret-path');
+
+  isNotFoundPage(answer);
+  assert.doesNotMatch(answer.body, /admin-console|secret-path/);
+});
+
+for (const name of ['a.b.jubilee.test', 'ab.jubilee.test', '-shop.jubilee.test', 'shop-.jubilee.test', 'sh--op.jubilee.test', 'sh_op.jubilee.test', `${'a'.repeat(41)}.jubilee.test`]) {
+  test(`L2-243 AC6: Given the host ${name}, when it is opened, then the not-found page shows with 404 and the API is not asked`, async () => {
+    const { site, api } = await addressHost();
+
+    isNotFoundPage(await at(site, name));
+    assert.equal(api.requests.length, 0);
+  });
+}
+
+test('L2-246 AC4: Given an address, when /api, another method or a file of the app is asked for, then nothing but a redirect or the not-found page answers', async () => {
+  const { site, api } = await addressHost(located('/b/luzandre-com/main-ABCDEFGH.js'));
+
+  isNotFoundPage(await at(site, LUZANDRE, '/api/session'));
+  isNotFoundPage(await at(site, LUZANDRE, '/api/listings/luzandre-com'));
+  isNotFoundPage(await at(site, LUZANDRE, '/', { method: 'POST', body: '{}' }));
+  assert.equal(api.requests.length, 0);
+  const file = await at(site, LUZANDRE, '/main-ABCDEFGH.js');
+  assert.equal(file.status, 301);
+  assert.doesNotMatch(file.body, /the app/);
+});
+
+test('L2-242 AC6: Given one of Jubilee’s own hosts, when a request arrives, then it is answered as that host and never as an address', async () => {
+  const { site, asked } = await addressHost();
+
+  const app = await at(site, 'app.jubilee.test', '/');
+  const api = await at(site, 'APP.jubilee.test:443', '/api/session');
+  const platform = await at(site, 'jubilee-app.azurewebsites.test', '/main-ABCDEFGH.js');
+  const probe = await call(site, { path: '/' });
+
+  assert.equal(app.status, 200);
+  assert.match(app.body, /<title>Jubilee<\/title>/);
+  assert.equal(api.body, '{"from":"the API"}');
+  assert.equal(platform.body, 'console.log("the app")');
+  assert.equal(probe.status, 200);
+  assert.equal(asked().length, 0);
+});
+
+test('L2-242 AC6: Given WEBSITE_HOSTNAME, when App Service asks by its default name, then it is an own host', async () => {
+  const { site } = await addressHost(undefined, { OWN_HOSTS: 'app.jubilee.test', WEBSITE_HOSTNAME: 'jubilee-app.azurewebsites.net' });
+
+  assert.equal((await at(site, 'jubilee-app.azurewebsites.net', '/')).status, 200);
+});
+
+for (const name of ['evil.example', 'jubilee.test', 'luzandre-com.jubilee.test.evil.example', 'notjubilee.test']) {
+  test(`L2-246 AC5: Given the host ${name}, when a request arrives, then it is refused with 400 and the host is not repeated`, async () => {
+    const { site, api } = await addressHost();
+
+    const answer = await at(site, name, '/b/luzandre-com');
+
+    assert.equal(answer.status, 400);
+    assert.equal(answer.body, 'Bad request.');
+    assert.equal(api.requests.length, 0);
+  });
+}
+
+test('L2-246 AC6: Given the API names a location outside /b/, when the address is opened, then no redirect is sent', async () => {
+  for (const location of ['//evil.example', 'https://evil.example/b/x', '/sign-in', '/b', '/b/../sign-in', '/b/x\r\nSet-Cookie: a=b']) {
+    const { site } = await addressHost(located(location));
+
+    const answer = await at(site, LUZANDRE);
+
+    assert.equal(answer.status, 404, location);
+    assert.equal(answer.headers.location, undefined);
+  }
+});
+
+test('L2-246 AC8: Given the API refuses a caller over the limit, when an address is opened, then 429 and Retry-After are passed on', async () => {
+  const { site } = await addressHost(() => ({ status: 429, headers: { 'Retry-After': '37' }, body: '{"status":429}' }));
+
+  const answer = await at(site, LUZANDRE);
+
+  assert.equal(answer.status, 429);
+  assert.equal(answer.headers['retry-after'], '37');
+  assert.equal(answer.headers.location, undefined);
+});
+
+test('Given the API does not answer in time, when an address is opened, then it answers 503 with Retry-After and no redirect', async () => {
+  const { site } = await addressHost(() => ({ afterMs: 600, status: 200, body: '{"location":"/b/luzandre-com"}' }), { DOCUMENT_STATUS_TIMEOUT_MS: '150' });
+
+  const answer = await at(site, LUZANDRE);
+
+  assert.equal(answer.status, 503);
+  assert.equal(answer.headers['retry-after'], '5');
+});
+
+test('Given no ADDRESS_DOMAIN, when any host asks, then the host answers as before', async () => {
+  const { site, asked } = await addressHost(undefined, { ADDRESS_DOMAIN: '' });
+
+  assert.equal((await at(site, 'luzandre-com.jubilee.test', '/')).status, 200);
+  assert.equal((await at(site, 'evil.example', '/')).status, 200);
+  assert.equal(asked().length, 0);
+});
+
+test('Given the not-found page of an address, when its font is fetched from the app, then the app’s host lets any origin read a font and nothing else', async () => {
+  const { site } = await addressHost();
+  fs.writeFileSync(path.join(site.root, 'static', 'Archivo.woff2'), 'font');
+
+  const page = await at(site, 'ab.jubilee.test');
+  const font = await at(site, 'app.jubilee.test', '/static/Archivo.woff2');
+  const script = await at(site, 'app.jubilee.test', '/main-ABCDEFGH.js');
+
+  assert.match(page.body, /url\("https:\/\/app\.jubilee\.test\/static\/Archivo\.woff2"\)/);
+  assert.equal(font.headers['access-control-allow-origin'], '*');
+  assert.equal(script.headers['access-control-allow-origin'], undefined);
 });

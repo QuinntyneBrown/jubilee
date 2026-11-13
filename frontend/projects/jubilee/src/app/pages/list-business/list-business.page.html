@@ -17,6 +17,35 @@
           </a>
         }
       </div>
+      @if (listingLink(); as link) {
+        <div jb-section>
+          <div jb-card heading="Your address" class="stack">
+            <div
+              jb-field
+              label="Your address"
+              labelHidden
+              hint="Share this address anywhere. It opens your listing on Jubilee."
+              hintAfter
+            >
+              <jb-input-group>
+                <input jb-input #addressField type="text" [value]="link.text" readonly />
+                <button
+                  slot="suffix"
+                  jb-button
+                  variant="primary"
+                  type="button"
+                  (click)="copyLink.copy(link.url, addressField.element)"
+                >
+                  {{ copyLink.copied() ? 'Copied ✓' : 'Copy' }}
+                </button>
+              </jb-input-group>
+              <span class="visually-hidden" role="status" aria-live="polite">{{
+                copyLink.copied() ? 'Address copied' : ''
+              }}</span>
+            </div>
+          </div>
+        </div>
+      }
       <div jb-section>
         <div
           jb-moment-check

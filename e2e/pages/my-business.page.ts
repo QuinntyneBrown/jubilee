@@ -1,5 +1,6 @@
 import type { Locator, Page } from '@playwright/test';
 import type { Region, Screen } from '../fixtures/visual';
+import { AddressField } from './address-field';
 import { ShellPage } from './shell.page';
 
 /** `/my-business`: the overview of the owner (L2-085, L2-086). */
@@ -14,6 +15,8 @@ export class MyBusinessPage extends ShellPage implements Screen {
   readonly needsReply: Locator;
   readonly replyRows: Locator;
   readonly listingCard: Locator;
+  /** "Your address" on the "Your listing" card (L2-244 AC3). */
+  readonly address: AddressField;
   readonly pause: Locator;
   readonly awayRow: Locator;
   readonly setAway: Locator;
@@ -46,6 +49,7 @@ export class MyBusinessPage extends ShellPage implements Screen {
     this.needsReply = this.main.locator('section[aria-labelledby="nr"]');
     this.replyRows = this.needsReply.locator('ul.rows > li');
     this.listingCard = this.main.locator('aside .card');
+    this.address = new AddressField(this.listingCard);
     this.pause = this.main.getByRole('button', { name: 'Pause listing' });
     this.awayRow = this.listingCard.locator('li.row').filter({ hasText: /Away/ });
     this.setAway = this.awayRow.getByRole('button', { name: 'Set away period' });

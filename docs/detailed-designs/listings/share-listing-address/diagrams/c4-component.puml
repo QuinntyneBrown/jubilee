@@ -1,0 +1,29 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Share the address of a listing
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(share, "ShareListingDialog", "Angular dialog", "Link, Copy, E-mail, WhatsApp and More… with the address")
+  Component(list, "ListBusinessPage", "Angular page", "Your address on the publish success state")
+  Component(mine, "MyBusinessPage", "Angular page", "Your address on the Your listing card")
+  Component(edit, "EditListingPage", "Angular page", "Your address, read-only, and the note after a rename")
+  Component(helper, "listingAddress", "Pure function (api library)", "Address, or {origin}/b/{slug} where there is none")
+  Component(copy, "CopyLink", "Class", "Clipboard write and the 2-second Copied state")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(handlers, "AddressBehavior", "MediatR pipeline behaviour", "Writes address on the listing page, publish, My business and editor answers")
+  Component(settings, "AddressSettings", "Singleton", "AddressOf(slug)")
+}
+
+Rel(share, helper, "Builds its link with")
+Rel(list, helper, "Builds its link with")
+Rel(mine, helper, "Builds its link with")
+Rel(edit, helper, "Builds its link with")
+Rel(list, copy, "Copies through")
+Rel(mine, copy, "Copies through")
+Rel(list, handlers, "Publishes through", "JSON/HTTPS")
+Rel(mine, handlers, "Reads My business from", "JSON/HTTPS")
+Rel(edit, handlers, "Reads and saves the listing through", "JSON/HTTPS")
+Rel(handlers, settings, "Asks AddressOf(slug)")
+@enduml

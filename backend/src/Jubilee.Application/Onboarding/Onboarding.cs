@@ -144,7 +144,11 @@ public sealed record DraftItemInput(
     string? InPersonPlace = null);
 
 public sealed record PublishedListingDto(
-    Guid ListingId, string Slug, string Name, string Kind, string Stage, DateTimeOffset SubmittedAt);
+    Guid ListingId, string Slug, string Name, string Kind, string Stage, DateTimeOffset SubmittedAt) : Listings.IAddressed
+{
+    /// <summary>The listing's address, written by <see cref="Listings.AddressBehavior{TRequest, TResponse}"/> (L2-244).</summary>
+    public string? Address { get; set; }
+}
 
 public static class Drafts
 {
@@ -299,7 +303,7 @@ public sealed class SaveListingDraftCommandHandler(IAppDbContext db, TimeProvide
 public sealed record PublishListingCommand(string Subject, string Name, Guid DraftId, DraftInput Input, string? IdempotencyKey)
     : IRequest<PublishedListingDto>;
 
-public sealed partial class PublishListingCommandHandler(IAppDbContext db, TimeProvider clock)
+public sealed partial class PublishListingCommandHandler(IAppDbContext db, TimeProvider clock, Listings.AddressSettings addresses)
     : IRequestHandler<PublishListingCommand, PublishedListingDto>
 {
     public const int MaxTaglineLength = 90;
@@ -381,7 +385,7 @@ public sealed partial class PublishListingCommandHandler(IAppDbContext db, TimeP
 
         var space = Drafts.SpaceOf(input);
         var listing = Listing.Create(
-            await Listings.ListingSlugs.UniqueAsync(db, name, null, cancellationToken), name, tagline, space is null ? input.CategorySlug! : Category.RoomsSlug, now);
+            await Listings.ListingSlugs.UniqueAsync(db, addresses, name, Drafts.KindOf(input.Kind), null, cancellationToken), name, tagline, space is null ? input.CategorySlug! : Category.RoomsSlug, now);
         listing.SetKind(Drafts.KindOf(input.Kind));
         listing.AssignOwner(command.Subject);
 
@@ -405,8 +409,39 @@ public sealed partial class PublishListingCommandHandler(IAppDbContext db, TimeP
         db.ListingDrafts.Remove(draft);
         // Members who asked to hear of new businesses in this category are told now (L2-222 AC1).
         await Notifications.NewBusinessNotifier.TellAsync(db, listing, now, cancellationToken);
-        await db.SaveChangesAsync(cancellationToken);
+        await SaveWithFreeSlugAsync(listing, now, cancellationToken);
         return Result(listing, submission);
+    }
+
+    /// <summary>
+    /// Saves the publish. When another publish took the same slug in the same moment, the unique index refuses this
+    /// one: the listing takes the next free slug and is saved again, so the owner never fails on the address
+    /// (L2-242 AC3, ADR 0071). Any other failure is a real one.
+    /// </summary>
+    private async Task SaveWithFreeSlugAsync(Listing listing, DateTimeOffset now, CancellationToken cancellationToken)
+    {
+        for (var attempt = 1; ; attempt++)
+        {
+            try
+            {
+                await db.SaveChangesAsync(cancellationToken);
+                return;
+            }
+            catch (DbUpdateException)
+            {
+                var slug = listing.Slug;
+                if (attempt == 5 || !await db.Listings.AsNoTracking().AnyAsync(l => l.Slug == slug && l.Id != listing.Id, cancellationToken))
+                {
+                    throw;
+                }
+
+                listing.MoveTo(await Listings.ListingSlugs.UniqueAsync(db, addresses, listing.Name, listing.Kind, listing.Id, cancellationToken));
+
+                // What members were told links the slug; they are told again with the one the listing has now.
+                db.Notifications.RemoveRange(db.Notifications.Local.Where(n => n.CorrelationId == listing.Id).ToList());
+                await Notifications.NewBusinessNotifier.TellAsync(db, listing, now, cancellationToken);
+            }
+        }
     }
 
     private static PublishedListingDto Result(Listing listing, ListingSubmission submission) => new(
