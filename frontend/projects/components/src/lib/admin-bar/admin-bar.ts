@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { Badge } from '../badge/badge';
 import { Button } from '../button/button';
 import { Lockup } from '../lockup/lockup';
 
@@ -7,6 +8,8 @@ import { Lockup } from '../lockup/lockup';
 export interface StaffChromeMember {
   displayName: string;
   roles: readonly ('moderator' | 'admin')[];
+  /** The unresolved reports (L2-105 AC1, L2-188 AC3). */
+  reportCount: number;
 }
 
 /** The screen of the admin application the staff member is on. */
@@ -26,7 +29,7 @@ const ROLE_NAMES = { moderator: 'Moderator', admin: 'Administrator' } as const;
  */
 @Component({
   selector: 'header[jb-admin-bar]',
-  imports: [RouterLink, Lockup, Button],
+  imports: [RouterLink, Lockup, Badge, Button],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'topbar topbar--ink admin-bar' },
   templateUrl: './admin-bar.html',

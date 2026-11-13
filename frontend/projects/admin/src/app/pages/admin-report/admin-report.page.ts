@@ -36,6 +36,7 @@ import {
 import { ClockService } from 'api';
 import { LoadState, errorReference } from 'api';
 import { clockTime, dayHeading, dayKey, threadTime } from 'api';
+import { StaffSessionService } from '../../services/staff-session.service';
 
 const REASON_STATE: Record<string, string> = {
   live: 'Live',
@@ -89,6 +90,7 @@ export class AdminReportPage implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly dialog = inject(Dialog);
   private readonly clock = inject(ClockService);
+  private readonly session = inject(StaffSessionService);
 
   protected readonly state = signal<LoadState<ReportDetail>>({ status: 'loading' });
   protected readonly skeleton = [1, 2, 3];
@@ -168,6 +170,8 @@ export class AdminReportPage implements OnInit {
         status: 'loaded',
         value: { ...result, conversation: result.conversation ?? report.conversation },
       });
+      // The action may have resolved the report: the admin bar's count is read again (ADR 0058).
+      this.session.refresh();
     });
   }
 }

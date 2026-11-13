@@ -32,7 +32,7 @@ test.describe('keep listings honest: access and the listings (L2-098, L2-099)', 
     expect(fake.listRequests).toEqual([]);
   });
 
-  test('L2-098 AC3: the admin bar names Listings, Reports and Featured, with no count', async ({
+  test('L2-098 AC3: the admin bar names Listings, Reports and Featured; only Reports carries a count', async ({
     page,
     jb,
   }) => {
@@ -43,7 +43,7 @@ test.describe('keep listings honest: access and the listings (L2-098, L2-099)', 
 
     await expect(listings.staffNav.getByRole('link')).toHaveText([
       'Listings',
-      'Reports',
+      'Reports 3',
       'Featured',
     ]);
     await expect(listings.navLink('Listings')).toHaveAttribute('aria-current', 'page');
