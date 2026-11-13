@@ -1,6 +1,7 @@
 import { expect, test } from '../fixtures/jb-test';
 import { nextInboxRead, stubMessaging } from '../fixtures/messaging';
 import { smallJpeg } from '../fixtures/photos';
+import { stubSaved } from '../fixtures/saved';
 import {
   goOffline,
   goOnline,
@@ -9,10 +10,12 @@ import {
   waitForSnapshot,
 } from '../fixtures/offline';
 import { BrowsePage } from '../pages/browse.page';
+import { BusinessPage } from '../pages/business.page';
 import { ConnectionBannerRegion } from '../pages/connection-banner';
 import { ConversationPage, MessagesPage } from '../pages/messages.page';
 import { OfflinePage } from '../pages/offline.page';
 import { AccountMenuRegion, SignInPage } from '../pages/sign-in.page';
+import { Toasts } from '../pages/toasts';
 
 // Use Jubilee offline: L2-119 to L2-122. The network is cut at the page's edge (fixtures/offline.ts);
 // the API is answered by Playwright mocking (ADR 0009) and the requests it receives are kept.
@@ -73,6 +76,94 @@ test.describe('the connection banner (L2-121)', () => {
     await banner.checkStatus.evaluate(() => window.dispatchEvent(new Event('online')));
 
     await expect(banner.root).toContainText('You’re back online.');
+  });
+});
+
+test.describe('a slow connection (L2-121 AC4, AC5)', () => {
+  test('AC4: when requests take long on average, a warning says the connection is slow', async ({
+    page,
+    jb,
+  }) => {
+    const banner = new ConnectionBannerRegion(page);
+    // Slow here means a mean above 300 ms, not 3 seconds; the 30 seconds it is taken over stay.
+    await page.addInitScript(() => {
+      Object.assign((globalThis as { __jbTimings?: object }).__jbTimings ?? {}, { slowMean: 300 });
+    });
+    await jb.signInAs('member');
+    await stubMessaging(page);
+    // Every answer of Jubilee takes a second and a half.
+    await page.route('**/api/**', async (route) => {
+      await new Promise((resolve) => setTimeout(resolve, 1_500));
+      await route.fallback();
+    });
+
+    await jb.goto('/messages');
+
+    await expect(banner.root).toContainText(
+      'Your connection is slow. Pages may take longer to load.',
+    );
+    await expect(banner.dismiss).toHaveCount(0);
+  });
+
+  test('AC5: a request still sending warns that the connection is slow, and is tried again until it is answered', async ({
+    page,
+    jb,
+  }) => {
+    const business = new BusinessPage(page);
+    const toasts = new Toasts(page);
+    // The warning comes after half a second, not 5; the request is tried every 300 ms for 10 seconds.
+    await page.addInitScript(() => {
+      Object.assign((globalThis as { __jbTimings?: object }).__jbTimings ?? {}, {
+        slowRequest: 500,
+        retryWindow: 10_000,
+        retryEvery: 300,
+      });
+    });
+    await business.setWidth(1280);
+    await jb.signInAs('member');
+    const fake = await stubSaved(page, { items: [], save: 'offline' });
+    await jb.goto('/b/luzandre');
+
+    await business.saveButton.click();
+
+    const still = toasts.warning('Still sending your request');
+    await expect(still).toBeVisible();
+    await expect(still).toContainText('Your connection is slow. We’ll keep trying for a minute.');
+    await expect.poll(() => fake.calls.length).toBeGreaterThanOrEqual(3);
+    fake.save = 'ok';
+    await expect(
+      toasts.withTitle('Saved Luzandre.com. Find it any time under Saved.'),
+    ).toBeVisible();
+    expect(new Set(fake.calls)).toEqual(new Set(['PUT businesses/luzandre']));
+  });
+
+  test('AC5: a request that is never answered fails when the minute of trying is over', async ({
+    page,
+    jb,
+  }) => {
+    const business = new BusinessPage(page);
+    const toasts = new Toasts(page);
+    // A minute and a try every 2 seconds, scaled down to 1.5 seconds and a try every 300 ms.
+    await page.addInitScript(() => {
+      Object.assign((globalThis as { __jbTimings?: object }).__jbTimings ?? {}, {
+        retryWindow: 1_500,
+        retryEvery: 300,
+      });
+    });
+    await business.setWidth(1280);
+    await jb.signInAs('member');
+    const fake = await stubSaved(page, { items: [], save: 'offline' });
+    await jb.goto('/b/luzandre');
+
+    await business.saveButton.click();
+
+    await expect(
+      toasts.withTitle(
+        'Couldn’t save Luzandre.com. You’re offline. Reconnect and tap the heart again.',
+      ),
+    ).toBeVisible();
+    expect(fake.calls.length).toBeGreaterThan(2);
+    await expect(business.saveButton).toHaveAttribute('aria-pressed', 'false');
   });
 });
 
