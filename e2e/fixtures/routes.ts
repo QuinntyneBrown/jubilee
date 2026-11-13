@@ -524,6 +524,13 @@ export const routes = {
     who: 'member',
     stub: 'listing-draft',
   },
+  // The platform form (L2-249); its invalid, busy and success states are reached by using it.
+  'list-business.platform': {
+    app: '/list?kind=platform',
+    mock: 'pages/list-business/platform.html',
+    who: 'member',
+    stub: 'listing-draft',
+  },
   // The editors opened from "Add a product" and "Add a service" on /list (L2-073).
   'product-editor.onboarding': {
     app: '/list',

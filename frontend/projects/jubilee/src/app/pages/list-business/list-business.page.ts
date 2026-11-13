@@ -1,3 +1,4 @@
+import { NgTemplateOutlet } from '@angular/common';
 import { Dialog } from '@angular/cdk/dialog';
 import { HttpErrorResponse } from '@angular/common/http';
 import {
@@ -79,6 +80,10 @@ type FieldName =
   | 'neighbourhood'
   | 'address'
   | 'household'
+  | 'website'
+  | 'does'
+  | 'for'
+  | 'pricing'
   | 'agreed';
 
 /** The element each field's summary link and first-invalid focus go to. */
@@ -91,6 +96,10 @@ const FIELD_ID: Record<FieldName, string> = {
   neighbourhood: 'area',
   address: 'address',
   household: 'household',
+  website: 'website',
+  does: 'does',
+  for: 'for',
+  pricing: 'pricing',
   agreed: 'agree',
 };
 
@@ -103,6 +112,10 @@ const FIELD_ORDER: FieldName[] = [
   'neighbourhood',
   'address',
   'household',
+  'website',
+  'does',
+  'for',
+  'pricing',
   'agreed',
 ];
 const AUTOSAVE_MS = 10_000;
@@ -111,6 +124,44 @@ const SUBMIT_TIMEOUT_MS = 10_000;
 const TAGLINE_MAX = 90;
 /** The green line of the card, as in the listing editor (L2-072 AC7, L2-087). */
 const HIGHLIGHT_MAX = 30;
+/** The limits of a platform's fields (L2-250 AC2). */
+const WEBSITE_MAX = 200;
+const DOES_MAX = 600;
+const FOR_MAX = 300;
+const PRICING_MAX = 120;
+
+/** The server's names of the platform fields, by the form's (L2-250 AC6). */
+const PLATFORM_FIELDS: Record<string, FieldName> = {
+  'platform.website': 'website',
+  'platform.does': 'does',
+  'platform.for': 'for',
+  'platform.pricing': 'pricing',
+};
+
+/**
+ * True for an absolute https address with a dotted host and no user or password, 200 characters
+ * at most: the rule the API applies (L2-250 AC4). The address is only read as text.
+ */
+export function isWebAddress(value: string): boolean {
+  const text = value.trim();
+  if (!text || text.length > WEBSITE_MAX || /\s/.test(text)) return false;
+  if (!/^https:\/\//i.test(text)) return false;
+  let url: URL;
+  try {
+    url = new URL(text);
+  } catch {
+    return false;
+  }
+  const host = url.hostname;
+  return (
+    url.protocol === 'https:' &&
+    !url.username &&
+    !url.password &&
+    host.includes('.') &&
+    !host.startsWith('.') &&
+    !host.endsWith('.')
+  );
+}
 
 /** FieldName-level wording (L2-071 to L2-079). Codes come from the server or from the same checks here. */
 export function messageFor(field: FieldName, code: string, space = false): string {
@@ -125,6 +176,16 @@ export function messageFor(field: FieldName, code: string, space = false): strin
         : 'Enter your business name as customers know it.';
     case 'tagline':
       return space ? 'Enter one line renters should know.' : 'Enter one line on what you do.';
+    case 'website':
+      return code === 'REQUIRED'
+        ? 'Enter the web address where people use your platform.'
+        : 'Enter a web address starting with https://';
+    case 'does':
+      return 'Say what your platform does in a few lines.';
+    case 'for':
+      return 'Say who your platform is for.';
+    case 'pricing':
+      return 'Say how it is priced, like “Free” or “$8 a month”.';
     case 'rent':
     case 'available':
     case 'neighbourhood':
@@ -147,6 +208,12 @@ function summaryFor(field: FieldName, code: string, space: boolean): string {
   switch (field) {
     case 'name':
       return space ? 'Enter a listing title' : 'Enter your business name';
+    case 'website':
+      return code === 'REQUIRED' ? 'Enter the web address' : text;
+    case 'does':
+      return 'Say what your platform does';
+    case 'pricing':
+      return 'Say how it is priced';
     case 'agreed':
       return space
         ? 'Agree to the statement of faith and the rental terms'
@@ -165,6 +232,7 @@ function summaryFor(field: FieldName, code: string, space: boolean): string {
   selector: 'jb-list-business-page',
   imports: [
     FormsModule,
+    NgTemplateOutlet,
     RouterLink,
     Icon,
     MediaTile,
@@ -212,6 +280,10 @@ export class ListBusinessPage {
   protected readonly format = formatPrice;
   protected readonly taglineMax = TAGLINE_MAX;
   protected readonly highlightMax = HIGHLIGHT_MAX;
+  protected readonly websiteMax = WEBSITE_MAX;
+  protected readonly doesMax = DOES_MAX;
+  protected readonly forMax = FOR_MAX;
+  protected readonly pricingMax = PRICING_MAX;
 
   protected readonly loading = signal(true);
   protected readonly loadFailed = signal(false);
@@ -224,6 +296,12 @@ export class ListBusinessPage {
   protected readonly place = signal('');
   protected readonly agreed = signal(false);
   protected readonly items = signal<DraftItem[]>([]);
+
+  // A software platform (L2-249, L2-250): its web address and the founder's words.
+  protected readonly website = signal('');
+  protected readonly does = signal('');
+  protected readonly forWhom = signal('');
+  protected readonly pricing = signal('');
 
   // A space (L2-198, L2-199), its fields held by the form the editor shares (L2-209).
   private readonly space = new SpaceForm();
@@ -265,12 +343,26 @@ export class ListBusinessPage {
   protected readonly publishedIn = computed(() =>
     this.isSpace()
       ? 'Rooms & rentals'
-      : (CATEGORIES.find((c) => c.slug === this.categorySlug())?.name ?? ''),
+      : this.isPlatform()
+        ? 'Software platforms'
+        : (CATEGORIES.find((c) => c.slug === this.categorySlug())?.name ?? ''),
   );
 
-  protected readonly tile = computed(() => categoryTile(this.categorySlug()));
+  /** The tile of the card: the category chosen, or "Software platforms" for a platform. */
+  protected readonly tile = computed(() =>
+    categoryTile(this.isPlatform() ? 'software-platforms' : this.categorySlug()),
+  );
   protected readonly isServices = computed(() => this.kind() === 'services');
   protected readonly isSpace = computed(() => this.kind() === 'space');
+  protected readonly isPlatform = computed(() => this.kind() === 'platform');
+  /** The heading of the form, by what is listed (L2-198 AC1, L2-249 AC2). */
+  protected readonly heading = computed(() =>
+    this.isSpace()
+      ? 'List a space'
+      : this.isPlatform()
+        ? 'List a software platform'
+        : 'List your business',
+  );
   protected readonly nightly = this.space.nightly;
   protected readonly minimumChoices = this.space.minimumChoices;
   protected readonly householdLabel = this.space.householdLabel;
@@ -296,7 +388,10 @@ export class ListBusinessPage {
     this.loadFailed.set(false);
     const wanted = this.route.snapshot.queryParamMap.get('draft');
     // /list?kind=space opens the space form (L2-198 AC2); a saved draft has the last word.
-    if (this.route.snapshot.queryParamMap.get('kind') === 'space') this.kind.set('space');
+    const asked = this.route.snapshot.queryParamMap.get('kind');
+    if (asked === 'space') this.kind.set('space');
+    // /list?kind=platform opens the platform form (L2-249 AC2).
+    if (asked === 'platform') this.kind.set('platform');
     const source: Observable<ListingDraft | null> =
       wanted === 'new' ? of(null) : wanted ? this.api.get(wanted) : this.api.current();
     source.subscribe({
@@ -322,6 +417,12 @@ export class ListBusinessPage {
     this.agreed.set(draft.agreed);
     this.items.set(draft.items);
     if (draft.space) this.space.apply(draft.space);
+    if (draft.platform) {
+      this.website.set(draft.platform.website);
+      this.does.set(draft.platform.does);
+      this.forWhom.set(draft.platform.for);
+      this.pricing.set(draft.platform.pricing);
+    }
   }
 
   /** A change of term keeps what was typed; only a minimum stay the new term lacks resets (AC5). */
@@ -360,12 +461,20 @@ export class ListBusinessPage {
       kind: this.kind(),
       name: this.name().trim(),
       tagline: this.tagline().trim(),
-      categorySlug: this.isSpace() ? null : this.categorySlug() || null,
+      categorySlug: this.isSpace() || this.isPlatform() ? null : this.categorySlug() || null,
       highlight: this.isSpace() ? null : this.highlight().trim() || null,
-      place: this.isSpace() ? null : this.place().trim() || null,
+      place: this.isSpace() || this.isPlatform() ? null : this.place().trim() || null,
       agreed: this.agreed(),
-      items: this.isSpace() ? [] : this.items(),
+      items: this.isSpace() || this.isPlatform() ? [] : this.items(),
       space: this.isSpace() ? this.space.body() : null,
+      platform: this.isPlatform()
+        ? {
+            website: this.website().trim(),
+            does: this.does().trim(),
+            for: this.forWhom().trim(),
+            pricing: this.pricing().trim(),
+          }
+        : null,
       idempotencyKey: null,
     };
   }
@@ -425,7 +534,14 @@ export class ListBusinessPage {
     if (!tagline) codes.tagline = 'REQUIRED';
     else if (tagline.length > TAGLINE_MAX) codes.tagline = `TOO_LONG:${tagline.length}`;
     if (this.isSpace()) Object.assign(codes, this.space.check());
-    else if (!this.categorySlug()) codes.categorySlug = 'REQUIRED';
+    else if (this.isPlatform()) {
+      const website = this.website().trim();
+      if (!website) codes.website = 'REQUIRED';
+      else if (!isWebAddress(website)) codes.website = 'INVALID';
+      if (!this.does().trim()) codes.does = 'REQUIRED';
+      if (!this.forWhom().trim()) codes.for = 'REQUIRED';
+      if (!this.pricing().trim()) codes.pricing = 'REQUIRED';
+    } else if (!this.categorySlug()) codes.categorySlug = 'REQUIRED';
     if (!this.agreed()) codes.agreed = 'REQUIRED';
     return codes;
   }
@@ -495,7 +611,7 @@ export class ListBusinessPage {
 function fieldCodes(errors: Record<string, string>): Partial<Record<FieldName, string>> {
   const codes: Partial<Record<FieldName, string>> = {};
   for (const [key, code] of Object.entries(errors)) {
-    const field = (SPACE_FIELDS[key] ?? key) as FieldName;
+    const field = (PLATFORM_FIELDS[key] ?? SPACE_FIELDS[key] ?? key) as FieldName;
     if (field in FIELD_ID) codes[field] = code;
   }
   return codes;

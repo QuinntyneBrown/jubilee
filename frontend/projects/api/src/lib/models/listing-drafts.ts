@@ -1,6 +1,15 @@
 import type { SpaceTerm } from './directory';
 
-export type OfferKind = 'products' | 'services' | 'space';
+export type OfferKind = 'products' | 'services' | 'space' | 'platform';
+
+/** The fields of a platform draft, as the founder typed them (L2-250). */
+export interface PlatformDraft {
+  /** The web address; any text while it is a draft. */
+  website: string;
+  does: string;
+  for: string;
+  pricing: string;
+}
 
 export type ItemPriceKind = 'free' | 'amount' | 'ask';
 
@@ -63,6 +72,8 @@ export interface ListingDraft {
   items: DraftItem[];
   /** The rental fields; null unless the draft is a space. */
   space?: SpaceDraft | null;
+  /** The platform fields; null unless the draft is a software platform. */
+  platform?: PlatformDraft | null;
 }
 
 /** What a save or a submit sends: the form, and for a submit the key that makes a repeat safe. */
@@ -77,6 +88,8 @@ export interface ListingDraftBody {
   items: DraftItem[];
   space: SpaceDraft | null;
   idempotencyKey: string | null;
+  /** The platform fields; sent for a software platform only. */
+  platform?: PlatformDraft | null;
 }
 
 /** `POST /api/listing-drafts/{id}/publish`: the listing is live straight away (L2-078, ADR 0057). */

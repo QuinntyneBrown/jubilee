@@ -145,10 +145,16 @@ public sealed class ListingDraft
         bool agreed,
         IEnumerable<DraftItem> items,
         DateTimeOffset now,
-        SpaceDetails? space = null)
+        SpaceDetails? space = null,
+        PlatformDetails? platform = null,
+        string? website = null)
     {
         Kind = kind;
         Space = kind == ListingKind.Space ? space : null;
+
+        // A platform keeps the founder's words and its address as typed; no other kind has them (L2-250 AC8).
+        Platform = kind == ListingKind.Platform ? platform : null;
+        Website = kind == ListingKind.Platform ? Cut(website, PlatformRules.MaxWebsiteLength) : null;
         Name = Cut(name, MaxNameLength) ?? string.Empty;
         Tagline = Cut(tagline, MaxTaglineLength) ?? string.Empty;
         CategorySlug = Cut(categorySlug, 60);
@@ -156,7 +162,8 @@ public sealed class ListingDraft
         Place = Cut(place, 200);
         Agreed = agreed;
         _items.Clear();
-        foreach (var item in items.Take(MaxItems))
+        // A platform has no services and no products (L2-248 AC3).
+        foreach (var item in kind == ListingKind.Platform ? [] : items.Take(MaxItems))
         {
             _items.Add(new DraftItem
             {

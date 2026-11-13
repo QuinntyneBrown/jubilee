@@ -57,6 +57,8 @@ export class ListBusinessPage extends ShellPage implements Screen {
   readonly addMore: Locator;
   /** The fields of a space (L2-198, L2-199). */
   readonly space: SpaceFields;
+  /** The fields of a software platform (L2-249, L2-250). */
+  readonly platform: PlatformFields;
 
   constructor(page: Page) {
     super(page);
@@ -106,6 +108,7 @@ export class ListBusinessPage extends ShellPage implements Screen {
     this.viewPublicListing = this.main.getByRole('link', { name: 'View public listing' });
     this.addMore = this.main.getByRole('link', { name: /^Add more/ });
     this.space = new SpaceFields(page, this.main);
+    this.platform = new PlatformFields(this.main);
   }
 
   async ready(): Promise<void> {
@@ -133,6 +136,78 @@ export class ListBusinessPage extends ShellPage implements Screen {
     await this.name.fill('Luzandre.com');
     await this.tagline.fill('Unique & custom Christian apparel, artworks & gifts');
     await this.agree.check();
+  }
+}
+
+/** The platform form of List your business (L2-249 to L2-251). */
+export class PlatformFields {
+  readonly offer: Locator;
+  readonly offerText: Locator;
+  readonly nameLabel: Locator;
+  readonly nameHelp: Locator;
+  readonly taglineLabel: Locator;
+  readonly website: Locator;
+  readonly websiteHelp: Locator;
+  readonly websiteError: Locator;
+  readonly does: Locator;
+  readonly doesHelp: Locator;
+  readonly doesCount: Locator;
+  readonly doesError: Locator;
+  readonly forWhom: Locator;
+  readonly forHelp: Locator;
+  readonly forCount: Locator;
+  readonly forError: Locator;
+  readonly pricing: Locator;
+  readonly pricingHelp: Locator;
+  readonly pricingCount: Locator;
+  readonly pricingError: Locator;
+  /** "Members go to your website to use it. Jubilee takes no payment." */
+  readonly note: Locator;
+  readonly photosNote: Locator;
+  readonly agreement: Locator;
+  readonly previewHeading: Locator;
+
+  constructor(main: Locator) {
+    this.offer = main.getByRole('radio', { name: /^A software platform/ });
+    this.offerText = main
+      .locator('.choice-card')
+      .filter({ hasText: 'A software platform' })
+      .locator('.choice-card__text');
+    this.nameLabel = main.locator('label[for="name"]');
+    this.nameHelp = main.locator('#name-help');
+    this.taglineLabel = main.locator('label[for="tagline"]');
+    this.website = main.locator('#website');
+    this.websiteHelp = main.locator('#website-help');
+    this.websiteError = main.locator('#website-error');
+    this.does = main.locator('#does');
+    this.doesHelp = main.locator('#does-help');
+    this.doesCount = main.locator('#does-count');
+    this.doesError = main.locator('#does-error');
+    this.forWhom = main.locator('#for');
+    this.forHelp = main.locator('#for-help');
+    this.forCount = main.locator('#for-count');
+    this.forError = main.locator('#for-error');
+    this.pricing = main.locator('#pricing');
+    this.pricingHelp = main.locator('#pricing-help');
+    this.pricingCount = main.locator('#pricing-count');
+    this.pricingError = main.locator('#pricing-error');
+    this.note = main.locator('#platform-note');
+    this.photosNote = main.getByRole('group', { name: 'Photos' }).locator('.field__help');
+    this.agreement = main.locator('.choice', {
+      has: main.page().getByRole('checkbox', { name: /statement of faith/ }),
+    });
+    this.previewHeading = main.getByRole('complementary').getByRole('heading');
+  }
+
+  /** Writes Lanternread, with every field a valid platform needs and the agreement. */
+  async fillValid(list: ListBusinessPage): Promise<void> {
+    await list.name.fill('Lanternread');
+    await list.tagline.fill('A reading log families keep together');
+    await this.website.fill('https://lanternread.example');
+    await this.does.fill('Families log the books their children read.');
+    await this.forWhom.fill('Families with children aged 4 to 12.');
+    await this.pricing.fill('Free for families.');
+    await list.agree.check();
   }
 }
 

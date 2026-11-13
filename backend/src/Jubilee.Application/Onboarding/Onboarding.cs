@@ -53,7 +53,8 @@ public sealed record ListingDraftDto(
     bool Agreed,
     DateTimeOffset UpdatedAt,
     IReadOnlyList<DraftItemDto> Items,
-    SpaceDraftDto? Space = null)
+    SpaceDraftDto? Space = null,
+    PlatformDraftDto? Platform = null)
 {
     public static ListingDraftDto From(ListingDraft draft) => new(
         draft.Id,
@@ -66,15 +67,30 @@ public sealed record ListingDraftDto(
         draft.Agreed,
         draft.UpdatedAt,
         [.. draft.Items.OrderBy(i => i.Position).Select(DraftItemDto.From)],
-        draft.Space is null ? null : SpaceDraftDto.From(draft.Space));
+        draft.Space is null ? null : SpaceDraftDto.From(draft.Space),
+        draft.Kind == ListingKind.Platform ? PlatformDraftDto.From(draft) : null);
 
     public static string Wire(ListingKind kind) => kind switch
     {
         ListingKind.Shop => "products",
         ListingKind.Space => "space",
+        ListingKind.Platform => "platform",
         _ => "services",
     };
 }
+
+/// <summary>A platform draft's fields as its founder typed them (L2-250 AC8).</summary>
+public sealed record PlatformDraftDto(string Website, string Does, string For, string Pricing)
+{
+    public static PlatformDraftDto From(ListingDraft draft) => new(
+        draft.Website ?? string.Empty,
+        draft.Platform?.Does ?? string.Empty,
+        draft.Platform?.For ?? string.Empty,
+        draft.Platform?.Pricing ?? string.Empty);
+}
+
+/// <summary>The platform fields of the form (L2-250): the web address and the founder's words.</summary>
+public sealed record PlatformInput(string? Website, string? Does, string? For, string? Pricing);
 
 /// <summary>A space draft's rental details as its owner typed them, address included (L2-199 AC10).</summary>
 public sealed record SpaceDraftDto(
@@ -128,7 +144,8 @@ public sealed record DraftInput(
     string? Place,
     bool Agreed,
     IReadOnlyList<DraftItemInput>? Items,
-    SpaceInput? Space = null);
+    SpaceInput? Space = null,
+    PlatformInput? Platform = null);
 
 public sealed record DraftItemInput(
     string? Name,
@@ -158,8 +175,48 @@ public static class Drafts
     {
         "services" => ListingKind.Services,
         "space" => ListingKind.Space,
+        "platform" => ListingKind.Platform,
         _ => ListingKind.Shop,
     };
+
+    /// <summary>The founder's words of a platform, cut to their limits; null for every other kind.</summary>
+    public static PlatformDetails? PlatformOf(DraftInput input) => KindOf(input.Kind) == ListingKind.Platform
+        ? PlatformFrom(input.Platform)
+        : null;
+
+    public static PlatformDetails PlatformFrom(PlatformInput? platform) =>
+        PlatformDetails.Create(platform?.Does, platform?.For, platform?.Pricing);
+
+    /// <summary>
+    /// The web address and the founder's words a platform needs (L2-250 AC3 to AC6). The address is judged as
+    /// text only: nothing requests it (L2-255 AC4).
+    /// </summary>
+    public static void ValidatePlatform(PlatformInput? platform, Dictionary<string, string> errors)
+    {
+        if (string.IsNullOrWhiteSpace(platform?.Website))
+        {
+            errors["platform.website"] = "REQUIRED";
+        }
+        else if (!PlatformRules.IsWebAddress(platform.Website))
+        {
+            errors["platform.website"] = "INVALID";
+        }
+
+        if (string.IsNullOrWhiteSpace(platform?.Does))
+        {
+            errors["platform.does"] = "REQUIRED";
+        }
+
+        if (string.IsNullOrWhiteSpace(platform?.For))
+        {
+            errors["platform.for"] = "REQUIRED";
+        }
+
+        if (string.IsNullOrWhiteSpace(platform?.Pricing))
+        {
+            errors["platform.pricing"] = "REQUIRED";
+        }
+    }
 
     /// <summary>The term chosen, or Short stay, the first choice, when none was (L2-198 AC2).</summary>
     public static SpaceTerm TermOf(SpaceInput? space) => WireValues.ParseTerm(space?.Term) ?? SpaceTerm.ShortStay;
@@ -237,7 +294,7 @@ public static class Drafts
     public static void Apply(ListingDraft draft, DraftInput input, DateTimeOffset now) =>
         draft.Save(
             KindOf(input.Kind), input.Name, input.Tagline, input.CategorySlug, input.Highlight, input.Place,
-            input.Agreed, ItemsOf(input), now, SpaceOf(input));
+            input.Agreed, ItemsOf(input), now, SpaceOf(input), PlatformOf(input), input.Platform?.Website);
 
     public static async Task<ListingDraft> Owned(IAppDbContext db, string subject, Guid id, CancellationToken cancellationToken) =>
         await db.ListingDrafts.Include(d => d.Items).SingleOrDefaultAsync(d => d.Id == id && d.OwnerSubject == subject, cancellationToken)
@@ -358,6 +415,11 @@ public sealed partial class PublishListingCommandHandler(IAppDbContext db, TimeP
             // A space always sits in Rooms & rentals, so it has no category to choose (L2-198 AC3).
             Drafts.ValidateSpace(input.Space, errors);
         }
+        else if (Drafts.KindOf(input.Kind) == ListingKind.Platform)
+        {
+            // A platform always sits in Software platforms, so it has no category to choose (L2-249 AC2).
+            Drafts.ValidatePlatform(input.Platform, errors);
+        }
         else if (input.CategorySlug is null || Category.Find(input.CategorySlug) is null)
         {
             errors["categorySlug"] = "REQUIRED";
@@ -384,17 +446,25 @@ public sealed partial class PublishListingCommandHandler(IAppDbContext db, TimeP
         }
 
         var space = Drafts.SpaceOf(input);
+        var platform = Drafts.PlatformOf(input);
+        var categorySlug = space is not null ? Category.RoomsSlug : platform is not null ? Category.PlatformsSlug : input.CategorySlug!;
         var listing = Listing.Create(
-            await Listings.ListingSlugs.UniqueAsync(db, addresses, name, Drafts.KindOf(input.Kind), null, cancellationToken), name, tagline, space is null ? input.CategorySlug! : Category.RoomsSlug, now);
+            await Listings.ListingSlugs.UniqueAsync(db, addresses, name, Drafts.KindOf(input.Kind), null, cancellationToken), name, tagline, categorySlug, now);
         listing.SetKind(Drafts.KindOf(input.Kind));
         listing.AssignOwner(command.Subject);
 
         // The public place of a space is its neighbourhood; the exact address stays in its details (L2-208).
-        listing.Describe(new ListingProfile(command.Name, [], null, space?.Neighbourhood ?? input.Place?.Trim(), null, null, null, null));
+        // A platform is used online: it has no place (L2-248 AC3).
+        var where = platform is not null ? null : space?.Neighbourhood ?? input.Place?.Trim();
+        listing.Describe(new ListingProfile(command.Name, [], null, where, null, null, null, null));
         listing.SetHighlight(space is null ? ListingDraft.Cut(input.Highlight, ListingDraft.MaxHighlightLength) : null);
         listing.Publish(now);
         db.Listings.Add(listing);
-        if (space is null)
+        if (platform is not null)
+        {
+            listing.DescribePlatform(platform, input.Platform!.Website);
+        }
+        else if (space is null)
         {
             AddItems(listing, input, now);
         }

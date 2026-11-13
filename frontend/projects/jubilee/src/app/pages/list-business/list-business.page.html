@@ -4,6 +4,8 @@
       <div jb-empty-state icon="check" [heading]="done.name + ' is live'" [level]="1">
         @if (done.kind === 'space') {
           Renters can find it in {{ publishedIn() }} now.
+        } @else if (done.kind === 'platform') {
+          Members can find it in {{ publishedIn() }} now.
         } @else {
           Members can find you in {{ publishedIn() }} now.
         }
@@ -11,7 +13,7 @@
           >View public listing</a
         >
         <a slot="actions" jb-button routerLink="/my-business">Go to My business</a>
-        @if (done.kind !== 'space') {
+        @if (done.kind !== 'space' && done.kind !== 'platform') {
           <a slot="actions" jb-button routerLink="/my-business">
             {{ done.kind === 'services' ? 'Add more services' : 'Add more products' }}
           </a>
@@ -60,7 +62,7 @@
   } @else {
     <div class="split" style="margin-top: var(--space-6)">
       <div>
-        <h1>{{ isSpace() ? 'List a space' : 'List your business' }}</h1>
+        <h1>{{ heading() }}</h1>
         <p class="subtitle" style="margin-bottom: var(--space-6)">
           Free for Christian-owned businesses in Toronto. Your listing goes live as soon as you
           publish it.
@@ -106,7 +108,7 @@
           <form class="form" novalidate (submit)="$event.preventDefault(); publish()">
             <fieldset [disabled]="busy()">
               <legend>What do you offer?</legend>
-              <jb-choice-cards columns="3">
+              <jb-choice-cards>
                 <jb-choice-card
                   name="offer"
                   controlId="offer-p"
@@ -136,6 +138,15 @@
                   (selected)="setKind('space')"
                   >A room, suite, apartment or hall to rent.</jb-choice-card
                 >
+                <jb-choice-card
+                  name="offer"
+                  controlId="offer-w"
+                  icon="monitor"
+                  heading="A software platform"
+                  [checked]="kind() === 'platform'"
+                  (selected)="setKind('platform')"
+                  >An app or tool people use online.</jb-choice-card
+                >
               </jb-choice-cards>
               <p jb-field-help style="margin-top: var(--space-2)">
                 Offer both? Pick the main one now and add the other once you’re live.
@@ -143,9 +154,15 @@
             </fieldset>
             <div
               jb-field
-              [label]="isSpace() ? 'Listing title' : 'Business name'"
+              [label]="
+                isSpace() ? 'Listing title' : isPlatform() ? 'Platform name' : 'Business name'
+              "
               [hint]="
-                isSpace() ? 'Say what it is and where: “Furnished room in Leslieville”.' : null
+                isSpace()
+                  ? 'Say what it is and where: “Furnished room in Leslieville”.'
+                  : isPlatform()
+                    ? 'The name people know it by.'
+                    : null
               "
               controlId="name"
               required
@@ -164,7 +181,13 @@
             </div>
             <div
               jb-field
-              [label]="isSpace() ? 'One line renters should know' : 'One line on what you do'"
+              [label]="
+                isSpace()
+                  ? 'One line renters should know'
+                  : isPlatform()
+                    ? 'One line on what it does'
+                    : 'One line on what you do'
+              "
               controlId="tagline"
               required
               [hint]="
@@ -185,7 +208,99 @@
                 (ngModelChange)="tagline.set($event); clear('tagline'); touched()"
               />
             </div>
-            @if (isSpace()) {
+            @if (isPlatform()) {
+              <div
+                jb-field
+                label="Web address"
+                hint="Where people use it. It starts with https://."
+                controlId="website"
+                required
+                [error]="errors().website"
+              >
+                <input
+                  jb-input
+                  name="website"
+                  type="url"
+                  inputmode="url"
+                  autocomplete="url"
+                  [attr.maxlength]="websiteMax"
+                  required
+                  [readOnly]="busy()"
+                  [ngModel]="website()"
+                  (ngModelChange)="website.set($event); clear('website'); touched()"
+                />
+              </div>
+              <div
+                jb-field
+                label="What it does"
+                hint="A few plain lines. What can someone do with it?"
+                controlId="does"
+                required
+                [counter]="does().length + ' / ' + doesMax"
+                [error]="errors().does"
+              >
+                <textarea
+                  jb-textarea
+                  name="does"
+                  rows="4"
+                  [attr.maxlength]="doesMax"
+                  required
+                  [readOnly]="busy()"
+                  [ngModel]="does()"
+                  (ngModelChange)="does.set($event); clear('does'); touched()"
+                ></textarea>
+              </div>
+              <div
+                jb-field
+                label="Who it is for"
+                hint="Like “Families with children aged 4 to 12”."
+                controlId="for"
+                required
+                [counter]="forWhom().length + ' / ' + forMax"
+                [error]="errors().for"
+              >
+                <input
+                  jb-input
+                  name="for"
+                  type="text"
+                  [attr.maxlength]="forMax"
+                  required
+                  [readOnly]="busy()"
+                  [ngModel]="forWhom()"
+                  (ngModelChange)="forWhom.set($event); clear('for'); touched()"
+                />
+              </div>
+              <div
+                jb-field
+                label="Pricing"
+                hint="In your own words, like “Free for families. Schools pay per classroom.”"
+                controlId="pricing"
+                required
+                [counter]="pricing().length + ' / ' + pricingMax"
+                [error]="errors().pricing"
+              >
+                <input
+                  jb-input
+                  name="pricing"
+                  type="text"
+                  [attr.maxlength]="pricingMax"
+                  required
+                  [readOnly]="busy()"
+                  [ngModel]="pricing()"
+                  (ngModelChange)="pricing.set($event); clear('pricing'); touched()"
+                />
+              </div>
+              <ng-container [ngTemplateOutlet]="highlightField" />
+              <p jb-field-help id="platform-note">
+                Members go to your website to use it. Jubilee takes no payment.
+              </p>
+              <fieldset>
+                <legend>Photos</legend>
+                <p jb-field-help>
+                  Add photos from My business once you publish. The first photo is your cover.
+                </p>
+              </fieldset>
+            } @else if (isSpace()) {
               <fieldset [disabled]="busy()">
                 <legend>How are you renting it?</legend>
                 <jb-choice-cards>
@@ -404,23 +519,7 @@
                   />
                 </div>
               </div>
-              <div
-                jb-field
-                label="Highlight"
-                controlId="perk"
-                optional
-                hint="A short green line on your card, like “Free first meeting”. 30 characters at most."
-              >
-                <input
-                  jb-input
-                  name="highlight"
-                  type="text"
-                  [attr.maxlength]="highlightMax"
-                  [readOnly]="busy()"
-                  [ngModel]="highlight()"
-                  (ngModelChange)="highlight.set($event); touched()"
-                />
-              </div>
+              <ng-container [ngTemplateOutlet]="highlightField" />
               <fieldset [disabled]="busy()">
                 <legend>{{ isServices() ? 'Services' : 'Products' }}</legend>
                 <p jb-field-help>
@@ -529,18 +628,26 @@
           class="text-caption"
           style="font-weight: var(--font-weight-semibold); margin-bottom: var(--space-3)"
         >
-          {{ isSpace() ? 'How renters see it' : 'How members see you' }}
+          {{
+            isSpace()
+              ? 'How renters see it'
+              : isPlatform()
+                ? 'How members see it'
+                : 'How members see you'
+          }}
         </h2>
         @if (isSpace()) {
           <div jb-space-card-preview [space]="spacePreview()"></div>
         } @else {
           <div
             jb-business-card-preview
-            [name]="name() || 'Your business name'"
-            [tagline]="tagline() || 'One line on what you do'"
+            [name]="name() || (isPlatform() ? 'Your platform’s name' : 'Your business name')"
+            [tagline]="
+              tagline() || (isPlatform() ? 'One line on what it does' : 'One line on what you do')
+            "
             [tint]="tile().tint"
             [icon]="tile().icon"
-            [tag]="isServices() ? 'Business' : 'Shop'"
+            [tag]="isPlatform() ? tile().label : isServices() ? 'Business' : 'Shop'"
             [highlight]="highlight().trim()"
           ></div>
         }
@@ -548,3 +655,22 @@
     </div>
   }
 </div>
+<ng-template #highlightField>
+  <div
+    jb-field
+    label="Highlight"
+    controlId="perk"
+    optional
+    hint="A short green line on your card, like “Free first meeting”. 30 characters at most."
+  >
+    <input
+      jb-input
+      name="highlight"
+      type="text"
+      [attr.maxlength]="highlightMax"
+      [readOnly]="busy()"
+      [ngModel]="highlight()"
+      (ngModelChange)="highlight.set($event); touched()"
+    />
+  </div>
+</ng-template>
