@@ -50,7 +50,7 @@ public sealed partial class FeedbackTests : IClassFixture<JubileeApiFactory>, IA
 
     // L2-214 AC1
     [Fact]
-    public async Task L2_200_AC1_a_rating_is_stored_for_the_member_with_its_note_areas_and_consent()
+    public async Task L2_214_AC1_a_rating_is_stored_for_the_member_with_its_note_areas_and_consent()
     {
         var response = await Rate(AsJoanna(), new
         {
@@ -81,7 +81,7 @@ public sealed partial class FeedbackTests : IClassFixture<JubileeApiFactory>, IA
     }
 
     [Fact]
-    public async Task L2_200_AC1_a_rating_alone_is_enough_and_consent_is_not_assumed()
+    public async Task L2_214_AC1_a_rating_alone_is_enough_and_consent_is_not_assumed()
     {
         Assert.Equal(HttpStatusCode.Created, (await Rate(AsJoanna())).StatusCode);
 
@@ -94,7 +94,7 @@ public sealed partial class FeedbackTests : IClassFixture<JubileeApiFactory>, IA
     [Theory]
     [InlineData(0)]
     [InlineData(6)]
-    public async Task L2_200_AC5_a_rating_outside_1_to_5_is_refused(int rating)
+    public async Task L2_214_AC5_a_rating_outside_1_to_5_is_refused(int rating)
     {
         var response = await Rate(AsJoanna(), new { rating });
 
@@ -104,7 +104,7 @@ public sealed partial class FeedbackTests : IClassFixture<JubileeApiFactory>, IA
     }
 
     [Fact]
-    public async Task L2_200_AC5_a_missing_rating_an_area_score_out_of_range_and_a_long_note_each_name_their_field()
+    public async Task L2_214_AC5_a_missing_rating_an_area_score_out_of_range_and_a_long_note_each_name_their_field()
     {
         var response = await Rate(AsJoanna(), new { note = new string('a', 1001), areas = new { trust = 9 } });
 
@@ -116,7 +116,7 @@ public sealed partial class FeedbackTests : IClassFixture<JubileeApiFactory>, IA
     }
 
     [Fact]
-    public async Task L2_200_AC5_a_note_of_1000_characters_is_kept()
+    public async Task L2_214_AC5_a_note_of_1000_characters_is_kept()
     {
         var response = await Rate(AsJoanna(), new { rating = 2, note = new string('a', 1000) });
 
@@ -125,7 +125,7 @@ public sealed partial class FeedbackTests : IClassFixture<JubileeApiFactory>, IA
 
     // L2-214 AC8, L2-132
     [Fact]
-    public async Task L2_200_AC8_the_same_key_stores_one_rating_and_gives_the_same_answer()
+    public async Task L2_214_AC8_the_same_key_stores_one_rating_and_gives_the_same_answer()
     {
         var client = AsJoanna();
 
@@ -138,7 +138,7 @@ public sealed partial class FeedbackTests : IClassFixture<JubileeApiFactory>, IA
     }
 
     [Fact]
-    public async Task L2_200_AC8_another_member_may_use_the_same_key()
+    public async Task L2_214_AC8_another_member_may_use_the_same_key()
     {
         await Rate(AsJoanna(), key: "key-1");
         await Rate(AsDavid(), key: "key-1");
@@ -148,7 +148,7 @@ public sealed partial class FeedbackTests : IClassFixture<JubileeApiFactory>, IA
 
     // L2-214 AC9, L2-137
     [Fact]
-    public async Task L2_200_AC9_a_member_who_sends_more_than_ten_in_an_hour_is_slowed_down()
+    public async Task L2_214_AC9_a_member_who_sends_more_than_ten_in_an_hour_is_slowed_down()
     {
         var client = AsJoanna();
         for (var i = 0; i < 10; i++)
@@ -166,7 +166,7 @@ public sealed partial class FeedbackTests : IClassFixture<JubileeApiFactory>, IA
 
     // L2-214 AC10, L2-213 AC1, AC7, L2-133
     [Fact]
-    public async Task L2_200_AC10_a_member_lists_their_own_feedback_newest_first_and_nobody_elses()
+    public async Task L2_214_AC10_a_member_lists_their_own_feedback_newest_first_and_nobody_elses()
     {
         var joanna = AsJoanna();
         await Rate(joanna, new { rating = 2, note = "Slow on my phone." });
@@ -188,7 +188,7 @@ public sealed partial class FeedbackTests : IClassFixture<JubileeApiFactory>, IA
 
     // L2-214 AC13, L2-213 AC1, AC2
     [Fact]
-    public async Task L2_200_AC13_a_status_and_a_reply_set_on_feedback_show_in_the_list()
+    public async Task L2_214_AC13_a_status_and_a_reply_set_on_feedback_show_in_the_list()
     {
         var joanna = AsJoanna();
         var id = (await Json(await Rate(joanna))).GetProperty("id").GetGuid();
@@ -208,7 +208,7 @@ public sealed partial class FeedbackTests : IClassFixture<JubileeApiFactory>, IA
 
     // L2-214 AC11
     [Fact]
-    public async Task L2_200_AC11_a_visitor_can_neither_send_nor_list_feedback()
+    public async Task L2_214_AC11_a_visitor_can_neither_send_nor_list_feedback()
     {
         var visitor = _factory.CreateClient();
 
