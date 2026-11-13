@@ -1249,7 +1249,7 @@ a.rating-link:hover .rating-link__count, a.rating-link[data-state="hover"] .rati
 /* === block: tee === */
 /* The Purpose Tee drawn flat in a 600 x 700 box, front or back, with its print (ADR 0073). Drawn
    from the Magic Patterns `PrintedTee`; the garment colours are the garment tokens, the same in
-   both themes, because the shirt is black whatever the page is. */
+   both themes, because the shirt sold is the same whatever the page's theme is. */
 .tee { display: block; width: 100%; max-width: 28.75rem; height: auto; margin-inline: auto; }
 .tee__fabric { fill: var(--color-garment-fabric); stroke: var(--color-garment-seam); stroke-width: 2; stroke-linejoin: round; }
 .tee__seams { fill: none; stroke: var(--color-garment-seam); stroke-width: 2; }

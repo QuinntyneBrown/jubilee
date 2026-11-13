@@ -537,6 +537,24 @@
       "bg": "--color-bg-canvas",
       "min": 3,
       "note": "invalid star outline on the page"
+    },
+    {
+      "fg": "--color-garment-print",
+      "bg": "--color-garment-fabric",
+      "min": 4.5,
+      "note": "the tee's cream print on the black shirt"
+    },
+    {
+      "fg": "--color-garment-highlight",
+      "bg": "--color-garment-fabric",
+      "min": 4.5,
+      "note": "“purpose.” in gold on the black shirt"
+    },
+    {
+      "fg": "--color-fg-accent",
+      "bg": "--color-bg-canvas",
+      "min": 3,
+      "note": "the accent word of a merchandise heading (large text)"
     }
   ]
 }
