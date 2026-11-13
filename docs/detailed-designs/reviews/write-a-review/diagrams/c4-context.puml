@@ -1,0 +1,16 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Write a review
+
+Person(member, "Member", "Writes one review of a listing whose owner confirmed a request of theirs")
+Person(owner, "Owner", "Is told of the new review")
+Person(visitor, "Visitor", "Is asked to join or sign in first")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace")
+System_Ext(mail, "E-mail service", "Delivers the owner's e-mail")
+
+Rel(member, jubilee, "Writes and posts a review in", "HTTPS")
+Rel(visitor, jubilee, "Presses Write a review in", "HTTPS")
+Rel(jubilee, owner, "Tells of the new review", "Notification centre")
+Rel(jubilee, mail, "Sends the new-review e-mail through", "SMTP/API")
+@enduml

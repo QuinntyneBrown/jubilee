@@ -1,0 +1,14 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Reply to a review
+
+Person(owner, "Owner", "Answers a review of their listing in public")
+Person(author, "Author", "Is told of the first reply")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace")
+System_Ext(mail, "E-mail service", "Delivers the author's e-mail")
+
+Rel(owner, jubilee, "Replies to a review in", "HTTPS")
+Rel(jubilee, author, "Tells of the reply", "Notification centre")
+Rel(jubilee, mail, "Sends the reply e-mail through", "SMTP/API")
+@enduml

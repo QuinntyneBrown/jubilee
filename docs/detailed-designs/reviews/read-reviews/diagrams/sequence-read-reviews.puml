@@ -1,0 +1,55 @@
+@startuml
+title UML sequence behaviour — Read, filter and sort reviews
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Visitor or member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "BusinessPage" as page
+  participant "jb-reviews" as section
+  participant "ReviewsApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "ReviewsController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "GetListingReviewsQuery" as handler
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+actor -> page : Open /b/{slug}
+page -> client : list(slug)
+page --> actor : Skeleton of the summary and three reviews (L2-123)
+client -> controller : GET /api/listings/{slug}/reviews (no session needed)
+controller -> handler : Send with the caller's subject, if any
+handler -> db : Public listing, its star counts and live reviews newest first
+alt Listing not public
+  handler --> controller : 404 (L2-226 AC7)
+else Public
+  handler -> handler : Relation and writing state (ReviewEligibility)
+  handler --> controller : ListingReviewsDto
+end
+controller --> client : 200
+client --> page : ListingReviews
+page -> section : reviews
+alt No reviews
+  section --> actor : "No reviews yet" and "Worked with {name}? …" (L2-229 AC6)
+else Reviews
+  section --> actor : Summary, own review first, first three of Most relevant, "Show all {n} reviews"
+end
+actor -> section : Press the 4-star bar
+section -> section : filterReviews(items, 4), first three again
+section --> actor : Bar pressed, "Showing {n} reviews with 4 stars · Clear", status announced (L2-230)
+actor -> section : Choose "Lowest rated"
+section -> section : sortReviews(items, lowest, now)
+section --> actor : List reordered, first three again
+actor -> section : Press "Show all {n} reviews"
+section --> actor : The rest shown, focus on the first added (L2-229 AC4)
+opt The reviews fail to load
+  client --> page : Error
+  page --> actor : "We couldn’t load the reviews." with Try again and the reference (L2-125)
+end
+@enduml

@@ -225,6 +225,19 @@ listings and takes down one that misrepresents a business.
 | [Adapt layouts](responsive-design/adapt-layouts/README.md) | `L2-165`, `L2-166`, `L2-167`, `L2-168`, `L2-163` |
 | [Adapt navigation](responsive-design/adapt-navigation/README.md) | `L2-163`, `L2-164`, `L2-162` |
 
+### reviews
+
+Decisions in [ADR 0066](../adr/0066-reviews.md).
+
+| Feature | L2 requirements cited |
+|---|---|
+| [Edit and remove a review](reviews/edit-and-remove-a-review/README.md) | `L2-233`, `L2-238`, `L2-240`, `L2-128`, `L2-129`, `L2-130`, `L2-133` |
+| [Moderate reviews](reviews/moderate-reviews/README.md) | `L2-236`, `L2-237`, `L2-235`, `L2-238`, `L2-239`, `L2-105`, `L2-180` |
+| [Read reviews](reviews/read-reviews/README.md) | `L2-229`, `L2-230`, `L2-231`, `L2-232`, `L2-226`, `L2-238`, `L2-239`, `L2-240`, `L2-123`, `L2-125` |
+| [Reply to a review](reviews/reply-to-a-review/README.md) | `L2-234`, `L2-235`, `L2-229`, `L2-238`, `L2-064`, `L2-068` |
+| [Review data](reviews/review-data/README.md) | `L2-238`, `L2-239`, `L2-017`, `L2-018`, `L2-133`, `L2-136`, `L2-137`, `L2-148` |
+| [Write a review](reviews/write-a-review/README.md) | `L2-226`, `L2-227`, `L2-228`, `L2-235`, `L2-238`, `L2-240`, `L2-126`, `L2-127`, `L2-132`, `L2-137` |
+
 ### security
 
 | Feature | L2 requirements cited |

@@ -1,0 +1,55 @@
+@startuml
+title UML sequence behaviour — Reply to a review
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Owner" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "BusinessPage" as page
+  participant "ReplyReviewDialog" as dialog
+  participant "ReviewsApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "ReviewsController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "ReplyToReviewCommand" as handler
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+actor -> page : Press "Reply" on a review of their listing
+page -> dialog : Open "Reply to {author}"
+actor -> dialog : Type the reply and press "Post reply"
+alt Empty
+  dialog --> actor : "Write your reply." nothing sent (L2-234 AC2)
+else Text
+  dialog --> actor : Busy
+  dialog -> client : reply(id, text)
+  client -> controller : PUT /api/reviews/{id}/reply
+  controller -> handler : Send with the member of the session
+  handler -> db : Live review and its listing
+  alt Caller does not own the listing
+    handler --> controller : 403 NOT_OWNER (L2-234 AC6)
+  else Owner
+    handler -> handler : Trim, REQUIRED or TOO_LONG, hourly limit
+    handler -> handler : Review.Reply(from, text, now)
+    alt First reply
+      handler -> db : Notification to the author "{name} replied to your review" and the e-mail (L2-235 AC2)
+    else Changed reply
+      handler -> handler : Set ReplyEditedAt, tell nobody
+    end
+    handler -> db : SaveChanges, one transaction
+    handler --> controller : ReviewItemDto
+  end
+  controller --> client : 200
+  dialog --> page : Close
+  page -> client : list(slug)
+  page --> actor : Reply under the review, toast "Reply posted", focus to "Edit reply" (L2-234 AC3)
+end
+opt Fails
+  dialog --> actor : "We couldn’t post your reply" and the text kept (L2-234 AC7)
+end
+@enduml

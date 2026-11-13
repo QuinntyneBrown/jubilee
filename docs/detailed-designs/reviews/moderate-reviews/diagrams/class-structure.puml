@@ -1,0 +1,100 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Moderate reviews
+
+package "Jubilee.Domain" {
+  class Review {
+    +TakenDownAt: DateTimeOffset?
+    +TakeDownReason: string?
+    +TakeDown(reason, now): void
+  }
+  class ReviewReport {
+    +Id: Guid
+    +ReviewId: Guid
+    +ReporterSubject: string
+    +ReporterName: string
+    +Reason: ReviewReportReason
+    +Note: string?
+    +Status: ReportStatus
+    +CreatedAt: DateTimeOffset
+    +ResolutionNote: string?
+    +ResolvedAt: DateTimeOffset?
+    +IdempotencyKey: string
+    +StartReview(): void
+    +Resolve(note, now): void
+  }
+  enum ReviewReportReason {
+    NotARealDealing
+    Abusive
+    PrivateDetails
+    Advertising
+    Other
+  }
+  enum ReportStatus {
+    Open
+    InReview
+    Resolved
+  }
+  enum ReportActionKind {
+    Dismiss
+    MessageReporter
+    MessageOwner
+    PlaceOnHold
+    RemoveListing
+    LiftHold
+    TakeDownReview
+  }
+  class ReportAction
+}
+
+package "Jubilee.Application" {
+  class ReportReviewCommand {
+    +Subject: string
+    +ReviewId: Guid
+    +Reason: string?
+    +Note: string?
+    +IdempotencyKey: string?
+  }
+  class LoadedReport {
+    +Type: "listing" | "conversation" | "review"
+    +ReviewReport: ReviewReport?
+  }
+  class ReportStore
+  class ApplyReportActionCommand
+  class ReportDetailDto {
+    +Review: ReportedReviewDto?
+  }
+}
+
+package "Jubilee Web" {
+  class ReportReviewDialog {
+    #reason: Signal<string | null>
+    #note: Signal<string>
+    #view: Signal<'form' | 'busy' | 'failed' | 'sent'>
+    -key: string
+    #send(): void
+  }
+}
+
+ReviewReport --> Review
+ReviewReport --> ReviewReportReason
+ReviewReport --> ReportStatus
+ReportReviewCommand ..> ReviewReport : creates
+ReportStore ..> LoadedReport : builds
+LoadedReport --> ReviewReport
+ApplyReportActionCommand ..> Review : TakeDown
+ApplyReportActionCommand ..> ReportAction : records
+ApplyReportActionCommand ..> ReportActionKind
+ReportReviewDialog ..> ReportReviewCommand : via POST /api/reviews/{id}/reports
+@enduml

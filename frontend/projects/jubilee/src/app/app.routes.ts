@@ -80,6 +80,14 @@ export const routes: Routes = [
     data: data({ shell: 'app', page: 'product', section: 'browse' }),
     title: 'Product · Jubilee',
   },
+  {
+    path: 'b/:slug/review',
+    loadComponent: () =>
+      import('./pages/write-review/write-review.page').then((m) => m.WriteReviewPage),
+    canActivate: [memberGuard],
+    data: data({ shell: 'app', page: 'write-review', section: 'browse' }),
+    title: 'Write a review · Jubilee',
+  },
   { path: 'feedback', pathMatch: 'full', redirectTo: 'feedback/rate' },
   {
     path: 'feedback/:tab',

@@ -83,6 +83,7 @@ export const ICONS = {
   play: [path('M6 3 20 12 6 21Z')],
   plus: [path('M12 5v14M5 12h14')],
   refresh: [path('M4 12a8 8 0 0 1 14-5l2 2M20 5v4h-4M20 12a8 8 0 0 1-14 5l-2-2M4 19v-4h4')],
+  reply: [path('M10 9V5l-7 7 7 7v-4c5 0 8 1.5 11 5-1-6-4-11-11-11z')],
   search: [circle(11, 11, 7), path('m20 20-3.5-3.5')],
   send: [path('M4 12 20 4l-5 16-3-7z')],
   'sign-out': [path('M10 4H5v16h5M15 8l4 4-4 4M19 12H9')],

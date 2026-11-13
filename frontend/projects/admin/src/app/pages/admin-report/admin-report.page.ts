@@ -9,7 +9,7 @@ import {
   signal,
 } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { ADMIN_API, ReportActionKind, ReportDetail } from 'api';
+import { ADMIN_API, ReportActionKind, ReportDetail, ReviewUnderReport, fullDate } from 'api';
 import {
   EmptyState,
   Icon,
@@ -28,6 +28,8 @@ import {
   MessageDay,
   DescriptionList,
   DescriptionItem,
+  Review,
+  ReviewView,
 } from 'components';
 import {
   ReportActionData,
@@ -53,11 +55,14 @@ const ACTION_TITLE: Record<ReportActionKind, string> = {
   hold: 'Listing placed on hold',
   remove: 'Listing removed',
   'lift-hold': 'Hold lifted',
+  'take-down': 'Review taken down',
 };
 
 /**
  * One report at /reports/:id (L2-105): opening it moves it to review, and a reported conversation is
- * shown with it while the report is unresolved (L2-063 AC3). The five actions open a dialog for the note.
+ * shown with it while the report is unresolved (L2-063 AC3). A reported review is shown as it stands
+ * with every report of it, and its actions are Dismiss, Message the reporter and Take the review down
+ * (L2-237). Each action opens a dialog for the note.
  */
 @Component({
   selector: 'jb-admin-report-page',
@@ -80,6 +85,7 @@ const ACTION_TITLE: Record<ReportActionKind, string> = {
     MessageDay,
     DescriptionList,
     DescriptionItem,
+    Review,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'jb-page container page' },
@@ -118,9 +124,35 @@ export class AdminReportPage implements OnInit {
   }
 
   protected title(report: ReportDetail): string {
-    return report.type === 'conversation'
-      ? `Conversation report about ${report.listing.name}`
-      : `Report about ${report.listing.name}`;
+    switch (report.type) {
+      case 'conversation':
+        return `Conversation report about ${report.listing.name}`;
+      case 'review':
+        return `Report about a review of ${report.listing.name}`;
+      default:
+        return `Report about ${report.listing.name}`;
+    }
+  }
+
+  /** The review as the review component shows it, with its dates written out. */
+  protected reviewView(review: ReviewUnderReport): ReviewView {
+    return {
+      author: review.author,
+      initials: review.initials,
+      rating: review.rating,
+      itemName: review.itemName,
+      date: fullDate(review.createdAt),
+      edited: review.editedAt !== null,
+      text: review.text,
+      reply: review.reply
+        ? {
+            from: review.reply.from,
+            date: fullDate(review.reply.at),
+            edited: review.reply.editedAt !== null,
+            text: review.reply.text,
+          }
+        : null,
+    };
   }
 
   protected listingState(report: ReportDetail): string {
@@ -156,7 +188,12 @@ export class AdminReportPage implements OnInit {
     const report = this.report();
     if (!report) return;
     const ref = this.dialog.open<ReportDetail, ReportActionData>(ReportActionDialog, {
-      data: { reportId: report.id, kind, listingName: report.listing.name },
+      data: {
+        reportId: report.id,
+        kind,
+        listingName: report.listing.name,
+        author: report.review?.author ?? null,
+      },
       ariaLabelledBy: 'dlg-title',
       ariaDescribedBy: 'dlg-desc',
       ariaModal: true,
@@ -168,7 +205,11 @@ export class AdminReportPage implements OnInit {
       // The answer to an action carries no messages: the ones opened with the report stay in view.
       this.state.set({
         status: 'loaded',
-        value: { ...result, conversation: result.conversation ?? report.conversation },
+        value: {
+          ...result,
+          conversation: result.conversation ?? report.conversation,
+          review: result.review ?? report.review,
+        },
       });
       // The action may have resolved the report: the admin bar's count is read again (ADR 0058).
       this.session.refresh();

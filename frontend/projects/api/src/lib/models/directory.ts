@@ -1,5 +1,7 @@
 /** Read models of the public directory, as the API returns them. */
 
+import { CardRating } from './reviews';
+
 export interface CategoryLink {
   slug: string;
   name: string;
@@ -15,6 +17,8 @@ export interface BusinessCard {
   coverPhoto: null;
   /** The business carries the "Replies fast" badge (L2-054). */
   repliesFast: boolean;
+  /** The average and count from three reviews; absent or null below three (L2-231). */
+  rating?: CardRating | null;
 }
 
 /** A business as the one-line directory row shows it. */
@@ -38,6 +42,8 @@ export interface ProductCard {
   tile: { tint: TileTint; icon: ProductTileIcon };
   /** Stock 0 in every option: the card says "Sold out" (L2-034 AC3). */
   soldOut: boolean;
+  /** The average and count from three reviews; absent or null below three (L2-231). */
+  rating?: CardRating | null;
 }
 
 /** How a space is rented (L2-197). */
@@ -55,6 +61,8 @@ export interface SpaceCard {
   neighbourhood: string;
   available: string;
   coverPhoto: string | null;
+  /** The average and count from three reviews; absent or null below three (L2-231). */
+  rating?: CardRating | null;
 }
 
 /** "Rooms & places to stay" on Browse (L2-201): the newest spaces overall and per term. */

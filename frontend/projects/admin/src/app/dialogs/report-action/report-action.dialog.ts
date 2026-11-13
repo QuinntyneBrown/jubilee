@@ -16,6 +16,8 @@ export interface ReportActionData {
   reportId: string;
   kind: ReportActionKind;
   listingName: string;
+  /** The author of a reported review, named by the take-down (L2-237). */
+  author?: string | null;
 }
 
 type View = 'form' | 'busy' | 'failed';
@@ -26,9 +28,21 @@ interface Wording {
   cta: string;
   danger: boolean;
   messages: boolean;
+  /** The label of the message field, its limit and what it asks for when empty. */
+  messageLabel?: string;
+  messageMax?: number;
+  messageMissing?: string;
+  /** Who never sees the resolution note. */
+  noteHint?: string;
 }
 
-/** The dialog that collects the required resolution note (and the message text) for a report action (L2-105 AC2). */
+const NOTE_HINT =
+  'Kept with the report and in the audit log. Never shown to the owner or the reporter.';
+
+/**
+ * The dialog that collects the required resolution note (and the message text) for a report action
+ * (L2-105 AC2). Taking a review down also asks for the reason its author reads (L2-237 AC3).
+ */
 @Component({
   selector: 'jb-report-action-dialog',
   imports: [FormsModule, Button, Alert, Field, Textarea, DialogFrame, DialogBody, DialogFooter],
@@ -47,6 +61,13 @@ export class ReportActionDialog {
   protected readonly noteProblem = signal(false);
   protected readonly textProblem = signal(false);
   protected readonly busy = computed(() => this.view() === 'busy');
+  protected readonly noteHint = NOTE_HINT;
+  protected readonly counter = computed(() => {
+    const max = this.wording().messageMax;
+    return max
+      ? `${this.text().length.toLocaleString('en-CA')} / ${max.toLocaleString('en-CA')}`
+      : null;
+  });
 
   protected readonly wording = computed<Wording>(() => {
     const name = this.data.listingName;
@@ -91,6 +112,21 @@ export class ReportActionDialog {
           danger: true,
           messages: false,
         };
+      case 'take-down': {
+        const author = this.data.author ?? 'The author';
+        return {
+          title: 'Take the review down?',
+          text: `${author}’s review leaves the page of ${name}, its rating and its cards. Every report of it is resolved, and ${author} is told why.`,
+          cta: 'Take the review down',
+          danger: true,
+          messages: true,
+          messageLabel: 'Reason the author will read',
+          messageMax: 1000,
+          messageMissing: 'Write the reason the author will read.',
+          noteHint:
+            'Kept with the report and in the audit log. Never shown to the author, the owner or the reporter.',
+        };
+      }
       default:
         return {
           title: `Lift the hold on ${name}?`,

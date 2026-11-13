@@ -199,6 +199,8 @@ internal static class DataArchive
             ["requests"] = await Requests(db, subject, cancellationToken),
             ["conversations"] = await Conversations(db, subject, cancellationToken),
             ["feedback"] = await FeedbackOf(db, subject, cancellationToken),
+            ["reviews"] = await ReviewsOf(db, r => r.AuthorSubject == subject, cancellationToken),
+            ["reviewReports"] = await ReviewReportsOf(db, subject, cancellationToken),
         };
 
         var owned = await db.Listings.AsNoTracking().Where(l => l.OwnerId == subject && l.DeletedAt == null).ToListAsync(cancellationToken);
@@ -236,10 +238,40 @@ internal static class DataArchive
                     r.Note,
                     received = r.CreatedAt,
                 }).ToList();
+            document["reviewsOfMyListings"] = await ReviewsOf(db, r => ids.Contains(r.ListingId) && r.TakenDownAt == null, cancellationToken);
         }
 
         return JsonSerializer.Serialize(document, Options);
     }
+
+    /// <summary>Reviews with their replies (ADR 0066): the member's own, or those of the member's listings.</summary>
+    private static async Task<object> ReviewsOf(
+        IAppDbContext db, System.Linq.Expressions.Expression<Func<Review, bool>> which, CancellationToken cancellationToken)
+    {
+        var reviews = (await db.Reviews.AsNoTracking().Where(which).ToListAsync(cancellationToken)).OrderBy(r => r.CreatedAt).ToList();
+        var ids = reviews.Select(r => r.ListingId).Distinct().ToList();
+        var names = await db.Listings.AsNoTracking().Where(l => ids.Contains(l.Id)).ToDictionaryAsync(l => l.Id, l => l.Name, cancellationToken);
+        return reviews.Select(r => new
+        {
+            business = names.GetValueOrDefault(r.ListingId) ?? "(no longer listed)",
+            author = r.AuthorName,
+            item = r.ItemName,
+            r.Rating,
+            r.Text,
+            written = r.CreatedAt,
+            edited = r.EditedAt,
+            reply = r.ReplyText,
+            takenDown = r.TakenDownAt,
+            takenDownReason = r.TakeDownReason,
+        }).ToList();
+    }
+
+    /// <summary>The reports of reviews the member sent (ADR 0066).</summary>
+    private static async Task<object> ReviewReportsOf(IAppDbContext db, string subject, CancellationToken cancellationToken) =>
+        (await db.ReviewReports.AsNoTracking().Where(r => r.ReporterSubject == subject).ToListAsync(cancellationToken))
+            .OrderBy(r => r.CreatedAt)
+            .Select(r => new { reason = r.Reason.ToString(), r.Note, sent = r.CreatedAt, status = r.Status.ToString() })
+            .ToList();
 
     private static async Task<object> Saved(IAppDbContext db, string subject, CancellationToken cancellationToken)
     {

@@ -1,10 +1,13 @@
 import type { Locator, Page } from '@playwright/test';
 import type { Region, Screen } from '../fixtures/visual';
 import { ProductCardPart } from './business.page';
+import { ReviewsRegion } from './reviews.region';
 import { ShellPage } from './shell.page';
 
 /** The product page at /b/:slug/p/:product. */
 export class ProductPage extends ShellPage implements Screen {
+  /** The rating under the name and the "Reviews" section of the product (L2-232). */
+  readonly reviews: ReviewsRegion;
   readonly breadcrumb: Locator;
   readonly breadcrumbLinks: Locator;
   readonly breadcrumbCurrent: Locator;
@@ -47,6 +50,7 @@ export class ProductPage extends ShellPage implements Screen {
 
   constructor(page: Page) {
     super(page);
+    this.reviews = new ReviewsRegion(page);
     this.breadcrumb = this.main.getByRole('navigation', { name: 'Breadcrumb' });
     this.saveButton = this.main.getByRole('button', {
       name: /^(Save|Saved\. Remove from saved)$/,

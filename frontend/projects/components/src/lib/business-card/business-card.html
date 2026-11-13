@@ -1,6 +1,9 @@
 <div jb-media-tile [tint]="tile().tint" [icon]="tile().icon" [tag]="tile().label"></div>
 <h3 class="biz-card__name">{{ business().name }}</h3>
 <p class="biz-card__tagline">{{ business().tagline }}</p>
+@if (business().rating; as rating) {
+  <span jb-rating-inline [average]="rating.average" [count]="rating.count"></span>
+}
 <p class="biz-card__meta">
   @if (business().highlight; as highlight) {
     <span jb-perk>{{ highlight }}</span>

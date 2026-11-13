@@ -100,7 +100,9 @@ test.describe('shop page (L2-034)', () => {
     await expect(mug.name).toHaveText('Gold cross stoneware mug');
     await expect(mug.badge).toHaveText('Sold out');
     // The card is one link: its name reads the badge with the product and the price
-    await expect(mug.root).toHaveAccessibleName('Sold out Gold cross stoneware mug $24');
+    await expect(mug.root).toHaveAccessibleName(
+      'Sold out Gold cross stoneware mug Rated 4.7 out of 5 from 3 reviews $24',
+    );
     await expect(mug.root).toHaveAttribute('href', '/b/luzandre/p/gold-cross-stoneware-mug');
     // A product in stock carries no badge
     await expect(shop.productCard(0).badge).toHaveCount(0);

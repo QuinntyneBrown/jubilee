@@ -21,6 +21,15 @@ import { DRAIN, stubMemberRequests } from './member-requests';
 import { stubListingDrafts } from './listing-drafts';
 import { stubOrder } from './order';
 import { stubQuote } from './quote';
+import {
+  deeksForm,
+  joannasReview,
+  legacyReviews,
+  luzandreReviews,
+  stubReviewForm,
+  stubReviews,
+  suiteForm,
+} from './reviews';
 import type { StubName } from './routes';
 import { STATEMENT_LAPSED, naomiOwing, stubStatementAgreement } from './statement-of-faith';
 import { joannaSession, keepDraft, stubSession as stubSignedInSession } from './session';
@@ -371,6 +380,37 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
         ...listing,
         photos: LISTING_PHOTOS.map(({ file: _file, ...photo }) => photo),
       }));
+    case 'reviews-member':
+      // The recording is made as a visitor; Joanna is a member who may write (L2-226 AC1).
+      return stubReviews(page, 'legacy-financial');
+    case 'reviews-empty':
+      return stubReviews(page, 'deeks-insurance', { items: [] });
+    case 'reviews-mine':
+      return stubReviews(page, 'legacy-financial', {
+        items: [joannasReview(), ...legacyReviews()],
+        writing: 'written',
+      });
+    case 'reviews-owner':
+      await patchListing(page, luzandre, (listing) => ({ ...listing, viewerRelation: 'owner' }));
+      return stubReviews(page, 'luzandre', {
+        items: luzandreReviews(),
+        viewer: 'owner',
+        writing: 'owner',
+      });
+    case 'reviews-loading':
+      return stubReviews(page, 'legacy-financial', { mode: 'loading' });
+    case 'reviews-error':
+      return stubReviews(page, 'legacy-financial', { mode: 'error' });
+    case 'reviews-not-eligible':
+      return stubReviews(page, 'legacy-financial', { writing: 'not-eligible' });
+    case 'write-review':
+      return stubReviewForm(page, 'legacy-financial');
+    case 'write-review-single-item':
+      return stubReviewForm(page, 'deeks-insurance', { form: deeksForm() });
+    case 'write-review-space':
+      return stubReviewForm(page, 'roncesvalles-guest-suite', { form: suiteForm() });
+    case 'write-review-not-eligible':
+      return stubReviewForm(page, 'luzandre', { refusal: { status: 403, code: 'NOT_ELIGIBLE' } });
     case 'business-replies-fast':
       // The seeded businesses have answered nobody yet; the badge comes from a month of quick answers (L2-054).
       return patchListing(page, legacyFinancial, (listing) => ({
@@ -681,6 +721,8 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
       return stubModeration(page, { reports: 'fails' });
     case 'moderation-report-conversation':
       return stubModeration(page);
+    case 'moderation-report-review':
+      return stubModeration(page, { reviewReport: true });
     case 'moderation-report-error':
       return stubModeration(page, { reports: 'fails' });
     case 'moderation-featured-error':

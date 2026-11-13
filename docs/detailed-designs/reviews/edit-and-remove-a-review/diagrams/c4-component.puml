@@ -1,0 +1,36 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Edit and remove a review
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(page, "BusinessPage", "Page container", "Opens the dialogs from Your review and reloads the reviews")
+  Component(section, "jb-reviews", "Library component", "Emits edit and remove")
+  Component(edit, "EditReviewDialog", "CDK dialog", "Stars, item, text, Save changes")
+  Component(remove, "RemoveReviewDialog", "CDK dialog", "Remove your review? and Remove review")
+  Component(frame, "jb-dialog", "Library component", "Card, bottom sheet under 640 px")
+  Component(client, "ReviewsApi", "Service contract", "edit and remove")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(ctrl, "ReviewsController", "ASP.NET Core controller", "PUT and DELETE /api/reviews/{id}")
+  Component(editCmd, "EditReviewCommand", "MediatR handler", "Author only, validate, limit, Edit, recount")
+  Component(removeCmd, "RemoveReviewCommand", "MediatR handler", "Author only, delete with reports, recount")
+  Component(tally, "ReviewTally", "Application rule", "Recounts the stars")
+}
+ComponentDb(db, "Jubilee database", "SQL Server", "Reviews, ReviewReports, Listings, Products")
+
+Rel(section, page, "Emits edit and remove to")
+Rel(page, edit, "Opens")
+Rel(page, remove, "Opens")
+Rel(edit, frame, "Is framed by")
+Rel(remove, frame, "Is framed by")
+Rel(edit, client, "Saves through")
+Rel(remove, client, "Removes through")
+Rel(client, ctrl, "Calls", "JSON/HTTPS")
+Rel(ctrl, editCmd, "Sends")
+Rel(ctrl, removeCmd, "Sends")
+Rel(editCmd, tally, "Applies")
+Rel(removeCmd, tally, "Applies")
+Rel(editCmd, db, "Saves")
+Rel(removeCmd, db, "Saves")
+@enduml

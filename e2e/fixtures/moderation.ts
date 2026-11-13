@@ -7,9 +7,17 @@ import { miriam, type FakeStaff, type StaffMember } from './staff';
 
 export const REPORT_ID = '5b0c7a10-2d4e-4f6a-8b1c-0123456789ab';
 export const CONVERSATION_REPORT_ID = '6c1d8b21-3e5f-4a7b-9c2d-123456789abc';
+export const REVIEW_REPORT_ID = '7d2e9c32-4f60-4b8c-8d3e-23456789abcd';
+
+/** The actions the API takes on a report of a review; the listing's are refused (L2-237 AC2). */
+const REVIEW_ACTIONS = ['dismiss', 'message-reporter', 'take-down'];
 
 export interface FakeModeration {
   reports: 'ok' | 'empty' | 'fails';
+  /** The list also holds a report of a review (L2-237). */
+  reviewReport: boolean;
+  /** The reported review was taken down. */
+  takenDown: boolean;
   featured: 'ok' | 'fails';
   save: 'ok' | 'overlaps' | 'fails';
   listingState: string;
@@ -64,6 +72,8 @@ export async function stubModeration(
 ): Promise<FakeModeration> {
   const fake: FakeModeration = {
     reports: 'ok',
+    reviewReport: false,
+    takenDown: false,
     featured: 'ok',
     save: 'ok',
     listingState: 'live',
@@ -77,7 +87,60 @@ export async function stubModeration(
   };
   fake.staff = (await stubAdmin(page, {}, staff)).staff;
 
+  const actionsOf = (id: string) =>
+    fake.actions
+      .filter((a) => a.id === id)
+      .map((a) => ({
+        kind: a.kind,
+        resolutionNote: a.resolutionNote,
+        messageText: a.messageText,
+        by: 'Esther Mensah',
+        at: '2026-11-11T09:00:00-05:00',
+      }));
+
+  // A report of a review: the review as it stands and every report of it (L2-237 AC2).
+  const reviewDetail = () => ({
+    id: REVIEW_REPORT_ID,
+    type: 'review',
+    status: fake.status,
+    overdue: false,
+    createdAt: '2026-11-10T09:40:00-05:00',
+    reporterName: 'Mary Osei',
+    listing: {
+      name: 'WaterWorks Plumbing & Drains',
+      slug: 'waterworks-plumbing-drains',
+      state: 'live',
+    },
+    entries: [
+      {
+        reason: 'It’s advertising or off-topic',
+        description: '',
+        at: '2026-11-09T19:12:00-05:00',
+      },
+      {
+        reason: 'It shares private details',
+        description: 'It has a phone number in it and names one of their plumbers.',
+        at: '2026-11-10T09:40:00-05:00',
+      },
+    ],
+    conversation: null,
+    review: {
+      author: 'Daniel R.',
+      initials: 'DR',
+      rating: 1,
+      itemName: 'Blocked drain',
+      text: 'The plumber who came, Mike, was rude and left a mess. Call me on 416-555-0142 and I’ll tell you the whole story.',
+      createdAt: '2026-11-08T12:00:00-05:00',
+      editedAt: null,
+      reply: null,
+      takenDown: fake.takenDown,
+    },
+    actions: actionsOf(REVIEW_REPORT_ID),
+    resolutionNote: null,
+  });
+
   const detail = (id: string) => {
+    if (id === REVIEW_REPORT_ID) return reviewDetail();
     const conversation = id === CONVERSATION_REPORT_ID;
     return {
       id,
@@ -114,15 +177,7 @@ export async function stubModeration(
               ],
             }
           : null,
-      actions: fake.actions
-        .filter((a) => a.id === id)
-        .map((a) => ({
-          kind: a.kind,
-          resolutionNote: a.resolutionNote,
-          messageText: a.messageText,
-          by: 'Esther Mensah',
-          at: '2026-11-11T09:00:00-05:00',
-        })),
+      actions: actionsOf(id),
       resolutionNote: null,
     };
   };
@@ -146,6 +201,17 @@ export async function stubModeration(
                 'Pressure to pay outside Jubilee',
                 false,
               ),
+              ...(fake.reviewReport
+                ? [
+                    item(
+                      REVIEW_REPORT_ID,
+                      'review',
+                      'WaterWorks Plumbing & Drains',
+                      'It shares private details',
+                      false,
+                    ),
+                  ]
+                : []),
             ];
       return route.fulfill({
         json: {
@@ -166,12 +232,26 @@ export async function stubModeration(
       resolutionNote: string;
       messageText: string | null;
     };
+    if (id === REVIEW_REPORT_ID && !REVIEW_ACTIONS.includes(body.kind)) {
+      return route.fulfill(
+        problem(422, { code: 'validation_failed', errors: { kind: 'INVALID' } }),
+      );
+    }
     if (!body.resolutionNote?.trim()) {
       return route.fulfill(
         problem(422, { code: 'validation_failed', errors: { resolutionNote: 'REQUIRED' } }),
       );
     }
+    if (body.kind === 'take-down' && !body.messageText?.trim()) {
+      return route.fulfill(
+        problem(422, { code: 'validation_failed', errors: { messageText: 'REQUIRED' } }),
+      );
+    }
     fake.actions.push({ id, ...body });
+    if (body.kind === 'take-down') {
+      fake.status = 'resolved';
+      fake.takenDown = true;
+    }
     if (body.kind === 'dismiss' || body.kind === 'remove' || body.kind === 'lift-hold')
       fake.status = 'resolved';
     if (body.kind === 'hold') fake.listingState = 'on-hold';

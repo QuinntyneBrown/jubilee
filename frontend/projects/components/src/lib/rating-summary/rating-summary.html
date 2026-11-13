@@ -1,0 +1,28 @@
+<div class="rating-summary__score">
+  <p class="rating-summary__average" aria-hidden="true">{{ shown() }}</p>
+  <div class="rating-summary__detail">
+    <span jb-stars [value]="average()" [label]="'Rated ' + shown() + ' out of 5'"></span>
+    <p class="rating-summary__count">{{ count() }} {{ count() === 1 ? 'review' : 'reviews' }}</p>
+  </div>
+</div>
+<ul class="rating-summary__bars">
+  @for (bar of bars(); track bar.stars) {
+    <li>
+      <button
+        class="rating-summary__bar"
+        type="button"
+        [attr.aria-pressed]="selected() === bar.stars"
+        [attr.aria-label]="
+          bar.stars + ' stars, ' + bar.count + (bar.count === 1 ? ' review' : ' reviews')
+        "
+        (click)="toggle(bar.stars)"
+      >
+        <span class="rating-summary__bar-label" aria-hidden="true">{{ bar.stars }}</span>
+        <span class="rating-summary__track" aria-hidden="true"
+          ><span class="rating-summary__fill" [style.width.%]="bar.width"></span
+        ></span>
+        <span class="rating-summary__bar-count" aria-hidden="true">{{ bar.count }}</span>
+      </button>
+    </li>
+  }
+</ul>

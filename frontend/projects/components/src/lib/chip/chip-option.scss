@@ -4,6 +4,8 @@
 
 :host {
   display: inline-flex;
+  // In a scrolling chip-row the option keeps its width; a long label never shrinks under its text.
+  flex: none;
 }
 
 @include chip.chip('.chip');

@@ -446,7 +446,8 @@ public sealed class AccountErasureJob(IServiceScopeFactory scopes, ILogger<Accou
 
 /// <summary>
 /// Once a day: deletes the launch notification sign-ups and the business pre-registrations that are
-/// 12 months old and logs how many, counts only (L2-148 AC5, AC6; L2-218 AC6).
+/// 12 months old, and the reviews taken down 12 months ago, and logs how many, counts only
+/// (L2-148 AC5, AC6; L2-218 AC6; L2-239 AC4).
 /// </summary>
 public sealed class LaunchRetentionJob(IServiceScopeFactory scopes, ILogger<LaunchRetentionJob> logger) : BackgroundService
 {
@@ -466,6 +467,9 @@ public sealed class LaunchRetentionJob(IServiceScopeFactory scopes, ILogger<Laun
                         "Retention: deleted {Subscribers} launch notification sign-ups and {PreRegistrations} business pre-registrations.",
                         purged.Subscribers,
                         purged.PreRegistrations);
+                    var reviews = await scope.ServiceProvider.GetRequiredService<MediatR.ISender>()
+                        .Send(new Jubilee.Application.Reviews.PurgeTakenDownReviewsCommand(), stoppingToken);
+                    logger.LogInformation("Retention: deleted {Reviews} reviews taken down 12 months ago.", reviews);
                 }
                 catch (Exception exception) when (exception is not OperationCanceledException)
                 {

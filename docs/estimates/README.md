@@ -1,7 +1,7 @@
 # Estimates
 
-- Overall effort: 399 days
-- Complete: 75%
+- Overall effort: 413 days
+- Complete: 76%
 
 | Subsystem | Effort | Complete |
 |---|---|---|
@@ -28,6 +28,7 @@
 | [offline](offline.md) | 12 days | 83% |
 | [marketing](marketing.md) | 13 days | 98% |
 | [feedback](feedback.md) | 9 days | 99% |
+| [reviews](reviews.md) | 14 days | 95% |
 
 Jubilee ships without verification (ADR 0057), and that work is done: owners publish and are live
 at once (publish-listing), the Jubilee team browses published listings and takes one down
@@ -43,5 +44,5 @@ listing page (L2-150 AC1) and the audit record of a role change (L2-098 AC4) are
 2. design-system, interaction-states: move the remaining presentation into the components library with a parity spec each (ADR 0035, 0036), then validation, dialog confirmation and date and money formats
 3. security, privacy, accessibility: authorization and rate limits, data visibility and retention, screen-reader and keyboard coverage
 4. operations, performance, admin, marketing: backups, availability, latency and page budgets; set up the admin application in production (`eng/azure/README.md`)
-5. Polish the remaining 60–90% designs: offline details, and set `Email__MailingAddress` so that promotional e-mail can go out (ADR 0053)
+5. Polish the remaining 60–90% designs: offline details, the choice of product when a shop's review is edited, and set `Email__MailingAddress` so that promotional e-mail can go out (ADR 0053)
 6. Deferred: the launch-day e-mail, pre-registrations as listing drafts and a staff screen for them (ADR 0044); hourly rent, the sign-up intents, and payment, leases, calendars and double booking for spaces (ADR 0042)

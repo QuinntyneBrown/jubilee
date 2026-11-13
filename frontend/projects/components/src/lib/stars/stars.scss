@@ -1,0 +1,59 @@
+// Block: stars. The host is the five stars. A track star is drawn under each, and .stars__fill
+// clips a gold star to its share. --jb-stars-size is the drawn star.
+:host {
+  --jb-stars-size: var(--icon-size-md);
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: var(--space-0-5);
+  vertical-align: middle;
+  line-height: 0;
+}
+
+:host(.stars--sm) {
+  --jb-stars-size: var(--icon-size-sm);
+}
+
+:host(.stars--lg) {
+  --jb-stars-size: var(--icon-size-lg);
+}
+
+.stars__star {
+  position: relative;
+  display: block;
+  flex: none;
+  width: var(--jb-stars-size);
+  height: var(--jb-stars-size);
+}
+
+.stars__track,
+.stars__glyph {
+  display: block;
+  width: var(--jb-stars-size);
+  height: var(--jb-stars-size);
+  stroke: none;
+}
+
+.stars__track {
+  fill: var(--color-bg-subtle-hover);
+}
+
+.stars__fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  overflow: hidden;
+}
+
+.stars__glyph {
+  fill: var(--color-accent);
+}
+
+@media (forced-colors: active) {
+  .stars__track {
+    fill: GrayText;
+  }
+
+  .stars__glyph {
+    fill: CanvasText;
+  }
+}

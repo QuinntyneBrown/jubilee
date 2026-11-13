@@ -1,0 +1,19 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Moderate reviews
+
+Person(member, "Member", "Reports a review")
+Person(moderator, "Jubilee team", "Takes a review down")
+System_Boundary(jubilee, "Jubilee") {
+  Container(web, "Jubilee Web", "Angular single-page application", "Report this review dialog")
+  Container(admin, "Jubilee Admin Web", "Angular single-page application", "Reports queue, report screen, take-down")
+  Container(api, "Jubilee API", "ASP.NET Core", "POST review reports; staff report endpoints")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Reviews, review reports, report actions, audit records, notifications")
+}
+Rel(member, web, "Uses", "HTTPS")
+Rel(moderator, admin, "Uses from an allowed network", "HTTPS")
+Rel(web, api, "Posts a report", "JSON/HTTPS")
+Rel(admin, api, "Lists, opens and acts on reports", "JSON/HTTPS")
+Rel(api, db, "Reads and writes", "EF Core")
+@enduml

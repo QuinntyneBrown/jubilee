@@ -877,6 +877,21 @@ namespace Jubilee.Infrastructure.Migrations
                     b.Property<int>("Stage")
                         .HasColumnType("int");
 
+                    b.Property<int>("Stars1")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Stars2")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Stars3")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Stars4")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Stars5")
+                        .HasColumnType("int");
+
                     b.Property<DateTimeOffset?>("StatementLapsedAt")
                         .HasColumnType("datetimeoffset");
 
@@ -1659,6 +1674,21 @@ namespace Jubilee.Infrastructure.Migrations
                         .HasMaxLength(120)
                         .HasColumnType("nvarchar(120)");
 
+                    b.Property<int>("Stars1")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Stars2")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Stars3")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Stars4")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Stars5")
+                        .HasColumnType("int");
+
                     b.Property<int?>("Stock")
                         .HasColumnType("int");
 
@@ -1975,6 +2005,147 @@ namespace Jubilee.Infrastructure.Migrations
                     b.HasKey("ListingId");
 
                     b.ToTable("ResponseTimeStats", (string)null);
+                });
+
+            modelBuilder.Entity("Jubilee.Domain.Review", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("AuthorName")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("nvarchar(120)");
+
+                    b.Property<string>("AuthorSubject")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset?>("EditedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("IdempotencyKey")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("ItemName")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("nvarchar(120)");
+
+                    b.Property<Guid>("ListingId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("ProductId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Rating")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset?>("RepliedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset?>("ReplyEditedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("ReplyFrom")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("ReplyText")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<Guid?>("ServiceId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("TakeDownReason")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<DateTimeOffset?>("TakenDownAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("AuthorSubject", "IdempotencyKey")
+                        .IsUnique();
+
+                    b.HasIndex("ListingId", "CreatedAt");
+
+                    b.ToTable("Reviews", (string)null);
+                });
+
+            modelBuilder.Entity("Jubilee.Domain.ReviewReport", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("IdempotencyKey")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<Guid>("ListingId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Note")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("Reason")
+                        .IsRequired()
+                        .HasMaxLength(24)
+                        .HasColumnType("nvarchar(24)");
+
+                    b.Property<string>("ReporterName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("ReporterSubject")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("ResolutionNote")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<DateTimeOffset?>("ResolvedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("ReviewId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("nvarchar(16)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ReviewId");
+
+                    b.HasIndex("ReporterSubject", "IdempotencyKey")
+                        .IsUnique();
+
+                    b.ToTable("ReviewReports", (string)null);
                 });
 
             modelBuilder.Entity("Jubilee.Domain.SavedItem", b =>
@@ -2544,6 +2715,24 @@ namespace Jubilee.Infrastructure.Migrations
                     b.HasOne("Jubilee.Domain.Listing", null)
                         .WithMany()
                         .HasForeignKey("ListingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Jubilee.Domain.Review", b =>
+                {
+                    b.HasOne("Jubilee.Domain.Listing", null)
+                        .WithMany()
+                        .HasForeignKey("ListingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Jubilee.Domain.ReviewReport", b =>
+                {
+                    b.HasOne("Jubilee.Domain.Review", null)
+                        .WithMany()
+                        .HasForeignKey("ReviewId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

@@ -1,0 +1,102 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Write a review
+
+package "Jubilee Web" {
+  interface ReviewsApi {
+    +form(slug: string): Observable<ReviewForm>
+    +write(slug: string, request: WriteReviewRequest, key: string): Observable<ReviewItem>
+  }
+  class HttpReviewsApi
+  class WriteReviewPage {
+    #rating: Signal<number | null>
+    #itemId: Signal<string | null>
+    #text: Signal<string>
+    #view: Signal<'form' | 'busy' | 'failed' | 'posted'>
+    -key: string
+    #post(): void
+  }
+  class ReviewForm {
+    +listing: ReviewFormListing
+    +items: ReviewableItem[]
+    +itemLegend: 'service' | 'product' | null
+    +authorName: string
+  }
+  class WriteReviewRequest {
+    +rating: number
+    +itemId: string | null
+    +text: string
+  }
+}
+
+package "Jubilee.Application.Reviews" {
+  class GetReviewFormQuery
+  class WriteReviewCommand {
+    +Subject: string
+    +Slug: string
+    +Rating: int?
+    +ItemId: Guid?
+    +Text: string?
+    +IdempotencyKey: string?
+  }
+  class ReviewEligibility {
+    +{static} EnsureMayWrite(db, listing, subject): Task
+  }
+  class ReviewTally {
+    +{static} Refresh(db, listingId, productId): Task
+  }
+}
+
+package "Jubilee.Domain" {
+  class Review {
+    +Id: Guid
+    +ListingId: Guid
+    +ProductId: Guid?
+    +ServiceId: Guid?
+    +ItemName: string
+    +AuthorSubject: string
+    +AuthorName: string
+    +Initials: string
+    +Rating: int
+    +Text: string
+    +CreatedAt: DateTimeOffset
+    +EditedAt: DateTimeOffset?
+    +TakenDownAt: DateTimeOffset?
+    +IdempotencyKey: string
+    +{static} Write(...): Review
+  }
+  class Listing {
+    +Stars1..Stars5: int
+  }
+  class Product {
+    +Stars1..Stars5: int
+  }
+  class Request {
+    +Status: RequestStatus
+  }
+}
+
+HttpReviewsApi ..|> ReviewsApi
+WriteReviewPage --> ReviewsApi : REVIEWS_API
+ReviewsApi ..> ReviewForm
+ReviewsApi ..> WriteReviewRequest
+GetReviewFormQuery ..> ReviewEligibility
+WriteReviewCommand ..> ReviewEligibility
+WriteReviewCommand ..> ReviewTally
+WriteReviewCommand ..> Review : creates
+ReviewEligibility ..> Request : confirmed or completed
+ReviewTally ..> Listing
+ReviewTally ..> Product
+Review --> Listing
+@enduml

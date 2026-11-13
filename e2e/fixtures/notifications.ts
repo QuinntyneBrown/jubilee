@@ -6,7 +6,8 @@ import { naomi } from './incoming-requests';
 
 export interface FakeNotification {
   id: string;
-  kind: 'request' | 'message' | 'listing' | 'account' | 'reminder' | 'business' | 'product';
+  kind:
+    'request' | 'message' | 'listing' | 'account' | 'reminder' | 'business' | 'product' | 'review';
   title: string;
   detail: string;
   target: string;

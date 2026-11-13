@@ -35,6 +35,10 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
 
     public DbSet<ListingReportEntry> ListingReportEntries => Set<ListingReportEntry>();
 
+    public DbSet<Review> Reviews => Set<Review>();
+
+    public DbSet<ReviewReport> ReviewReports => Set<ReviewReport>();
+
     public DbSet<ListingView> ListingViews => Set<ListingView>();
 
     public DbSet<ListingPhoto> ListingPhotos => Set<ListingPhoto>();

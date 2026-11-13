@@ -1,0 +1,64 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Reply to a review
+
+package "Jubilee Web" {
+  interface ReviewsApi {
+    +reply(id: string, text: string): Observable<ReviewItem>
+  }
+  class ReplyReviewDialog {
+    #text: Signal<string>
+    #error: Signal<string | null>
+    #view: Signal<'form' | 'busy' | 'failed'>
+    #post(): void
+  }
+  class ReplyReviewData {
+    +review: ReviewItem
+  }
+}
+
+package "Jubilee.Application" {
+  class ReplyToReviewCommand {
+    +Subject: string
+    +ReviewId: Guid
+    +Text: string?
+  }
+  class NotificationRules {
+    +{static} Tell(db, subject, kind, title, detail, target, now)
+  }
+  class EmailPolicy {
+    +{static} Queue(db, member, category, subject, body, now): bool
+  }
+}
+
+package "Jubilee.Domain" {
+  class Review {
+    +ReplyText: string?
+    +ReplyFrom: string?
+    +RepliedAt: DateTimeOffset?
+    +ReplyEditedAt: DateTimeOffset?
+    +Reply(from, text, now): bool
+  }
+  class Notification {
+    +Kind: "review"
+  }
+}
+
+ReplyReviewDialog --> ReplyReviewData
+ReplyReviewDialog --> ReviewsApi : REVIEWS_API
+ReplyToReviewCommand ..> Review : Reply
+ReplyToReviewCommand ..> NotificationRules : first reply only
+ReplyToReviewCommand ..> EmailPolicy : requests category
+NotificationRules ..> Notification : creates
+@enduml

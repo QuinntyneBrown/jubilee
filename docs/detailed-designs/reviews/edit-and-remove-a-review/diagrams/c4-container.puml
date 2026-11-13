@@ -1,0 +1,15 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Edit and remove a review
+
+Person(author, "Author", "Changes or removes their review")
+System_Boundary(jubilee, "Jubilee") {
+  Container(web, "Jubilee Web", "Angular single-page application", "Edit your review and Remove your review? dialogs")
+  Container(api, "Jubilee API", "ASP.NET Core", "PUT and DELETE /api/reviews/{id} for the author only")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Reviews, review reports and star counts")
+}
+Rel(author, web, "Uses", "HTTPS")
+Rel(web, api, "Puts the change or deletes the review", "JSON/HTTPS")
+Rel(api, db, "Updates or deletes and recounts in", "EF Core")
+@enduml

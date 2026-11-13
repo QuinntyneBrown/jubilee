@@ -1,0 +1,173 @@
+// Block: reviews. The host is the section. From 48rem the summary is a sticky column (260px,
+// 300px from 64rem) beside the list.
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  margin-block: var(--space-12) var(--space-8);
+  padding-top: var(--space-8);
+  border-top: var(--border-width-hairline) solid var(--color-border-default);
+  scroll-margin-top: calc(var(--layout-topbar-height) + var(--space-4));
+}
+
+.reviews__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3) var(--space-4);
+}
+
+.reviews__title {
+  margin: 0;
+  font: var(--text-h2);
+  font-stretch: var(--font-stretch-wide);
+
+  &:focus {
+    outline: none;
+  }
+}
+
+.reviews__body {
+  display: grid;
+  gap: var(--space-8);
+}
+
+.reviews__summary,
+.reviews__main {
+  min-width: 0;
+}
+
+.reviews__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding-bottom: var(--space-3);
+  border-bottom: var(--border-width-hairline) solid var(--color-border-default);
+}
+
+.reviews__filter {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1) var(--space-2);
+  margin: 0;
+  font: var(--text-body-sm);
+  color: var(--color-fg-muted);
+}
+
+.reviews__clear {
+  min-height: var(--target-comfortable);
+  padding: 0 var(--space-1);
+  border: 0;
+  background: none;
+  color: var(--color-fg-default);
+  font: var(--text-label);
+  font-weight: var(--font-weight-semibold);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+  cursor: pointer;
+}
+
+.reviews__sort {
+  flex: none;
+}
+
+.reviews__list {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  > li {
+    padding-block: var(--space-6);
+  }
+
+  > li + li {
+    border-top: var(--border-width-hairline) solid var(--color-border-default);
+  }
+}
+
+.reviews__mine {
+  margin-bottom: var(--space-6);
+}
+
+.reviews__none {
+  margin: 0;
+  padding-block: var(--space-6);
+  font: var(--text-body-sm);
+  color: var(--color-fg-muted);
+}
+
+.reviews__more {
+  align-self: flex-start;
+}
+
+.reviews__notice {
+  margin: 0;
+  font: var(--text-body-sm);
+  color: var(--color-fg-muted);
+}
+
+.reviews__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-4);
+  max-width: 48rem;
+  padding-left: var(--space-4);
+  border-left: var(--border-width-thick) solid var(--color-accent);
+}
+
+.reviews__empty-title {
+  margin: 0;
+  font: var(--text-label);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+}
+
+.reviews__empty-text {
+  margin: var(--space-1) 0 0;
+  font: var(--text-body-sm);
+  color: var(--color-fg-muted);
+}
+
+.reviews__error {
+  max-width: 48rem;
+}
+
+.reviews__skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+@media (min-width: 40rem) {
+  .reviews__empty {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+@media (min-width: 48rem) {
+  .reviews__body {
+    grid-template-columns: 16.25rem minmax(0, 1fr);
+    gap: var(--space-12);
+  }
+
+  .reviews__summary {
+    position: sticky;
+    top: calc(var(--layout-topbar-height) + var(--space-6));
+    align-self: start;
+  }
+}
+
+@media (min-width: 64rem) {
+  .reviews__body {
+    grid-template-columns: 18.75rem minmax(0, 1fr);
+  }
+}

@@ -1,0 +1,10 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Edit and remove a review
+
+Person(author, "Author", "Changes or removes their own review")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace")
+
+Rel(author, jubilee, "Edits or removes their review in", "HTTPS")
+@enduml

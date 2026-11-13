@@ -1,0 +1,58 @@
+@startuml
+title UML sequence behaviour — Post a review
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "WriteReviewPage" as page
+  participant "ReviewsApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "ReviewsController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "WriteReviewCommand" as handler
+  participant "ReviewTally" as tally
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+actor -> page : Press "Post review"
+alt No star or fewer than 40 characters
+  page --> actor : Messages under the stars and the field, focus to the first (L2-228 AC1, AC2)
+else Valid
+  page --> actor : "Posting…" busy, fields disabled (L2-127)
+  page -> client : write(slug, request, key)
+  client -> controller : POST /api/listings/{slug}/reviews with Idempotency-Key
+  controller -> handler : Send with the member of the session
+  handler -> db : Review of this member with this key?
+  alt Key seen before
+    handler --> controller : First review (L2-132)
+  else New key
+    handler -> handler : Validate rating, item and text (422 per field)
+    handler -> db : ReviewEligibility and reviews of the member today
+    alt Over 5 today
+      handler --> controller : 429 with Retry-After
+    else Allowed
+      handler -> db : Add Review
+      handler -> tally : Refresh(listing, product)
+      tally -> db : Set Stars1..Stars5
+      handler -> db : Add the owner's Notification and the outbox e-mail
+      handler -> db : SaveChanges, one transaction (L2-235 AC1)
+      handler --> controller : ReviewItemDto
+    end
+  end
+  controller --> client : 201 with the review
+  client --> page : ReviewItem
+  page --> actor : "Thanks, your review is live." takes focus (L2-228 AC4)
+end
+opt Fails, times out after 10 seconds, or answers 429
+  client --> page : Error
+  page --> actor : Alert "We couldn’t post your review", everything kept (L2-228 AC6)
+  actor -> page : Press "Post review" again
+  page -> client : Same request with the same key
+end
+@enduml

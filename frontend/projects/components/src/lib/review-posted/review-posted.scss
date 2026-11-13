@@ -1,0 +1,102 @@
+// Block: review-posted. The host is the posted state: the mark, the heading, what happens next,
+// the review in short between two rules, and the ways on.
+:host {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-3);
+  max-width: 36rem;
+  padding-block: var(--space-8) var(--space-12);
+}
+
+.review-posted__mark {
+  display: grid;
+  place-items: center;
+  width: var(--avatar-size-lg);
+  height: var(--avatar-size-lg);
+  border-radius: var(--radius-full);
+  background: var(--color-success-solid);
+  color: var(--color-fg-inverse);
+  animation: fade-in var(--duration-base) var(--ease-enter);
+}
+
+.review-posted__icon {
+  width: var(--icon-size-lg);
+  height: var(--icon-size-lg);
+  stroke-width: 2.5;
+}
+
+.review-posted__title {
+  margin: var(--space-3) 0 0;
+  font: var(--text-h1);
+  font-size: var(--font-size-3xl);
+  font-stretch: var(--font-stretch-wide);
+
+  &:focus {
+    outline: none;
+  }
+}
+
+.review-posted__text {
+  margin: 0;
+  font: var(--text-body-lg);
+  color: var(--color-fg-default);
+}
+
+.review-posted__summary {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  width: 100%;
+  margin-top: var(--space-5);
+  padding-block: var(--space-5);
+  border-block: var(--border-width-hairline) solid var(--color-border-default);
+}
+
+.review-posted__rating {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font: var(--text-label);
+  font-weight: var(--font-weight-semibold);
+}
+
+.review-posted__item {
+  margin: 0;
+  font: var(--text-body-sm);
+  color: var(--color-fg-muted);
+  overflow-wrap: anywhere;
+}
+
+.review-posted__body {
+  display: -webkit-box;
+  margin: var(--space-2) 0 0;
+  overflow: hidden;
+  font: var(--text-body);
+  overflow-wrap: anywhere;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+
+.review-posted__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-top: var(--space-5);
+}
+
+@media (min-width: 48rem) {
+  :host {
+    padding-block: var(--space-16);
+  }
+
+  .review-posted__title {
+    font-size: var(--font-size-4xl);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .review-posted__mark {
+    animation: none;
+  }
+}

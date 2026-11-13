@@ -40,6 +40,12 @@ app with. Each is a full-page capture of one frame of the published design,
 | `list-a-space-short-stay-1280.png` | List a space, short stays | 1280 px | light | 11 November 2026 |
 | `list-a-space-room-1280.png` | List a space, rooms | 1280 px | light | 11 November 2026 |
 | `list-a-space-roommate-1280.png` | List a space, roommates | 1280 px | light | 11 November 2026 |
+| `listing-reviews-360.png` | Listing (Legacy Financial) with its Reviews section, full page | 360 px | light | 12 November 2026 |
+| `listing-reviews-1280.png` | Listing (Legacy Financial) with its Reviews section, full page | 1280 px | light | 12 November 2026 |
+| `listing-reviews-section-360.png` | The Reviews section of the Listing, cropped | 360 px | light | 12 November 2026 |
+| `listing-reviews-section-1280.png` | The Reviews section of the Listing, cropped | 1280 px | light | 12 November 2026 |
+| `write-review-360.png` | Write a Review (Legacy Financial), nothing chosen | 360 px | light | 12 November 2026 |
+| `write-review-1280.png` | Write a Review (Legacy Financial), nothing chosen | 1280 px | light | 12 November 2026 |
 
 The published site opens on Sign up. "Log in" under the form shows Log in, and "Create a free
 account" shows Sign up again, at the same URL. The prototype's own "Log in" button, pressed with
@@ -62,6 +68,13 @@ default in the published bundle (`` rentingAs:`Room` `` in `index.js`) as the pa
 Playwright `route`, and change nothing else. The space pages' terms need no arg: each space is its
 own card. The full-page 360 px captures show the phone tab bar where the first viewport ended, as
 the earlier 360 px captures do.
+
+The reviews frames (ADR 0066) are reached the same way: from the home, the Legacy Financial card
+opens the Listing frame, whose Reviews section follows the services, and its "Write a review"
+opens Write a Review. Nothing is chosen or typed, so the posted state, a pressed star bar and the
+sort are not captured; the mocks draw them from the frames' source (`components/Reviews.tsx`,
+`shared/components/Stars.tsx`). The older `business-services-*.png` predate the Reviews section
+and are kept for their parity crops.
 
 The published Sign up and home have changed since `sign-up-*.png` and `home-*.png` were captured
 (Sign up now asks "I'm here to", the home heading now reads "Hire, shop and find a place to live
@@ -147,6 +160,26 @@ decision (ADR 0043):
 | "We'll attach: … Safari on iPhone · v1.4.2" | the screen, the browser and the app version as the member's device reports them | Real values |
 | "You can message me about this", ticked | the same label, not ticked | Consent is given, never assumed (L2-145) |
 | The panel has no scrim from 768 px | the panel is a modal dialog with the scrim at every width | One dialog behaviour, focus held inside (L2-160) |
+
+## Reviews: what the product changes from the frames
+
+ADR 0066 records why. The parity specs of the reviews components carry these as known differences.
+
+| Frame | Product | Why |
+|---|---|---|
+| "What did they do well? …" and the placeholder "They were on time, explained everything…" | "What did they do, and how did it go? …" and "Say what happened, as you would tell a friend." | The frame leads towards praise; no line asks for a good review (L2-227 AC6) |
+| "Your review will show as Verified because you booked through Jubilee." | No such line: "Your review posts under your first name and last initial: {name}", and a second line "Keep to what happened to you: no private details of anyone and no advertising." | Jubilee shows no "Verified" mark anywhere (ADR 0057, ADR 0066) |
+| "Verified means the reviewer made a booking through Jubilee." | absent, as is "Verified" on each review | The same |
+| "Add photos (optional)" on Write a Review, a photo on a review | absent | Photos on reviews are deferred (ADR 0066) |
+| "Helpful · 24" on each review | absent | Helpful is deferred; "Most relevant" ranks without votes |
+| A context line under the name ("Trinity Annex", "Sanctuary Toronto", "Markham") | the date alone | The home church is private (L1-020); Jubilee collects no neighbourhood |
+| Relative dates ("1 week ago") | "3 Nov 2026", with "Edited" when changed | L2-131 and L2-229 AC3 |
+| The stars with no visible label | the legend "Your rating" above the stars | The star scale’s legend is its accessible name; the system shows it (Star scale) |
+| The chosen service chip filled ink | filled gold (`.chip` with a checked radio), the chips wrapping in a cluster as the frame does | The system’s one chosen-chip colour |
+| "Write a review" a filled ink button | an outlined button with the pen icon | The listing’s one primary action stays booking, requesting or messaging |
+| 4.8 from 137 reviews, 118 of them 5 stars; ratings on the Deeks Insurance and JD Smith cards | the seeded sample: 4.6 from 5 reviews; no rating on a card below 3 reviews | The mocks, the seed and the e2e recording share one sample (ADR 0066) |
+| Select with a chevron ("Most relevant") | the system select with its drawn arrow | Select component |
+| The posted state, filters, edit, remove, reply and report | drawn in the mocks only | The frames have no such states |
 
 ## Known differences
 

@@ -108,9 +108,19 @@
   font-size: var(--font-size-lg);
 }
 
-:host(.btn--block) {
+:host(.btn--block),
+:host(.btn--block-narrow) {
   display: flex;
   width: 100%;
+}
+
+// Full width on a phone, its own width from 640px: a form's one submit (L2-227 AC7).
+@media (min-width: 40rem) {
+  :host(.btn--block-narrow) {
+    display: inline-flex;
+    width: auto;
+    align-self: flex-start;
+  }
 }
 
 :host(.btn--icon) {

@@ -1,0 +1,62 @@
+// Block: review-subject. The host is the line: the category tile, the name and its meta.
+:host {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.review-subject__media {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: var(--control-height-lg);
+  height: var(--control-height-lg);
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  background: var(--color-bg-subtle);
+  color: var(--color-fg-default);
+}
+
+.review-subject__icon {
+  width: var(--icon-size-md);
+  height: var(--icon-size-md);
+}
+
+.review-subject__media--green {
+  background: var(--color-success-bg);
+  color: var(--color-success-fg);
+}
+
+.review-subject__media--gold {
+  background: var(--color-accent-subtle);
+  color: var(--color-fg-default);
+}
+
+.review-subject__media--blue {
+  background: var(--color-info-bg);
+  color: var(--color-info-fg);
+}
+
+.review-subject__text {
+  min-width: 0;
+}
+
+.review-subject__name,
+.review-subject__meta {
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.review-subject__name {
+  font: var(--text-label);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+}
+
+.review-subject__meta {
+  font: var(--text-body-sm);
+  color: var(--color-fg-muted);
+}

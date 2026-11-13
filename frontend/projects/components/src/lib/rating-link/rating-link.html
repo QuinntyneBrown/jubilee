@@ -1,0 +1,10 @@
+@if (count() === 0) {
+  No reviews yet
+} @else {
+  <span jb-stars [value]="average()"></span>
+  <span class="rating-link__average"
+    ><span class="visually-hidden">Rated </span>{{ shown()
+    }}<span class="visually-hidden"> out of 5,</span></span
+  >
+  <span class="rating-link__count">{{ count() }} {{ count() === 1 ? 'review' : 'reviews' }}</span>
+}

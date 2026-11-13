@@ -1,0 +1,17 @@
+<span class="review-posted__mark" aria-hidden="true"
+  ><svg jb-icon name="check" class="review-posted__icon"></svg
+></span>
+<h1 class="review-posted__title" tabindex="-1">Thanks, your review is live.</h1>
+<p class="review-posted__text">
+  {{ name() }} will be notified and can reply publicly. You can edit or remove your review from
+  their page.
+</p>
+<div class="review-posted__summary">
+  <div class="review-posted__rating">
+    <span jb-stars [value]="rating()" [label]="rating() + ' out of 5 stars'"></span>
+    <span>{{ word() }}</span>
+  </div>
+  <p class="review-posted__item">{{ itemName() }} · {{ name() }}</p>
+  <p class="review-posted__body">{{ text() }}</p>
+</div>
+<div class="review-posted__actions"><ng-content select="[slot=actions]" /></div>

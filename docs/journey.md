@@ -47,8 +47,9 @@ journey that is implemented: the effort-weighted average of its feature designs 
 | 29 | Give feedback | Rate Jubilee, report a bug or send kudos from any screen, answer a check-in, and follow past feedback. | 9 | 99% |
 | 30 | Work in the admin application | Staff sign in to the admin application through single sign-on from an allowed network, work in its shell and sign out; old admin links in the app point there. | 20 | 92% |
 | 31 | Get ready for launch | Before Jubilee opens: see that it is launching soon, leave an e-mail address for the launch notice, or send a business's details to be listed on launch day; the team reads them with the CLI. | 7 | 100% |
+| 32 | Write and read reviews | After a request the owner confirmed, write a review of the business, shop or space; read every listing's rating and reviews, sorted and filtered, and its average on the cards; edit or remove your review; the owner replies in public; anyone signed in reports a review and the Jubilee team takes it down. Requirements L2-226 to L2-240. | 14 | 95% |
 
-**Total: 217 days** for the 30 journeys, **98% complete** weighted by effort.
+**Total: 231 days** for the 31 journeys, **98% complete** weighted by effort.
 
 ## Notes
 

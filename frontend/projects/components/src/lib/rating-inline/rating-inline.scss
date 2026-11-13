@@ -1,0 +1,33 @@
+// Block: rating-inline. The host is the rating: one gold star, the average and the count.
+:host {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font: var(--text-body-sm);
+  white-space: nowrap;
+}
+
+.rating-inline__star {
+  width: var(--icon-size-sm);
+  height: var(--icon-size-sm);
+  flex: none;
+  fill: var(--color-accent);
+  stroke: none;
+}
+
+.rating-inline__average {
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-fg-default);
+  font-variant-numeric: tabular-nums;
+}
+
+.rating-inline__count {
+  color: var(--color-fg-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+@media (forced-colors: active) {
+  .rating-inline__star {
+    fill: CanvasText;
+  }
+}

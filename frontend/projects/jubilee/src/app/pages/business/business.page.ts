@@ -20,6 +20,7 @@ import {
   ListingPagePhoto,
   ListingStatus,
   ReplyTimeBand,
+  ReviewItemOption,
   SpaceDetails,
 } from 'api';
 import {
@@ -62,6 +63,7 @@ import {
   availability,
   formatRent,
   Saveable,
+  RatingLink,
 } from 'components';
 import { CardHearts } from '../../services/card-hearts';
 import { Subscription } from 'rxjs';
@@ -92,6 +94,8 @@ import { ListingHints } from '../../services/listing-hints';
 import { LoadState, errorReference } from 'api';
 import { SavedStore } from '../../services/saved.store';
 import { SessionService } from '../../services/session.service';
+import { ListingReviewsStore } from '../../services/listing-reviews.store';
+import { ListingReviews } from './listing-reviews';
 
 const REPLIES: Record<ReplyTimeBand, string> = {
   'few-hours': 'Usually within a few hours',
@@ -168,7 +172,10 @@ const STATUS_WORDS: Record<ListingStatus, string> = {
     IncludedList,
     SpaceCard,
     SpaceFacts,
+    RatingLink,
+    ListingReviews,
   ],
+  providers: [ListingReviewsStore],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'jb-page container page' },
   templateUrl: './business.page.html',
@@ -185,6 +192,8 @@ export class BusinessPage {
   private readonly session = inject(SessionService);
   private readonly dialog = inject(Dialog);
   private readonly savedStore = inject(SavedStore);
+  /** The listing's reviews: the rating under the name and the "Reviews" section (L2-229). */
+  protected readonly reviews = inject(ListingReviewsStore);
   private slug = '';
   /** Which dialog the address asks for: /b/:slug/message, /book, /request (a space) and so on. */
   private readonly composing = signal<Composing | null>(null);
@@ -347,6 +356,8 @@ export class BusinessPage {
         this.hints.rememberCategory(listing.related, listing.category.slug);
         this.state.set({ status: 'loaded', value: listing });
         this.title.setTitle(`${listing.name} · Jubilee`);
+        // A listing that is not public shows no reviews (L2-226 AC7).
+        if (listing.status === 'live') this.reviews.load(listing.slug);
         // A listing view counts for the owner's statistics; their own visits do not (L2-037),
         // and a preview is not a visit by the public (L2-219 AC3).
         if (listing.viewerRelation !== 'owner' && listing.status === 'live') {
@@ -583,6 +594,16 @@ export class BusinessPage {
       return;
     }
     this.savedStore.toggle({ kind: 'business', slug: listing.slug, name: listing.name });
+  }
+
+  /**
+   * What a review of this listing may be about, for the Edit dialog (L2-233 AC1): a business's
+   * services. A shop's review keeps the product it is about, and a space's is about the stay.
+   */
+  protected reviewItems(listing: ListingPage): ReviewItemOption[] {
+    return listing.kind === 'services'
+      ? listing.services.map(({ id, name }) => ({ id, name }))
+      : [];
   }
 
   /** The tile that stands for a space's photo, by its term. */

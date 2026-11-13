@@ -47,6 +47,13 @@ export class NotificationsPage extends ShellPage implements Screen {
     );
   }
 
+  /** The star icon on a notification: the icon of a review (L2-235 AC5). */
+  starIcon(title: string | RegExp): Locator {
+    return this.item(title).locator(
+      '.notif__icon svg path[d="M12 3l2.4 6.4 6.7.2-5.3 4.2 1.8 6.6L12 16.6l-5.6 3.8 1.8-6.6-5.3-4.2 6.7-.2z"]',
+    );
+  }
+
   unread(): Locator {
     return this.main.locator('.notif--unread');
   }

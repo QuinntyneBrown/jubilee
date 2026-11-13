@@ -1,0 +1,64 @@
+@let found = problems();
+@if (view() === 'success') {
+  <jb-dialog
+    heading="Thanks for telling us"
+    description="The Jubilee team will look at it within one business day. The author won’t know who reported it."
+    icon="check"
+    tone="success"
+    (closed)="close()"
+  >
+    <div jb-dialog-footer>
+      <button jb-button variant="primary" type="button" cdkFocusInitial (click)="close()">
+        Done
+      </button>
+    </div>
+  </jb-dialog>
+} @else {
+  <jb-dialog heading="Report this review" icon="flag" [busy]="busy()" (closed)="close()">
+    <form jb-dialog-body class="stack" id="report-review-form" novalidate (ngSubmit)="send()">
+      @if (view() === 'failed') {
+        <div jb-alert tone="danger" [heading]="failure().title" role="alert">
+          @if (failure().text) {
+            <div>{{ failure().text }}</div>
+          }
+        </div>
+      }
+      <fieldset
+        jb-radio-group
+        legend="What’s wrong with it?"
+        required
+        controlId="rp-why"
+        name="rp-why"
+        [options]="reasons"
+        [value]="reason()"
+        (valueChange)="chooseReason($event)"
+        [disabled]="busy()"
+        [error]="found.reason"
+      ></fieldset>
+      <div
+        jb-field
+        label="Tell us more"
+        optional
+        controlId="rp-note"
+        [counter]="counter()"
+        [error]="found.note"
+      >
+        <textarea
+          jb-textarea
+          name="note"
+          rows="3"
+          [attr.maxlength]="max"
+          [readOnly]="busy()"
+          [ngModel]="note()"
+          (ngModelChange)="note.set($event)"
+        ></textarea>
+      </div>
+    </form>
+    <div jb-dialog-footer>
+      <button jb-button type="button" [disabled]="busy()" (click)="close()">Cancel</button>
+      <button jb-button variant="primary" type="submit" form="report-review-form" [busy]="busy()">
+        Send report
+      </button>
+    </div>
+  </jb-dialog>
+}

@@ -233,4 +233,26 @@ public class DemoDirectoryTests(SeededApiFactory factory) : IClassFixture<Seeded
             [("Deeks Insurance", "Get a quote"), ("JD Smith Insurance Brokers", "Get a quote")],
             json.GetProperty("related").EnumerateArray().Select(c => (c.GetProperty("name").GetString()!, c.GetProperty("highlight").GetString()!)));
     }
+
+    // L2-229, ADR 0066: the sample reviews of the mocks.
+    [Fact]
+    public async Task L2_225_the_demo_listings_have_the_sample_reviews_of_the_mocks()
+    {
+        var legacy = await factory.GetJson("/api/listings/legacy-financial/reviews");
+        var shop = await factory.GetJson("/api/listings/luzandre/reviews");
+        var suite = await factory.GetJson("/api/listings/roncesvalles-guest-suite/reviews");
+        var mug = await factory.GetJson("/api/listings/luzandre/reviews?product=gold-cross-stoneware-mug");
+
+        Assert.Equal((4.6m, 5), (legacy.GetProperty("summary").GetProperty("average").GetDecimal(), legacy.GetProperty("summary").GetProperty("count").GetInt32()));
+        Assert.Equal(
+            ["Grace A.", "Marcus T.", "Esther L.", "Priya S.", "Paul K."],
+            legacy.GetProperty("items").EnumerateArray().Select(i => i.GetProperty("author").GetString()));
+        Assert.Equal("Trevor Chew", legacy.GetProperty("items")[0].GetProperty("reply").GetProperty("from").GetString());
+        Assert.Equal((4.4m, 5), (shop.GetProperty("summary").GetProperty("average").GetDecimal(), shop.GetProperty("summary").GetProperty("count").GetInt32()));
+        Assert.Equal("Luzandre.com", shop.GetProperty("items")[0].GetProperty("reply").GetProperty("from").GetString());
+        Assert.Equal((4.5m, 2), (suite.GetProperty("summary").GetProperty("average").GetDecimal(), suite.GetProperty("summary").GetProperty("count").GetInt32()));
+        Assert.Equal("My stay", suite.GetProperty("items")[0].GetProperty("itemName").GetString());
+        Assert.Equal("Paul & Marta Kowalski", suite.GetProperty("items")[0].GetProperty("reply").GetProperty("from").GetString());
+        Assert.Equal(3, mug.GetProperty("summary").GetProperty("count").GetInt32());
+    }
 }

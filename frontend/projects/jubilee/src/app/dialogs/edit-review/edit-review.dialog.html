@@ -1,0 +1,70 @@
+@let found = problems();
+<jb-dialog heading="Edit your review" icon="edit" [busy]="busy()" (closed)="close()">
+  <form jb-dialog-body class="stack" id="edit-review-form" novalidate (ngSubmit)="save()">
+    @if (view() === 'failed') {
+      <div jb-alert tone="danger" [heading]="failure().title" role="alert">
+        @if (failure().text) {
+          <div>{{ failure().text }}</div>
+        }
+      </div>
+    }
+    <fieldset
+      jb-star-scale
+      legend="Your rating"
+      controlId="er-rating"
+      [words]="words"
+      [value]="rating()"
+      [disabled]="busy()"
+      [error]="found.rating"
+      (valueChange)="chooseRating($event)"
+    ></fieldset>
+    @if (choosesItem) {
+      <fieldset
+        jb-field
+        [label]="itemLegend"
+        controlId="er-item"
+        id="er-item"
+        [error]="found.itemId"
+      >
+        <div jb-chip-row plain>
+          @for (item of data.items; track item.id) {
+            <jb-chip-option
+              name="er-item"
+              [value]="item.id"
+              [checked]="itemId() === item.id"
+              [disabled]="busy()"
+              (selected)="chooseItem(item.id)"
+              >{{ item.name }}</jb-chip-option
+            >
+          }
+        </div>
+      </fieldset>
+    }
+    <div
+      jb-field
+      label="Tell others about it"
+      controlId="er-text"
+      [hint]="prompt"
+      [counter]="counter()"
+      [counterInvalid]="!!found.text"
+      [error]="found.text"
+    >
+      <textarea
+        jb-textarea
+        name="text"
+        rows="5"
+        placeholder="Say what happened, as you would tell a friend."
+        [attr.maxlength]="max"
+        [readOnly]="busy()"
+        [ngModel]="text()"
+        (ngModelChange)="text.set($event)"
+      ></textarea>
+    </div>
+  </form>
+  <div jb-dialog-footer>
+    <button jb-button type="button" [disabled]="busy()" (click)="close()">Cancel</button>
+    <button jb-button variant="primary" type="submit" form="edit-review-form" [busy]="busy()">
+      {{ busy() ? 'Saving…' : 'Save changes' }}
+    </button>
+  </div>
+</jb-dialog>

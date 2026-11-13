@@ -66,6 +66,7 @@ public class JubileeApiFactory : WebApplicationFactory<Program>
         builder.UseSetting("RateLimits:JoinsPerHour", "100000");
         builder.UseSetting("RateLimits:LaunchSignUpsPerHour", "100000");
         builder.UseSetting("RateLimits:LaunchPreRegistrationsPerHour", "100000");
+        builder.UseSetting("RateLimits:ReviewChangesPerHour", "100000");
         builder.UseSetting("Email:WebhookSecret", "test-webhook-secret");
         builder.UseSetting("App:PublicBaseUrl", "https://jubilee.test");
         builder.UseSetting("Email:MailingAddress", "1 Example Street, Toronto, ON M5H 0A1");
@@ -197,6 +198,8 @@ public class JubileeApiFactory : WebApplicationFactory<Program>
         await WithDb(async db =>
         {
             db.RemoveRange(db.FeedbackScreenshots);
+            db.RemoveRange(db.ReviewReports);
+            db.RemoveRange(db.Reviews);
             db.RemoveRange(db.Feedback);
             db.RemoveRange(db.Notifications);
             db.RemoveRange(db.RequestTransitions);
