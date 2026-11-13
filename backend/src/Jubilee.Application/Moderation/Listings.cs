@@ -216,10 +216,22 @@ public sealed class GetAdminListingsQueryHandler(IAppDbContext db, TimeProvider 
 /// <summary>One published listing, its owner and its flags (L2-100).</summary>
 public sealed record GetAdminListingQuery(Reviewer Reviewer, Guid ListingId) : IRequest<AdminListingDto>;
 
-public sealed class GetAdminListingQueryHandler(IAppDbContext db) : IRequestHandler<GetAdminListingQuery, AdminListingDto>
+public sealed class GetAdminListingQueryHandler(IAppDbContext db, TimeProvider clock) : IRequestHandler<GetAdminListingQuery, AdminListingDto>
 {
-    public async Task<AdminListingDto> Handle(GetAdminListingQuery request, CancellationToken cancellationToken) =>
-        await AdminListings.Detail(db, await AdminListings.Load(db, request.ListingId, cancellationToken), request.Reviewer, cancellationToken);
+    public async Task<AdminListingDto> Handle(GetAdminListingQuery request, CancellationToken cancellationToken)
+    {
+        var listing = await AdminListings.Load(db, request.ListingId, cancellationToken);
+
+        // The Owner card is the owner's personal data: each reading is recorded with the listing as the reason (L2-150 AC1, ADR 0058).
+        if (listing.OwnerId is { } ownerId)
+        {
+            AuditLog.Record(
+                db, request.Reviewer, "owner.viewed", "member", ownerId, null, null, $"Listing {listing.Id}", clock.GetUtcNow());
+            await db.SaveChangesAsync(cancellationToken);
+        }
+
+        return await AdminListings.Detail(db, listing, request.Reviewer, cancellationToken);
+    }
 }
 
 /// <summary>

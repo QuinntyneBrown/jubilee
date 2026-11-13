@@ -117,6 +117,39 @@ public sealed class AdminListingsTests : IClassFixture<JubileeApiFactory>, IAsyn
         Assert.DoesNotContain("checklist", text, StringComparison.OrdinalIgnoreCase);
     }
 
+    // L2-150 AC1, L2-180 AC1: opening a listing reads the owner's personal data, so each opening is audited
+    [Fact]
+    public async Task L2_150_AC1_opening_a_listing_records_the_access_to_the_owner_with_the_listing_as_the_reason()
+    {
+        await Miriam().GetAsync($"/api/admin/listings/{_luzandre.Id}");
+        _factory.Clock.Advance(TimeSpan.FromMinutes(5));
+        await Miriam().GetAsync($"/api/admin/listings/{_luzandre.Id}");
+
+        await _factory.WithDb(async db =>
+        {
+            var records = await db.AuditRecords.AsNoTracking().Where(a => a.Action == "owner.viewed").OrderBy(a => a.At).ToListAsync();
+            Assert.Equal(2, records.Count);
+            Assert.All(records, record =>
+            {
+                Assert.Equal("staff|miriam", record.Actor);
+                Assert.Equal("Miriam Castillo", record.ActorName);
+                Assert.Equal("member", record.TargetType);
+                Assert.Equal(_naomi.Id.ToString(), record.TargetId);
+                Assert.Equal($"Listing {_luzandre.Id}", record.Reason);
+            });
+            Assert.Equal([ListingMother.Now, ListingMother.Now.AddMinutes(5)], records.Select(r => r.At));
+        });
+    }
+
+    // L2-150 AC1: a listing that cannot be opened reads nobody's data
+    [Fact]
+    public async Task L2_150_AC1_a_listing_that_is_not_found_records_no_access()
+    {
+        await Miriam().GetAsync($"/api/admin/listings/{Guid.NewGuid()}");
+
+        await _factory.WithDb(async db => Assert.Equal(0, await db.AuditRecords.CountAsync()));
+    }
+
     // L2-100: an unknown listing, or a draft, is not one of the published listings
     [Fact]
     public async Task L2_100_a_draft_or_an_unknown_listing_is_not_found()
