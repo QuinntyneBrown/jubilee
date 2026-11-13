@@ -28,6 +28,7 @@ public sealed class StaffAccessTests : IClassFixture<JubileeApiFactory>, IAsyncL
     {
         { "GET", "/api/admin/listings" },
         { "GET", $"/api/admin/listings/{Any}" },
+        { "POST", $"/api/admin/listings/{Any}/take-down" },
         { "GET", "/api/admin/audit" },
         { "GET", "/api/admin/reports" },
         { "POST", $"/api/admin/reports/{Any}/open" },
@@ -35,6 +36,8 @@ public sealed class StaffAccessTests : IClassFixture<JubileeApiFactory>, IAsyncL
         { "GET", "/api/admin/featured" },
         { "GET", "/api/admin/featured/candidates" },
         { "PUT", "/api/admin/featured-weeks/2026-11-16" },
+        { "GET", "/api/admin/content" },
+        { "GET", "/api/admin/content/terms" },
         { "GET", "/api/admin/content/terms/versions" },
         { "POST", "/api/admin/content/terms/versions" },
     };
