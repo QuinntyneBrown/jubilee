@@ -1,0 +1,67 @@
+WEBVTT
+
+00:00:00.650 --> 00:00:04.196
+Journey fourteen: track and cancel requests.
+
+00:00:04.196 --> 00:00:09.434
+A member follows each request and cancels one that is still open.
+
+00:00:10.294 --> 00:00:15.238
+Your requests lists every booking, quote and order, open ones first,
+
+00:00:15.238 --> 00:00:17.782
+with how many are awaiting a reply.
+
+00:00:18.497 --> 00:00:22.080
+The page now listens to Jubilee's event stream.
+
+00:00:22.080 --> 00:00:27.112
+When WaterWorks confirms, the row changes a second later, with one
+
+00:00:27.112 --> 00:00:27.569
+toast.
+
+00:00:28.680 --> 00:00:32.578
+A confirmed order now offers the owner Mark fulfilled.
+
+00:00:32.578 --> 00:00:37.487
+The dialog names the customer, the order and the total, with Not yet
+
+00:00:37.487 --> 00:00:37.920
+first.
+
+00:00:38.628 --> 00:00:41.426
+Marking it fulfilled closes the order.
+
+00:00:41.426 --> 00:00:46.580
+The customer is told in the app and by e-mail, and their request reads
+
+00:00:46.580 --> 00:00:47.316
+Completed.
+
+00:00:48.513 --> 00:00:52.937
+A member watching their order sees it complete the moment the shop marks
+
+00:00:52.937 --> 00:00:54.105
+it, with no reload.
+
+00:00:55.301 --> 00:01:00.341
+A request nobody answered for a week offers cancel or ask again.
+
+00:01:01.047 --> 00:01:07.092
+Cancel request asks first. The business is told straight away, and Undo
+
+00:01:07.092 --> 00:01:09.135
+opens the request again.
+
+00:01:10.454 --> 00:01:14.865
+Behind the screen, the tests prove the owner is told in the app of a
+
+00:01:14.865 --> 00:01:19.406
+cancel and its withdrawal, and the request jobs run once per schedule.
+
+00:01:20.288 --> 00:01:26.204
+Journey fourteen is complete. Jubilee takes no payment: members pay the
+
+00:01:26.204 --> 00:01:27.704
+business directly.
