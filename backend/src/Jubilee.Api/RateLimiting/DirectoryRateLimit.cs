@@ -27,6 +27,15 @@ public sealed class RateLimitOptions
     /// <summary>Business pre-registrations allowed per client IP address per hour (L2-137 AC1).</summary>
     public int LaunchPreRegistrationsPerHour { get; set; } = 5;
 
+    /// <summary>Merchandise checkouts allowed per client IP address per hour (L2-270 AC7).</summary>
+    public int MerchCheckoutsPerHour { get; set; } = 10;
+
+    /// <summary>Merchandise order reads allowed per client IP address per minute (L2-270 AC7).</summary>
+    public int MerchOrderReadsPerMinute { get; set; } = 60;
+
+    /// <summary>Payment provider webhook calls allowed per minute, in all (L2-270 AC7).</summary>
+    public int MerchWebhooksPerMinute { get; set; } = 600;
+
     /// <summary>Changes to reviews and replies to them allowed per member per hour (L2-238 AC6).</summary>
     public int ReviewChangesPerHour { get; set; } = 30;
 
@@ -54,6 +63,14 @@ public static class LaunchRateLimit
 {
     public const string SignUps = "launch-sign-ups";
     public const string PreRegistrations = "launch-pre-registrations";
+}
+
+/// <summary>Jubilee's merchandise: checkouts and order reads per IP address, the provider's webhook in all (L2-270 AC7).</summary>
+public static class MerchRateLimit
+{
+    public const string Checkouts = "merch-checkouts";
+    public const string OrderReads = "merch-order-reads";
+    public const string Webhooks = "merch-webhooks";
 }
 
 /// <summary>Account limits per hour: 5 joins per IP address, 5 confirmation resends per member (L2-137 AC1).</summary>
@@ -185,6 +202,39 @@ public static class DirectoryRateLimit
                 {
                     PermitLimit = Math.Max(1, limit.LaunchPreRegistrationsPerHour),
                     Window = TimeSpan.FromHours(1),
+                    QueueLimit = 0,
+                });
+            });
+            limiter.AddPolicy(MerchRateLimit.Checkouts, context =>
+            {
+                var limit = context.RequestServices.GetRequiredService<IOptions<RateLimitOptions>>().Value;
+                var client = context.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+                return RateLimitPartition.GetFixedWindowLimiter($"merch-checkout:{client}", _ => new FixedWindowRateLimiterOptions
+                {
+                    PermitLimit = Math.Max(1, limit.MerchCheckoutsPerHour),
+                    Window = TimeSpan.FromHours(1),
+                    QueueLimit = 0,
+                });
+            });
+            limiter.AddPolicy(MerchRateLimit.OrderReads, context =>
+            {
+                var limit = context.RequestServices.GetRequiredService<IOptions<RateLimitOptions>>().Value;
+                var client = context.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+                return RateLimitPartition.GetFixedWindowLimiter($"merch-order:{client}", _ => new FixedWindowRateLimiterOptions
+                {
+                    PermitLimit = Math.Max(1, limit.MerchOrderReadsPerMinute),
+                    Window = TimeSpan.FromMinutes(1),
+                    QueueLimit = 0,
+                });
+            });
+            limiter.AddPolicy(MerchRateLimit.Webhooks, context =>
+            {
+                // One partition for every caller: the provider calls from many addresses.
+                var limit = context.RequestServices.GetRequiredService<IOptions<RateLimitOptions>>().Value;
+                return RateLimitPartition.GetFixedWindowLimiter("merch-webhook", _ => new FixedWindowRateLimiterOptions
+                {
+                    PermitLimit = Math.Max(1, limit.MerchWebhooksPerMinute),
+                    Window = TimeSpan.FromMinutes(1),
                     QueueLimit = 0,
                 });
             });

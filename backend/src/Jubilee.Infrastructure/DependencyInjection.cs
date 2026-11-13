@@ -82,6 +82,12 @@ public static class DependencyInjection
             reserved.Value is { } words ? [words] : reserved.GetChildren().Select(word => word.Value ?? string.Empty)));
         services.AddSingleton(new Application.Accounts.EmailSettings(configuration["Email:MailingAddress"]));
         services.AddSingleton(new Application.Launch.LaunchSettings(configuration["Launch:TeamEmail"]));
+        services.AddSingleton(new Application.Merch.MerchSettings(
+            configuration["Stripe:SecretKey"],
+            configuration["Stripe:WebhookSecret"],
+            !bool.TryParse(configuration["Stripe:AutomaticTax"], out var automaticTax) || automaticTax,
+            configuration["Merch:TeamEmail"] is { Length: > 0 } merchTeam ? merchTeam : configuration["Launch:TeamEmail"],
+            configuration["App:PublicBaseUrl"] ?? "http://localhost:4200"));
         services.AddSingleton(new Application.Moderation.TeamSettings(
             configuration["Moderation:TeamEmail"] is { Length: > 0 } team ? team : configuration["Launch:TeamEmail"],
             configuration["StaffSignIn:PublicBaseUrl"] ?? "https://admin.jubilee.to"));
@@ -93,6 +99,7 @@ public static class DependencyInjection
         services.AddSingleton<Application.Accounts.IPasswordHasher, Accounts.Argon2idPasswordHasher>();
         services.AddHttpClient<Application.Accounts.IBreachedPasswordChecker, Accounts.HaveIBeenPwnedChecker>();
         services.AddHttpClient<Application.Accounts.IBotChallengeVerifier, Accounts.TurnstileBotChallengeVerifier>();
+        services.AddHttpClient<Application.Merch.IPaymentGateway, Merch.StripePaymentGateway>(http => http.Timeout = TimeSpan.FromSeconds(15));
         services.AddHttpClient<Application.Accounts.IGoogleIdentityClient, Accounts.GoogleIdentityClient>();
         // The staff directory (ADR 0040): Entra ID, or the development identity (refused outside Development by the API).
         if (string.Equals(configuration["StaffSignIn:Provider"], "Development", StringComparison.OrdinalIgnoreCase))
