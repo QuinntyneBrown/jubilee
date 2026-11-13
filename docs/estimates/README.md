@@ -27,7 +27,7 @@
 | [operations](operations.md) | 30 days | 31% |
 | [offline](offline.md) | 12 days | 83% |
 | [marketing](marketing.md) | 13 days | 98% |
-| [feedback](feedback.md) | 9 days | 97% |
+| [feedback](feedback.md) | 9 days | 99% |
 
 Jubilee ships without verification (ADR 0057), and that work is done: owners publish and are live
 at once (publish-listing), the Jubilee team browses published listings and takes one down
