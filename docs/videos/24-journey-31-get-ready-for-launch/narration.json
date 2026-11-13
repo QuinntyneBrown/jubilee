@@ -1,5 +1,5 @@
 {
-  "title": "23 · Journey 31: Get ready for launch",
+  "title": "24 · Journey 31: Get ready for launch",
   "scenes": [
     {
       "id": "intro",
@@ -47,7 +47,7 @@
     },
     {
       "id": "checklist",
-      "say": "The owner now has one ordered checklist in the Azure readme, eight steps, each with its command and how to check it worked. ADR 0061 records it."
+      "say": "The owner now has one ordered checklist in the Azure readme, eight steps, each with its command and how to check it worked. ADR 0062 records it."
     },
     {
       "id": "close",

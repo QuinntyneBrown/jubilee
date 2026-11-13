@@ -1,7 +1,7 @@
 import type { Page } from '@playwright/test';
 
 /**
- * Stands in for Cloudflare Turnstile (L2-137 AC2, ADR 0061): the script renders nothing and hands
+ * Stands in for Cloudflare Turnstile (L2-137 AC2, ADR 0062): the script renders nothing and hands
  * each widget on the page the next of `tokens`, at first and after each reset of that widget, as
  * Turnstile gives each widget its own. No test reaches Cloudflare. Resolves with a count of the
  * times the script was loaded.

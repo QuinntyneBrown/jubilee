@@ -339,7 +339,7 @@ public sealed class LaunchSignUpTeamEmailTests(LaunchTeamEmailFactory factory) :
 }
 
 // Acceptance Test
-// Traces to: L2-218 (AC3), L2-137 (AC1); ADR 0040, ADR 0061
+// Traces to: L2-218 (AC3), L2-137 (AC1); ADR 0040, ADR 0062
 // Description: behind the marketing host the limits of 5 an hour count each visitor's address, as the proxy states it.
 public sealed class LaunchVisitorLimitTests(FiveLaunchSubmissionsFactory factory) : IClassFixture<FiveLaunchSubmissionsFactory>, IAsyncLifetime
 {

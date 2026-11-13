@@ -135,7 +135,7 @@ host forwards its calls. The Deploy workflow applies every setting below on each
 ### The owner's checklist
 
 Run these in order, in Azure Cloud Shell (bash) from a clone of this repository, after the first
-deployment and whenever the forms seem not to arrive (ADR 0061). Each step says how to check it
+deployment and whenever the forms seem not to arrive (ADR 0062). Each step says how to check it
 and, if the check fails, how to put it right. Nothing here prints a secret or anyone's details;
 step 7 reads the database through the CLI, and that reading is written to the audit log.
 

@@ -484,7 +484,7 @@ test('Given an API on another host and a proxy key, when /api is forwarded, then
   assert.equal(api.requests[0].headers['x-jubilee-client-address'], '203.0.113.5');
 });
 
-// The limits of 5 an hour count the visitor's address (L2-218 AC3, ADR 0061): a caller cannot choose
+// The limits of 5 an hour count the visitor's address (L2-218 AC3, ADR 0062): a caller cannot choose
 // its own by sending the headers the proxy states.
 test('Given the marketing host and a proxy key, when a caller sends its own address and key, then the API is told the address App Service saw, with the host\'s key', async () => {
   const api = await standIn('127.0.0.1', () => ({ status: 202 }));

@@ -1,4 +1,4 @@
-# 23 · Journey 31: Get ready for launch
+# 24 · Journey 31: Get ready for launch
 
 The transcript, written from `narration.json` by `tools/video-demo/build.mjs`.
 
@@ -24,6 +24,6 @@ Behind the marketing host, the limits now have tests on both sides of the proxy.
 
 The Jubilee team reads the lists with the command line only. Its output is the export, and each reading is audited. A worker test proves the daily job deletes what is twelve months old and logs counts only.
 
-The owner now has one ordered checklist in the Azure readme, eight steps, each with its command and how to check it worked. ADR 0061 records it.
+The owner now has one ordered checklist in the Azure readme, eight steps, each with its command and how to check it worked. ADR 0062 records it.
 
 What is left is the owner's: run the checklist in production, send each form once, and read it back. Journey thirty-one stands at one hundred percent.

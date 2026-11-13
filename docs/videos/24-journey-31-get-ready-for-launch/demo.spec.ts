@@ -1,7 +1,7 @@
 import { test } from "../../../e2e/fixtures/demo";
 import { MarketingHomePage, naomiDetails } from "../../../e2e/pages/marketing-home.page";
 
-// Video 23: journey 31, get ready for launch (L2-215 to L2-218, ADR 0044, ADR 0047, ADR 0061). The marketing
+// Video 24: journey 31, get ready for launch (L2-215 to L2-218, ADR 0044, ADR 0047, ADR 0062). The marketing
 // site on :4201 in its launching-soon state, answered from the recorded API and the launch stubs the behaviour
 // specs use (ADR 0009), each state opened by its route key: the launch notification (invalid, busy, still
 // sending, confirmed, limited) and the business pre-registration (refused by the server, bot challenge,
@@ -134,7 +134,7 @@ test("journey 31: get ready for launch", async ({ demo }) => {
   await demo.card("The owner's checklist", [
     "eng/azure/README.md: migrations, proxy key, marketing host, team address, forwarding,",
     "send each form, read it back, bot challenge. Each step: command, check, fix.",
-    "ADR 0061.",
+    "ADR 0062.",
   ]);
   await demo.scene("checklist");
 

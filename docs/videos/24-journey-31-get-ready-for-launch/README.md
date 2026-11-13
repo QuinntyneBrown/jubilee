@@ -1,13 +1,13 @@
-# 23 · Journey 31: Get ready for launch
+# 24 · Journey 31: Get ready for launch
 
 > **Runtime:** 2:58 (178.3 s) · **Format:** 1920×1080, 30 fps, captions burned in · **Audience:** the repository owner and reviewers of journey 31
 
-**Video:** [23-journey-31-get-ready-for-launch.mp4](23-journey-31-get-ready-for-launch.mp4) · **Audio:** [23-journey-31-get-ready-for-launch.mp3](23-journey-31-get-ready-for-launch.mp3) · [Transcript](script.md) · [Captions sidecar](captions.vtt)
+**Video:** [24-journey-31-get-ready-for-launch.mp4](24-journey-31-get-ready-for-launch.mp4) · **Audio:** [24-journey-31-get-ready-for-launch.mp3](24-journey-31-get-ready-for-launch.mp3) · [Transcript](script.md) · [Captions sidecar](captions.vtt)
 
 ## What it shows
 
 The run of `docs/prompts/31-get-ready-for-launch.md`, which gave every criterion of `L2-215` to
-`L2-218` a passing test and gave the owner one checklist of the launch settings (ADR 0061). The
+`L2-218` a passing test and gave the owner one checklist of the launch settings (ADR 0062). The
 video is filmed on the marketing site (`:4201`) in its launching-soon state (ADR 0044), each state
 opened by its route key (`site: 'marketing'`) and answered from the recorded API and the launch
 stubs the behaviour specs use (ADR 0009). The top bar's "Launching soon" and the opening's label
@@ -43,6 +43,6 @@ is left for the owner.
 
 ```sh
 pip install edge-tts
-node tools/video-demo/build.mjs docs/videos/23-journey-31-get-ready-for-launch --check   # speak the lines, print their lengths
-node tools/video-demo/build.mjs docs/videos/23-journey-31-get-ready-for-launch           # record and encode
+node tools/video-demo/build.mjs docs/videos/24-journey-31-get-ready-for-launch --check   # speak the lines, print their lengths
+node tools/video-demo/build.mjs docs/videos/24-journey-31-get-ready-for-launch           # record and encode
 ```
