@@ -14,6 +14,7 @@ import { ADMIN_PAGE_SIZES, ADMIN_TABLES_API, AdminRows, errorReference, LoadStat
 import {
   AdminHeading,
   AdminPage,
+  BulkBar,
   Button,
   EmptyState,
   Icon,
@@ -24,9 +25,11 @@ import {
   RecordsFilter,
   RecordsFoot,
   RecordsHead,
+  RecordsRow,
   RecordsSort,
   RecordsTable,
   RecordsTools,
+  ToastService,
 } from 'components';
 import { distinctUntilChanged, map, Subscription } from 'rxjs';
 import { AdminCatalogService } from '../../services/admin-catalog.service';
@@ -59,6 +62,7 @@ import { NotFoundPage } from '../not-found/not-found.page';
     RecordsHead,
     RecordsTable,
     RecordsTools,
+    BulkBar,
     AdminOnlyPage,
     NotFoundPage,
   ],
@@ -74,6 +78,7 @@ export class RecordsPage {
   private readonly router = inject(Router);
   private readonly session = inject(StaffSessionService);
   private readonly preferences = inject(AdminPreferencesService);
+  private readonly toasts = inject(ToastService);
 
   protected readonly key = signal('');
   protected readonly state = signal<LoadState<AdminRows>>({ status: 'loading' });
@@ -86,6 +91,8 @@ export class RecordsPage {
   /** The columns the staff member chose, or null for the table's defaults. */
   private readonly chosenColumns = signal<string[] | null>(null);
   private reading?: Subscription;
+  /** The IDs of the checked rows (L2-280 AC3). */
+  protected readonly selected = signal<readonly string[]>([]);
 
   protected readonly table = computed(() => this.catalog.table(this.key()));
 
@@ -124,6 +131,12 @@ export class RecordsPage {
   protected readonly total = computed(() => {
     const state = this.state();
     return state.status === 'loaded' ? state.value.total : 0;
+  });
+
+  /** The status field, when the role may set it on the selected rows (L2-280 AC4). */
+  protected readonly settable = computed(() => {
+    const table = this.table();
+    return table?.fields.find((f) => f.key === table.statusField && f.editable) ?? null;
   });
 
   /** The status field and its values, for the chips (L2-277 AC2). */
@@ -235,9 +248,38 @@ export class RecordsPage {
   }
 
   /** Reads the page of rows for the search, the status and the sort; a newer read replaces an older one. */
+  protected copied(): void {
+    this.toasts.show({ tone: 'success', title: 'ID copied', text: '' });
+  }
+
+  /** A new record with the row's values but its ID and system fields (L2-280 AC2). */
+  protected duplicate(row: RecordsRow): void {
+    void this.router.navigate(['/', this.key(), 'new'], { state: { copy: row.values } });
+  }
+
+  /** Sets the status on every selected row, then reads the page again (L2-280 AC4). */
+  protected setStatus(word: string): void {
+    const ids = this.selected();
+    this.api.setStatus(this.key(), ids, word).subscribe({
+      next: ({ count }) => {
+        this.toasts.show({ tone: 'success', title: `${count} set to ${word}`, text: '' });
+        this.selected.set([]);
+        this.load();
+      },
+      error: (error: unknown) =>
+        this.toasts.show({
+          tone: 'danger',
+          title: `We couldn’t set ${word}`,
+          text: `Nothing was changed. If it keeps happening, tell us and quote ${errorReference(error, 'JB-ADM-504')}.`,
+        }),
+    });
+  }
+
   protected load(): void {
     const key = this.key();
     const sort = this.sort();
+    // A selection names rows of the page shown; another page, search or order starts afresh.
+    this.selected.set([]);
     this.state.set({ status: 'loading' });
     this.refused.set(null);
     this.screen.outcome.set(null);

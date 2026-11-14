@@ -65,6 +65,13 @@ export class AdminRecordsPage extends AdminShellPage implements Screen {
   /** "Page {n} of {pages}", under 640 px. */
   readonly pageOf: Locator;
   readonly goTo: Locator;
+  /** The selection: the heading's checkbox and the bar it brings up (L2-280 AC3). */
+  readonly selectAll: Locator;
+  readonly bulkBar: Locator;
+  readonly bulkCount: Locator;
+  readonly setStatus: Locator;
+  readonly statusMenu: Locator;
+  readonly clearSelection: Locator;
 
   constructor(page: Page) {
     super(page);
@@ -102,6 +109,12 @@ export class AdminRecordsPage extends AdminShellPage implements Screen {
     this.nextPage = this.pages.getByRole('button', { name: 'Next page' });
     this.pageOf = this.pages.locator('.records__page-of');
     this.goTo = this.pages.getByLabel('Go to');
+    this.selectAll = this.table.getByRole('checkbox', { name: 'Select all on this page' });
+    this.bulkBar = page.getByRole('region', { name: /^Selected / });
+    this.bulkCount = this.bulkBar.locator('.bulk-bar__count');
+    this.setStatus = this.bulkBar.getByRole('button', { name: /^Set / });
+    this.statusMenu = page.getByRole('menu', { name: /^Set / });
+    this.clearSelection = this.bulkBar.getByRole('button', { name: 'Clear selection' });
   }
 
   /** The cells of a row of the table. */
@@ -187,6 +200,32 @@ export class AdminRecordsPage extends AdminShellPage implements Screen {
     return row.getByRole('checkbox');
   }
 
+  /** The actions of a row, "Actions for {name}" (L2-280 AC1). */
+  rowActions(name: string): Locator {
+    return this.table.getByRole('button', { name: `Actions for ${name}` });
+  }
+
+  rowMenu(name: string): Locator {
+    return this.page.getByRole('menu', { name: `Actions for ${name}` });
+  }
+
+  async openRowMenu(name: string): Promise<Locator> {
+    await this.rowActions(name).click();
+    const menu = this.rowMenu(name);
+    await menu.waitFor();
+    return menu;
+  }
+
+  /** Checks the rows with these names (L2-280 AC3). */
+  async select(...names: string[]): Promise<void> {
+    for (const name of names) await this.checkbox(this.row(name)).check();
+  }
+
+  async setStatusTo(word: string): Promise<void> {
+    await this.setStatus.click();
+    await this.statusMenu.getByRole('menuitem', { name: word, exact: true }).click();
+  }
+
   retry(): Locator {
     return this.error.getByRole('button', { name: 'Try again' });
   }
@@ -214,6 +253,52 @@ export class AdminColumnsMenuScreen extends AdminRecordsPage {
 
   override regions(): Region[] {
     return [{ name: 'columns-menu', locator: this.columnsMenu }];
+  }
+}
+
+/** The Members table with the actions of Mara Okafor's row open (L2-280 AC1). */
+export class AdminRowMenuScreen extends AdminRecordsPage {
+  readonly menu = this.rowMenu('Mara Okafor');
+
+  override async ready(): Promise<void> {
+    await super.ready();
+    if (await this.menu.isVisible()) return; // the mock is drawn open
+    await this.openRowMenu('Mara Okafor');
+  }
+
+  override regions(): Region[] {
+    return [{ name: 'row-menu', locator: this.menu }];
+  }
+}
+
+/** The Members table with two rows selected and the bar at its foot (L2-280 AC3). */
+export class AdminSelectedScreen extends AdminRecordsPage {
+  override async ready(): Promise<void> {
+    await super.ready();
+    if (await this.bulkBar.isVisible()) return; // the mock is drawn selected
+    await this.select('Mara Okafor', 'Daniel Mensah');
+    await this.bulkBar.waitFor();
+  }
+
+  override regions(): Region[] {
+    return [
+      { name: 'records', locator: this.records },
+      { name: 'bulk-bar', locator: this.bulkBar },
+    ];
+  }
+}
+
+/** Two rows selected with "Set status" open upward (L2-280 AC4). */
+export class AdminBulkStatusMenuScreen extends AdminSelectedScreen {
+  override async ready(): Promise<void> {
+    await super.ready();
+    if (await this.statusMenu.isVisible()) return; // the mock is drawn open
+    await this.setStatus.click();
+    await this.statusMenu.waitFor();
+  }
+
+  override regions(): Region[] {
+    return [{ name: 'status-menu', locator: this.statusMenu }];
   }
 }
 

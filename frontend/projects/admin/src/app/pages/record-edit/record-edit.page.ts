@@ -95,6 +95,9 @@ export class RecordEditPage {
   protected readonly errors = signal<Record<string, string>>({});
   protected readonly saving = signal(false);
   private readonly refs = signal<Record<string, RecordChoice[]>>({});
+  /** The values of the row a new record duplicates, if any (L2-280 AC2). */
+  private readonly copy = this.router.getCurrentNavigation()?.extras.state?.['copy'] as
+    Record<string, unknown> | undefined;
 
   protected readonly table = computed(() => this.catalog.table(this.key()));
   protected readonly singular = computed(() => this.table()?.singular.toLowerCase() ?? 'record');
@@ -293,11 +296,9 @@ export class RecordEditPage {
   private draftOf(record: AdminRecord | null): AdminValues {
     const draft: AdminValues = {};
     for (const field of this.table()?.fields ?? []) {
-      draft[field.key] = record
-        ? wireOf(record.values[field.key])
-        : field.type === 'status'
-          ? (field.options?.[0] ?? null)
-          : null;
+      if (record) draft[field.key] = wireOf(record.values[field.key]);
+      else if (this.copy && field.creatable) draft[field.key] = wireOf(this.copy[field.key]);
+      else draft[field.key] = field.type === 'status' ? (field.options?.[0] ?? null) : null;
     }
     return draft;
   }

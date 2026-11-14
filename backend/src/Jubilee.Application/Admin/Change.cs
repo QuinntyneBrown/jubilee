@@ -52,6 +52,46 @@ public sealed class CreateAdminRecordCommandHandler(IAppDbContext db, TimeProvid
     }
 }
 
+/// <summary>How many records a change of the selection reached.</summary>
+public sealed record AdminCountDto(int Count);
+
+/// <summary>Sets one status on the selected records, each through the status field's binding and each audited (L2-280 AC4).</summary>
+public sealed record SetAdminStatusCommand(StaffViewer Staff, string Table, IReadOnlyList<string> Ids, string Status)
+    : IRequest<AdminCountDto>;
+
+public sealed class SetAdminStatusCommandHandler(IAppDbContext db, TimeProvider clock)
+    : IRequestHandler<SetAdminStatusCommand, AdminCountDto>
+{
+    public async Task<AdminCountDto> Handle(SetAdminStatusCommand request, CancellationToken cancellationToken)
+    {
+        var table = AdminChanges.Changeable(request.Staff, request.Table);
+        var field = table.StatusField is { } key ? table.Fields.Single(f => f.Key == key) : null;
+        if (field is null || !field.Editable)
+        {
+            throw new ForbiddenException("FORBIDDEN", $"The status of {table.Label.ToLowerInvariant()} is not set here.");
+        }
+
+        var now = clock.GetUtcNow();
+        var change = new AdminChange(request.Staff, now);
+        var values = new Dictionary<string, string?> { [field.Key] = request.Status };
+        var count = 0;
+        foreach (var id in request.Ids.Distinct())
+        {
+            // A refusal throws before anything is saved, so no record of the selection changes.
+            var changed = await table.UpdateAsync(db, id, values, change, cancellationToken);
+            if (changed is { After.Count: > 0 })
+            {
+                AdminChanges.Audit(db, request.Staff, $"{table.Key}.update", table.Key, id, changed, now);
+            }
+
+            count += changed is null ? 0 : 1;
+        }
+
+        await db.SaveChangesAsync(cancellationToken);
+        return new AdminCountDto(count);
+    }
+}
+
 /// <summary>The checks and the audit every change of the admin application shares (L2-284 AC1, AC5).</summary>
 public static class AdminChanges
 {

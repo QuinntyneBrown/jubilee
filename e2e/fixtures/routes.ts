@@ -1957,6 +1957,27 @@ export const routes = {
     site: 'admin',
     stub: 'admin-record-error',
   },
+  'admin-records.row-menu': {
+    app: '/members',
+    mock: 'pages/admin-records/row-menu.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'admin-records',
+  },
+  'admin-records.selected': {
+    app: '/members',
+    mock: 'pages/admin-records/selected.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'admin-records',
+  },
+  'admin-records.bulk-status-menu': {
+    app: '/members',
+    mock: 'pages/admin-records/bulk-status-menu.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'admin-records',
+  },
   'admin-record.edit': {
     app: '/members/mem_8F2kQa/edit',
     mock: 'pages/admin-record/edit.html',

@@ -107,6 +107,7 @@ export const ICONS = {
   message: [path('M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z')],
   minus: [path('M5 12h14')],
   more: [circle(12, 5, 1.5), circle(12, 12, 1.5), circle(12, 19, 1.5)],
+  'more-horizontal': [circle(5, 12, 1), circle(12, 12, 1), circle(19, 12, 1)],
   mug: [path('M5 8h11v7a4 4 0 0 1-4 4H9a4 4 0 0 1-4-4zM16 10h2a2 2 0 0 1 0 5h-2M8 4v1M12 4v1')],
   mail: [rect(3, 5, 18, 14, 2), path('m3 7 9 6 9-6')],
   pencil: [path('M21.2 6.8a2.8 2.8 0 0 0-4-4L3.8 16.2 2.5 21.5l5.3-1.3z'), path('m15 5 4 4')],

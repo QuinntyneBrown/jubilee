@@ -1,8 +1,9 @@
 import { parity } from '../../fixtures/parity';
-import { AdminRecordsPage } from '../../pages/admin-records.page';
+import { AdminRecordsPage, AdminSelectedScreen } from '../../pages/admin-records.page';
 
 // jb-records-table: the rows of the Members table, as a table from 768 px and a list below it;
-// the same while loading; and Job runs, read-only, without checkboxes.
+// the same while loading; Job runs, read-only, without checkboxes; and two rows selected
+// (L2-280 AC3).
 parity('records-table', {
   cases: [
     {
@@ -23,6 +24,13 @@ parity('records-table', {
       route: 'admin-records.job-runs',
       screen: (page) => new AdminRecordsPage(page),
       region: (screen: AdminRecordsPage) => screen.records,
+      widths: [1280],
+    },
+    {
+      name: 'selected',
+      route: 'admin-records.selected',
+      screen: (page) => new AdminSelectedScreen(page),
+      region: (screen: AdminSelectedScreen) => screen.records,
       widths: [1280],
     },
   ],

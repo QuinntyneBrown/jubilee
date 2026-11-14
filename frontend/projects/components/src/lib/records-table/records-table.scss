@@ -95,6 +95,29 @@
   text-align: right;
 }
 
+.records__more {
+  display: inline-grid;
+  place-items: center;
+  width: var(--control-height-sm);
+  height: var(--control-height-sm);
+  border: 0;
+  border-radius: var(--radius-full);
+  background: none;
+  color: var(--color-fg-muted);
+  cursor: pointer;
+}
+
+.records__more:hover,
+.records__more[aria-expanded='true'] {
+  background: var(--color-bg-subtle);
+  color: var(--color-fg-default);
+}
+
+.records__more:focus-visible {
+  outline: var(--focus-ring-width) solid var(--color-focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
 @media (min-width: 48rem) {
   .records__table {
     display: block;

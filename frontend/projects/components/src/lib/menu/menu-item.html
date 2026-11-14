@@ -2,3 +2,6 @@
   <svg jb-icon class="menu__icon" [name]="name"></svg>
 }
 <ng-content />
+@if (hint(); as hint) {
+  <span class="menu__hint">{{ hint }}</span>
+}

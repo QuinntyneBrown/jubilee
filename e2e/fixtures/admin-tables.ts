@@ -438,7 +438,7 @@ export type SaveAnswer = 'ok' | 'refused' | 'slow';
 export interface AdminSave {
   method: 'PATCH' | 'POST';
   path: string;
-  values: Record<string, string | null>;
+  values: Record<string, unknown>;
 }
 
 export interface AdminPointer {
@@ -600,6 +600,17 @@ export async function stubAdminTables(
       return route.fulfill(
         problem(503, 'JB-ADM-504', `We couldn't load ${known.singular.toLowerCase()} ${id}.`),
       );
+    }
+    if (route.request().method() === 'POST' && id === 'status') {
+      // One status set on the selected rows (L2-280 AC4).
+      const body = route.request().postDataJSON() as { ids: string[]; status: string };
+      fake.saves.push({ method: 'POST', path: `/${key}/status`, values: body });
+      if (fake.saveAnswer === 'slow') return;
+      if (fake.saveAnswer === 'refused') return route.fulfill(refused(fake.refusal));
+      const field = known.statusField ?? 'status';
+      const chosen = (fake.rows[key] ?? []).filter((r) => body.ids.includes(r.id));
+      for (const r of chosen) r.values[field] = body.status;
+      return route.fulfill({ json: { count: chosen.length } });
     }
     const row = (fake.rows[key] ?? []).find((r) => r.id === id);
     if (!row) return route.fulfill(problem(404, 'NOT_FOUND', 'There is no such record.'));

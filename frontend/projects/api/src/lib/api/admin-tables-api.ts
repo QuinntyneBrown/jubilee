@@ -6,6 +6,7 @@ import {
   AdminRecord,
   AdminRows,
   AdminRowsQuery,
+  AdminCount,
   AdminValues,
 } from '../models/admin-tables';
 
@@ -21,6 +22,8 @@ export interface AdminTablesApi {
   update(table: string, id: string, values: AdminValues): Observable<AdminRecord>;
   /** Creates a record through the table's creation (L2-283 AC4). */
   create(table: string, values: AdminValues): Observable<AdminRecord>;
+  /** Sets one status on the selected records; answers how many it reached (L2-280 AC4). */
+  setStatus(table: string, ids: readonly string[], status: string): Observable<AdminCount>;
 }
 
 export const ADMIN_TABLES_API = new InjectionToken<AdminTablesApi>('ADMIN_TABLES_API');
@@ -58,6 +61,13 @@ export class HttpAdminTablesApi implements AdminTablesApi {
   create(table: string, values: AdminValues): Observable<AdminRecord> {
     return this.http.post<AdminRecord>(`/api/admin/tables/${encodeURIComponent(table)}`, {
       values,
+    });
+  }
+
+  setStatus(table: string, ids: readonly string[], status: string): Observable<AdminCount> {
+    return this.http.post<AdminCount>(`/api/admin/tables/${encodeURIComponent(table)}/status`, {
+      ids,
+      status,
     });
   }
 }

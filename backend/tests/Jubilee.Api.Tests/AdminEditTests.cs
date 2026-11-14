@@ -193,4 +193,48 @@ public sealed class AdminEditTests : IClassFixture<JubileeApiFactory>, IAsyncLif
 
         Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
     }
+
+    // L2-280 AC4: a status set on the selected rows changes each through the binding, each audited
+    [Fact]
+    public async Task L2_280_AC4_setting_a_status_on_selected_rows_changes_and_audits_each()
+    {
+        var second = Feedback.Rate(
+            _ruth.Id.ToString(), "Ruth Chen", 5, null, new AreaScores(null, null, null, null), false, "key-2", ListingMother.Now);
+        await _factory.Arrange(second);
+
+        var response = await Miriam().PostAsJsonAsync(
+            "/api/admin/tables/feedback/status", new { ids = new[] { _rating.Id.ToString(), second.Id.ToString() }, status = "read" });
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal(2, (await Json(response)).GetProperty("count").GetInt32());
+        Assert.Equal(2, await _factory.Query(db => db.Feedback.CountAsync(f => f.Status == FeedbackStatus.Read)));
+        Assert.Equal(2, await _factory.Query(db => db.AuditRecords.CountAsync(a => a.Action == "feedback.update")));
+    }
+
+    // L2-280 AC4: a status the rule refuses is refused for all, and none is changed
+    [Fact]
+    public async Task L2_280_AC4_a_refused_status_changes_no_row()
+    {
+        var read = Feedback.Rate(
+            _ruth.Id.ToString(), "Ruth Chen", 5, null, new AreaScores(null, null, null, null), false, "key-3", ListingMother.Now);
+        read.MarkRead();
+        await _factory.Arrange(read);
+
+        var response = await Miriam().PostAsJsonAsync(
+            "/api/admin/tables/feedback/status", new { ids = new[] { _rating.Id.ToString(), read.Id.ToString() }, status = "new" });
+
+        Assert.Equal(HttpStatusCode.UnprocessableEntity, response.StatusCode);
+        Assert.Equal("NOT_ALLOWED", (await Json(response)).GetProperty("errors").GetProperty("status").GetString());
+        Assert.False(await _factory.Query(db => db.AuditRecords.AnyAsync()));
+    }
+
+    // L2-284 AC1: a table whose status the role may not change refuses it
+    [Fact]
+    public async Task L2_284_AC1_setting_a_status_without_a_binding_is_refused()
+    {
+        var response = await Ada().PostAsJsonAsync(
+            "/api/admin/tables/members/status", new { ids = new[] { _ruth.Id.ToString() }, status = "active" });
+
+        Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+    }
 }

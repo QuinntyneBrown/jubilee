@@ -5,12 +5,18 @@ import {
   computed,
   inject,
   input,
+  model,
   output,
 } from '@angular/core';
+import { Clipboard } from '@angular/cdk/clipboard';
+import { CdkMenuTrigger } from '@angular/cdk/menu';
+import { ConnectedPosition } from '@angular/cdk/overlay';
 import { NgTemplateOutlet } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { Button } from '../button/button';
 import { Icon } from '../icon/icon';
+import { Menu } from '../menu/menu';
+import { MenuItem } from '../menu/menu-item';
 import { Skeleton } from '../skeleton/skeleton';
 import { StatusPill } from '../status-pill/status-pill';
 
@@ -151,10 +157,26 @@ export function cellOf(type: RecordsColumnType, value: unknown): Cell {
  * and its action emits `emptyAction`; the `foot` slot (the pagination) closes the card. A sortable
  * column's heading is a button that sorts ascending, then descending, then not at all, emitting
  * `sorted` and saying the order with `aria-sort`.
+ *
+ * Each row's actions (L2-280 AC1), "Actions for {name}", open a menu: "Open", "Edit" when
+ * `editable`, "Copy ID" with the start of the ID (emitting `copied`) and "Duplicate" when
+ * `duplicable` (emitting `duplicate`). The checked rows are `selected`, by ID, two-way (L2-280
+ * AC3); a checked row is tinted and `aria-selected`, and the heading's checkbox checks every row of
+ * the page.
  */
 @Component({
   selector: 'div[jb-records-table]',
-  imports: [NgTemplateOutlet, RouterLink, Button, Icon, Skeleton, StatusPill],
+  imports: [
+    CdkMenuTrigger,
+    NgTemplateOutlet,
+    RouterLink,
+    Button,
+    Icon,
+    Menu,
+    MenuItem,
+    Skeleton,
+    StatusPill,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'records' },
   templateUrl: './records-table.html',
@@ -162,6 +184,7 @@ export function cellOf(type: RecordsColumnType, value: unknown): Cell {
 })
 export class RecordsTable {
   private readonly router = inject(Router);
+  private readonly clipboard = inject(Clipboard);
 
   /** The table's key, the first segment of each record's path. */
   readonly table = input.required<string>();
@@ -176,27 +199,48 @@ export class RecordsTable {
   readonly sort = input<RecordsSort | null>(null);
   readonly empty = input<RecordsEmpty | null>(null);
 
+  /** The row menu offers "Edit" (L2-280 AC1). */
+  readonly editable = input(false, { transform: booleanAttribute });
+  /** The row menu offers "Duplicate" (L2-280 AC2). */
+  readonly duplicable = input(false, { transform: booleanAttribute });
+  /** The IDs of the checked rows (L2-280 AC3). */
+  readonly selected = model<readonly string[]>([]);
+
   readonly sorted = output<RecordsSort | null>();
   readonly emptyAction = output<void>();
+  /** A row's ID was put on the clipboard. */
+  readonly copied = output<void>();
+  readonly duplicate = output<RecordsRow>();
+
+  /** A row's menu opens under its button, aligned to its end. */
+  protected readonly endAligned: ConnectedPosition[] = [
+    { originX: 'end', originY: 'bottom', overlayX: 'end', overlayY: 'top' },
+    { originX: 'end', originY: 'top', overlayX: 'end', overlayY: 'bottom' },
+  ];
+
+  private readonly chosen = computed(() => new Set(this.selected()));
+
+  /** Every row of the page is checked; some are, but not all. */
+  protected readonly allChosen = computed(
+    () => this.rows().length > 0 && this.rows().every((r) => this.chosen().has(r.id)),
+  );
+  protected readonly someChosen = computed(
+    () => !this.allChosen() && this.rows().some((r) => this.chosen().has(r.id)),
+  );
 
   protected readonly skeletons = [0, 1, 2, 3, 4, 5];
   protected readonly widths = [50, 70, 30] as const;
 
-  /** The column that names the row: Name, else the first text column, else the ID. */
-  protected readonly nameKey = computed(() => {
-    const columns = this.columns();
-    return (
-      columns.find((c) => c.key === 'name')?.key ??
-      columns.find((c) => c.type === 'text')?.key ??
-      columns.find((c) => c.type === 'id')?.key ??
-      null
-    );
-  });
+  /** The column that names the row and links to it: the first text column, if any. */
+  protected readonly nameKey = computed(
+    () => this.columns().find((c) => c.type === 'text')?.key ?? null,
+  );
 
   protected readonly drawn = computed(() =>
     this.rows().map((row) => ({
       row,
       link: ['/', this.table(), row.id],
+      chosen: this.chosen().has(row.id),
       status: this.statusKey() ? row.values[this.statusKey()!] : null,
       cells: this.columns().map((column) => ({
         column,
@@ -228,6 +272,28 @@ export class RecordsTable {
 
   protected asText(value: unknown): string {
     return typeof value === 'string' ? value : '';
+  }
+
+  protected check(id: string, event: Event): void {
+    const checked = (event.target as HTMLInputElement).checked;
+    const others = this.selected().filter((s) => s !== id);
+    this.selected.set(checked ? [...others, id] : others);
+  }
+
+  /** The heading's checkbox checks every row of the page, or none (L2-280 AC3). */
+  protected checkAll(event: Event): void {
+    const checked = (event.target as HTMLInputElement).checked;
+    const page = new Set(this.rows().map((r) => r.id));
+    const others = this.selected().filter((s) => !page.has(s));
+    this.selected.set(checked ? [...others, ...page] : others);
+  }
+
+  protected copy(id: string): void {
+    if (this.clipboard.copy(id)) this.copied.emit();
+  }
+
+  protected open(link: string[]): void {
+    void this.router.navigate(link);
   }
 
   /** Choosing a row away from its links and checkboxes opens its record (L2-276 AC4). */

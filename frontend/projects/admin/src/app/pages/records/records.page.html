@@ -58,8 +58,13 @@
           [error]="state().status === 'error'"
           [sort]="sort()"
           [empty]="empty()"
+          [editable]="table.canEdit"
+          [duplicable]="table.canCreate"
+          [(selected)]="selected"
           (sorted)="sortBy($event)"
           (emptyAction)="clear()"
+          (copied)="copied()"
+          (duplicate)="duplicate($event)"
         >
           @if (rows().length > 0) {
             <div
@@ -89,6 +94,17 @@
             </div>
           }
         </div>
+        @if (selected().length > 0) {
+          <div
+            jb-bulk-bar
+            [label]="table.label.toLowerCase()"
+            [count]="selected().length"
+            [statusLabel]="settable()?.label?.toLowerCase() ?? null"
+            [statuses]="settable()?.options ?? []"
+            (statusChosen)="setStatus($event)"
+            (cleared)="selected.set([])"
+          ></div>
+        }
       </div>
     }
   }

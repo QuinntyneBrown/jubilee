@@ -14,7 +14,14 @@
         <tr>
           @if (selectable()) {
             <th class="records__check" scope="col">
-              <input class="records__box" type="checkbox" aria-label="Select all on this page" />
+              <input
+                class="records__box"
+                type="checkbox"
+                aria-label="Select all on this page"
+                [checked]="allChosen()"
+                [indeterminate]="someChosen()"
+                (change)="checkAll($event)"
+              />
             </th>
           }
           @for (column of columns(); track column.key) {
@@ -50,13 +57,18 @@
           }
         } @else {
           @for (item of drawn(); track item.row.id) {
-            <tr (click)="choose($event, item.link)">
+            <tr
+              [attr.aria-selected]="item.chosen ? 'true' : null"
+              (click)="choose($event, item.link)"
+            >
               @if (selectable()) {
                 <td class="records__check">
                   <input
                     class="records__box"
                     type="checkbox"
                     [attr.aria-label]="'Select ' + item.row.name"
+                    [checked]="item.chosen"
+                    (change)="check(item.row.id, $event)"
                   />
                 </td>
               }
@@ -74,7 +86,18 @@
                   }
                 </td>
               }
-              <td class="records__actions"></td>
+              <td class="records__actions">
+                <button
+                  class="records__more"
+                  type="button"
+                  [attr.aria-label]="'Actions for ' + item.row.name"
+                  [cdkMenuTriggerFor]="rowMenu"
+                  [cdkMenuTriggerData]="{ $implicit: item }"
+                  [cdkMenuPosition]="endAligned"
+                >
+                  <svg jb-icon name="more-horizontal"></svg>
+                </button>
+              </td>
             </tr>
           }
         }
@@ -93,6 +116,8 @@
               class="records__box"
               type="checkbox"
               [attr.aria-label]="'Select ' + item.row.name"
+              [checked]="item.chosen"
+              (change)="check(item.row.id, $event)"
             />
           }
           <a class="records__row" [routerLink]="item.link"
@@ -155,6 +180,21 @@
       {{ cell.text }}
     }
   }
+</ng-template>
+
+<ng-template #rowMenu let-item>
+  <jb-menu [label]="'Actions for ' + item.row.name">
+    <button jb-menu-item icon="external" (chosen)="open(item.link)">Open</button>
+    @if (editable()) {
+      <button jb-menu-item icon="pencil" (chosen)="open(item.link.concat('edit'))">Edit</button>
+    }
+    <button jb-menu-item icon="copy" [hint]="item.row.id.slice(0, 12)" (chosen)="copy(item.row.id)">
+      Copy ID
+    </button>
+    @if (duplicable()) {
+      <button jb-menu-item icon="copy-plus" (chosen)="duplicate.emit(item.row)">Duplicate</button>
+    }
+  </jb-menu>
 </ng-template>
 
 <ng-template #emptyTemplate>

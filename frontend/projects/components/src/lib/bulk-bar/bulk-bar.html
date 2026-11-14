@@ -1,0 +1,31 @@
+<div class="bulk-bar__panel">
+  <span class="bulk-bar__count">{{ count() }} selected</span>
+  @if (statusLabel(); as status) {
+    <button
+      class="bulk-bar__btn"
+      type="button"
+      [cdkMenuTriggerFor]="statusMenu"
+      [cdkMenuPosition]="upward"
+    >
+      Set {{ status }}<svg jb-icon name="chevron-down"></svg>
+    </button>
+    <ng-template #statusMenu>
+      <jb-menu [label]="'Set ' + status">
+        @for (word of statuses(); track word) {
+          <button jb-menu-item (chosen)="statusChosen.emit(word)">
+            <span jb-status-pill [value]="word"></span>
+          </button>
+        }
+      </jb-menu>
+    </ng-template>
+  }
+  <ng-content />
+  <button
+    class="bulk-bar__btn bulk-bar__btn--clear"
+    type="button"
+    aria-label="Clear selection"
+    (click)="cleared.emit()"
+  >
+    <svg jb-icon name="close"></svg>
+  </button>
+</div>

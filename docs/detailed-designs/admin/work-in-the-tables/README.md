@@ -152,6 +152,13 @@ gap.
 - **Clear search**: `L2-277` AC1 asks for a "Clear search" button that the admin mocks do not draw.
   The search is a `type="search"` field, which clears with Escape, and the empty state offers
   "Clear search and filters".
+- **"Set {status}" only where it is bound**: the mocks draw "Set status" for Members, but a status
+  changes only through the binding of the feature that owns it (ADR 0074). The bar offers it where
+  the table's status field is editable for the role (Feedback), and `POST /{table}/status` refuses
+  it elsewhere with 403. Likewise a row's menu offers "Edit" where a field is bound and "Duplicate"
+  where the table creates.
+- **The row's name**: a row links to its record through its first text column, as the mocks do; a
+  table without one (Job runs) opens a record by its row or its "Open".
 - **History words**: a change reads "changed {field} from {old} to {new}" with the field in lower
   case, as the mock `saved.html` writes it.
 

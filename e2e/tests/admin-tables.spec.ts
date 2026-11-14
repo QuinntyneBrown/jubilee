@@ -1,5 +1,6 @@
 // Acceptance Test
-// Traces to: L2-099, L2-106, L2-188, L2-272, L2-276, L2-277, L2-278, L2-282, L2-283, L2-284
+// Traces to: L2-099, L2-106, L2-188, L2-272, L2-276, L2-277, L2-278, L2-280, L2-282, L2-283,
+// L2-284
 // Description: the schema-driven admin application (ADR 0074): its shell with the sidebar of
 // tables in their groups, what a role may read, and one table read from the catalog.
 import {
@@ -15,6 +16,7 @@ import { ADMIN_URL, expect, test } from '../fixtures/jb-test';
 import { ada, miriam } from '../fixtures/staff';
 import { AdminRecordPage } from '../pages/admin-record.page';
 import { AdminRecordsPage } from '../pages/admin-records.page';
+import { Toasts } from '../pages/toasts';
 
 test.describe('the shell of the admin application (L2-272)', () => {
   test('AC1: the top bar shows the lockup, the jump, the address with the environment and the staff member', async ({
@@ -1060,5 +1062,148 @@ test.describe('edit and create a record (L2-283)', () => {
 
     await expect(records.heading).toHaveText('Members');
     await expect(records.newRecord).toHaveCount(0);
+  });
+});
+
+test.describe('row actions and selection (L2-280)', () => {
+  const rating = FEEDBACK_ROW;
+  const slot = {
+    id: '5a1b2c3d-4e5f-4a6b-8c7d-9e0f1a2b3c4d',
+    name: '5a1b2c3d-4e5f-4a6b-8c7d-9e0f1a2b3c4d',
+    values: {
+      id: '5a1b2c3d-4e5f-4a6b-8c7d-9e0f1a2b3c4d',
+      listingId: {
+        table: 'listings',
+        id: LISTING_ROWS[0].id,
+        name: 'Luzandre.com',
+        deleted: false,
+      },
+      position: 2,
+      startsOn: '2026-11-16',
+    },
+  };
+
+  test('AC1: the actions of a row are Open, Edit and Copy ID with the start of the ID', async ({
+    page,
+    jb,
+  }) => {
+    const records = new AdminRecordsPage(page);
+    await records.setWidth(1280);
+    await stubAdminTables(page, miriam);
+    await jb.gotoAdmin('/feedback');
+
+    const menu = await records.openRowMenu('Ruth Chen');
+
+    await expect(menu.getByRole('menuitem')).toHaveText(['Open', 'Edit', /^\s*Copy ID/]);
+    await expect(menu.getByRole('menuitem', { name: /^Copy ID/ })).toContainText(
+      rating.id.slice(0, 12),
+    );
+    await menu.getByRole('menuitem', { name: 'Edit' }).click();
+    await expect(page).toHaveURL(new RegExp(`/feedback/${rating.id}/edit$`));
+  });
+
+  test('AC1: a read-only table offers Open and Copy ID only', async ({ page, jb }) => {
+    const records = new AdminRecordsPage(page);
+    await records.setWidth(1280);
+    await stubAdminTables(page, ada, { rows: { 'job-runs': [JOB_RUN_ROW] } });
+    await jb.gotoAdmin('/job-runs');
+
+    const menu = await records.openRowMenu(JOB_RUN_ROW.name);
+
+    await expect(menu.getByRole('menuitem')).toHaveText(['Open', /^\s*Copy ID/]);
+    await menu.getByRole('menuitem', { name: 'Open' }).click();
+    await expect(page).toHaveURL(new RegExp(`/job-runs/${JOB_RUN_ROW.id}$`));
+  });
+
+  test('AC2: "Copy ID" says "ID copied"', async ({ page, jb }) => {
+    const records = new AdminRecordsPage(page);
+    await records.setWidth(1280);
+    await stubAdminTables(page, miriam);
+    await jb.gotoAdmin('/feedback');
+
+    const menu = await records.openRowMenu('Ruth Chen');
+    await menu.getByRole('menuitem', { name: /^Copy ID/ }).click();
+
+    await expect(new Toasts(page).withTitle('ID copied')).toBeVisible();
+  });
+
+  test('AC2: "Duplicate" opens a new record with the row’s values but its ID', async ({
+    page,
+    jb,
+  }) => {
+    const records = new AdminRecordsPage(page);
+    const record = new AdminRecordPage(page);
+    await records.setWidth(1280);
+    await stubAdminTables(page, miriam, {
+      rows: { 'featured-slots': [slot], listings: LISTING_ROWS },
+    });
+    await jb.gotoAdmin('/featured-slots');
+
+    const menu = await records.openRowMenu(slot.name);
+    await menu.getByRole('menuitem', { name: 'Duplicate' }).click();
+
+    await expect(page).toHaveURL(/\/featured-slots\/new$/);
+    await expect(record.heading).toHaveText('New featured slot');
+    await expect(record.editor('Listing')).toHaveValue(LISTING_ROWS[0].id);
+    await expect(record.editor('Position')).toHaveValue('2');
+    await expect(record.editor('Week of')).toHaveValue('2026-11-16');
+    await expect(record.system).toContainText('ID set on create');
+  });
+
+  test('AC3: checked rows are selected, and a bar counts them until the selection is cleared', async ({
+    page,
+    jb,
+  }) => {
+    const records = new AdminRecordsPage(page);
+    await records.setWidth(1280);
+    await stubAdminTables(page, ada);
+    await jb.gotoAdmin('/members');
+    await expect(records.bulkBar).toHaveCount(0);
+
+    await records.select('Ruth Chen');
+
+    await expect(records.row('Ruth Chen')).toHaveAttribute('aria-selected', 'true');
+    await expect(records.row('Naomi Laurent')).not.toHaveAttribute('aria-selected', 'true');
+    await expect(records.bulkBar).toHaveAccessibleName('Selected members');
+    await expect(records.bulkCount).toHaveText('1 selected');
+    await expect(records.setStatus).toHaveCount(0);
+
+    await records.selectAll.check();
+    await expect(records.bulkCount).toHaveText('2 selected');
+    await expect(records.row('Naomi Laurent')).toHaveAttribute('aria-selected', 'true');
+
+    await records.clearSelection.click();
+    await expect(records.bulkBar).toHaveCount(0);
+    await expect(records.selectAll).not.toBeChecked();
+    await expect(records.checkbox(records.row('Ruth Chen'))).not.toBeChecked();
+  });
+
+  test('AC4: "Set status" sets the chosen status on every selected row and says so', async ({
+    page,
+    jb,
+  }) => {
+    const records = new AdminRecordsPage(page);
+    await records.setWidth(1280);
+    const fake = await stubAdminTables(page, miriam);
+    await jb.gotoAdmin('/feedback');
+    await records.select('Ruth Chen');
+
+    await records.setStatus.click();
+
+    await expect(records.setStatus).toHaveText('Set status');
+    await expect(records.statusMenu.getByRole('menuitem')).toHaveText([
+      'new',
+      'read',
+      'in progress',
+      'fixed',
+    ]);
+    await records.statusMenu.getByRole('menuitem', { name: 'read', exact: true }).click();
+
+    expect(fake.saves).toEqual([
+      { method: 'POST', path: '/feedback/status', values: { ids: [rating.id], status: 'read' } },
+    ]);
+    await expect(new Toasts(page).withTitle('1 set to read')).toBeVisible();
+    await expect(records.bulkBar).toHaveCount(0);
+    await expect(await records.cell(records.row('Ruth Chen'), 'Status')).toHaveText('read');
   });
 });

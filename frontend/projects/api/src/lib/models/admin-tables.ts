@@ -155,3 +155,8 @@ export function isAdminRef(value: unknown): value is AdminRefValue {
 
 /** The values of a change or a creation, by field key, in their wire form (L2-283). */
 export type AdminValues = Record<string, string | null>;
+
+/** How many records a change of the selection reached (L2-280 AC4). */
+export interface AdminCount {
+  count: number;
+}

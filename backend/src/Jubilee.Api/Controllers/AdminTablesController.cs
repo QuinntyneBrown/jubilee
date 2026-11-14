@@ -43,6 +43,12 @@ public sealed class AdminTablesController(ISender sender) : ControllerBase
     public Task<AdminRecordDto> Record(string table, string id, CancellationToken cancellationToken) =>
         sender.Send(new GetAdminRecordQuery(User.ToStaff(), table, id), cancellationToken);
 
+    /// <summary>Sets one status on the selected records (L2-280 AC4).</summary>
+    [HttpPost("{table}/status")]
+    [ErrorReference("JB-ADM-504")]
+    public Task<AdminCountDto> SetStatus(string table, [FromBody] AdminStatusRequest body, CancellationToken cancellationToken) =>
+        sender.Send(new SetAdminStatusCommand(User.ToStaff(), table, body.Ids ?? [], body.Status ?? string.Empty), cancellationToken);
+
     /// <summary>Changes the fields of a record through their bindings (L2-283 AC2).</summary>
     [HttpPatch("{table}/{id}")]
     [ErrorReference("JB-ADM-504")]
@@ -62,3 +68,6 @@ public sealed class AdminTablesController(ISender sender) : ControllerBase
 
 /// <summary>The values of a change or a creation, by field key, in their wire form.</summary>
 public sealed record AdminValuesRequest(Dictionary<string, string?>? Values);
+
+/// <summary>The selected records and the status to set on them.</summary>
+public sealed record AdminStatusRequest(IReadOnlyList<string>? Ids, string? Status);
