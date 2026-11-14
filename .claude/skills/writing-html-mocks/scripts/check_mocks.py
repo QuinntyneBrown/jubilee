@@ -249,7 +249,7 @@ def run_checks(root: Path) -> tuple[list[str], list[str], dict]:
         for state, reason in not_applicable.items():
             if not str(reason).strip():
                 errors.append(f"manifest: screen '{sid}' marks state '{state}' not applicable without a reason")
-        row = {"id": sid, "kind": kind, "title": screen.get("title", sid), "route": screen.get("route", ""), "requirements": screen.get("requirements", []), "states": {}}
+        row = {"id": sid, "kind": kind, "title": screen.get("title", sid), "route": screen.get("route", ""), "requirements": screen.get("requirements", []), "group": screen.get("group", ""), "states": {}}
         for state in required_by_kind.get(kind, []):
             if state not in states and state not in not_applicable:
                 errors.append(f"coverage: {kind} '{sid}' is missing required state '{state}' (add the mock or explain it under not_applicable)")
@@ -385,38 +385,56 @@ def write_readme(root: Path, coverage: dict, manifest: dict) -> None:
     readme.write_text(text, encoding="utf-8")
 
 
+def tokens_href(root: Path) -> str:
+    """The index's tokens.css: the mocks' own, else the design system's once it has been extracted."""
+    for candidate in ("assets/tokens.css", "../design-system/tokens/tokens.css", "../design-system/assets/tokens.css"):
+        if (root / candidate).is_file():
+            return candidate
+    return "assets/tokens.css"
+
+
+def render_card(row: dict) -> str:
+    links = []
+    for state, info in row["states"].items():
+        if info["status"] == "ok":
+            links.append(f'<li><a href="{info["path"]}">{state}</a></li>')
+        elif info["status"] == "n/a":
+            links.append(f'<li class="na" title="{info["reason"]}">{state} <span>n/a</span></li>')
+        else:
+            links.append(f'<li class="missing">{state} <span>missing</span></li>')
+    first = next((i["path"] for i in row["states"].values() if i["status"] == "ok"), None)
+    preview = f'<iframe loading="lazy" tabindex="-1" aria-hidden="true" src="{first}"></iframe>' if first else '<div class="no-preview">No mock yet</div>'
+    route = f'<code>{row["route"]}</code>' if row["route"] else ""
+    reqs = " ".join(f"<code>{r}</code>" for r in row["requirements"])
+    return (
+        f'<article class="card"><div class="preview">{preview}</div><div class="body">'
+        f'<h3>{row["title"]}</h3><p class="meta">{route} {reqs}</p><ul class="states">{"".join(links)}</ul></div></article>'
+    )
+
+
 def write_index(root: Path, coverage: dict, manifest: dict) -> None:
     title = manifest.get("project", "Project")
     sections = []
-    for kind, rows in coverage.items():
-        if not rows:
-            continue
-        cards = []
-        for row in rows:
-            links = []
-            for state, info in row["states"].items():
-                if info["status"] == "ok":
-                    links.append(f'<li><a href="{info["path"]}">{state}</a></li>')
-                elif info["status"] == "n/a":
-                    links.append(f'<li class="na" title="{info["reason"]}">{state} <span>n/a</span></li>')
-                else:
-                    links.append(f'<li class="missing">{state} <span>missing</span></li>')
-            first = next((i["path"] for i in row["states"].values() if i["status"] == "ok"), None)
-            preview = f'<iframe loading="lazy" tabindex="-1" aria-hidden="true" src="{first}"></iframe>' if first else '<div class="no-preview">No mock yet</div>'
-            route = f'<code>{row["route"]}</code>' if row["route"] else ""
-            reqs = " ".join(f"<code>{r}</code>" for r in row["requirements"])
-            cards.append(
-                f'<article class="card"><div class="preview">{preview}</div><div class="body">'
-                f'<h3>{row["title"]}</h3><p class="meta">{route} {reqs}</p><ul class="states">{"".join(links)}</ul></div></article>'
-            )
-        sections.append(f'<section><h2 id="{KIND_FOLDERS[kind]}">{KIND_FOLDERS[kind].capitalize()}</h2><div class="grid">{"".join(cards)}</div></section>')
+    nav = []
+    for kind, all_rows in coverage.items():
+        # A screen may name a "group" in the manifest (a second application, say): each group gets
+        # a section and a nav link of its own, after the kind's ungrouped screens.
+        groups: dict = {}
+        for row in all_rows:
+            groups.setdefault(row.get("group") or "", []).append(row)
+        for group, rows in sorted(groups.items(), key=lambda item: item[0] != ""):
+            anchor = re.sub(r"[^a-z0-9]+", "-", group.lower()).strip("-") if group else KIND_FOLDERS[kind]
+            heading = group or KIND_FOLDERS[kind].capitalize()
+            nav.append(f'<a href="#{anchor}">{heading}</a>')
+            cards = [render_card(row) for row in rows]
+            sections.append(f'<section><h2 id="{anchor}">{heading}</h2><div class="grid">{"".join(cards)}</div></section>')
     html = f"""<!doctype html>
 <html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{title} mocks</title>
-<link rel="stylesheet" href="assets/tokens.css">
+<link rel="stylesheet" href="{tokens_href(root)}">
 <style>
   body {{ margin: 0; font: var(--text-body); color: var(--color-fg-default); background: var(--color-bg-canvas); }}
   header {{ padding: var(--space-6) var(--layout-margin); border-bottom: 1px solid var(--color-border-default); display: flex; gap: var(--space-4); align-items: center; flex-wrap: wrap; }}
@@ -448,7 +466,7 @@ def write_index(root: Path, coverage: dict, manifest: dict) -> None:
 <body>
 <header>
   <h1>{title} mocks</h1>
-  <nav aria-label="Sections">{"".join(f'<a href="#{KIND_FOLDERS[k]}">{KIND_FOLDERS[k].capitalize()}</a>' for k, rows in coverage.items() if rows)}<a href="README.md">Coverage</a></nav>
+  <nav aria-label="Sections">{"".join(nav)}<a href="README.md">Coverage</a></nav>
   <button class="theme" type="button" onclick="var r=document.documentElement;r.dataset.theme=r.dataset.theme==='dark'?'light':'dark';">Toggle theme</button>
 </header>
 <main id="main">

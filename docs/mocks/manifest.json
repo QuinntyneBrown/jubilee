@@ -798,6 +798,7 @@
       "id": "admin-sign-in",
       "kind": "page",
       "title": "Staff sign-in",
+      "group": "Admin application",
       "route": "/sign-in (admin application)",
       "states": [
         "default",
@@ -841,6 +842,7 @@
       "id": "admin-overview",
       "kind": "page",
       "title": "Admin overview",
+      "group": "Admin application",
       "route": "/ (admin application)",
       "states": [
         "default",
@@ -864,6 +866,7 @@
       "id": "admin-records",
       "kind": "page",
       "title": "Records",
+      "group": "Admin application",
       "route": "/:table (admin application)",
       "states": [
         "default",
@@ -951,6 +954,7 @@
       "id": "admin-record",
       "kind": "page",
       "title": "Record",
+      "group": "Admin application",
       "route": "/:table/:id, /:table/new (admin application)",
       "states": [
         "default",
