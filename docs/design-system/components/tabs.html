@@ -50,6 +50,11 @@
       <li><a href="../components/tab-bar.html">Tab bar</a></li>
       <li><a href="../components/feedback-launcher.html">Feedback launcher</a></li>
       <li><a href="../components/sidebar-navigation.html">Sidebar navigation</a></li>
+      <li><a href="../components/admin-shell.html">Admin shell</a></li>
+      <li><a href="../components/work-queue.html">Work queue</a></li>
+      <li><a href="../components/record.html">Record</a></li>
+      <li><a href="../components/bulk-bar.html">Bulk bar</a></li>
+      <li><a href="../components/command-palette.html">Command palette</a></li>
       <li><a href="../components/tabs.html">Tabs</a></li>
       <li><a href="../components/breadcrumb.html">Breadcrumb</a></li>
       <li><a href="../components/pagination.html">Pagination</a></li>
@@ -320,11 +325,11 @@
       <ul>
         <li><a href="../../mocks/pages/requests/default.html">pages/requests/default</a> (in-page, Request type)</li>
         <li><a href="../../mocks/pages/search/default.html">pages/search/default</a> (in-page, Result type with a tabpanel)</li>
-        <li><a href="../../mocks/pages/admin-reports/default.html">pages/admin-reports/default</a> (Report status filter)</li>
         <li><a href="../../mocks/pages/my-business/default.html">pages/my-business/default</a> (page tabs)</li>
         <li><a href="../../mocks/pages/account/default.html">pages/account/default</a> (page tabs)</li>
       </ul>
       <p>Drift fixed during extraction: the indicator radius was a raw 2px (now <code>--radius-xs</code>) and the selected look was a brand override layered after the kit rule (now merged into <code>.tab</code>). In-page tablists on Your requests, incoming requests and the admin queue have no <code>aria-controls</code> and no <code>role="tabpanel"</code>; only search results has a panel, and it is labelled by <code>aria-label</code> instead of the tab, with an inline <code>style="border-top: 0"</code>. The pattern above wires both. The gold indicator is only about 1.6:1 against cream, so selection must also be carried by the semibold, darker label, as it is.</p>
+      <p>The admin application filters a table by status with <a href="chip.html">Chip</a> buttons (<code>aria-pressed</code>), not tabs.</p>
     </section>
 
     <footer class="ds-footer"><span>Jubilee design system · extracted from <a href="../../mocks/index.html">docs/mocks</a> on 10 November 2026</span><a href="#top">Back to top</a></footer>

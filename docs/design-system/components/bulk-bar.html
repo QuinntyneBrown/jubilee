@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en-CA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bulk bar — Jubilee design system</title>
+<meta name="description" content="The bar of the selected rows of an admin table: count, Set status, Export, Delete and Clear.">
+<link rel="stylesheet" href="../tokens/tokens.css">
+<link rel="stylesheet" href="../assets/components.css">
+<link rel="stylesheet" href="../assets/ds.css">
+</head>
+<body id="top">
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="ds-shell">
+  <nav class="ds-nav" aria-label="Design system">
+    <div class="ds-nav__brand"><a href="../index.html">Jubilee DS</a><button class="ds-theme-toggle" type="button" aria-pressed="false">☾ Dark</button></div>
+    <details open><summary>Foundations</summary><ul>
+      <li><a href="../foundations/color.html">Color</a></li>
+      <li><a href="../foundations/typography.html">Typography</a></li>
+      <li><a href="../foundations/spacing.html">Spacing</a></li>
+      <li><a href="../foundations/layout.html">Layout</a></li>
+      <li><a href="../foundations/elevation.html">Elevation</a></li>
+      <li><a href="../foundations/shape.html">Shape</a></li>
+      <li><a href="../foundations/motion.html">Motion</a></li>
+      <li><a href="../foundations/iconography.html">Iconography</a></li>
+      <li><a href="../foundations/theming.html">Theming</a></li>
+      <li><a href="../foundations/responsive.html">Responsive</a></li>
+      <li><a href="../foundations/accessibility.html">Accessibility</a></li>
+      <li><a href="../foundations/content.html">Content</a></li>
+    </ul></details>
+    <details open><summary>Components</summary><ul>
+      <li><a href="../components/button.html">Button</a></li>
+      <li><a href="../components/button-group.html">Button group</a></li>
+      <li><a href="../components/marketing-button.html">Marketing button</a></li>
+      <li><a href="../components/link.html">Link</a></li>
+      <li><a href="../components/menu.html">Menu</a></li>
+      <li><a href="../components/text-field.html">Text field</a></li>
+      <li><a href="../components/textarea.html">Textarea</a></li>
+      <li><a href="../components/select.html">Select</a></li>
+      <li><a href="../components/checkbox.html">Checkbox</a></li>
+      <li><a href="../components/radio-group.html">Radio group</a></li>
+      <li><a href="../components/switch.html">Switch</a></li>
+      <li><a href="../components/form-field.html">Form field</a></li>
+      <li><a href="../components/form-layout.html">Form layout</a></li>
+      <li><a href="../components/launch-form.html">Launch form</a></li>
+      <li><a href="../components/top-bar.html">Top bar</a></li>
+      <li><a href="../components/tab-bar.html">Tab bar</a></li>
+      <li><a href="../components/sidebar-navigation.html">Sidebar navigation</a></li>
+      <li><a href="../components/admin-shell.html">Admin shell</a></li>
+      <li><a href="../components/work-queue.html">Work queue</a></li>
+      <li><a href="../components/record.html">Record</a></li>
+      <li><a href="../components/bulk-bar.html">Bulk bar</a></li>
+      <li><a href="../components/command-palette.html">Command palette</a></li>
+      <li><a href="../components/tabs.html">Tabs</a></li>
+      <li><a href="../components/breadcrumb.html">Breadcrumb</a></li>
+      <li><a href="../components/pagination.html">Pagination</a></li>
+      <li><a href="../components/stepper.html">Stepper</a></li>
+      <li><a href="../components/footer.html">Footer</a></li>
+      <li><a href="../components/skip-link.html">Skip link</a></li>
+      <li><a href="../components/card.html">Card</a></li>
+      <li><a href="../components/accordion.html">Accordion</a></li>
+      <li><a href="../components/dialog.html">Dialog</a></li>
+      <li><a href="../components/drawer.html">Drawer</a></li>
+      <li><a href="../components/popover.html">Popover</a></li>
+      <li><a href="../components/tooltip.html">Tooltip</a></li>
+      <li><a href="../components/divider.html">Divider</a></li>
+      <li><a href="../components/layout-primitives.html">Layout primitives</a></li>
+      <li><a href="../components/auth-layout.html">Auth layout</a></li>
+      <li><a href="../components/table.html">Table</a></li>
+      <li><a href="../components/list.html">List</a></li>
+      <li><a href="../components/description-list.html">Description list</a></li>
+      <li><a href="../components/avatar.html">Avatar</a></li>
+      <li><a href="../components/badge.html">Badge</a></li>
+      <li><a href="../components/launch-badge.html">Launch badge</a></li>
+      <li><a href="../components/chip.html">Chip</a></li>
+      <li><a href="../components/stat.html">Stat</a></li>
+      <li><a href="../components/timeline.html">Timeline</a></li>
+      <li><a href="../components/business-card.html">Business card</a></li>
+      <li><a href="../components/space-card.html">Space card</a></li>
+      <li><a href="../components/saveable.html">Saveable card</a></li>
+      <li><a href="../components/policy-document.html">Policy document</a></li>
+      <li><a href="../components/booking-card.html">Booking card</a></li>
+      <li><a href="../components/rental-facts.html">Rental facts</a></li>
+      <li><a href="../components/household.html">Household</a></li>
+      <li><a href="../components/host-card.html">Host card</a></li>
+      <li><a href="../components/term-chooser.html">Term chooser</a></li>
+      <li><a href="../components/term-filter.html">Term filter</a></li>
+      <li><a href="../components/included-chips.html">Included chips</a></li>
+      <li><a href="../components/directory-row.html">Directory row</a></li>
+      <li><a href="../components/media-tile.html">Media tile</a></li>
+      <li><a href="../components/message-thread.html">Message thread</a></li>
+      <li><a href="../components/notification-item.html">Notification item</a></li>
+      <li><a href="../components/hero-band.html">Hero band</a></li>
+      <li><a href="../components/lockup.html">Lockup</a></li>
+      <li><a href="../components/toast.html">Toast</a></li>
+      <li><a href="../components/alert.html">Alert and banner</a></li>
+      <li><a href="../components/inline-message.html">Inline message</a></li>
+      <li><a href="../components/launch-confirmation.html">Launch confirmation</a></li>
+      <li><a href="../components/progress-bar.html">Progress bar</a></li>
+      <li><a href="../components/spinner.html">Spinner</a></li>
+      <li><a href="../components/skeleton.html">Skeleton</a></li>
+      <li><a href="../components/empty-state.html">Empty state</a></li>
+      <li><a href="../components/error-page.html">Error page</a></li>
+    </ul></details>
+    <details open><summary>Patterns</summary><ul>
+      <li><a href="../patterns/forms.html">Forms</a></li>
+      <li><a href="../patterns/feedback-and-loading.html">Feedback and loading</a></li>
+      <li><a href="../patterns/empty-and-error-states.html">Empty and error states</a></li>
+      <li><a href="../patterns/navigation.html">Navigation and page structure</a></li>
+      <li><a href="../patterns/dialogs-and-overlays.html">Dialogs and overlays</a></li>
+      <li><a href="../patterns/tables-and-lists.html">Data tables and lists</a></li>
+      <li><a href="../patterns/notifications.html">Notifications</a></li>
+      <li><a href="../patterns/content-and-tone.html">Content and tone</a></li>
+    </ul></details>
+  </nav>
+  <main id="main" class="ds-main">
+    <header class="ds-header">
+      <p class="ds-kicker">Component · Admin application</p>
+      <h1>Bulk bar</h1>
+      <p class="ds-lead">The bar that floats at the foot of an admin table while rows are selected: the count, "Set status", Export, Delete and Clear, and the confirmation that lists what will be deleted (L2-278, L2-281).</p>
+      <div class="ds-meta"><span class="ds-pill ds-pill--ok">WCAG 2.2 AA</span><span class="ds-pill">Status: new</span></div>
+      <ul class="ds-toc"><li><a href="#overview">Overview</a></li><li><a href="#anatomy">Anatomy</a></li><li><a href="#variants">Variants</a></li><li><a href="#sizes">Sizes</a></li><li><a href="#states">States</a></li><li><a href="#responsive">Responsive behaviour</a></li><li><a href="#theming">Theming</a></li><li><a href="#accessibility">Accessibility</a></li><li><a href="#content">Content</a></li><li><a href="#do-dont">Do and don't</a></li><li><a href="#tokens">Tokens</a></li><li><a href="#code">Code</a></li><li><a href="#sources">Sources</a></li></ul>
+    </header>
+    <section class="ds-section" id="overview"><h2><a href="#overview">Overview</a></h2>
+      <p>When rows of a <a href="table.html#variants">Records table</a> are selected, <code>.bulk-bar</code> floats at the foot of the screen with how many are selected and what can be done to all of them: "Set status", Export, Delete and Clear (L2-278). It is an ink pill so it reads as a different layer from the table. Delete opens a confirmation that lists the records to delete (<code>.doomed</code>).</p>
+    </section>
+    <section class="ds-section" id="anatomy"><h2><a href="#anatomy">Anatomy</a></h2>
+      <div class="ds-example"><div class="ds-example__canvas">
+<div class="bulk-bar" role="region" aria-label="Selected listing reports" style="position: static; justify-content: flex-start; padding: 0; max-width: 100%; overflow-x: auto;"><div class="bulk-bar__panel"><span class="bulk-bar__count">2 selected</span><button class="bulk-bar__btn" type="button" aria-haspopup="menu" aria-expanded="false">Set status<svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></button><button class="bulk-bar__btn bulk-bar__btn--export" type="button"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></svg>Export</button><button class="bulk-bar__btn bulk-bar__btn--danger" type="button"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>Delete</button><button class="bulk-bar__btn bulk-bar__btn--clear" type="button" aria-label="Clear selection"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div></div>
+      </div>
+        <div class="ds-example__caption"><span>1 The count · 2 "Set status", which opens a <a href="menu.html">Menu</a> upward (<code>menu--up</code>) · 3 Export (from 640px) · 4 Delete, in the danger colour · 5 Clear, which deselects every row.</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;div class="bulk-bar" role="region" aria-label="Selected listing reports" style="position: static; justify-content: flex-start; padding: 0; max-width: 100%; overflow-x: auto;"&gt;&lt;div class="bulk-bar__panel"&gt;&lt;span class="bulk-bar__count"&gt;2 selected&lt;/span&gt;&lt;button class="bulk-bar__btn" type="button" aria-haspopup="menu" aria-expanded="false"&gt;Set status&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="m6 9 6 6 6-6"/&gt;&lt;/svg&gt;&lt;/button&gt;&lt;button class="bulk-bar__btn bulk-bar__btn--export" type="button"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/&gt;&lt;path d="m7 10 5 5 5-5"/&gt;&lt;path d="M12 15V3"/&gt;&lt;/svg&gt;Export&lt;/button&gt;&lt;button class="bulk-bar__btn bulk-bar__btn--danger" type="button"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/&gt;&lt;/svg&gt;Delete&lt;/button&gt;&lt;button class="bulk-bar__btn bulk-bar__btn--clear" type="button" aria-label="Clear selection"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M18 6 6 18M6 6l12 12"/&gt;&lt;/svg&gt;&lt;/button&gt;&lt;/div&gt;&lt;/div&gt;</code></pre></details></div>
+    </section>
+    <section class="ds-section" id="variants"><h2><a href="#variants">Variants</a></h2>
+      <h3>Delete confirmation</h3>
+      <p>Delete opens an <a href="dialog.html">alert dialog</a> that names the records (<code>.doomed</code>: name and ID per line), warns when other records point to them, and asks for <code>delete</code> to be typed when there is more than one. Deleting one record from its row menu asks without the typing.</p>
+      <div class="ds-example"><div class="ds-example__canvas">
+<div style="width: 100%;"><div class="ds-frame" style="min-height: calc(var(--space-24) * 7);"><div class="backdrop"></div><div class="dialog" role="alertdialog" aria-modal="true" aria-labelledby="bb-dlg-t" aria-describedby="bb-dlg-d"><div class="dialog__panel dialog__panel--sm" style="animation: none;"><div class="dialog__header"><div class="dialog__heading"><h2 class="dialog__title" id="bb-dlg-t">Delete 2 listing reports?</h2><p class="dialog__desc" id="bb-dlg-d">This removes them for everyone on Jubilee. The deletion is kept in Audit records, but the data can’t be brought back after 30 days.</p></div><button class="btn btn--ghost btn--icon" type="button" aria-label="Close"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div><div class="dialog__body stack"><ul class="doomed"><li><b>Guest suite near Roncesvalles</b><code>lrp_141</code></li><li><b>WaterWorks Plumbing &amp; Drains</b><code>lrp_139</code></li></ul><div class="field"><label class="field__label" for="bb-type">Type <code>delete</code> to confirm</label><input class="input" id="bb-type" type="text" autocomplete="off"></div></div><div class="dialog__footer"><button class="btn" type="button">Keep them</button><button class="btn btn--danger" type="button" aria-disabled="true">Delete 2 listing reports</button></div></div></div></div></div>
+      </div>
+        <div class="ds-example__caption"><span>Deleting two listing reports.</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;div style="width: 100%;"&gt;&lt;div class="ds-frame" style="min-height: calc(var(--space-24) * 7);"&gt;&lt;div class="backdrop"&gt;&lt;/div&gt;&lt;div class="dialog" role="alertdialog" aria-modal="true" aria-labelledby="bb-dlg-t" aria-describedby="bb-dlg-d"&gt;&lt;div class="dialog__panel dialog__panel--sm" style="animation: none;"&gt;&lt;div class="dialog__header"&gt;&lt;div class="dialog__heading"&gt;&lt;h2 class="dialog__title" id="bb-dlg-t"&gt;Delete 2 listing reports?&lt;/h2&gt;&lt;p class="dialog__desc" id="bb-dlg-d"&gt;This removes them for everyone on Jubilee. The deletion is kept in Audit records, but the data can’t be brought back after 30 days.&lt;/p&gt;&lt;/div&gt;&lt;button class="btn btn--ghost btn--icon" type="button" aria-label="Close"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M18 6 6 18M6 6l12 12"/&gt;&lt;/svg&gt;&lt;/button&gt;&lt;/div&gt;&lt;div class="dialog__body stack"&gt;&lt;ul class="doomed"&gt;&lt;li&gt;&lt;b&gt;Guest suite near Roncesvalles&lt;/b&gt;&lt;code&gt;lrp_141&lt;/code&gt;&lt;/li&gt;&lt;li&gt;&lt;b&gt;WaterWorks Plumbing &amp;amp; Drains&lt;/b&gt;&lt;code&gt;lrp_139&lt;/code&gt;&lt;/li&gt;&lt;/ul&gt;&lt;div class="field"&gt;&lt;label class="field__label" for="bb-type"&gt;Type &lt;code&gt;delete&lt;/code&gt; to confirm&lt;/label&gt;&lt;input class="input" id="bb-type" type="text" autocomplete="off"&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="dialog__footer"&gt;&lt;button class="btn" type="button"&gt;Keep them&lt;/button&gt;&lt;button class="btn btn--danger" type="button" aria-disabled="true"&gt;Delete 2 listing reports&lt;/button&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;</code></pre></details></div>
+    </section>
+    <section class="ds-section" id="sizes"><h2><a href="#sizes">Sizes</a></h2>
+      <p>One size. Its buttons are <code>--control-height-sm</code> tall; the clear button is round.</p>
+    </section>
+    <section class="ds-section" id="states"><h2><a href="#states">States</a></h2>
+      <p>The bar shows while at least one row is selected and goes when the selection clears. Its buttons have default, hover (a 12% tint of the text) and focus; "Set status" is <code>aria-expanded="true"</code> while its menu is open.</p>
+      <div class="ds-matrix"><table><thead><tr><th scope="col">Bar</th><th scope="col">Default</th><th scope="col">Hover</th><th scope="col">Focus</th></tr></thead><tbody><tr><th scope="row">Set status</th><td><div class="bulk-bar" role="region" aria-label="Selected listing reports" style="position: static; justify-content: flex-start; padding: 0; max-width: 100%; overflow-x: auto;"><div class="bulk-bar__panel"><span class="bulk-bar__count">2 selected</span><button class="bulk-bar__btn" type="button" aria-haspopup="menu" aria-expanded="false">Set status<svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></button><button class="bulk-bar__btn bulk-bar__btn--export" type="button"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></svg>Export</button><button class="bulk-bar__btn bulk-bar__btn--danger" type="button"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>Delete</button><button class="bulk-bar__btn bulk-bar__btn--clear" type="button" aria-label="Clear selection"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div></div></td><td><div class="bulk-bar" role="region" aria-label="Selected listing reports" style="position: static; justify-content: flex-start; padding: 0; max-width: 100%; overflow-x: auto;"><div class="bulk-bar__panel"><span class="bulk-bar__count">2 selected</span><button class="bulk-bar__btn" type="button" aria-haspopup="menu" aria-expanded="false" data-state="hover">Set status<svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></button><button class="bulk-bar__btn bulk-bar__btn--export" type="button"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></svg>Export</button><button class="bulk-bar__btn bulk-bar__btn--danger" type="button"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>Delete</button><button class="bulk-bar__btn bulk-bar__btn--clear" type="button" aria-label="Clear selection"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div></div></td><td><div class="bulk-bar" role="region" aria-label="Selected listing reports" style="position: static; justify-content: flex-start; padding: 0; max-width: 100%; overflow-x: auto;"><div class="bulk-bar__panel"><span class="bulk-bar__count">2 selected</span><button class="bulk-bar__btn" type="button" aria-haspopup="menu" aria-expanded="false" data-state="focus">Set status<svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></button><button class="bulk-bar__btn bulk-bar__btn--export" type="button"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></svg>Export</button><button class="bulk-bar__btn bulk-bar__btn--danger" type="button"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>Delete</button><button class="bulk-bar__btn bulk-bar__btn--clear" type="button" aria-label="Clear selection"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div></div></td></tr></tbody></table></div>
+      <p>After a delete the selection clears, the bar goes and a <a href="toast.html">Toast</a> says "2 listing reports deleted" with Undo.</p>
+    </section>
+    <section class="ds-section" id="responsive"><h2><a href="#responsive">Responsive behaviour</a></h2>
+      <ul><li>The bar centres at the foot of the viewport with <code>--space-4</code> on each side, at every width.</li><li>Below 640px Export hides; the count, "Set status", Delete and Clear stay.</li><li>The table screen (<code>admin-page--wide</code>) keeps <code>--space-24</code> free below its last row so the bar never covers it.</li></ul>
+    </section>
+    <section class="ds-section" id="theming"><h2><a href="#theming">Theming</a></h2>
+      <p>The bar is the inverse ink in both themes (<code>--color-bg-inverse</code>, <code>--color-fg-inverse</code>); Delete is <code>--color-danger-icon-inverse</code>, checked as text.</p>
+      <div class="ds-themes"><div data-theme="light"><div class="ds-example__canvas ds-example__canvas--stack"><div class="bulk-bar" role="region" aria-label="Selected listing reports" style="position: static; justify-content: flex-start; padding: 0; max-width: 100%; overflow-x: auto;"><div class="bulk-bar__panel"><span class="bulk-bar__count">2 selected</span><button class="bulk-bar__btn" type="button" aria-haspopup="menu" aria-expanded="false">Set status<svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></button><button class="bulk-bar__btn bulk-bar__btn--export" type="button"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></svg>Export</button><button class="bulk-bar__btn bulk-bar__btn--danger" type="button"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>Delete</button><button class="bulk-bar__btn bulk-bar__btn--clear" type="button" aria-label="Clear selection"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div></div></div></div><div data-theme="dark"><div class="ds-example__canvas ds-example__canvas--stack"><div class="bulk-bar" role="region" aria-label="Selected listing reports" style="position: static; justify-content: flex-start; padding: 0; max-width: 100%; overflow-x: auto;"><div class="bulk-bar__panel"><span class="bulk-bar__count">2 selected</span><button class="bulk-bar__btn" type="button" aria-haspopup="menu" aria-expanded="false">Set status<svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></button><button class="bulk-bar__btn bulk-bar__btn--export" type="button"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></svg>Export</button><button class="bulk-bar__btn bulk-bar__btn--danger" type="button"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>Delete</button><button class="bulk-bar__btn bulk-bar__btn--clear" type="button" aria-label="Clear selection"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div></div></div></div></div>
+    </section>
+    <section class="ds-section" id="accessibility"><h2><a href="#accessibility">Accessibility</a></h2>
+      <h3>Role and pattern</h3>
+      <p>A <code>region</code> named for its table ("Selected listing reports"), after the table in reading order. "Set status" is a <a href="https://www.w3.org/WAI/ARIA/apg/patterns/menu-button/">menu button</a>. The confirmation is an <code>alertdialog</code> with its title and description, focus on the typing field.</p>
+      <h3>Keyboard</h3>
+      <div class="ds-table-wrap"><table class="ds-table ds-keys"><thead><tr><th scope="col">Key</th><th scope="col">Action</th></tr></thead><tbody><tr><td><kbd>Tab</kbd></td><td>From the table to the bar, through its buttons.</td></tr><tr><td><kbd>Enter</kbd>, <kbd>Space</kbd>, <kbd>↓</kbd> on Set status</td><td>Opens the menu with its first status focused; <kbd>Esc</kbd> closes it.</td></tr><tr><td><kbd>Esc</kbd> in the dialog</td><td>Keeps the records; focus returns to Delete.</td></tr></tbody></table></div>
+      <h3>Labelling</h3>
+      <ul><li>The count is text, so the region says "2 selected".</li><li>Clear is named "Clear selection".</li><li>The dialog's confirm button says what it does: "Delete 2 listing reports".</li></ul>
+      <h3>Contrast</h3>
+      <div class="ds-themes"><div data-theme="light"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);"><div class="ds-pair"><span>Bar text</span><span class="ds-pair__ratio" data-contrast="--color-fg-inverse|--color-bg-inverse" data-min="4.5"></span></div><div class="ds-pair"><span>Delete</span><span class="ds-pair__ratio" data-contrast="--color-danger-icon-inverse|--color-bg-inverse" data-min="4.5"></span></div></div></div><div data-theme="dark"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);"><div class="ds-pair"><span>Bar text</span><span class="ds-pair__ratio" data-contrast="--color-fg-inverse|--color-bg-inverse" data-min="4.5"></span></div><div class="ds-pair"><span>Delete</span><span class="ds-pair__ratio" data-contrast="--color-danger-icon-inverse|--color-bg-inverse" data-min="4.5"></span></div></div></div></div>
+      <h3>Motion</h3>
+      <p>None of its own; the menu and dialog take theirs from <a href="menu.html">Menu</a> and <a href="dialog.html">Dialog</a>.</p>
+    </section>
+    <section class="ds-section" id="content"><h2><a href="#content">Content</a></h2>
+      <ul><li>"{n} selected"; never "items".</li><li>"Set status" lists the statuses of the table, as words.</li><li>The confirmation names the kind and the number ("Delete 2 listing reports?"), says what is kept ("kept in Audit records") and what is lost ("can’t be brought back after 30 days").</li><li>The way out is "Keep them".</li></ul>
+    </section>
+    <section class="ds-section" id="do-dont"><h2><a href="#do-dont">Do and don't</a></h2>
+      <div class="ds-dodont"><figure class="ds-do"><div class="ds-example__canvas"><ul class="doomed" style="width: 100%;"><li><b>Guest suite near Roncesvalles</b><code>lrp_141</code></li><li><b>WaterWorks Plumbing &amp; Drains</b><code>lrp_139</code></li></ul></div><figcaption>List what will be deleted, by name and ID.</figcaption></figure><figure class="ds-dont"><div class="ds-example__canvas"><p>Delete 2 records?</p></div><figcaption>Ask about "records" without saying which.</figcaption></figure></div>
+      <div class="ds-dodont"><figure class="ds-do"><div class="ds-example__canvas"><div class="bulk-bar" role="region" aria-label="Selected listing reports" style="position: static; justify-content: flex-start; padding: 0; max-width: 100%; overflow-x: auto;"><div class="bulk-bar__panel"><span class="bulk-bar__count">2 selected</span><button class="bulk-bar__btn" type="button" aria-haspopup="menu" aria-expanded="false">Set status<svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></button><button class="bulk-bar__btn bulk-bar__btn--export" type="button"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></svg>Export</button><button class="bulk-bar__btn bulk-bar__btn--danger" type="button"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>Delete</button><button class="bulk-bar__btn bulk-bar__btn--clear" type="button" aria-label="Clear selection"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div></div></div><figcaption>Name the region for its table and the Clear button for what it does.</figcaption></figure><figure class="ds-dont"><div class="ds-example__canvas"><div class="bulk-bar" style="position: static; padding: 0;"><div class="bulk-bar__panel"><span class="bulk-bar__count">2 selected</span><span class="bulk-bar__btn bulk-bar__btn--clear"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></span></div></div></div><figcaption>Leave an icon-only button unnamed (drawn inert here).</figcaption></figure></div>
+    </section>
+    <section class="ds-section" id="tokens"><h2><a href="#tokens">Tokens</a></h2>
+      <div class="ds-table-wrap"><table class="ds-table"><thead><tr><th scope="col">Part</th><th scope="col">Token</th><th scope="col">Light</th><th scope="col">Dark</th></tr></thead><tbody><tr><td>Bar</td><td><code>--color-bg-inverse</code> / <code>--color-fg-inverse</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-bg-inverse" data-swatch></i><span data-token="--color-bg-inverse"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-inverse" data-swatch></i><span data-token="--color-fg-inverse"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-bg-inverse" data-swatch></i><span data-token="--color-bg-inverse"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-inverse" data-swatch></i><span data-token="--color-fg-inverse"></span></span></td></tr><tr><td>Delete</td><td><code>--color-danger-icon-inverse</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-danger-icon-inverse" data-swatch></i><span data-token="--color-danger-icon-inverse"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-danger-icon-inverse" data-swatch></i><span data-token="--color-danger-icon-inverse"></span></span></td></tr><tr><td>Shadow</td><td><code>--shadow-4</code></td><td colspan="2"><span data-token="--shadow-4"></span></td></tr><tr><td>Buttons</td><td><code>--control-height-sm</code></td><td colspan="2"><span data-token="--control-height-sm"></span></td></tr><tr><td>Offset from the foot</td><td><code>--space-6</code></td><td colspan="2"><span data-token="--space-6"></span></td></tr><tr><td>Layer</td><td><code>--z-sticky</code></td><td colspan="2"><span data-token="--z-sticky"></span></td></tr></tbody></table></div>
+    </section>
+    <section class="ds-section" id="code"><h2><a href="#code">Code</a></h2>
+<div class="ds-table-wrap"><table class="ds-table"><thead><tr><th scope="col">Class / attribute</th><th scope="col">Effect</th></tr></thead><tbody><tr><td><code>.bulk-bar</code> <code>__panel</code> <code>__count</code></td><td>The floating bar and its count.</td></tr><tr><td><code>.bulk-bar__btn</code> <code>--danger</code> <code>--export</code> <code>--clear</code></td><td>Its buttons; Export from 640px.</td></tr><tr><td><code>.menu--up</code>, <code>.menu__scroll</code>, <code>.menu__hint</code></td><td>The menu that opens upward from the bar, scrolls when long and shows a count; see <a href="menu.html">Menu</a>.</td></tr><tr><td><code>.doomed</code></td><td>The records to delete, in the confirmation.</td></tr></tbody></table></div>
+    </section>
+    <section class="ds-section" id="sources"><h2><a href="#sources">Sources</a></h2>
+      <p>Extracted from these mocks:</p>
+      <ul><li><a href="../../mocks/pages/admin-records/selected.html">pages/admin-records/selected</a></li><li><a href="../../mocks/pages/admin-records/bulk-status-menu.html">pages/admin-records/bulk-status-menu</a></li><li><a href="../../mocks/pages/admin-records/confirm-delete.html">pages/admin-records/confirm-delete</a></li><li><a href="../../mocks/pages/admin-records/confirm-delete-one.html">pages/admin-records/confirm-delete-one</a></li><li><a href="../../mocks/pages/admin-records/deleted.html">pages/admin-records/deleted</a></li></ul>
+      <p>Drift logged, not yet fixed: the mocks select Members, whose statuses (suspended, banned) no requirement defines; the examples here select listing reports. The hover tint is <code>color-mix(currentColor 12%)</code>, not a token. Delete is offered on every table (open question 8 of the <a href="../../mocks/README.md">open questions of the mocks README</a>).</p>
+    </section>
+
+    <footer class="ds-footer"><span>Jubilee design system · added 14 November 2026 (the admin application, L2-188, L2-272 – L2-284)</span><a href="#top">Back to top</a></footer>
+  </main>
+</div>
+<script src="../assets/ds.js"></script>
+</body>
+</html>

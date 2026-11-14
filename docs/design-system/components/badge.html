@@ -50,6 +50,11 @@
       <li><a href="../components/tab-bar.html">Tab bar</a></li>
       <li><a href="../components/feedback-launcher.html">Feedback launcher</a></li>
       <li><a href="../components/sidebar-navigation.html">Sidebar navigation</a></li>
+      <li><a href="../components/admin-shell.html">Admin shell</a></li>
+      <li><a href="../components/work-queue.html">Work queue</a></li>
+      <li><a href="../components/record.html">Record</a></li>
+      <li><a href="../components/bulk-bar.html">Bulk bar</a></li>
+      <li><a href="../components/command-palette.html">Command palette</a></li>
       <li><a href="../components/tabs.html">Tabs</a></li>
       <li><a href="../components/breadcrumb.html">Breadcrumb</a></li>
       <li><a href="../components/pagination.html">Pagination</a></li>
@@ -183,6 +188,23 @@
       </div>
         <div class="ds-example__caption"><span>Counts on a tab and standalone. On an icon button the count goes into the button’s label instead.</span></div>
         <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;div class="tabs" role="tablist" aria-label="Inbox"&gt;&lt;button class="tab" role="tab" type="button" aria-selected="true"&gt;Messages &lt;span class="badge badge--count" aria-label="2 unread"&gt;2&lt;/span&gt;&lt;/button&gt;&lt;/div&gt;&lt;a class="btn btn--ghost btn--icon" href="../../mocks/pages/notifications/default.html" aria-label="Notifications, 3 unread"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M6 16V11a6 6 0 0 1 12 0v5l2 2H4zM10 20a2 2 0 0 0 4 0"/&gt;&lt;/svg&gt;&lt;/a&gt;&lt;span class="badge badge--count" aria-label="4 waiting"&gt;4&lt;/span&gt;&lt;span class="badge badge--count" aria-label="12 unread"&gt;12&lt;/span&gt;</code></pre></details></div>
+      <h3>Status pill (admin application)</h3>
+      <p>The admin application sets a record's status, kind or reason as <code>.status</code>: Badge's role in a dense table, without the dot or the capitals, in the words the record holds. The words carry the state; the tone repeats it: <code>--wait</code> (open, in review, draft), <code>--good</code> (resolved, published), <code>--bad</code> (failed, removed) and no modifier for anything else. <code>.lock-tag</code> says a table or record is read-only, beside its title (<code>--lg</code> in place of a record's actions). Both are 24px pills; neither is a control.</p>
+      <div class="ds-example"><div class="ds-example__canvas">
+<span class="status status--wait">open</span>
+<span class="status status--good">resolved</span>
+<span class="status">dismissed</span>
+<span class="status status--bad">failed</span>
+<span class="lock-tag"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Read-only</span>
+<span class="lock-tag lock-tag--lg"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Read-only</span>
+      </div>
+        <div class="ds-example__caption"><span>A listing report open, resolved and dismissed; a job run failed; the read-only tag at both sizes.</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;span class="status status--wait"&gt;open&lt;/span&gt;
+&lt;span class="status status--good"&gt;resolved&lt;/span&gt;
+&lt;span class="status"&gt;dismissed&lt;/span&gt;
+&lt;span class="status status--bad"&gt;failed&lt;/span&gt;
+&lt;span class="lock-tag"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;rect x="3" y="11" width="18" height="11" rx="2"/&gt;&lt;path d="M7 11V7a5 5 0 0 1 10 0v4"/&gt;&lt;/svg&gt;Read-only&lt;/span&gt;
+&lt;span class="lock-tag lock-tag--lg"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;rect x="3" y="11" width="18" height="11" rx="2"/&gt;&lt;path d="M7 11V7a5 5 0 0 1 10 0v4"/&gt;&lt;/svg&gt;Read-only&lt;/span&gt;</code></pre></details></div>
     </section>
     <section class="ds-section" id="sizes"><h2><a href="#sizes">Sizes</a></h2>
       <p>One size: 20px (<code>--badge-height</code>), with an 8px dot. Counts are at least 20px wide so single digits stay round.</p>
@@ -297,6 +319,8 @@
         <tr><td><code>.badge--info</code> <code>--success</code> <code>--warning</code> <code>--danger</code></td><td>Tone.</td></tr>
         <tr><td><code>.badge--solid</code></td><td>Gold highlight.</td></tr>
         <tr><td><code>.badge--count</code></td><td>Gold count pill, no dot; needs <code>aria-label</code>.</td></tr>
+        <tr><td><code>.status</code> <code>--wait</code> <code>--good</code> <code>--bad</code></td><td>Admin application: a record's status as a pill; the tones map to Badge's warning, success and danger.</td></tr>
+        <tr><td><code>.lock-tag</code> <code>--lg</code></td><td>Admin application: "Read-only" with a lock, beside a title or in place of a record's actions.</td></tr>
       </tbody></table></div>
     </section>
     <section class="ds-section" id="sources"><h2><a href="#sources">Sources</a></h2>
@@ -304,12 +328,12 @@
       <ul>
         <li><a href="../../mocks/pages/my-products/default.html">pages/my-products/default</a> (Listed and Sold out)</li>
         <li><a href="../../mocks/pages/business/replies-fast.html">pages/business/replies-fast</a> (Replies fast, on the page and on a card)</li>
-        <li><a href="../../mocks/pages/admin-reports/default.html">pages/admin-reports/default</a> (In review)</li>
         <li><a href="../../mocks/pages/messages/default.html">pages/messages/default</a> (count badges)</li>
         <li><a href="../../mocks/pages/request-detail/cancelled.html">pages/request-detail/cancelled</a> (neutral Cancelled)</li>
         <li><a href="../../mocks/notifications/request-toast/warning.html">notifications/request-toast/warning</a> (tab totals as neutral badges)</li>
       </ul>
       <p>Drift fixed during extraction: the badge height was 22px with a 6px dot; it is now <code>--badge-height</code> (20px) and <code>--indicator-size</code> (8px). Tab totals in the request-toast mocks used neutral <code>.badge</code> for numbers ("Bookings • 1") with no noun; they should be <code>.badge--count</code> with an <code>aria-label</code>, or plain text in the tab label. Several badges had a stray trailing space in the class (<code>class="badge "</code>). <code>.badge--solid</code> is defined but used in no mock.</p>
+      <p>The admin variants come from <a href="../../mocks/pages/admin-records/listing-reports.html">pages/admin-records/listing-reports</a>, <a href="../../mocks/pages/admin-records/job-runs.html">pages/admin-records/job-runs</a> and <a href="../../mocks/pages/admin-record/audit-records.html">pages/admin-record/audit-records</a>. Drift logged, not yet fixed: the generated mocks (<code>tools/admin-mocks/build.mjs</code>) name the pill <code>.status</code> instead of a Badge modifier and write <code>status--plain</code>, which has no rule and renders as the neutral pill; the rename is a later mock change. Only decided records are shown here (see the open questions in <a href="../../mocks/README.md">the mocks README</a>).</p>
     </section>
 
     <footer class="ds-footer"><span>Jubilee design system · extracted from <a href="../../mocks/index.html">docs/mocks</a> on 10 November 2026</span><a href="#top">Back to top</a></footer>

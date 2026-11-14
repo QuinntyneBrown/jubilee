@@ -50,6 +50,11 @@
       <li><a href="../components/tab-bar.html">Tab bar</a></li>
       <li><a href="../components/feedback-launcher.html">Feedback launcher</a></li>
       <li><a href="../components/sidebar-navigation.html">Sidebar navigation</a></li>
+      <li><a href="../components/admin-shell.html">Admin shell</a></li>
+      <li><a href="../components/work-queue.html">Work queue</a></li>
+      <li><a href="../components/record.html">Record</a></li>
+      <li><a href="../components/bulk-bar.html">Bulk bar</a></li>
+      <li><a href="../components/command-palette.html">Command palette</a></li>
       <li><a href="../components/tabs.html">Tabs</a></li>
       <li><a href="../components/breadcrumb.html">Breadcrumb</a></li>
       <li><a href="../components/pagination.html">Pagination</a></li>
@@ -180,6 +185,13 @@
       </div>
         <div class="ds-example__caption"><span>WaterWorks declined: the process ends at the stopped step.</span></div>
         <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;ol class="timeline"&gt;&lt;li data-complete&gt;&lt;span class="timeline__dot" aria-hidden="true"&gt;✓&lt;/span&gt;&lt;div&gt;&lt;div class="timeline__title"&gt;&lt;span class="visually-hidden"&gt;Done: &lt;/span&gt;You asked&lt;/div&gt;&lt;div class="timeline__meta"&gt;Mon 9 Nov, 4:20 p.m.&lt;/div&gt;&lt;/div&gt;&lt;/li&gt;&lt;li data-stopped&gt;&lt;span class="timeline__dot" aria-hidden="true"&gt;×&lt;/span&gt;&lt;div&gt;&lt;div class="timeline__title"&gt;&lt;span class="visually-hidden"&gt;Stopped: &lt;/span&gt;WaterWorks declined&lt;/div&gt;&lt;div class="timeline__meta"&gt;Today, 7:55 a.m.&lt;/div&gt;&lt;/div&gt;&lt;/li&gt;&lt;/ol&gt;</code></pre></details></div>
+      <h3>History (admin application)</h3>
+      <p>A record's history in the admin application, newest first: who, what they did, when. <code>.history</code> is Timeline without steps: every entry is done, so there is no current or stopped state and the dots sit on a plain rule. The overview's recent changes (<code>.change-list</code>) are the same entries without the rule.</p>
+      <div class="ds-example"><div class="ds-example__canvas">
+<ol class="history"><li><b>Esi</b> <span class="history__what">updated listing</span><div class="history__when">18 Nov 06:30</div></li><li><b>Jubilee</b> <span class="history__what">created this listing</span><div class="history__when">02 Feb 2025 14:20</div></li></ol>
+      </div>
+        <div class="ds-example__caption"><span>The history of the listing Luzandre.com.</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;ol class="history"&gt;&lt;li&gt;&lt;b&gt;Esi&lt;/b&gt; &lt;span class="history__what"&gt;updated listing&lt;/span&gt;&lt;div class="history__when"&gt;18 Nov 06:30&lt;/div&gt;&lt;/li&gt;&lt;li&gt;&lt;b&gt;Jubilee&lt;/b&gt; &lt;span class="history__what"&gt;created this listing&lt;/span&gt;&lt;div class="history__when"&gt;02 Feb 2025 14:20&lt;/div&gt;&lt;/li&gt;&lt;/ol&gt;</code></pre></details></div>
     </section>
     <section class="ds-section" id="sizes"><h2><a href="#sizes">Sizes</a></h2>
       <p>One size. The dot is 24px so the ✓ and × glyphs stay legible; steps are spaced <code>--space-5</code>. In a narrow card the text wraps beside the dot.</p>
@@ -300,6 +312,8 @@
         <tr><td><code>li[data-complete]</code></td><td>Done.</td></tr>
         <tr><td><code>li[aria-current="step"]</code></td><td>Current.</td></tr>
         <tr><td><code>li[data-stopped]</code></td><td>Stopped; last step.</td></tr>
+        <tr><td><code>.history</code> <code>__what</code> <code>__when</code></td><td>Admin application: a record's history, newest first.</td></tr>
+        <tr><td><code>.change-list</code> <code>__what</code> <code>__when</code></td><td>Admin application: the overview's recent changes.</td></tr>
       </tbody></table></div>
     </section>
     <section class="ds-section" id="sources"><h2><a href="#sources">Sources</a></h2>
@@ -311,6 +325,7 @@
         <li><a href="../../mocks/pages/request-detail/cancelled.html">pages/request-detail/cancelled</a> (stopped: cancelled)</li>
       </ul>
       <p>Drift fixed during extraction: the dots were correctly <code>aria-hidden</code>, but no step had status text, so a screen reader heard the titles with no idea which were done or stopped (only <code>aria-current</code> was announced); the docs add visually hidden "Done:" / "Current step:" / "Next:" / "Stopped:" prefixes. Upcoming steps carried empty <code>.timeline__meta</code> divs; omit them. The listing-review timeline had an inline <code>style="text-align: left; margin-top: …"</code> to undo its centred parent. The connector offset is computed from <code>--target-min</code> and the hairline, so changing the dot size moves it correctly.</p>
+      <p>The admin variant comes from <a href="../../mocks/pages/admin-record/listings.html">pages/admin-record/listings</a> and <a href="../../mocks/pages/admin-overview/default.html">pages/admin-overview/default</a> (recent changes). Drift logged, not yet fixed: the generated mocks name it <code>.history</code> rather than a Timeline modifier, and its dot ring is a raw <code>2px</code> spread.</p>
     </section>
 
     <footer class="ds-footer"><span>Jubilee design system · extracted from <a href="../../mocks/index.html">docs/mocks</a> on 10 November 2026</span><a href="#top">Back to top</a></footer>
