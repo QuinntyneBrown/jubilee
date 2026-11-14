@@ -12,7 +12,7 @@ The sound is off. The narration is still readable, because the captions are part
 
 Because the film has the focus, the browser's own controls answer the keyboard: Space pauses it. Tab goes through those controls to the chapters, and Enter on Finding someone you can trust plays the film from twenty-one seconds, marked as the current chapter.
 
-Straight after the film, the page states the mission, word for word: Abiding in Jesus and for love of Him, Jubilee equips Christian business people in Toronto to prosper with purpose and resource His Kingdom.
+Straight after the film, the page states the mission, word for word: Jubilee helps Christian business owners in Toronto do well in business and use what they earn to support God’s work. We do this because we love Jesus and stay close to Him.
 
 Every heading reads as one sentence to a screen reader, and its second part is set in the accent colour. That criterion had no spec before; now it does.
 

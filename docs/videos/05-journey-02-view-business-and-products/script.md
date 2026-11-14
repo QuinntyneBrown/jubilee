@@ -1,7 +1,7 @@
 # 05 · Journey 2: view a business and its products
 
 The narration, scene by scene. The windows each line is spoken in are in `narration.json`; this file
-is the transcript. About 180 words over 80 seconds. The last scene is the mission, word for word
+is the transcript. About 185 words over 80 seconds. The last scene is the mission, word for word
 (`docs/specs/L0.md`).
 
 ## 01 Title
@@ -34,4 +34,4 @@ An owner who opens a listing that is not public sees a preview, with its status.
 
 ## 08 Close
 
-Abiding in Jesus and for love of Him, Jubilee equips Christian business people in Toronto to prosper with purpose and resource His Kingdom.
+Jubilee helps Christian business owners in Toronto do well in business and use what they earn to support God's work. We do this because we love Jesus and stay close to Him.

@@ -121,14 +121,16 @@ ${closeUp(S, { x: 96, y: 860, w: 1180, name: 'preview-team-detail', at: 6.2, zoo
 `);
 
   // ── S08 · Close · 1:10–1:20 ─────────────────────────────────────────────────────────────────────────
-  const MISSION = ['Abiding in Jesus and for love of Him,', 'Jubilee equips Christian business people', 'in Toronto to prosper with purpose', 'and resource His Kingdom.'];
+  const MISSION = ['Jubilee helps Christian business owners', 'in Toronto do well in business and use', 'what they earn to support God’s work.', 'We do this because we love Jesus', 'and stay close to Him.'];
+  // Each line rises as the voice reaches it: the first sentence from 70.2 s, the second at 76.6 s.
+  const MISSION_AT = [0.4, 2.2, 4.0, 6.6, 7.6];
   const close = (S) => scene(S, `
 <div class="fill" style="display:flex;flex-direction:column;align-items:center;padding-top:150px">
 <div style="display:flex;align-items:flex-start;gap:22px">
 ${S.drawnMark(150, { draw: (t) => enter(t, 0.1, 0.5), bar: (t) => enter(t, 0.55, 0.3) })}
 <div style="margin-top:12px">${wordmark(S, 138, 0.4)}</div></div>
-<p class="d" style="margin-top:80px;width:1400px;text-align:center;font-size:56px;font-weight:600;line-height:1.24;letter-spacing:-0.02em">${MISSION.map((line, i) => `<span style="display:block" ${S.rise(1.2 + i * 1.5, { dur: 0.5 })}>${line}</span>`).join('')}</p>
-<p class="s" style="margin-top:64px;border-radius:999px;background:var(--gold);color:var(--ink);padding:14px 40px;font-size:30px;font-weight:600" ${S.rise(7.4)}>Journey 2 · View a business and its products · complete</p>
+<p class="d" style="margin-top:80px;width:1400px;text-align:center;font-size:56px;font-weight:600;line-height:1.24;letter-spacing:-0.02em">${MISSION.map((line, i) => `<span style="display:block" ${S.rise(MISSION_AT[i], { dur: 0.5 })}>${line}</span>`).join('')}</p>
+<p class="s" style="margin-top:64px;border-radius:999px;background:var(--gold);color:var(--ink);padding:14px 40px;font-size:30px;font-weight:600" ${S.rise(8.6)}>Journey 2 · View a business and its products · complete</p>
 </div>
 `, { last: true });
 

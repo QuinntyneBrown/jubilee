@@ -1,6 +1,6 @@
 # 20 · Journey 27: Meet Jubilee on the marketing site
 
-> **Runtime:** 2:44 (163.6 s) · **Format:** 1920×1080, 30 fps, captions burned in · **Audience:** the repository owner and reviewers of journey 27
+> **Runtime:** 2:47 (166.7 s) · **Format:** 1920×1080, 30 fps, captions burned in · **Audience:** the repository owner and reviewers of journey 27
 
 **Video:** [20-journey-27-meet-jubilee-on-the-marketing-site.mp4](20-journey-27-meet-jubilee-on-the-marketing-site.mp4) · **Audio:** [20-journey-27-meet-jubilee-on-the-marketing-site.mp3](20-journey-27-meet-jubilee-on-the-marketing-site.mp3) · [Transcript](script.md) · [Captions sidecar](captions.vtt)
 
@@ -29,13 +29,13 @@ light (AC3). Cards open it, say what the specs prove and close with what waits o
 | 03 | `keyboard` | 0:31 | 0:44 | Tab through the top bar and the opening to the play button; Enter plays the film |
 | 04 | `captions` | 0:44 | 1:00 | The film without sound, its captions under the picture |
 | 05 | `controls` | 1:00 | 1:16 | Space pauses; Tab to "0:21 Finding someone you can trust", Enter plays from it |
-| 06 | `mission` | 1:16 | 1:30 | "Our mission." and the mission word for word |
-| 07 | `headings` | 1:30 | 1:42 | "Trust, built in." and "From need to handshake.", the accent parts |
-| 08 | `tab-order` | 1:42 | 1:53 | "Be listed on launch day.": Tab through the fields with a focus ring |
-| 09 | `reduced` | 1:53 | 2:04 | Reduced motion: "Watch the film" jumps; play gives way at once |
-| 10 | `dark` | 2:04 | 2:16 | A device set to dark: the page in its light theme |
-| 11 | `proof` | 2:17 | 2:27 | Card: "Proved by tests" |
-| 12 | `close` | 2:27 | 2:44 | Card: "Waiting on the owner's launch decision" |
+| 06 | `mission` | 1:16 | 1:32 | "Our mission." and the mission word for word |
+| 07 | `headings` | 1:32 | 1:44 | "Trust, built in." and "From need to handshake.", the accent parts |
+| 08 | `tab-order` | 1:44 | 1:55 | "Be listed on launch day.": Tab through the fields with a focus ring |
+| 09 | `reduced` | 1:55 | 2:07 | Reduced motion: "Watch the film" jumps; play gives way at once |
+| 10 | `dark` | 2:07 | 2:20 | A device set to dark: the page in its light theme |
+| 11 | `proof` | 2:20 | 2:30 | Card: "Proved by tests" |
+| 12 | `close` | 2:30 | 2:47 | Card: "Waiting on the owner's launch decision" |
 
 ## Rebuild
 

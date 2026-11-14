@@ -74,9 +74,14 @@ window.TIMING = {
    "end": 67.224
   },
   {
-   "text": "Abiding in Jesus and for love of Him, Jubilee equips Christian business people in Toronto to prosper with purpose and resource His Kingdom.",
-   "start": 70.8,
-   "end": 79.481
+   "text": "Jubilee helps Christian business owners in Toronto do well in business and use what they earn to support God’s work.",
+   "start": 70.2,
+   "end": 76.6
+  },
+  {
+   "text": "We do this because we love Jesus and stay close to Him.",
+   "start": 76.6,
+   "end": 80.049
   }
  ],
  "segments": [
@@ -165,10 +170,16 @@ window.TIMING = {
    "speed": 1.0
   },
   {
-   "text": "Abiding in Jesus and for love of Him, Jubilee equips Christian business people in Toronto to prosper with purpose and resource His Kingdom.",
-   "start": 70.8,
-   "end": 79.181,
-   "speed": 1.0
+   "text": "Jubilee helps Christian business owners in Toronto do well in business and use what they earn to support God's work.",
+   "start": 70.2,
+   "end": 76.3,
+   "speed": 1.25
+  },
+  {
+   "text": "We do this because we love Jesus and stay close to Him.",
+   "start": 76.6,
+   "end": 79.749,
+   "speed": 1.05
   }
  ]
 };

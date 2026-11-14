@@ -6,11 +6,12 @@
 
 ## Why this video exists
 
-To make people want to join and to list, framed from the mission: "Abiding in Jesus and for love of
-Him, Jubilee equips Christian business people in Toronto to prosper with purpose and resource His
-Kingdom." It opens on the calling (on Sunday we're sent out to bear fruit that will last, John 15:16),
-shows the Monday problem (can believers find you?), then shows what Jubilee is, why to join, what a
-member can do, and why and how an owner lists, in just over a minute.
+To make people want to join and to list, framed from the mission: "Jubilee helps Christian business
+owners in Toronto do well in business and use what they earn to support God's work. We do this
+because we love Jesus and stay close to Him." It opens on the calling (on Sunday we're sent out to
+bear fruit that will last, John 15:16), shows the Monday problem (can believers find you?), then
+shows what Jubilee is, why to join, what a member can do, and why and how an owner lists, in just
+over a minute.
 
 ## Source of truth
 
