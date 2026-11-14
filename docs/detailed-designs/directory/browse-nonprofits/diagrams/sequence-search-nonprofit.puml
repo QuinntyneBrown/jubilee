@@ -1,0 +1,53 @@
+@startuml
+title UML sequence behaviour: Find a non-profit in search
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Visitor or member" as actor
+box "Frontend: Jubilee Web" #E0F2FE
+  participant "SearchPage" as page
+  participant "SearchApi" as client
+end box
+box "Backend: Jubilee API" #D1FADF
+  participant "SearchController" as controller
+end box
+box "Backend: Jubilee Application and Domain" #ECFDF3
+  participant "SearchDirectoryQueryHandler" as handler
+  participant "ISearchIndex" as index
+end box
+box "Backend: Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+actor -> page : Search "youth"
+page -> client : search("youth")
+client -> controller : GET /api/search?q=youth
+controller -> handler : Send SearchDirectoryQuery
+handler -> index : SearchAsync("youth")
+index -> db : Public listings (L2-028)
+db --> index : Listings, non-profits with their Nonprofit details
+index -> index : Match name, line, Mission, Serves and Area; never Website or GiveUrl (L2-290 AC2)
+index --> handler : Hits; a non-profit hit has Kind nonprofit and "Matches youth in who it serves"
+handler --> controller : SearchResults with NonprofitCount apart from BusinessCount
+controller --> client : 200 OK, no address in the body
+client --> page : Results
+alt nonprofitCount > 0
+  page --> actor : "{n} businesses · {n} services · {n} products · {n} non-profits" and the tab "Non-profits" (L2-290 AC3)
+  actor -> page : Open the tab "Non-profits"
+  page --> actor : Lakeshore Youth Collective with the Non-profits icon and its match explanation
+  actor -> page : Activate the result
+  page --> actor : Navigate to /b/lakeshore-youth-collective (listings/view-nonprofit)
+else No matching non-profit
+  page --> actor : Summary and three tabs as before; no "Non-profits" tab (L2-290 AC3)
+end
+@enduml

@@ -1,0 +1,61 @@
+@startuml
+title UML sequence behaviour: Load the browse home with the non-profit shelf
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Visitor or member" as actor
+box "Frontend: Jubilee Web" #E0F2FE
+  participant "BrowsePage" as page
+  participant "DirectoryApi" as client
+end box
+box "Backend: Jubilee API" #D1FADF
+  participant "DirectoryController" as controller
+end box
+box "Backend: Jubilee Application and Domain" #ECFDF3
+  participant "GetBrowseHomeQueryHandler" as handler
+  participant "IDirectoryReadCache" as cache
+end box
+box "Backend: Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+actor -> page : Open /
+page -> client : getHome()
+client -> controller : GET /api/directory/home
+controller -> handler : Send GetBrowseHomeQuery
+handler -> cache : Get the home
+alt Cached
+  cache --> handler : BrowseHomeDto
+else Not cached
+  handler -> db : Count WherePublic().WhereBusiness(): no spaces, no non-profits (L2-285 AC6)
+  handler -> db : Groups through DirectoryGrouping, no Non-profits group (L2-289 AC1)
+  handler -> db : Featured slots, fallback without non-profits (L2-290 AC5)
+  handler -> db : WherePublic().WhereNonprofit(): count and first four, Recommended (L2-025, L2-028)
+  db --> handler : Listings
+  handler -> handler : BrowseHomeDto with Nonprofits (NonprofitShelfDto of BusinessCardDto)
+  handler -> cache : Store for 60 s (L2-156)
+end
+handler --> controller : BrowseHomeDto
+controller --> client : 200 OK
+client --> page : Home
+page --> actor : Chips ending with "Non-profits" (L2-289 AC2)
+page --> actor : "All {n} businesses" with the business groups only
+alt Nonprofits.Count > 0
+  page --> actor : "Non-profits in Toronto", "Ministries and charities at work across the city.", "All {n}" to /c/non-profits, up to four cards (L2-289 AC1)
+else No live non-profit
+  page --> actor : No shelf
+end
+opt Load fails
+  page --> actor : "We couldn't load the directory" with JB-DIR-503 (L2-118)
+end
+@enduml

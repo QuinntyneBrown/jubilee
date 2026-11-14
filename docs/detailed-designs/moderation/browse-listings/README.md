@@ -111,6 +111,17 @@ by name finds a platform as it finds any listing. Nothing in
 platform's own fields show on its listing screen
 (`moderation/take-down-listing`).
 
+### Non-profits
+
+A published non-profit (kind `nonprofit`, ADR 0074) is listed like any
+listing. The list has no column for the kind: the Category column reads
+"Non-profits", because `AdminListingRow.CategoryName` comes from
+`Category.Find` and the category is the thirteenth of `Category.All`. The
+search by name finds a non-profit as it finds any listing. Nothing in
+`GetAdminListingsQueryHandler` branches on the kind (`L2-295` AC1). The
+non-profit's own fields show on its record, in the panel "The non-profit"
+(`moderation/take-down-listing`).
+
 ## Requirements
 
 The feature realizes the following level-2 (L2) requirements. Each L2
@@ -124,6 +135,7 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 | `L2-180` | `L1-025` | The system shall store an append-only audit record with actor, action, target, time, before and after values, and reason for each sensitive action, including role changes. |
 | `L2-118` | `L1-016` | The system shall show a quotable error reference on every load-error state, with `503` when the service was unavailable. |
 | `L2-257` | `L1-033` | A published platform shall be listed at `/listings` in the admin application like any listing, with the category "Software platforms", and the search by name shall find it. |
+| `L2-295` | `L1-035` | A published non-profit shall be listed in the Listings table of the admin application like any listing, with the category "Non-profits", and the search by name shall find it. |
 
 ## Diagrams
 

@@ -1,0 +1,60 @@
+@startuml
+title UML sequence behaviour: Choose a non-profit, fill it in and save a draft
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member (leader)" as actor
+box "Frontend: Jubilee Web" #E0F2FE
+  participant "ListBusinessPage" as page
+  participant "NonprofitForm" as form
+  participant "ListingDraftsApi" as client
+end box
+box "Backend: Jubilee API" #D1FADF
+  participant "ListingDraftsController" as controller
+end box
+box "Backend: Jubilee Application and Domain" #ECFDF3
+  participant "SaveListingDraftCommandHandler" as handler
+  participant "ListingDraft" as draft
+end box
+box "Backend: Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+actor -> page : Open /list?kind=nonprofit, or choose "A non-profit"
+page --> actor : "List a non-profit", "For someone who leads or represents it.", "Non-profit name", "One line on what it does" (L2-286 AC2)
+page --> actor : Website, Its mission, Who it serves, Where in Toronto it works, Page for giving; no Category, items or place (L2-287 AC1)
+actor -> page : Type the fields
+page -> form : Set website, mission, serves, area, giveUrl
+form --> page : Counters "{n} / 600", "{n} / 300", "{n} / 120" (L2-287 AC2)
+page --> actor : Preview "How members see it": business card, Non-profit, "Not published yet" (L2-286 AC3, L2-076)
+actor -> page : Press "Save draft"
+page -> form : body()
+page -> client : save(draft id, kind nonprofit, nonprofit {website, mission, serves, area, giveUrl})
+client -> controller : POST or PUT /api/listing-drafts
+controller -> handler : Send SaveListingDraftCommand with the member of the session
+handler -> db : The member's own draft (L2-297 AC2)
+handler -> draft : Save(kind Nonprofit, name, line, highlight, website, NonprofitDetails)
+draft -> draft : Keep as typed, cut to the limits, no validation (L2-287 AC9)
+handler -> db : SaveChanges
+handler --> controller : ListingDraftDto with kind nonprofit and NonprofitDraftDto
+controller --> client : 200 OK
+client --> page : Draft
+page --> actor : Draft saved
+opt The member returns later
+  actor -> page : Open /list
+  page -> client : current()
+  client -> controller : GET /api/listing-drafts/current
+  controller --> client : ListingDraftDto, kind nonprofit
+  page --> actor : "A non-profit" chosen and every field restored (L2-286 AC4)
+end
+@enduml

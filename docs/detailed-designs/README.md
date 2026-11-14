@@ -74,11 +74,12 @@ and observability are marked `<TO SUPPLY>` in the feature designs.
 
 | Feature | L2 requirements cited |
 |---|---|
-| [Browse a category](directory/browse-category/README.md) | `L2-023`, `L2-024`, `L2-025`, `L2-026`, `L2-028`, `L2-113`, `L2-118`, `L2-202` |
-| [Browse home](directory/browse-home/README.md) | `L2-021`, `L2-022`, `L2-027`, `L2-028`, `L2-012`, `L2-106`, `L2-118`, `L2-156`, `L2-201` |
+| [Browse a category](directory/browse-category/README.md) | `L2-023`, `L2-024`, `L2-025`, `L2-026`, `L2-028`, `L2-113`, `L2-118`, `L2-202`, `L2-289` |
+| [Browse home](directory/browse-home/README.md) | `L2-021`, `L2-022`, `L2-027`, `L2-028`, `L2-012`, `L2-106`, `L2-118`, `L2-156`, `L2-201`, `L2-285`, `L2-289`, `L2-290` |
+| [Browse non-profits](directory/browse-nonprofits/README.md) | `L2-285`, `L2-289`, `L2-290`, `L2-298`, `L2-025`, `L2-026`, `L2-028`, `L2-118`, `L2-156`, `L2-181` |
 | [Browse platforms](directory/browse-platforms/README.md) | `L2-248`, `L2-252`, `L2-253`, `L2-025`, `L2-026`, `L2-028`, `L2-118`, `L2-156` |
 | [Browse spaces](directory/browse-spaces/README.md) | `L2-197`, `L2-201`, `L2-202`, `L2-203`, `L2-204`, `L2-208`, `L2-026`, `L2-028`, `L2-118`, `L2-156` |
-| [Search the directory](directory/search-directory/README.md) | `L2-029`, `L2-030`, `L2-031`, `L2-032`, `L2-028`, `L2-118`, `L2-133`, `L2-181`, `L2-204` |
+| [Search the directory](directory/search-directory/README.md) | `L2-029`, `L2-030`, `L2-031`, `L2-032`, `L2-028`, `L2-118`, `L2-133`, `L2-181`, `L2-204`, `L2-290` |
 | [View welcome page](directory/view-welcome-page/README.md) | `L2-020`, `L2-028`, `L2-027`, `L2-106` |
 
 ### feedback
@@ -112,6 +113,7 @@ and observability are marked `<TO SUPPLY>` in the feature designs.
 | [Share a listing](listings/share-listing/README.md) | `L2-038`, `L2-028`, `L2-130` |
 | [Share the address of a listing](listings/share-listing-address/README.md) | `L2-244`, `L2-245`, `L2-038`, `L2-078`, `L2-085`, `L2-087` |
 | [View a business page](listings/view-business-page/README.md) | `L2-033`, `L2-034`, `L2-037`, `L2-040`, `L2-028`, `L2-118`, `L2-133`, `L2-205` |
+| [View a non-profit](listings/view-nonprofit/README.md) | `L2-291`, `L2-292`, `L2-293`, `L2-297`, `L2-298`, `L2-012`, `L2-028`, `L2-037`, `L2-118`, `L2-136` |
 | [View a platform](listings/view-platform/README.md) | `L2-254`, `L2-255`, `L2-248`, `L2-261`, `L2-262`, `L2-012`, `L2-028`, `L2-037`, `L2-118`, `L2-136` |
 | [View a product](listings/view-product/README.md) | `L2-035`, `L2-036`, `L2-028`, `L2-118` |
 | [View a space](listings/view-space/README.md) | `L2-205`, `L2-206`, `L2-208`, `L2-012`, `L2-028`, `L2-037`, `L2-118` |
@@ -140,10 +142,10 @@ listings and takes down one that misrepresents a business.
 
 | Feature | L2 requirements cited |
 |---|---|
-| [Browse listings](moderation/browse-listings/README.md) | `L2-098`, `L2-099`, `L2-133`, `L2-180`, `L2-118`, `L2-257` |
+| [Browse listings](moderation/browse-listings/README.md) | `L2-098`, `L2-099`, `L2-133`, `L2-180`, `L2-118`, `L2-257`, `L2-295` |
 | [Feature businesses](moderation/feature-businesses/README.md) | `L2-106`, `L2-133`, `L2-180` |
 | [Handle reports](moderation/handle-reports/README.md) | `L2-105`, `L2-063`, `L2-133`, `L2-150`, `L2-180` |
-| [Take down a listing](moderation/take-down-listing/README.md) | `L2-100`, `L2-101`, `L2-098`, `L2-079`, `L2-150`, `L2-180`, `L2-257` |
+| [Take down a listing](moderation/take-down-listing/README.md) | `L2-100`, `L2-101`, `L2-098`, `L2-079`, `L2-150`, `L2-180`, `L2-257`, `L2-295` |
 
 ### notifications
 
@@ -167,6 +169,7 @@ listings and takes down one that misrepresents a business.
 | Feature | L2 requirements cited |
 |---|---|
 | [Describe a listing](onboarding/describe-listing/README.md) | `L2-071`, `L2-072`, `L2-073`, `L2-076`, `L2-005`, `L2-126`, `L2-133`, `L2-198` |
+| [Describe a non-profit](onboarding/describe-nonprofit/README.md) | `L2-285`, `L2-286`, `L2-287`, `L2-288`, `L2-297`, `L2-298`, `L2-076`, `L2-077`, `L2-126`, `L2-133`, `L2-136` |
 | [Describe a platform](onboarding/describe-platform/README.md) | `L2-248`, `L2-249`, `L2-250`, `L2-251`, `L2-261`, `L2-262`, `L2-076`, `L2-077`, `L2-126`, `L2-133`, `L2-136` |
 | [Describe a space](onboarding/describe-space/README.md) | `L2-197`, `L2-198`, `L2-199`, `L2-200`, `L2-076`, `L2-077`, `L2-126`, `L2-133` |
 | [Save a draft](onboarding/save-draft/README.md) | `L2-077`, `L2-118`, `L2-133`, `L2-182` |
@@ -188,14 +191,14 @@ listings and takes down one that misrepresents a business.
 
 | Feature | L2 requirements cited |
 |---|---|
-| [Launching soon](marketing/launching-soon/README.md) | `L2-215`, `L2-216`, `L2-217`, `L2-218`, `L2-183`, `L2-186`, `L2-137`, `L2-148`, `L2-149`, `L2-150` |
+| [Launching soon](marketing/launching-soon/README.md) | `L2-215`, `L2-216`, `L2-217`, `L2-218`, `L2-183`, `L2-186`, `L2-137`, `L2-148`, `L2-149`, `L2-150`, `L2-296` |
 | [Show the marketing site](marketing/show-marketing-site/README.md) | `L2-183`, `L2-184`, `L2-185`, `L2-186` |
 
 ### owner-workspace
 
 | Feature | L2 requirements cited |
 |---|---|
-| [Edit a listing](owner-workspace/edit-listing/README.md) | `L2-087`, `L2-088`, `L2-126`, `L2-127`, `L2-133`, `L2-138`, `L2-209`, `L2-208`, `L2-256` |
+| [Edit a listing](owner-workspace/edit-listing/README.md) | `L2-087`, `L2-088`, `L2-126`, `L2-127`, `L2-133`, `L2-138`, `L2-209`, `L2-208`, `L2-256`, `L2-294` |
 | [Manage products](owner-workspace/manage-products/README.md) | `L2-089`, `L2-090`, `L2-091`, `L2-092`, `L2-132`, `L2-133`, `L2-128`, `L2-129` |
 | [Manage services](owner-workspace/manage-services/README.md) | `L2-093`, `L2-094`, `L2-095`, `L2-090`, `L2-132`, `L2-133`, `L2-129` |
 | [Pause and resume a listing](owner-workspace/pause-listing/README.md) | `L2-096`, `L2-028`, `L2-067`, `L2-129`, `L2-133` |
@@ -226,7 +229,7 @@ listings and takes down one that misrepresents a business.
 | [Decline a request](requests/decline-request/README.md) | `L2-053`, `L2-043`, `L2-129`, `L2-128`, `L2-133` |
 | [Handle incoming requests](requests/handle-incoming-requests/README.md) | `L2-051`, `L2-054`, `L2-043`, `L2-133`, `L2-070`, `L2-182`, `L2-207` |
 | [Request an item](requests/request-item/README.md) | `L2-046`, `L2-043`, `L2-005`, `L2-132`, `L2-133` |
-| [Request a quote](requests/request-quote/README.md) | `L2-045`, `L2-043`, `L2-005`, `L2-126`, `L2-132` |
+| [Request a quote](requests/request-quote/README.md) | `L2-045`, `L2-043`, `L2-005`, `L2-126`, `L2-132`, `L2-293` |
 | [Request a space](requests/request-space/README.md) | `L2-206`, `L2-207`, `L2-208`, `L2-043`, `L2-052`, `L2-053`, `L2-005`, `L2-132`, `L2-133` |
 | [Track requests](requests/track-requests/README.md) | `L2-043`, `L2-047`, `L2-048`, `L2-133`, `L2-118`, `L2-070`, `L2-182`, `L2-207`, `L2-208` |
 
@@ -239,7 +242,7 @@ listings and takes down one that misrepresents a business.
 
 ### reviews
 
-Decisions in [ADR 0066](../adr/0066-reviews.md); reviews of software platforms in [ADR 0072](../adr/0072-software-platforms.md).
+Decisions in [ADR 0066](../adr/0066-reviews.md); reviews of software platforms in [ADR 0072](../adr/0072-software-platforms.md); non-profits take no reviews ([ADR 0074](../adr/0074-non-profits.md)).
 
 | Feature | L2 requirements cited |
 |---|---|
@@ -249,7 +252,7 @@ Decisions in [ADR 0066](../adr/0066-reviews.md); reviews of software platforms i
 | [Reply to a review](reviews/reply-to-a-review/README.md) | `L2-234`, `L2-235`, `L2-229`, `L2-238`, `L2-064`, `L2-068` |
 | [Review a platform](reviews/review-a-platform/README.md) | `L2-258`, `L2-259`, `L2-260`, `L2-261`, `L2-262`, `L2-226`, `L2-227`, `L2-228`, `L2-238`, `L2-126` |
 | [Review data](reviews/review-data/README.md) | `L2-238`, `L2-239`, `L2-017`, `L2-018`, `L2-133`, `L2-136`, `L2-137`, `L2-148`, `L2-261` |
-| [Write a review](reviews/write-a-review/README.md) | `L2-226`, `L2-227`, `L2-228`, `L2-235`, `L2-238`, `L2-240`, `L2-126`, `L2-127`, `L2-132`, `L2-137`, `L2-258`, `L2-259` |
+| [Write a review](reviews/write-a-review/README.md) | `L2-226`, `L2-227`, `L2-228`, `L2-235`, `L2-238`, `L2-240`, `L2-126`, `L2-127`, `L2-132`, `L2-137`, `L2-258`, `L2-259`, `L2-293` |
 
 ### security
 
@@ -264,7 +267,7 @@ Decisions in [ADR 0066](../adr/0066-reviews.md); reviews of software platforms i
 | [Restrict staff access by network](security/restrict-staff-network/README.md) | `L2-192`, `L2-189` |
 | [Secure transport and tokens](security/secure-transport-and-tokens/README.md) | `L2-139`, `L2-140`, `L2-136` |
 | [Secure uploads](security/secure-uploads/README.md) | `L2-138`, `L2-133`, `L2-135` |
-| [Validate input](security/validate-input/README.md) | `L2-136`, `L2-139`, `L2-002` |
+| [Validate input](security/validate-input/README.md) | `L2-136`, `L2-139`, `L2-002`, `L2-287`, `L2-292` |
 
 ### system-pages
 

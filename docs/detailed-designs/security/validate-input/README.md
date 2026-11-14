@@ -72,6 +72,29 @@ context and the build checks.
   the field, and asserts that the payload appears as text and that no dialog or
   CSP violation occurs. Test runner: `<TO SUPPLY>`.
 
+### Web addresses of platforms and non-profits
+
+A software platform's web address and a non-profit's website and page for
+giving are the main action of their pages, so they follow a stricter rule
+than `WebsiteUrl`. The rule is `WebAddressRules` in `Jubilee.Domain`, moved
+out of `PlatformRules` by [ADR 0074](../../../adr/0074-non-profits.md) so the
+two kinds cannot drift; `PlatformRules.IsWebAddress`, `PlatformRules.Host` and
+`PlatformRules.MaxWebsiteLength` forward to it.
+
+- **`WebAddressRules.IsWebAddress(string?)`**: accepts an absolute `https`
+  address with a host name that has a dot, no white space, no user or
+  password, and at most `MaxWebsiteLength` (200) characters. It refuses
+  `http://hopehouse.example`, `hopehouse.example`, `javascript:alert(1)` and
+  `https://me:secret@hopehouse.example/give` (`L2-287` AC4, `L2-250` AC4).
+- **`WebAddressRules.Host(string)`**: the host name without a leading `www.`,
+  for the text "Visit {host}" and "Give on {host}".
+- **No request**: both are pure. No server component resolves or requests the
+  address on save, publish, page build or search (`L2-292` AC4).
+- **On output**: an address stored earlier that no longer passes the rule is
+  left out of the API's answer instead of being linked (`L2-292` AC5); the
+  admin application shows it as text only (`L2-295` AC2). Every link out has
+  `rel="noopener noreferrer nofollow"` and `target="_blank"`.
+
 ## Requirements
 
 The feature realizes the following level-2 (L2) requirements. Each L2
@@ -82,6 +105,8 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 | `L2-136` | `L1-019` | The server shall validate every API input against a schema (type, length, format, allowed values), shall reject unknown fields, and shall use parameterised queries only. User-supplied text shall be HTML-encoded by the framework's default binding with no raw HTML insertion, the Content Security Policy shall allow scripts only from the app's own origin with nonces or hashes and set `frame-ancestors 'none'`, owner website URLs shall allow only `http` and `https` and open with `rel="noopener noreferrer nofollow"`, and an automated test shall prove the payload `<script>alert(1)</script>` appears as text on every screen. |
 | `L2-139` | `L1-019` | The system shall redirect HTTP to HTTPS with TLS 1.2 as the minimum, and every response shall include the specified security headers and the CSP of L2-136. |
 | `L2-002` | `L1-001` | The join form shall validate on submit, in the browser and again on the server, and shall report every problem at once. |
+| `L2-287` | `L1-035` | A non-profit's website and page for giving shall each be an absolute `https://` address with a host name that has a dot, no user or password, and at most 200 characters, by the rule of `L2-250` AC4; the API shall refuse others with `nonprofit.website` or `nonprofit.giveUrl` `INVALID`. |
+| `L2-292` | `L1-035` | The server shall never request a non-profit's website or page for giving; an address already stored that fails the rule shall be left out of the answer, and each link out shall carry `rel="noopener noreferrer nofollow"` and `target="_blank"`. |
 
 ## Diagrams
 

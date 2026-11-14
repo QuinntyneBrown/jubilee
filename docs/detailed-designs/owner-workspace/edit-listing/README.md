@@ -240,6 +240,51 @@ is not the founder is answered as for any listing that is not theirs
 The integration tests are in `PlatformEditTests`, beside `SpaceEditTests`,
 and the Playwright behaviour spec is `e2e/tests/edit-platform.spec.ts`.
 
+### Non-profits
+
+For a non-profit (kind `nonprofit`, ADR 0074), the screen shows Photos,
+"Non-profit name", "One line on what it does" with its counter, "Website",
+"Its mission", "Who it serves", "Where in Toronto it works", "Page for
+giving" and "Highlight" with their stored values, "Changes are published
+when you save", "Discard changes", "Save listing" and the live preview, and
+not "About", "Category", "Where" or "Hours" (`L2-294` AC1). The page holds the
+five non-profit fields in the shared `NonprofitForm` and checks them with the
+rules and the messages of `/list` (`L2-287`; see
+[Describe a non-profit](../../onboarding/describe-nonprofit/README.md)). The
+live preview stays `jb-business-card`, with the "Non-profits" tile and label.
+
+`GET /api/my-business/listing` returns `ListingEditorDto` with `Nonprofit`
+(`NonprofitDraftDto`: `website`, `mission`, `serves`, `area`, `giveUrl`), and
+its `Categories` hold "Non-profits" alone; the editor of a business is not
+offered that category. `PUT /api/my-business/listing` takes `nonprofit`
+(`NonprofitInput` on `SaveListingCommand`, `SaveListingBody` and
+`ListingChanges`). For a non-profit, `SaveListingCommandHandler` checks the
+name and the line as for any listing, validates `nonprofit` with
+`Drafts.ValidateNonprofit` (`nonprofit.website` `REQUIRED` or `INVALID`,
+`nonprofit.giveUrl` `INVALID`, `nonprofit.mission`, `nonprofit.serves` and
+`nonprofit.area` `REQUIRED`), and does not require hours. The top-level
+`website` of the body is not read for a non-profit, so the rule of
+`WebAddressRules.IsWebAddress` (`https` only, 200 characters) applies. The
+handler then calls `Listing.Edit` and `Listing.DescribeNonprofit`, which sets
+`Listing.Nonprofit` and `Listing.Website`. The change is live at once, a
+change of name is audited as `listing.renamed` (`L2-087` AC5, AC6), and an
+emptied "Page for giving" is stored as null, so the page shows no link to it
+(`L2-294` AC2).
+
+A save that names another category for a non-profit, or `non-profits` for any
+other listing, is refused with HTTP 422 and `category` `CATEGORY_LOCKED`, as
+for a space and a platform (`L2-294` AC3). Pause and resume
+(`pause-listing`) and the overview (`view-business-overview`) are unchanged; a
+non-profit has no products, services or requests, and their screens show
+their empty states (`L2-294` AC4). A caller who is not the leader is answered
+as for any listing that is not theirs (`L2-097`, `L2-133`, `L2-294` AC5).
+Photos follow `L2-088`.
+
+The integration tests are in `NonprofitEditTests`, beside
+`PlatformEditTests`, and the Playwright behaviour spec is
+`e2e/tests/edit-nonprofit.spec.ts`; the mock is
+`pages/edit-listing/nonprofit.html`.
+
 ## Requirements
 
 The feature realizes the following level-2 (L2) requirements. Each L2
@@ -258,6 +303,7 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 | `L2-209` | `L1-028` | `/my-business/listing` for a space shall show the space fields with their stored values and not "Category", "Hours" or "Website", validate them as on `/list`, and publish a change of term to the cards and page. |
 | `L2-208` | `L1-028` | The exact address shall reach only the member whose space request is `confirmed` or `completed`, and the owner shall see and change it on Edit listing. |
 | `L2-256` | `L1-033` | `/my-business/listing` for a platform shall show the platform fields with their stored values and not "About", "Category", "Where", "Hours" or "Website", validate them as on `/list`, publish changes when saved, refuse a change of category with HTTP 422 `category: CATEGORY_LOCKED`, and keep pause, resume and the overview as for any listing. |
+| `L2-294` | `L1-035` | `/my-business/listing` for a non-profit shall show the non-profit fields with their stored values and not "About", "Category", "Where" or "Hours", validate them as on `/list`, publish changes when saved, remove the link to the page for giving when it is emptied, refuse a change of category with HTTP 422 `category: CATEGORY_LOCKED`, keep pause, resume and the overview as for any listing, and refuse anyone but its leader. |
 
 ## Diagrams
 

@@ -1,0 +1,68 @@
+@startuml
+title UML sequence behaviour: Open a non-profit page and follow a link out
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Visitor or member" as actor
+box "Frontend: Jubilee Web" #E0F2FE
+  participant "BusinessPage" as page
+  participant "ListingsApi" as client
+end box
+box "Backend: Jubilee API" #D1FADF
+  participant "ListingsController" as controller
+end box
+box "Backend: Jubilee Application and Domain" #ECFDF3
+  participant "GetListingPageQueryHandler" as handler
+  participant "WebAddressRules" as rules
+end box
+box "Backend: Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+participant "Non-profit's site" as site
+actor -> page : Open /b/hope-house-toronto
+page --> actor : Skeleton of the listing page (L2-291 AC9)
+page -> client : get(hope-house-toronto)
+client -> controller : GET /api/listings/hope-house-toronto
+controller -> handler : Send GetListingPageQuery with the viewer of the session
+handler -> db : Public listing by slug, or the leader's or the team's preview (L2-028, L2-291 AC8)
+alt Not found, or not public for this viewer
+  handler --> controller : NotFoundException
+  controller --> client : 404
+  page --> actor : Not-found page (L2-291 AC8)
+else Found
+  db --> handler : Listing with Website and Nonprofit details
+  handler -> rules : IsWebAddress(Website), Host(Website)
+  handler -> rules : IsWebAddress(GiveUrl), Host(GiveUrl)
+  rules --> handler : Each address and host, or null when the rule refuses it (L2-292 AC5)
+  handler --> controller : ListingPageDto, kind nonprofit, Nonprofit {website, host, giveUrl, giveHost, mission, serves, area} (L2-291 AC10)
+  controller --> client : 200 OK
+  client --> page : ListingPage
+  page --> actor : Non-profit layout: name, "Led by", line, Its mission, Who it serves, Details; no rating, no Reviews (L2-291 AC1, AC4)
+  alt giveUrl is set
+    page --> actor : Primary "Give on {giveHost}", then "Visit {host}" (L2-291 AC2)
+  else Website only
+    page --> actor : Primary "Visit {host}"
+  end
+  page --> actor : "Opens in a new tab. Gifts go straight to Hope House Toronto. Jubilee takes no gift or payment and has not checked this non-profit." (L2-291 AC3)
+  actor -> site : Follow a link in a new tab: exact address, no referrer, nothing added (L2-292 AC1, AC2)
+  note over page, db : Jubilee receives no request, records no click and learns nothing of a gift (L2-292 AC3)
+  opt Visitor presses "Message leader", save or "Report this listing"
+    page --> actor : Sign-in prompt (L2-012, L2-291 AC6)
+  end
+end
+opt Load fails
+  client --> page : Error
+  page --> actor : "We couldn't load this non-profit" with JB-BIZ-503 and "Try again" (L2-291 AC9)
+end
+@enduml

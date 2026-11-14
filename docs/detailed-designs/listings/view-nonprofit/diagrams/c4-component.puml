@@ -1,0 +1,36 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components: View a non-profit
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(page, "BusinessPage", "Angular page", "Chooses the non-profit layout when kind is nonprofit")
+  Component(button, "a[jb-button]", "Library component", "Links out: Give on {host}, Visit {host}, arrow-up-right, new tab")
+  Component(rows, "jb-description-list", "Library component", "Works in, Website, Page for giving, On Jubilee since, Replies")
+  Component(card, "jb-business-card", "Library component", "More in Non-profits")
+  Component(prompt, "SignInPromptService", "Angular service", "Prompts a visitor for the member actions")
+  Component(client, "ListingsApi", "Service contract", "GET /api/listings/{slug}")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(ctrl, "ListingsController", "ASP.NET Core controller", "Anonymous listing page")
+  Component(handler, "GetListingPageQueryHandler", "MediatR handler", "Builds ListingPageDto with Nonprofit")
+  Component(dto, "NonprofitPageDto", "DTO", "Website, Host, GiveUrl, GiveHost, Mission, Serves, Area")
+  Component(rules, "WebAddressRules", "Domain rule", "IsWebAddress and Host; never requests the address")
+  Component(quote, "RequestQuoteCommandHandler", "MediatR handler", "409 NOT_OFFERED for a non-profit")
+  Component(review, "ReviewRules", "Application rule", "WritingAsync answers not-offered; 409 NOT_OFFERED")
+}
+ContainerDb(db, "Jubilee database", "SQL Server", "Listings")
+
+Rel(page, button, "Renders each link whose address is set")
+Rel(page, rows, "Renders")
+Rel(page, card, "Renders up to two")
+Rel(page, prompt, "Opens for a visitor")
+Rel(page, client, "Loads the page")
+Rel(client, ctrl, "GET /api/listings/{slug}", "JSON/HTTPS")
+Rel(ctrl, handler, "Sends GetListingPageQuery")
+Rel(handler, dto, "Projects to")
+Rel(dto, rules, "Checks each address and reads its host with")
+Rel(handler, db, "Reads", "EF Core")
+Rel(quote, db, "Reads the listing's kind", "EF Core")
+Rel(review, db, "Reads the listing's kind", "EF Core")
+@enduml

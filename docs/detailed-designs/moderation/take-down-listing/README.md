@@ -143,6 +143,31 @@ A takedown of a platform (`L2-101`) and a report of it (`L2-105`,
 platform leaves every public list, its page answers 404 and its founder is
 told (`L2-257` AC3).
 
+### Non-profits
+
+For a non-profit (kind `nonprofit`, ADR 0074), `AdminListingDto` carries
+`Kind` `nonprofit` and `Nonprofit` (`AdminListingNonprofit`: `Website`,
+`GiveUrl`, `Mission`, `Serves` and `Area`), null for every other kind.
+`AdminListingPage` shows the header as for any listing, "Non-profits ·
+published {when} · {status}", "Take down listing", the Owner panel and the
+flags of `L2-072`. Its preview "How members see it" shows the non-profit's
+card with its line and its highlight, and a panel "The non-profit" shows
+"Website" and "Page for giving", "Its mission", "Who it serves" and "Where in
+Toronto it works", and says "Jubilee never opens or checks these addresses.
+Follow them yourself to see what the listing describes." (`L2-295` AC2). Each
+address shows as text; it is also a link, with
+`rel="noopener noreferrer nofollow"` and `target="_blank"`, only when it
+passes `WebAddressRules.IsWebAddress`, and an address that fails the rule
+stays text only. Every field is rendered by interpolation, never as markup
+(`L2-297` AC1), and the server never requests either address (`L2-292` AC4).
+No line calls the non-profit verified, approved, registered, vetted or
+endorsed.
+
+A takedown of a non-profit (`L2-101`) and a report of it (`L2-105`,
+`moderation/handle-reports`) follow the same handlers as for any listing: the
+non-profit leaves every public list, its page answers 404 and its leader is
+told (`L2-295` AC3). The mock is `pages/admin-record/nonprofit.html`.
+
 ## Requirements
 
 The feature realizes the following level-2 (L2) requirements. Each L2
@@ -157,6 +182,7 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 | `L2-150` | `L1-020` | The system shall record in the audit log each staff view of a member's personal data, with the reason (report ID or listing ID). |
 | `L2-180` | `L1-025` | The system shall store an append-only audit record with actor, action, target, time, before and after values, and reason for each sensitive action, including a takedown. |
 | `L2-257` | `L1-033` | The listing screen of a platform in the admin application shall show, in the preview "How members see it", the line, "Web address" (as text, and as a link with `rel="noopener noreferrer nofollow"` and `target="_blank"`), "What it does", "Who it is for" and "Pricing"; a platform taken down or reported shall be handled as any listing. |
+| `L2-295` | `L1-035` | The record of a non-profit in the admin application shall show, besides the fields of any listing, the preview "How members see it" with its card and a panel "The non-profit" with "Website" and "Page for giving" (as text, and as a link with `rel="noopener noreferrer nofollow"` and `target="_blank"` only when it passes the rule), "Its mission", "Who it serves" and "Where in Toronto it works" and the line that Jubilee never opens or checks these addresses; a non-profit taken down or reported shall be handled as any listing. |
 
 ## Diagrams
 

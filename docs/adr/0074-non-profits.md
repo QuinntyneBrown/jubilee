@@ -82,8 +82,8 @@ giving** is its own page where people give, on its own site or the giving servic
 - **A non-profit is not a business, so it is not counted as one.** `WhereBusiness` leaves out
   non-profits as it leaves out spaces: they are not in "All {n} businesses", the browse groups,
   the welcome page's count or the fallback of "Featured this week". The browse home gains a shelf
-  of its own, "Non-profits in Toronto" (`BrowseHomeDto.Nonprofits`, a category group of up to four
-  in Recommended order with its count), after the businesses' groups. The Jubilee team may still
+  of its own, "Non-profits in Toronto" (`BrowseHomeDto.Nonprofits`, a `NonprofitShelfDto` of its count and up to
+  four business cards in Recommended order, as `RoomsShelfDto` holds space cards), after the businesses' groups. The Jubilee team may still
   choose a non-profit for a featured slot, as for any listing. "More in Non-profits", the saved
   list and "New businesses" notifications (L2-222) treat it as any listing in its category.
 - **Search gives non-profits a group of their own.** `DatabaseSearchIndex` matches a non-profit by

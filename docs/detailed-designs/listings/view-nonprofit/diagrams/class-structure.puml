@@ -1,0 +1,115 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure: View a non-profit
+
+class ListingPageDto <<record>> {
+  +string Slug
+  +string Kind
+  +string Name
+  +CategoryLinkDto Category
+  +string Status
+  +string ViewerRelation
+  +string? OwnerName
+  +string Tagline
+  +string? Highlight
+  +ListingDetailsDto Details
+  +IReadOnlyList<BusinessCardDto> Related
+  +SpacePageDto? Space
+  +PlatformPageDto? Platform
+  +NonprofitPageDto? Nonprofit
+}
+
+class NonprofitPageDto <<record>> {
+  +string? Website
+  +string? Host
+  +string? GiveUrl
+  +string? GiveHost
+  +string Mission
+  +string Serves
+  +string Area
+  +{static} From(listing: Listing): NonprofitPageDto?
+}
+
+class WebAddressRules <<static>> {
+  +{static} MaxWebsiteLength: int = 200
+  +{static} IsWebAddress(value: string?): bool
+  +{static} Host(value: string): string
+}
+
+class Listing {
+  +string Slug
+  +string Name
+  +ListingKind Kind
+  +string? OwnerName
+  +string? Website
+  +NonprofitDetails? Nonprofit
+  +DescribeNonprofit(details: NonprofitDetails, website: string?)
+}
+
+class NonprofitDetails <<owned type, JSON column Nonprofit>> {
+  +{static} MaxMissionLength: int = 600
+  +{static} MaxServesLength: int = 300
+  +{static} MaxAreaLength: int = 120
+  +{static} MaxGiveUrlLength: int = 200
+  +string Mission
+  +string Serves
+  +string Area
+  +string? GiveUrl
+}
+
+enum ListingKind {
+  Services
+  Shop
+  Space
+  Platform
+  Nonprofit
+}
+
+class GetListingPageQueryHandler {
+  +Handle(query: GetListingPageQuery): ListingPageDto
+}
+
+class RequestQuoteCommandHandler {
+  +Handle(command: RequestQuoteCommand): BookedRequestDto
+}
+
+class ReviewRules <<static>> {
+  +{static} NotOfferedCode: string = "NOT_OFFERED"
+  +{static} WritingAsync(db, listing, viewer): string
+}
+
+class ReviewWriting <<static>> {
+  +{static} NotOffered: string = "not-offered"
+}
+
+class NonprofitPage <<TypeScript>> {
+  +website: string | null
+  +host: string | null
+  +giveUrl: string | null
+  +giveHost: string | null
+  +mission: string
+  +serves: string
+  +area: string
+}
+
+ListingPageDto *-- "0..1" NonprofitPageDto
+NonprofitPageDto ..> Listing : reads Website and Nonprofit
+NonprofitPageDto ..> WebAddressRules : each address kept only when IsWebAddress
+Listing *-- "0..1" NonprofitDetails
+Listing --> ListingKind
+GetListingPageQueryHandler ..> ListingPageDto : builds
+RequestQuoteCommandHandler ..> ListingKind : 409 NOT_OFFERED when Nonprofit
+ReviewRules ..> ReviewWriting : not-offered when Nonprofit
+NonprofitPage ..> NonprofitPageDto : mirrors
+@enduml

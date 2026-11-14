@@ -1,0 +1,12 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context: Describe a non-profit
+
+Person(member, "Member (leader)", "Lists a Christian non-profit they lead or represent")
+Person(team, "Jubilee team", "Looks through published listings")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace of Christian-owned businesses")
+
+Rel(member, jubilee, "Describes, saves and publishes a non-profit at /list")
+Rel(team, jubilee, "Sees the published non-profit in the admin application")
+@enduml

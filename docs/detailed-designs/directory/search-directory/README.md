@@ -121,6 +121,20 @@ counted and listed under "Businesses", and carries `SearchHit.Space`
 (`SpaceCardDto`) so the page renders it as a space card. The rule is part of
 the feature [Browse spaces](../browse-spaces/README.md) (ADR 0042).
 
+### Non-profits
+
+A live non-profit matches on its name and line like any listing, and also on
+its mission, who it serves and where it works, with the match explanations
+"in its mission", "in who it serves" and "in where it works"; never on its
+website or its page for giving. Unlike a space or a platform, a non-profit
+hit has its own kind: `SearchResultKind.Nonprofit` (`nonprofit`).
+`SearchResults` gains `NonprofitCount`, and a non-profit is never counted in
+`BusinessCount`; `DatabaseNameSearch` follows the same rule. `SearchPage`
+offers a fourth tab "Non-profits" after "Products" only when
+`nonprofitCount` is above 0, and then the summary adds "· {n} non-profits"
+("1 non-profit"); otherwise the page reads as before. The rule is part of the
+feature [Browse non-profits](../browse-nonprofits/README.md) (ADR 0074).
+
 ## Requirements
 
 The feature realizes the following level-2 (L2) requirements. Each L2
@@ -138,6 +152,7 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 | `L2-181` | `L1-025` | When the search index is unavailable, the application shall fall back to a database name search of the public listings and shall show results without match explanations. |
 | `L2-182` | `L1-025` | Search shall have no indexing job, because it reads the listings themselves. |
 | `L2-204` | `L1-028` | Search shall match live spaces by title, line, neighbourhood, the space and key facts, list them under "Businesses" as space cards, and never search or return the exact address. |
+| `L2-290` | `L1-035` | Search shall match live non-profits by name, line, mission, who it serves and where it works, never by their addresses, list them in a fourth group "Non-profits" offered only when it has a match and not counted under "Businesses", and add "· {n} non-profits" to the summary then. |
 
 ## Diagrams
 

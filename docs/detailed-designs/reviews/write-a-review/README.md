@@ -156,6 +156,27 @@ branches by the listing's kind in three places; the detail is in
   used {name} myself." above the note; `ReviewItems.OfAsync` returns the only
   item "Their platform".
 
+### Non-profits
+
+A non-profit takes no reviews
+([ADR 0074](../../../adr/0074-non-profits.md), `L2-293`).
+
+- **Who may write**: `ReviewRules.WritingAsync` answers
+  `ReviewWriting.NotOffered` (`not-offered`) when `listing.Kind` is
+  `Nonprofit`, before it reads the session, so the answer is the same for a
+  visitor, a member and the leader (`L2-293` AC2). For every other kind the
+  rule is unchanged (`L2-293` AC5).
+- **Refusals**: `GET api/listings/{slug}/reviews/new` and `POST
+  api/listings/{slug}/reviews` answer HTTP 409 with code `NOT_OFFERED`
+  (`ReviewRules.NotOfferedCode`) for a non-profit and store nothing
+  (`L2-293` AC3). `ReviewRules.EnsureMayWriteAsync` maps `not-offered` to that
+  `ConflictException`.
+- **The screen**: `WriteReviewPage` at `/b/{slug}/review` shows the not-found
+  page for a non-profit when the start of the screen answers `NOT_OFFERED`
+  (`L2-293` AC3). The
+  non-profit page has no rating and no "Reviews" section
+  (`listings/view-nonprofit`).
+
 ### Open questions
 
 Every choice below is recorded in [ADR 0066](../../../adr/0066-reviews.md).
@@ -191,6 +212,7 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 | `L2-137` | `L1-019` | Writes shall be limited per member and answered 429 with `Retry-After` beyond the limit. |
 | `L2-258` | `L1-033` | A member shall review a platform on their own statement of use, sent as `usedIt: true`; a statement of use shall never make a member eligible to review a business, a shop or a space. |
 | `L2-259` | `L1-033` | The Write a review screen of a platform shall add the statement of use and show no item choice, the review being about "Their platform". |
+| `L2-293` | `L1-035` | A non-profit shall take no reviews: its `writing` shall be `not-offered` for everyone, signed in or not, and starting or sending a review of it shall be refused with HTTP 409 `NOT_OFFERED`, storing nothing; a business, a shop, a space or a platform shall be answered as before. |
 
 ## Diagrams
 

@@ -66,7 +66,8 @@ commands and handlers in `Jubilee.Application`, EF configurations and a migratio
   `TOO_LONG` against the lengths of `L2-216` AC1 (80, 100, 254, 80, 200 and 500 characters),
   `EMAIL_INVALID`, `PHONE_INVALID` (ten digits; an eleventh leading 1 is allowed),
   `WEBSITE_INVALID` (an `http` or `https` address; a bare host name is accepted and stored as
-  `https://` and the name), `CATEGORY_UNKNOWN` (one of the eleven category slugs of `L2-023`) and
+  `https://` and the name), `CATEGORY_UNKNOWN` (one of the thirteen category slugs of `L2-023` AC5, the last
+  `non-profits`) and
   `CONSENT_REQUIRED`. It stores a `BusinessPreRegistration` and, when `LaunchSettings.TeamEmail`
   is set, adds an `OutboxMessage` e-mail "New business pre-registration: {business name}" with
   the details in the same save (`L2-216` AC10, ADR 0038). It adds nothing to the directory and
@@ -274,6 +275,30 @@ Each changed component keeps its look where it was already used.
   state of the two forms, the server's answer for a field and the bot challenge, against a
   stand-in for Cloudflare's script.
 
+### Non-profits
+
+[ADR 0074](../../../adr/0074-non-profits.md) names non-profits among what
+Jubilee lists, in the page's own words, and adds no link (`L2-296`).
+
+- **The opening**: the paragraph under the heading in `content.ts` reads
+  "Jubilee is where Toronto’s Christian community will find shops, advisors
+  and trades it can trust, and the non-profits doing God’s work in the city.
+  We are launching soon." (`L2-215` AC1, `L2-296` AC1). It names no real
+  organisation, adds no link and does not say or imply that anyone can give
+  through Jubilee.
+- **The thirteenth category**: the "Category" select of
+  `jb-business-pre-registration` offers the thirteen categories of `L2-023`
+  AC5 in their order, from `CATEGORIES` in the marketing application's
+  `content.ts`, which gains `{ slug: 'non-profits', name: 'Non-profits' }` as
+  its last entry (`L2-296` AC2). `PreRegisterBusinessCommand` checks the
+  category with `Category.Find`, so it accepts `non-profits` once
+  `Category.All` holds it, with no change of its own. Nothing else of the form
+  changes.
+- **Tests**: the API integration test `L2_296_AC2_...` sends `non-profits`
+  and is answered 202; the Playwright behaviour spec of the launching-soon
+  page reads the opening paragraph and the last option of "Category" through
+  its page object. The mock is `pages/marketing-home/default.html`.
+
 ## Requirements
 
 The feature realizes the following level-2 (L2) requirements. Each L2 requirement refines a
@@ -292,6 +317,7 @@ launching-soon state.
 | `L2-148` | `L1-020` | Launch notification sign-ups and business pre-registrations shall be deleted when 12 months have passed since they were sent, and the daily job shall log counts only. |
 | `L2-149` | `L1-020` | The time and method of a consent shall be recorded; consent given on the launching-soon marketing page shall be recorded with the sign-up or the pre-registration itself. |
 | `L2-150` | `L1-020` | Staff shall read the launch notification sign-ups and the business pre-registrations only as `L2-218` says, and each reading shall be recorded in the audit log. |
+| `L2-296` | `L1-035`, `L1-030` | The launching-soon page's opening paragraph shall name the non-profits doing God’s work in the city, with no link, no real organisation and nothing implying that anyone can give through Jubilee; the pre-registration form shall offer the thirteen categories ending with "Non-profits", and the API shall accept `non-profits`. |
 
 `L2-185` is not realized by this design: it is suspended until launch, except its criterion 3
 (top bar links move within the page), which stays in force and is unchanged.
