@@ -6,4 +6,34 @@
   [value]="value()"
   (typed)="typed.emit($event)"
 ></form>
-<div class="records-tools__columns"><ng-content select="[slot=columns]" /></div>
+@if (columns().length) {
+  <div class="records-tools__columns">
+    <button
+      jb-button
+      type="button"
+      [cdkMenuTriggerFor]="columnsMenu"
+      [cdkMenuPosition]="endAligned"
+    >
+      <svg jb-icon name="columns"></svg>Columns <span class="records-tools__n">{{ shown() }}</span>
+    </button>
+  </div>
+  <ng-template #columnsMenu>
+    <jb-menu label="Columns">
+      <div jb-menu-label>Show in table</div>
+      <div class="records-tools__scroll">
+        @for (column of columns(); track column.key) {
+          <button
+            jb-menu-check
+            [checked]="column.shown"
+            [disabled]="column.shown && shown() === 1"
+            (chosen)="toggled.emit(column.key)"
+          >
+            {{ column.label }}
+          </button>
+        }
+      </div>
+      <div jb-menu-divider></div>
+      <button jb-menu-item (chosen)="resetColumns.emit()">Reset to default</button>
+    </jb-menu>
+  </ng-template>
+}

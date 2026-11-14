@@ -52,6 +52,19 @@ export class AdminRecordsPage extends AdminShellPage implements Screen {
   readonly error: Locator;
   readonly empty: Locator;
   readonly foot: Locator;
+  /** The Columns menu, "Show in table" (L2-278 AC1). */
+  readonly columnsMenu: Locator;
+  readonly resetColumns: Locator;
+  /** "{from}–{to} of {total}" in the foot. */
+  readonly range: Locator;
+  readonly rowsButton: Locator;
+  readonly rowsMenu: Locator;
+  readonly pages: Locator;
+  readonly previousPage: Locator;
+  readonly nextPage: Locator;
+  /** "Page {n} of {pages}", under 640 px. */
+  readonly pageOf: Locator;
+  readonly goTo: Locator;
 
   constructor(page: Page) {
     super(page);
@@ -79,6 +92,16 @@ export class AdminRecordsPage extends AdminShellPage implements Screen {
     this.error = this.records.getByRole('alert');
     this.empty = this.records.locator('.records__empty');
     this.foot = this.records.locator('.records__foot');
+    this.columnsMenu = page.getByRole('menu', { name: 'Columns' });
+    this.resetColumns = this.columnsMenu.getByRole('menuitem', { name: 'Reset to default' });
+    this.range = this.foot.locator('.records__range > span');
+    this.rowsButton = this.foot.getByRole('button', { name: /^Rows per page/ });
+    this.rowsMenu = page.getByRole('menu', { name: 'Rows per page' });
+    this.pages = this.foot.getByRole('navigation', { name: 'Pages' });
+    this.previousPage = this.pages.getByRole('button', { name: 'Previous page' });
+    this.nextPage = this.pages.getByRole('button', { name: 'Next page' });
+    this.pageOf = this.pages.locator('.records__page-of');
+    this.goTo = this.pages.getByLabel('Go to');
   }
 
   /** The cells of a row of the table. */
@@ -126,6 +149,40 @@ export class AdminRecordsPage extends AdminShellPage implements Screen {
     return this.empty.first().getByRole('button', { name: 'Clear search and filters' });
   }
 
+  /** A field in the Columns menu, a checkbox that shows or hides its column. */
+  columnChoice(label: string): Locator {
+    return this.columnsMenu.getByRole('menuitemcheckbox', { name: label, exact: true });
+  }
+
+  async openColumns(): Promise<void> {
+    await this.columnsButton.click();
+    await this.columnsMenu.waitFor();
+  }
+
+  /** Shows or hides a column through the Columns menu, which closes after each choice. */
+  async toggleColumn(label: string): Promise<void> {
+    if (!(await this.columnsMenu.isVisible())) await this.openColumns();
+    await this.columnChoice(label).click();
+  }
+
+  rowsChoice(size: number): Locator {
+    return this.rowsMenu.getByRole('menuitemradio', { name: String(size), exact: true });
+  }
+
+  async showRows(size: number): Promise<void> {
+    await this.rowsButton.click();
+    await this.rowsChoice(size).click();
+  }
+
+  pageButton(page: number): Locator {
+    return this.pages.getByRole('button', { name: String(page), exact: true });
+  }
+
+  async goToPage(page: number): Promise<void> {
+    await this.goTo.fill(String(page));
+    await this.goTo.press('Enter');
+  }
+
   checkbox(row: Locator): Locator {
     return row.getByRole('checkbox');
   }
@@ -144,5 +201,32 @@ export class AdminRecordsPage extends AdminShellPage implements Screen {
       { name: 'records-head', locator: this.head },
       { name: 'records', locator: this.records },
     ];
+  }
+}
+
+/** The Members table with the Columns menu open (L2-278 AC1). */
+export class AdminColumnsMenuScreen extends AdminRecordsPage {
+  override async ready(): Promise<void> {
+    await super.ready();
+    if (await this.columnsMenu.isVisible()) return; // the mock is drawn open
+    await this.openColumns();
+  }
+
+  override regions(): Region[] {
+    return [{ name: 'columns-menu', locator: this.columnsMenu }];
+  }
+}
+
+/** The Members table with the Rows per page menu open (L2-278 AC3). */
+export class AdminRowsMenuScreen extends AdminRecordsPage {
+  override async ready(): Promise<void> {
+    await super.ready();
+    if (await this.rowsMenu.isVisible()) return; // the mock is drawn open
+    await this.rowsButton.click();
+    await this.rowsMenu.waitFor();
+  }
+
+  override regions(): Region[] {
+    return [{ name: 'rows-menu', locator: this.rowsMenu }];
   }
 }

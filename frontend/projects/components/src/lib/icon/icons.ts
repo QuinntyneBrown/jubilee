@@ -52,6 +52,7 @@ export const ICONS = {
   check: [path('M4 12l6 6L20 6')],
   chart: [path('M4 20V4M4 20h16M8 16v-4M12 16V8M16 16v-6')],
   'chevron-down': [path('m6 9 6 6 6-6')],
+  'chevron-left': [path('m15 18-6-6 6-6')],
   'chevron-right': [path('m9 6 6 6-6 6')],
   close: [path('M6 6l12 12M18 6 6 18')],
   clock: [circle(12, 12, 9), path('M12 7v5l3 2')],

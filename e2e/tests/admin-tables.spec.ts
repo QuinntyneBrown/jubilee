@@ -1,8 +1,8 @@
 // Acceptance Test
-// Traces to: L2-099, L2-188, L2-272, L2-276, L2-277, L2-284
+// Traces to: L2-099, L2-188, L2-272, L2-276, L2-277, L2-278, L2-284
 // Description: the schema-driven admin application (ADR 0074): its shell with the sidebar of
 // tables in their groups, what a role may read, and one table read from the catalog.
-import { LISTING_ROWS, MEMBER_ROWS, stubAdminTables } from '../fixtures/admin-tables';
+import { LISTING_ROWS, manyMembers, MEMBER_ROWS, stubAdminTables } from '../fixtures/admin-tables';
 import { ADMIN_URL, expect, test } from '../fixtures/jb-test';
 import { ada, miriam } from '../fixtures/staff';
 import { AdminRecordsPage } from '../pages/admin-records.page';
@@ -528,5 +528,187 @@ test.describe('the Listings table, searched and filtered (L2-099)', () => {
       'A listing appears here as soon as its owner publishes it.',
     );
     await expect(records.clearSearchAndFilters()).toHaveCount(0);
+  });
+});
+
+test.describe('columns and pages of a table (L2-278)', () => {
+  test('AC1: Columns lists every field, the shown ones checked, and Reset to default', async ({
+    page,
+    jb,
+  }) => {
+    const records = new AdminRecordsPage(page);
+    await records.setWidth(1280);
+    await stubAdminTables(page, ada);
+    await jb.gotoAdmin('/members');
+
+    await expect(records.columnsButton).toHaveText(/Columns\s*7/);
+    await records.openColumns();
+    await expect(records.columnsMenu).toContainText('Show in table');
+    await expect(records.columnsMenu.getByRole('menuitemcheckbox')).toHaveText([
+      'ID',
+      'Name',
+      'Email',
+      'Status',
+      'Phone',
+      'Postal code',
+      'Created',
+      'Email confirmed',
+    ]);
+    await expect(records.columnChoice('Created')).toHaveAttribute('aria-checked', 'true');
+    await expect(records.columnChoice('Email confirmed')).toHaveAttribute('aria-checked', 'false');
+
+    await records.columnChoice('Email confirmed').click();
+    await expect(records.columnsButton).toHaveText(/Columns\s*8/);
+    await expect(records.columnHeaders.nth(8)).toHaveText('Email confirmed');
+
+    await records.toggleColumn('Phone');
+    await expect(records.columnsButton).toHaveText(/Columns\s*7/);
+    await expect(records.columnHeaders).not.toContainText(['Phone']);
+
+    await records.openColumns();
+    await records.resetColumns.click();
+    await expect(records.columnsButton).toHaveText(/Columns\s*7/);
+    await expect(records.columnHeaders.nth(5)).toHaveText('Phone');
+  });
+
+  test('AC1: the last shown column cannot be hidden', async ({ page, jb }) => {
+    const records = new AdminRecordsPage(page);
+    await records.setWidth(1280);
+    await stubAdminTables(page, ada);
+    await jb.gotoAdmin('/members');
+
+    for (const label of ['ID', 'Email', 'Status', 'Phone', 'Postal code', 'Created']) {
+      await records.toggleColumn(label);
+    }
+    await expect(records.columnsButton).toHaveText(/Columns\s*1/);
+    await records.openColumns();
+
+    await expect(records.columnChoice('Name')).toHaveAttribute('aria-disabled', 'true');
+  });
+
+  test('L2-276 AC3: yes and no are a check or a dash named Yes or No', async ({ page, jb }) => {
+    const records = new AdminRecordsPage(page);
+    await records.setWidth(1280);
+    await stubAdminTables(page, ada);
+    await jb.gotoAdmin('/members');
+
+    await records.toggleColumn('Email confirmed');
+
+    const ruth = await records.cell(records.row('Ruth Chen'), 'Email confirmed');
+    const naomi = await records.cell(records.row('Naomi Laurent'), 'Email confirmed');
+    await expect(ruth.getByRole('img', { name: 'Yes' })).toBeVisible();
+    await expect(naomi.getByRole('img', { name: 'No' })).toBeVisible();
+  });
+
+  test('AC2: the foot shows the range, the rows per page and the pages around the current one', async ({
+    page,
+    jb,
+  }) => {
+    const records = new AdminRecordsPage(page);
+    await records.setWidth(1280);
+    const fake = await stubAdminTables(page, ada, { rows: { members: manyMembers(200) } });
+    await jb.gotoAdmin('/members');
+
+    await expect(records.range).toHaveText('1–25 of 200');
+    await expect(records.rowsButton).toHaveText('25');
+    await expect(records.pages.locator('.records__numbers')).toHaveText(
+      /^\s*1\s*2\s*3\s*4\s*5\s*…\s*8\s*$/,
+    );
+    await expect(records.pageButton(1)).toHaveAttribute('aria-current', 'page');
+    await expect(records.goTo).toBeVisible();
+
+    await records.nextPage.click();
+
+    await expect(records.range).toHaveText('26–50 of 200');
+    await expect(records.pageButton(2)).toHaveAttribute('aria-current', 'page');
+    await expect(records.row('Member 026')).toBeVisible();
+    expect(fake.rowRequests.at(-1)).toContain('page=2&size=25');
+  });
+
+  test('AC2: under 640 px the foot says "Page {n} of {pages}"', async ({ page, jb }) => {
+    const records = new AdminRecordsPage(page);
+    await records.setWidth(360);
+    await stubAdminTables(page, ada, { rows: { members: manyMembers(200) } });
+    await jb.gotoAdmin('/members');
+
+    await expect(records.pageOf).toHaveText('Page 1 of 8');
+    await expect(records.rowsButton).toBeHidden();
+    await expect(records.goTo).toBeHidden();
+  });
+
+  test('AC4: the first page cannot go back and the last cannot go on', async ({ page, jb }) => {
+    const records = new AdminRecordsPage(page);
+    await records.setWidth(1280);
+    await stubAdminTables(page, ada, { rows: { members: manyMembers(200) } });
+    await jb.gotoAdmin('/members');
+    await expect(records.previousPage).toHaveAttribute('aria-disabled', 'true');
+
+    await records.goToPage(8);
+
+    await expect(records.range).toHaveText('176–200 of 200');
+    await expect(records.nextPage).toHaveAttribute('aria-disabled', 'true');
+    await expect(records.previousPage).not.toHaveAttribute('aria-disabled', 'true');
+  });
+
+  test('AC3: Rows offers 25, 50, 100 and 250, and a choice returns to page 1', async ({
+    page,
+    jb,
+  }) => {
+    const records = new AdminRecordsPage(page);
+    await records.setWidth(1280);
+    const fake = await stubAdminTables(page, ada, { rows: { members: manyMembers(200) } });
+    await jb.gotoAdmin('/members');
+    await records.pageButton(3).click();
+    await expect(records.range).toHaveText('51–75 of 200');
+
+    await records.rowsButton.click();
+    await expect(records.rowsMenu.getByRole('menuitemradio')).toHaveText([
+      '25',
+      '50',
+      '100',
+      '250',
+    ]);
+    await expect(records.rowsChoice(25)).toHaveAttribute('aria-checked', 'true');
+    await records.rowsChoice(50).click();
+
+    await expect(records.range).toHaveText('1–50 of 200');
+    await expect(records.rowsButton).toHaveText('50');
+    expect(fake.rowRequests.at(-1)).toContain('page=1&size=50');
+  });
+
+  test('AC1: a search returns to page 1', async ({ page, jb }) => {
+    const records = new AdminRecordsPage(page);
+    await records.setWidth(1280);
+    const fake = await stubAdminTables(page, ada, { rows: { members: manyMembers(200) } });
+    await jb.gotoAdmin('/members');
+    await records.pageButton(2).click();
+    await expect(records.range).toHaveText('26–50 of 200');
+
+    await records.searchFor('member1');
+
+    await expect(records.range).toHaveText('1–25 of 100');
+    expect(fake.rowRequests.at(-1)).toContain('page=1');
+  });
+
+  test('AC5: the columns and the rows per page are kept for the table in the browser', async ({
+    page,
+    jb,
+  }) => {
+    const records = new AdminRecordsPage(page);
+    await records.setWidth(1280);
+    const fake = await stubAdminTables(page, ada, { rows: { members: manyMembers(200) } });
+    await jb.gotoAdmin('/members');
+    await records.toggleColumn('Email confirmed');
+    await records.showRows(100);
+    await expect(records.range).toHaveText('1–100 of 200');
+
+    await page.reload();
+
+    await expect(records.range).toHaveText('1–100 of 200');
+    await expect(records.columnsButton).toHaveText(/Columns\s*8/);
+    expect(fake.rowRequests.at(-1)).toContain('size=100');
+    // Another table keeps its own defaults.
+    await jb.gotoAdmin('/listings');
+    await expect(records.columnsButton).toHaveText(/Columns\s*7/);
   });
 });

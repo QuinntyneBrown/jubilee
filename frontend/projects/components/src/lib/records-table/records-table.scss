@@ -237,11 +237,11 @@ th[aria-sort='descending'] .records__sort {
 }
 
 th[aria-sort='ascending'] .records__sort::after {
-  content: '↑';
+  content: '↑' / '';
 }
 
 th[aria-sort='descending'] .records__sort::after {
-  content: '↓';
+  content: '↓' / '';
 }
 
 .records__empty {

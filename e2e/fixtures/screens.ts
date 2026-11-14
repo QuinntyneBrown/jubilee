@@ -7,7 +7,12 @@ import { TakeDownScreen } from '../pages/report-action.dialog';
 import { AdminShellPage } from '../pages/admin-shell.page';
 import { AdminSignInPage } from '../pages/admin-sign-in.page';
 import { AdminListingPage } from '../pages/admin-listing.page';
-import { AdminRecordsPage, AdminStaffMenuScreen } from '../pages/admin-records.page';
+import {
+  AdminColumnsMenuScreen,
+  AdminRecordsPage,
+  AdminRowsMenuScreen,
+  AdminStaffMenuScreen,
+} from '../pages/admin-records.page';
 import { AdminPoliciesPage } from '../pages/admin-policies.page';
 import { AdminPolicyPage } from '../pages/admin-policy.page';
 import {
@@ -273,6 +278,8 @@ export const screens: {
   { key: 'admin-records.loading', screen: (page) => new AdminRecordsPage(page) },
   { key: 'admin-records.error', screen: (page) => new AdminRecordsPage(page) },
   { key: 'admin-records.staff-menu', screen: (page) => new AdminStaffMenuScreen(page) },
+  { key: 'admin-records.columns-menu', screen: (page) => new AdminColumnsMenuScreen(page) },
+  { key: 'admin-records.page-size-menu', screen: (page) => new AdminRowsMenuScreen(page) },
   { key: 'admin-records.forbidden', screen: (page) => new AdminShellPage(page) },
   { key: 'admin-records.not-found', screen: (page) => new AdminShellPage(page) },
   { key: 'admin-records.listings', screen: (page) => new AdminRecordsPage(page) },

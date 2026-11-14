@@ -1905,6 +1905,20 @@ export const routes = {
     site: 'admin',
     stub: 'admin-records',
   },
+  'admin-records.columns-menu': {
+    app: '/members',
+    mock: 'pages/admin-records/columns-menu.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'admin-records',
+  },
+  'admin-records.page-size-menu': {
+    app: '/members',
+    mock: 'pages/admin-records/page-size-menu.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'admin-records',
+  },
   'admin-records.forbidden': {
     app: '/staff',
     mock: 'pages/admin-records/forbidden.html',

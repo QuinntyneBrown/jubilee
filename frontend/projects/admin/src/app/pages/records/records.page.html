@@ -32,7 +32,10 @@
           jb-records-tools
           [unit]="table.label.toLowerCase()"
           [value]="q()"
+          [columns]="columnChoices()"
           (typed)="search($event)"
+          (toggled)="toggleColumn($event)"
+          (resetColumns)="resetColumns()"
         ></div>
         @if (statusField(); as field) {
           <div
@@ -58,6 +61,17 @@
           (sorted)="sortBy($event)"
           (emptyAction)="clear()"
         >
+          @if (rows().length > 0) {
+            <div
+              slot="foot"
+              jb-records-foot
+              [page]="page()"
+              [size]="size()"
+              [total]="total()"
+              (pageChange)="goTo($event)"
+              (sizeChange)="showRows($event)"
+            ></div>
+          }
           @if (errorReference(); as reference) {
             <div
               slot="error"

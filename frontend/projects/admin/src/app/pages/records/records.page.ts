@@ -10,7 +10,7 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { ADMIN_TABLES_API, AdminRows, errorReference, LoadState } from 'api';
+import { ADMIN_PAGE_SIZES, ADMIN_TABLES_API, AdminRows, errorReference, LoadState } from 'api';
 import {
   AdminHeading,
   AdminPage,
@@ -19,8 +19,10 @@ import {
   Icon,
   LockTag,
   RecordsColumn,
+  RecordsColumnChoice,
   RecordsEmpty,
   RecordsFilter,
+  RecordsFoot,
   RecordsHead,
   RecordsSort,
   RecordsTable,
@@ -28,6 +30,7 @@ import {
 } from 'components';
 import { distinctUntilChanged, map, Subscription } from 'rxjs';
 import { AdminCatalogService } from '../../services/admin-catalog.service';
+import { AdminPreferencesService } from '../../services/admin-preferences.service';
 import { AdminScreenService } from '../../services/admin-screen.service';
 import { StaffSessionService } from '../../services/staff-session.service';
 import { AdminOnlyPage } from '../admin-only/admin-only.page';
@@ -37,8 +40,9 @@ import { NotFoundPage } from '../not-found/not-found.page';
  * A table of Jubilee's records, `/{table}` (L2-276): any table of the catalog, drawn from its
  * description: its group, name and sentence, Export and "New", the search, the status chips and
  * its rows in the table's default columns, sorted by any of them. The server searches, filters and
- * sorts every record of the table (L2-277 AC6). A table the role may not read, or that does not
- * exist, says so (L2-188 AC4, AC7).
+ * sorts every record of the table (L2-277 AC6). The staff member chooses the columns and the rows
+ * per page, kept for the table in this browser (L2-278), and turns the pages. A table the role may
+ * not read, or that does not exist, says so (L2-188 AC4, AC7).
  */
 @Component({
   selector: 'jb-records-page',
@@ -51,6 +55,7 @@ import { NotFoundPage } from '../not-found/not-found.page';
     Icon,
     LockTag,
     RecordsFilter,
+    RecordsFoot,
     RecordsHead,
     RecordsTable,
     RecordsTools,
@@ -68,6 +73,7 @@ export class RecordsPage {
   private readonly title = inject(Title);
   private readonly router = inject(Router);
   private readonly session = inject(StaffSessionService);
+  private readonly preferences = inject(AdminPreferencesService);
 
   protected readonly key = signal('');
   protected readonly state = signal<LoadState<AdminRows>>({ status: 'loading' });
@@ -75,17 +81,49 @@ export class RecordsPage {
   protected readonly q = signal('');
   protected readonly status = signal<string | null>(null);
   protected readonly sort = signal<RecordsSort | null>(null);
+  protected readonly page = signal(1);
+  protected readonly size = signal<number>(ADMIN_PAGE_SIZES[0]);
+  /** The columns the staff member chose, or null for the table's defaults. */
+  private readonly chosenColumns = signal<string[] | null>(null);
   private reading?: Subscription;
 
   protected readonly table = computed(() => this.catalog.table(this.key()));
 
+  /** The keys of the columns shown: the staff member's choice of the table's fields, else its defaults. */
+  private readonly shownKeys = computed(() => {
+    const table = this.table();
+    if (!table) return [];
+    const chosen = this.chosenColumns()?.filter((key) => table.fields.some((f) => f.key === key));
+    return chosen?.length ? chosen : table.defaultColumns;
+  });
+
   protected readonly columns = computed<RecordsColumn[]>(() => {
     const table = this.table();
     if (!table) return [];
-    return table.defaultColumns
+    const shown = this.shownKeys();
+    const chosen = this.chosenColumns() !== null;
+    const keys = chosen
+      ? table.fields.map((f) => f.key).filter((key) => shown.includes(key))
+      : shown;
+    return keys
       .map((key) => table.fields.find((f) => f.key === key))
       .filter((f) => !!f)
       .map((f) => ({ key: f.key, label: f.label, type: f.type, sortable: f.sortable }));
+  });
+
+  /** Every field, for the Columns menu (L2-278 AC1). */
+  protected readonly columnChoices = computed<RecordsColumnChoice[]>(() => {
+    const shown = this.shownKeys();
+    return (this.table()?.fields ?? []).map((f) => ({
+      key: f.key,
+      label: f.label,
+      shown: shown.includes(f.key),
+    }));
+  });
+
+  protected readonly total = computed(() => {
+    const state = this.state();
+    return state.status === 'loaded' ? state.value.total : 0;
   });
 
   /** The status field and its values, for the chips (L2-277 AC2). */
@@ -133,22 +171,55 @@ export class RecordsPage {
         takeUntilDestroyed(),
       )
       .subscribe((key) => {
+        const kept = this.preferences.read(key);
         this.key.set(key);
         this.q.set('');
         this.status.set(null);
         this.sort.set(null);
+        this.page.set(1);
+        this.chosenColumns.set(Array.isArray(kept.columns) ? kept.columns : null);
+        this.size.set(ADMIN_PAGE_SIZES.find((n) => n === kept.size) ?? ADMIN_PAGE_SIZES[0]);
         this.load();
       });
   }
 
   protected search(q: string): void {
     this.q.set(q);
+    this.page.set(1);
     this.load();
   }
 
   protected filter(status: string | null): void {
     this.status.set(status);
+    this.page.set(1);
     this.load();
+  }
+
+  protected goTo(page: number): void {
+    this.page.set(page);
+    this.load();
+  }
+
+  /** Rows per page: shows that many from page 1, and keeps the choice (L2-278 AC3, AC5). */
+  protected showRows(size: number): void {
+    this.size.set(size);
+    this.page.set(1);
+    this.preferences.write(this.key(), { size });
+    this.load();
+  }
+
+  /** Shows or hides a column; the last one shown stays (L2-278 AC1, AC5). */
+  protected toggleColumn(key: string): void {
+    const shown = this.shownKeys();
+    const next = shown.includes(key) ? shown.filter((k) => k !== key) : [...shown, key];
+    if (next.length === 0) return;
+    this.chosenColumns.set(next);
+    this.preferences.write(this.key(), { columns: next });
+  }
+
+  protected resetColumns(): void {
+    this.chosenColumns.set(null);
+    this.preferences.write(this.key(), { columns: undefined });
   }
 
   protected sortBy(sort: RecordsSort | null): void {
@@ -159,10 +230,11 @@ export class RecordsPage {
   protected clear(): void {
     this.q.set('');
     this.status.set(null);
+    this.page.set(1);
     this.load();
   }
 
-  /** Reads the first page of rows for the search, the status and the sort; a newer read replaces an older one. */
+  /** Reads the page of rows for the search, the status and the sort; a newer read replaces an older one. */
   protected load(): void {
     const key = this.key();
     const sort = this.sort();
@@ -176,8 +248,8 @@ export class RecordsPage {
         status: this.status() ?? undefined,
         sort: sort?.key,
         dir: sort?.dir,
-        page: 1,
-        size: 25,
+        page: this.page(),
+        size: this.size(),
       })
       .subscribe({
         next: (rows) => {

@@ -1,0 +1,91 @@
+<div class="records__range">
+  <span
+    ><b>{{ count(from()) }}–{{ count(to()) }}</b> of {{ count(total()) }}</span
+  >
+  <div class="records__size">
+    <span>Rows</span>
+    <button
+      jb-button
+      size="sm"
+      type="button"
+      [attr.aria-label]="'Rows per page, ' + size()"
+      [cdkMenuTriggerFor]="sizeMenu"
+    >
+      {{ size() }}<svg jb-icon name="chevron-down"></svg>
+    </button>
+  </div>
+</div>
+<nav class="records__pages" aria-label="Pages">
+  <ul class="records__list-of-pages">
+    <li>
+      <button
+        class="records__page"
+        type="button"
+        aria-label="Previous page"
+        [attr.aria-disabled]="page() === 1 ? 'true' : null"
+        (click)="go(page() - 1)"
+      >
+        <svg jb-icon name="chevron-left"></svg>
+      </button>
+    </li>
+    <li class="records__numbers">
+      <ul class="records__list-of-pages">
+        @for (n of numbers(); track $index) {
+          @if (n === null) {
+            <li aria-hidden="true">…</li>
+          } @else {
+            <li>
+              <button
+                class="records__page"
+                type="button"
+                [attr.aria-current]="n === page() ? 'page' : null"
+                (click)="go(n)"
+              >
+                {{ count(n) }}
+              </button>
+            </li>
+          }
+        }
+      </ul>
+    </li>
+    <li class="records__page-of">
+      Page <b>{{ count(page()) }}</b> of {{ count(pages()) }}
+    </li>
+    <li>
+      <button
+        class="records__page"
+        type="button"
+        aria-label="Next page"
+        [attr.aria-disabled]="page() === pages() ? 'true' : null"
+        (click)="go(page() + 1)"
+      >
+        <svg jb-icon name="chevron-right"></svg>
+      </button>
+    </li>
+  </ul>
+  @if (pages() > 7) {
+    <form class="records__goto" (submit)="goTo($event, box.element)">
+      <label for="records-goto">Go to</label>
+      <input
+        jb-input
+        #box
+        id="records-goto"
+        class="records__goto-box"
+        controlSize="sm"
+        inputmode="numeric"
+        placeholder="1"
+      />
+    </form>
+  }
+</nav>
+
+<ng-template #sizeMenu>
+  <jb-menu label="Rows per page">
+    <div jb-menu-label>Rows per page</div>
+    @for (n of sizes(); track n) {
+      <button jb-menu-radio [checked]="n === size()" (chosen)="sizeChange.emit(n)">
+        {{ n }}
+      </button>
+    }
+  </jb-menu>
+</ng-template>

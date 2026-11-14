@@ -274,6 +274,28 @@ export const MEMBER_ROWS: AdminRow[] = [
   },
 ];
 
+/** As many members as a test needs to turn pages: "Member 001", "Member 002"… */
+export function manyMembers(count: number): AdminRow[] {
+  return Array.from({ length: count }, (_, i) => {
+    const n = String(i + 1).padStart(3, '0');
+    const id = `00000000-0000-4000-8000-000000000${n}`;
+    return {
+      id,
+      name: `Member ${n}`,
+      values: {
+        id,
+        name: `Member ${n}`,
+        email: `member${n}@example.com`,
+        status: 'active',
+        phone: null,
+        postalCode: null,
+        createdAt: '2026-10-01T12:00:00+00:00',
+        emailConfirmed: i % 2 === 0,
+      },
+    };
+  });
+}
+
 export const LISTING_ROWS: AdminRow[] = [
   {
     id: '3b2a1c0d-9e8f-4a7b-b6c5-d4e3f2a1b0c9',
@@ -418,9 +440,12 @@ export async function stubAdminTables(
     const size = Number(url.searchParams.get('size') ?? 25);
     const pageNumber = Number(url.searchParams.get('page') ?? 1);
     // The server searches, filters and sorts every record of the table (L2-277 AC6).
-    const rows = answerRows(known, fake.rows[key] ?? [], url.searchParams);
+    const found = answerRows(known, fake.rows[key] ?? [], url.searchParams);
+    // The mocks count the whole table, as production does, though they draw only a page of it.
+    const whole = mock && !url.searchParams.get('q') && !url.searchParams.get('status');
+    const rows = whole ? found : found.slice((pageNumber - 1) * size, pageNumber * size);
     return route.fulfill({
-      json: { rows, total: rows.length, page: pageNumber, size },
+      json: { rows, total: whole ? known.count : found.length, page: pageNumber, size },
     });
   });
 
