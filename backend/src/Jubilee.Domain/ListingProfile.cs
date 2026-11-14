@@ -11,6 +11,9 @@ public enum ListingKind
 
     /// <summary>A software platform people use online, in "Software platforms" (L2-248).</summary>
     Platform = 3,
+
+    /// <summary>A Christian non-profit at work in Toronto, in "Non-profits" (L2-285).</summary>
+    Nonprofit = 4,
 }
 
 /// <summary>

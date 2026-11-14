@@ -131,13 +131,17 @@ public sealed record CategoryGroupDto(
 /// </summary>
 public sealed record RoomsShelfDto(int Count, IReadOnlyList<SpaceCardDto> Spaces);
 
+/// <summary>"Non-profits in Toronto" on the browse home: how many are live and up to four of them (L2-289 AC1).</summary>
+public sealed record NonprofitShelfDto(int Count, IReadOnlyList<BusinessCardDto> Listings);
+
 public sealed record BrowseHomeDto(
     int LiveBusinessCount,
     IReadOnlyList<CategoryLinkDto> Categories,
     IReadOnlyList<BusinessCardDto> Featured,
     IReadOnlyList<ProductCardDto> Products,
     IReadOnlyList<CategoryGroupDto> Groups,
-    RoomsShelfDto Rooms);
+    RoomsShelfDto Rooms,
+    NonprofitShelfDto Nonprofits);
 
 /// <summary>A short count shown beside the business count, for example "3 take emergency calls".</summary>
 public sealed record CategoryFactDto(string Offer, int Count);

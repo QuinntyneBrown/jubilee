@@ -17,6 +17,7 @@ public sealed class GetBrowseHomeQueryHandler(
     public const int FeaturedLimit = 5;
     public const int ShopProductLimit = 5;
     public const int RoomsShelfLimit = 4;
+    public const int NonprofitShelfLimit = 4;
 
     public Task<BrowseHomeDto> Handle(GetBrowseHomeQuery request, CancellationToken cancellationToken) =>
         cache.GetOrCreateAsync("home", BuildAsync, cancellationToken);
@@ -31,7 +32,20 @@ public sealed class GetBrowseHomeQueryHandler(
 
         var fast = await Requests.ResponseTimes.FastListings(db, cancellationToken);
 
-        return new BrowseHomeDto(count, CategoryLinkDto.All, [.. featured.Select(l => BusinessCardDto.From(l, fast))], products, groups, rooms);
+        var nonprofits = await NonprofitShelfAsync(fast, cancellationToken);
+
+        return new BrowseHomeDto(count, CategoryLinkDto.All, [.. featured.Select(l => BusinessCardDto.From(l, fast))], products, groups, rooms, nonprofits);
+    }
+
+    /// <summary>"Non-profits in Toronto": the live non-profits' count and the first four in Recommended order (L2-289 AC1).</summary>
+    private async Task<NonprofitShelfDto> NonprofitShelfAsync(IReadOnlySet<Guid> fast, CancellationToken cancellationToken)
+    {
+        var nonprofits = db.Listings.AsNoTracking().WherePublic().WhereNonprofit();
+        var count = await nonprofits.CountAsync(cancellationToken);
+        var first = count == 0
+            ? []
+            : await ListingSortPolicy.Apply(nonprofits, ListingSort.Recommended).Take(NonprofitShelfLimit).ToListAsync(cancellationToken);
+        return new NonprofitShelfDto(count, [.. first.Select(l => BusinessCardDto.From(l, fast))]);
     }
 
     /// <summary>The newest four spaces overall and of each term (L2-201 AC1, AC3), newest first.</summary>

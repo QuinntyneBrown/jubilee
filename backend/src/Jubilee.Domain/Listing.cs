@@ -121,7 +121,7 @@ public sealed class Listing
     {
         if (Category.Find(categorySlug) is null)
         {
-            throw new ArgumentException($"'{categorySlug}' is not one of the twelve categories.", nameof(categorySlug));
+            throw new ArgumentException($"'{categorySlug}' is not one of the thirteen categories.", nameof(categorySlug));
         }
 
         return new Listing

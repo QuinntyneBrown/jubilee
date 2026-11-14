@@ -52,6 +52,7 @@ public static class WireValues
         ListingKind.Shop => "shop",
         ListingKind.Space => "space",
         ListingKind.Platform => "platform",
+        ListingKind.Nonprofit => "nonprofit",
         _ => "services",
     };
 
