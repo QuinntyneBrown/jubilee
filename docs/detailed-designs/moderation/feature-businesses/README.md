@@ -23,18 +23,23 @@ actions and are written to the audit log (`L2-180`).
 
 The slice has an admin write path and a public read path.
 
-- **`RecordsPage` (Featured slots)** — page of the admin application
-  (`admin/run-admin-application`) at `/featured`. It shows the current and coming
-  weeks, lets a moderator search live listings, order up to five of them and pick
-  the start date, and stops the selection at five. The mock is
-  `pages/admin-featured` and the copy is in it (ADR 0033).
+- **`RecordsPage` and `RecordEditPage` (Featured slots)** — the table of the admin
+  application at `/featured-slots` and its creation (`/featured-slots/new`): Listing, Position
+  and "Week of". `FeaturedSlotCreation` applies the featured week's rules: a live listing
+  (`NOT_LIVE`), a position from 1 to 5 (`OUT_OF_RANGE`), today or later (`START_IN_PAST`), at most
+  five slots in a week (`WEEK_FULL`) and no week overlapping another (`WEEK_OVERLAPS`), each said
+  under its field. The old path `/featured` opens `/featured-slots`; the Featured screen and its
+  page `admin-featured` are retired (ADR 0074). The mocks are `pages/admin-records/featured-slots`
+  and `pages/admin-record/featured-slots`.
 - **`WelcomePage`** and **`BrowsePage`** — pages of the app that render
   "Featured this week" with one business card per business returned, in slot
   order, and nothing when the list is empty.
 - **`AdminApi`** (`ADMIN_API`) — `featuredWeeks`, `featuredCandidates` and
   `setFeaturedWeek`; the app reads the businesses with the welcome and browse
   reads of `DirectoryApi`.
-- **`AdminFeaturedController`** — exposes `GET /api/admin/featured`,
+- **`AdminFeaturedController`** — no screen uses it since the Featured screen retired; it is kept
+  until its API tests of the week's rules and of the directory's featured pages move onto the
+  table's creation (see `admin/work-in-the-tables`, open questions). It exposes `GET /api/admin/featured`,
   `GET /api/admin/featured/candidates?q=` and
   `PUT /api/admin/featured-weeks/{startDate}` under `RequiresModerator`, the staff
   policy (`security/authorize-staff-requests`). The PUT replaces the whole

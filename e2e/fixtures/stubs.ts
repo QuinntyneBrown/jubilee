@@ -914,8 +914,6 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
       return stubAdmin(page, { listing: 'fails' });
     case 'moderation-reports':
     case 'moderation-report':
-    case 'moderation-featured':
-      return stubModeration(page);
     case 'moderation-reports-empty':
       return stubModeration(page, { reports: 'empty' });
     case 'moderation-reports-error':
@@ -926,8 +924,6 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
       return stubModeration(page, { reviewReport: true });
     case 'moderation-report-error':
       return stubModeration(page, { reports: 'fails' });
-    case 'moderation-featured-error':
-      return stubModeration(page, { featured: 'fails' });
     case 'account-data-requested':
       await stubProfile(page);
       return stubAccountData(page, { exportState: 'requested' });

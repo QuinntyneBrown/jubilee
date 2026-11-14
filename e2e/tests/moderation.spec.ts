@@ -1,7 +1,6 @@
 import { expect, test } from '../fixtures/jb-test';
 import { CONVERSATION_REPORT_ID, REPORT_ID, stubModeration } from '../fixtures/moderation';
 import { miriam } from '../fixtures/staff';
-import { AdminFeaturedPage } from '../pages/admin-featured.page';
 import { AdminReportPage } from '../pages/admin-report.page';
 import { AdminReportsPage } from '../pages/admin-reports.page';
 import { ReportActionDialog } from '../pages/report-action.dialog';
@@ -169,77 +168,5 @@ test.describe('handle reports (L2-105)', () => {
 
     await expect(report.resolvedNotice).toContainText('This report is resolved');
     expect(fake.actions[0].kind).toBe('remove');
-  });
-});
-
-test.describe('feature businesses (L2-106)', () => {
-  test('AC1: a moderator searches live businesses, orders them and saves the week', async ({
-    page,
-    jb,
-  }) => {
-    const featured = new AdminFeaturedPage(page);
-    const toasts = new Toasts(page);
-    await featured.setWidth(1280);
-    const fake = await stubModeration(page);
-    await jb.gotoAdmin('/featured');
-
-    await featured.search.fill('financial');
-    await featured.add('Legacy Financial').click();
-    await featured.search.fill('flower');
-    await featured.add('Flower Creations').click();
-    await expect(featured.chosen).toHaveCount(2);
-    await featured.moveDown('Legacy Financial').click();
-    await expect(featured.chosen.first()).toContainText('Flower Creations');
-    await expect(featured.count).toContainText('2 of 5 chosen');
-
-    await featured.save.click();
-
-    await expect(toasts.withTitle('Featured businesses saved')).toBeVisible();
-    expect(fake.saved).toHaveLength(1);
-    expect(fake.saved[0].ids).toEqual(['f3', 'f1']);
-  });
-
-  test('AC2: no more than five can be chosen', async ({ page, jb }) => {
-    const featured = new AdminFeaturedPage(page);
-    await featured.setWidth(1280);
-    await stubModeration(page);
-    await jb.gotoAdmin('/featured');
-
-    for (const name of ['Legacy', 'WaterWorks', 'Flower', 'Luzandre', 'Laurent']) {
-      await featured.search.fill(name);
-      await featured.found.getByRole('button', { name: /^Add/ }).first().click();
-    }
-    await expect(featured.chosen).toHaveCount(5);
-    await expect(featured.search).toBeDisabled();
-    await expect(featured.count).toContainText('Remove one to add another');
-
-    await featured.remove('Laurent Photography').click();
-    await expect(featured.search).toBeEnabled();
-  });
-
-  test('AC3: a week too close to another is refused and the selection is kept', async ({
-    page,
-    jb,
-  }) => {
-    const featured = new AdminFeaturedPage(page);
-    await featured.setWidth(1280);
-    await stubModeration(page, { save: 'overlaps' });
-    await jb.gotoAdmin('/featured');
-
-    await featured.search.fill('Legacy');
-    await featured.add('Legacy Financial').click();
-    await featured.save.click();
-
-    await expect(featured.alert).toContainText('within 7 days');
-    await expect(featured.chosen).toHaveCount(1);
-  });
-
-  test('weeks that cannot load say so and quote their reference', async ({ page, jb }) => {
-    const featured = new AdminFeaturedPage(page);
-    await featured.setWidth(1280);
-    await stubModeration(page, { featured: 'fails' });
-    await jb.gotoAdmin('/featured');
-
-    await expect(featured.reference).toHaveText('JB-ADM-513');
   });
 });

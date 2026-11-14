@@ -208,6 +208,29 @@ gap.
 - **"Type delete to confirm"**: the label is plain text, as its accessible name reads; the mock's
   `<code>` around "delete" is dropped because `jb-field` takes its label as text.
 
+- **Retiring the old screens (ADR 0074)** — done for Featured: `/featured` opens
+  `/featured-slots`, and the `admin-featured` page, its API calls and its e2e page object are gone.
+  Not yet done, because the record screens do not carry their behaviour yet and retiring them now
+  would take it from the Jubilee team:
+  - `/listings/{id}` still opens `admin-listing`: the listing record needs "Take down listing" with
+    `take-down-listing`, "Taken down {date} by {name}." (`L2-100` AC5, `L2-101`) and the Owner
+    panel, flags, "How members see it", the platform panel and a space's terms (`L2-013` AC8,
+    `L2-257` AC2, `L2-200` AC3), none of which the record mocks draw yet.
+  - `/reports` and `/reports/{id}` still open `admin-reports` and `admin-report`: the report
+    records need "Overdue" (`L2-105` AC4, `L2-237` AC1), the reported conversation or review with
+    every report of it, the move to "In review" on opening, and the actions of `report-action`
+    (`L2-105` AC2 – AC5, `L2-237` AC2 – AC4).
+  - `/policies` and `/policies/{slug}` still open `admin-policies` and `admin-policy`: a
+    content version's record needs the editor of `L2-247` AC2 – AC4 (title, lead, sections,
+    preview) and "Publish version {n}" with `publish-policy`.
+  - `AdminFeaturedController` stays until `ModerationTests`, `ModerationBoundTests`,
+    `DirectoryCacheTests` and `StaffAccessTests` exercise the week's rules through
+    `POST /api/admin/tables/featured-slots`.
+  - The own-listing parity case (`admin-record.own-listing`) waits for `/listings/{id}` on the
+    record page.
+  Each is its own slice: the record mock first, then the action or panel on `RecordPage`, then the
+  old screen's tests moved onto it, then the old page, route and endpoints removed.
+
 ## Requirements
 
 | L2 ID | Refines (L1) | Requirement |

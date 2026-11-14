@@ -1058,6 +1058,46 @@ test.describe('edit and create a record (L2-283)', () => {
     await expect(record.field('Listing')).toHaveText('Luzandre.com');
   });
 
+  // L2-106 AC1: the featured week's rules hold on the table's creation, where the old Featured
+  // screen's chooser held them (ADR 0074).
+  test('L2-106 AC1: a sixth slot in one week, or one too close to another week, is refused under "Week of"', async ({
+    page,
+    jb,
+  }) => {
+    const record = new AdminRecordPage(page);
+    await record.setWidth(1280);
+    const fake = await stubAdminTables(page, miriam, {
+      saveAnswer: 'refused',
+      refusal: { startsOn: 'WEEK_FULL' },
+    });
+    await jb.gotoAdmin('/featured-slots/new');
+
+    await record.editor('Listing').selectOption({ label: `Luzandre.com · ${LISTING_ROWS[0].id}` });
+    await record.editor('Position').fill('2');
+    await record.editor('Week of').fill('2026-11-16');
+    await record.create('featured slot').click();
+
+    await expect(record.fieldError('Week of')).toHaveText(
+      'That week already has five featured listings.',
+    );
+    fake.refusal = { startsOn: 'WEEK_OVERLAPS' };
+    await record.create('featured slot').click();
+    await expect(record.fieldError('Week of')).toHaveText(
+      'Another featured week overlaps this one.',
+    );
+    await expect(page).toHaveURL(/\/featured-slots\/new$/);
+  });
+
+  test('ADR 0074: the old Featured screen’s path opens Featured slots', async ({ page, jb }) => {
+    const records = new AdminRecordsPage(page);
+    await records.setWidth(1280);
+    await stubAdminTables(page, miriam);
+    await jb.gotoAdmin('/featured');
+
+    await expect(page).toHaveURL(`${ADMIN_URL}/featured-slots`);
+    await expect(records.heading).toHaveText('Featured slots');
+  });
+
   test('AC4: a table the role cannot create in offers no "New"', async ({ page, jb }) => {
     const records = new AdminRecordsPage(page);
     await records.setWidth(1280);

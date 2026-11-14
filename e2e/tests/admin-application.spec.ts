@@ -12,12 +12,7 @@ import { AdminSignInPage } from '../pages/admin-sign-in.page';
 import { AdminRecordsPage } from '../pages/admin-records.page';
 
 test.describe('the admin application (L2-188)', () => {
-  for (const path of [
-    `/listings/${LISTING_ID}`,
-    '/reports',
-    `/reports/${REPORT_ID}`,
-    '/featured',
-  ]) {
+  for (const path of [`/listings/${LISTING_ID}`, '/reports', `/reports/${REPORT_ID}`]) {
     test(`AC4: ${path} tells a staff member without the moderator role that it is not for them`, async ({
       page,
       jb,

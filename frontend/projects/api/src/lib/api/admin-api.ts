@@ -1,14 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, InjectionToken, inject } from '@angular/core';
-import { Observable, map } from 'rxjs';
-import {
-  FeaturedListing,
-  FeaturedWeek,
-  ReportActionKind,
-  ReportDetail,
-  ReportFilter,
-  ReportList,
-} from '../models/moderation';
+import { Observable } from 'rxjs';
+import { ReportActionKind, ReportDetail, ReportFilter, ReportList } from '../models/moderation';
 import { AdminListing, AdminListings } from '../models/admin-listings';
 
 /** Contract of the Jubilee team's endpoints (L2-098 to L2-106, ADR 0057). */
@@ -27,9 +20,6 @@ export interface AdminApi {
     resolutionNote: string,
     messageText: string | null,
   ): Observable<ReportDetail>;
-  featuredWeeks(): Observable<FeaturedWeek[]>;
-  featuredCandidates(search: string): Observable<FeaturedListing[]>;
-  setFeaturedWeek(startDate: string, listingIds: string[]): Observable<FeaturedWeek>;
 }
 
 export const ADMIN_API = new InjectionToken<AdminApi>('ADMIN_API');
@@ -71,22 +61,5 @@ export class HttpAdminApi implements AdminApi {
       resolutionNote,
       ...(messageText === null ? {} : { messageText }),
     });
-  }
-
-  featuredWeeks(): Observable<FeaturedWeek[]> {
-    return this.http
-      .get<{ weeks: FeaturedWeek[] }>('/api/admin/featured')
-      .pipe(map((answer) => answer.weeks));
-  }
-
-  featuredCandidates(search: string): Observable<FeaturedListing[]> {
-    const params: Record<string, string> = search ? { q: search } : {};
-    return this.http
-      .get<{ items: FeaturedListing[] }>('/api/admin/featured/candidates', { params })
-      .pipe(map((answer) => answer.items));
-  }
-
-  setFeaturedWeek(startDate: string, listingIds: string[]): Observable<FeaturedWeek> {
-    return this.http.put<FeaturedWeek>(`/api/admin/featured-weeks/${startDate}`, { listingIds });
   }
 }

@@ -100,13 +100,8 @@ export const routes: Routes = [
         data: screen('admin-report', 'listing-reports'),
         title: 'Review a report · Jubilee admin',
       },
-      {
-        path: 'featured',
-        loadComponent: () =>
-          import('./pages/admin-featured/admin-featured.page').then((m) => m.AdminFeaturedPage),
-        data: screen('admin-featured', 'featured-slots'),
-        title: 'Featured this week · Jubilee admin',
-      },
+      // The old Featured screen's path opens its table (ADR 0074).
+      { path: 'featured', pathMatch: 'full', redirectTo: 'featured-slots' },
       {
         path: 'policies',
         pathMatch: 'full',

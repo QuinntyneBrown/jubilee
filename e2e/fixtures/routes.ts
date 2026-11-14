@@ -210,8 +210,6 @@ export type StubName =
   | 'moderation-report-conversation'
   | 'moderation-report-review'
   | 'moderation-report-error'
-  | 'moderation-featured'
-  | 'moderation-featured-error'
   | 'account-data-requested'
   | 'account-data-build-failed'
   | 'data-download-done'
@@ -2236,20 +2234,6 @@ export const routes = {
     who: 'visitor',
     site: 'admin',
     stub: 'moderation-report-error',
-  },
-  'admin-featured': {
-    app: '/featured',
-    mock: 'pages/admin-featured/default.html',
-    who: 'visitor',
-    site: 'admin',
-    stub: 'moderation-featured',
-  },
-  'admin-featured.error': {
-    app: '/featured',
-    mock: 'pages/admin-featured/error.html',
-    who: 'visitor',
-    site: 'admin',
-    stub: 'moderation-featured-error',
   },
   'admin-sign-in': {
     app: '/sign-in',
