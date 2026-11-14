@@ -280,6 +280,7 @@ PlantUML source: [`diagrams/sequence-return.puml`](diagrams/sequence-return.puml
 
 | What fails | What the buyer sees | What happens to the order |
 |---|---|---|
+| The bag cannot read the prices again | "We couldn’t check the prices"; no delivery or totals; "Check out" disabled | None is made |
 | No `Stripe:SecretKey` | "Checkout isn’t open yet." | None is made |
 | Stripe refuses or cannot be reached | "We couldn’t open checkout." with `JB-MERCH-503` | None is kept; nothing is held |
 | The buyer leaves Stripe's page | "Nothing was paid"; the bag is kept | Pending, then expired at 30 minutes; the hold ends |
