@@ -230,6 +230,17 @@ export class AdminRecordsPage extends AdminShellPage implements Screen {
     await this.exportMenu.getByRole('menuitem', { name: item }).click();
   }
 
+  /** Opens Export and gives where its menu lands once it has finished opening (L2-279 AC1). */
+  async openExportMenu(): Promise<{ x: number; width: number }> {
+    await this.exportButton.click();
+    await this.exportMenu.waitFor();
+    await this.exportMenu.evaluate((menu) =>
+      Promise.all(menu.getAnimations({ subtree: true }).map((animation) => animation.finished)),
+    );
+    const box = await this.exportMenu.boundingBox();
+    return { x: box!.x, width: box!.width };
+  }
+
   /** Checks the rows with these names, in the table or, under 768 px, the list (L2-280 AC3). */
   async select(...names: string[]): Promise<void> {
     for (const name of names) {

@@ -150,7 +150,7 @@ and those a new record is given (`creatable`).
 - **Components** (`components`): `jb-records-table` (`records`, the `cell--*` values, the phone
   list, skeleton rows, the empty state), `jb-status-pill` (`status status--{tone}`), `jb-lock-tag`,
   `jb-record-head`, `jb-record-fields`, `jb-backlinks`, `jb-history`, `jb-bulk-bar`, `jb-doomed-list`,
-  `jb-export-menu` (Export and its menu, the matching rows first while a search or a filter is on),
+  `jb-export-menu` (Export and its menu, the matching rows first while a search or a filter is on; it opens with its end on the button's end, or from its start where Export sits in the left half of the main region, so it never covers the sidebar),
   `jb-record-note`,
   reusing `jb-menu`, `jb-chip`, `jb-checkbox`, `jb-switch`, `jb-select`, `jb-input`,
   `jb-textarea`, `jb-skeleton`, `jb-empty-state` and `jb-toast-region`.

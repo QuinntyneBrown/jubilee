@@ -1426,6 +1426,42 @@ test.describe('export a table (L2-279)', () => {
     ]);
   });
 
+  test('AC1: where Export starts its row, the menu opens from its start and leaves the sidebar clear', async ({
+    page,
+    jb,
+  }) => {
+    const records = new AdminRecordsPage(page);
+    // At 1100 px the sidebar shows, and the Members table's description of the design data pushes
+    // the heading's actions under the title.
+    await records.setWidth(1100);
+    await stubAdminTables(page, ada, { data: 'mock' });
+    await jb.gotoAdmin('/members');
+    const button = await records.exportButton.boundingBox();
+    const heading = await records.heading.boundingBox();
+    expect(Math.round(button!.x)).toBe(Math.round(heading!.x));
+
+    const menu = await records.openExportMenu();
+
+    const sidebar = await records.sidebar.boundingBox();
+    expect(menu.x).toBeGreaterThanOrEqual(sidebar!.x + sidebar!.width);
+    expect(Math.round(menu.x)).toBe(Math.round(button!.x));
+  });
+
+  test('AC1: beside the title, the menu opens with its end on the end of Export', async ({
+    page,
+    jb,
+  }) => {
+    const records = new AdminRecordsPage(page);
+    await records.setWidth(1440);
+    await stubAdminTables(page, ada);
+    await jb.gotoAdmin('/members');
+
+    const menu = await records.openExportMenu();
+
+    const button = await records.exportButton.boundingBox();
+    expect(Math.round(menu.x + menu.width)).toBe(Math.round(button!.x + button!.width));
+  });
+
   test('AC1: with a search, Export offers the matching rows first', async ({ page, jb }) => {
     const records = new AdminRecordsPage(page);
     await records.setWidth(1280);

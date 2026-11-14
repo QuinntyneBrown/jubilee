@@ -1,6 +1,15 @@
 import { CdkMenuTrigger } from '@angular/cdk/menu';
 import { ConnectedPosition } from '@angular/cdk/overlay';
-import { booleanAttribute, ChangeDetectionStrategy, Component, input, output } from '@angular/core';
+import {
+  booleanAttribute,
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  inject,
+  input,
+  output,
+  signal,
+} from '@angular/core';
 import { Button } from '../button/button';
 import { Icon } from '../icon/icon';
 import { Menu } from '../menu/menu';
@@ -16,6 +25,35 @@ export interface ExportChoice {
 }
 
 const COUNT = new Intl.NumberFormat('en-CA');
+
+const BELOW_END: ConnectedPosition = {
+  originX: 'end',
+  originY: 'bottom',
+  overlayX: 'end',
+  overlayY: 'top',
+};
+const BELOW_START: ConnectedPosition = {
+  originX: 'start',
+  originY: 'bottom',
+  overlayX: 'start',
+  overlayY: 'top',
+};
+const ABOVE_END: ConnectedPosition = {
+  originX: 'end',
+  originY: 'top',
+  overlayX: 'end',
+  overlayY: 'bottom',
+};
+const ABOVE_START: ConnectedPosition = {
+  originX: 'start',
+  originY: 'top',
+  overlayX: 'start',
+  overlayY: 'bottom',
+};
+/** End on the button's end; the others where that would leave the page. */
+const END_ALIGNED = [BELOW_END, BELOW_START, ABOVE_END, ABOVE_START];
+/** From the button's start; the others where that would leave the page. */
+const START_ALIGNED = [BELOW_START, BELOW_END, ABOVE_START, ABOVE_END];
 
 /**
  * Export, beside a table's heading (L2-279 AC1): a menu "Download" with "CSV, matching rows" and
@@ -45,16 +83,25 @@ export class ExportMenu {
   /** True to turn the weekly e-mail on, false to stop it. */
   readonly weeklyChanged = output<boolean>();
 
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+
   /**
-   * The menu opens under the button, its end on the button's end, as the design draws it; where
-   * that would leave the page, as on a phone where Export starts its row, from the button's start.
+   * Where the menu opens, chosen as the button is pressed or focused (L2-279 AC1): under the
+   * button, its end on the button's end, as the design draws it beside the title; where Export
+   * starts its row, as on a phone or when the heading's actions wrap under the title, from the
+   * button's start, so that it never covers the sidebar of tables.
    */
-  protected readonly endAligned: ConnectedPosition[] = [
-    { originX: 'end', originY: 'bottom', overlayX: 'end', overlayY: 'top' },
-    { originX: 'start', originY: 'bottom', overlayX: 'start', overlayY: 'top' },
-    { originX: 'end', originY: 'top', overlayX: 'end', overlayY: 'bottom' },
-    { originX: 'start', originY: 'top', overlayX: 'start', overlayY: 'bottom' },
-  ];
+  protected readonly positions = signal<ConnectedPosition[]>(END_ALIGNED);
+
+  /** Opens towards the side of the screen's main region with more room. */
+  protected place(): void {
+    const button = this.host.nativeElement.getBoundingClientRect();
+    const region = (
+      this.host.nativeElement.closest('main') ?? document.body
+    ).getBoundingClientRect();
+    const startsLeft = button.left + button.width / 2 < region.left + region.width / 2;
+    this.positions.set(startsLeft ? START_ALIGNED : END_ALIGNED);
+  }
 
   protected count(n: number): string {
     return COUNT.format(n);

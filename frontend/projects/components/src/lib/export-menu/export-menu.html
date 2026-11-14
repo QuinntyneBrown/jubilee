@@ -1,4 +1,11 @@
-<button jb-button type="button" [cdkMenuTriggerFor]="exportMenu" [cdkMenuPosition]="endAligned">
+<button
+  jb-button
+  type="button"
+  [cdkMenuTriggerFor]="exportMenu"
+  [cdkMenuPosition]="positions()"
+  (pointerdown)="place()"
+  (focus)="place()"
+>
   <svg jb-icon name="download"></svg>Export<svg jb-icon name="chevron-down"></svg>
 </button>
 <ng-template #exportMenu>
