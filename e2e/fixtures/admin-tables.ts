@@ -514,6 +514,8 @@ export interface FakeAdminTables {
   overviewAnswer: 'ok' | 'slow' | 'fails';
   /** How many times the overview was read; nothing polls it (L2-274 AC7). */
   overviewReads: number;
+  /** The text of every search of the jump palette, in order (L2-273 AC6). */
+  jumps: string[];
 }
 
 /** The overview as the API answers it (L2-274, L2-275). */
@@ -543,6 +545,9 @@ export interface AdminOverview {
   }[];
   changes: { actor: string; what: string; table: string | null; recordId: string; at: string }[];
 }
+
+/** The tables a search never reaches: a message opens only from its report (L2-284 AC3). */
+const PRIVATE_TABLES = new Set(['messages', 'message-attachments']);
 
 /** The overview of the mocks, drawn from their rows at the e2e clock (L2-274, L2-275). */
 export const MOCK_OVERVIEW = mockTables.overview as AdminOverview;
@@ -661,6 +666,7 @@ export async function stubAdminTables(
     overview: options.overview ?? structuredClone(MOCK_OVERVIEW),
     overviewAnswer: options.overviewAnswer ?? 'ok',
     overviewReads: 0,
+    jumps: [],
   };
   // A copy per test: "Email me this weekly" changes its table (L2-279 AC3).
   const groups = structuredClone(
@@ -678,6 +684,33 @@ export async function stubAdminTables(
       );
     }
     return route.fulfill({ json: fake.overview });
+  });
+
+  // The records the jump palette lists: ID or name containing the text, across the tables the
+  // staff member reads, in the catalog's order, six at most, never a private table (L2-273 AC3).
+  await page.route('**/api/admin/jump*', (route: Route) => {
+    const text = (new URL(route.request().url()).searchParams.get('q') ?? '').trim();
+    fake.jumps.push(text);
+    const lower = text.toLowerCase();
+    const found = tables
+      .filter((t) => !PRIVATE_TABLES.has(t.key))
+      .flatMap((t) =>
+        (fake.rows[t.key] ?? [])
+          .filter(
+            (row) =>
+              lower !== '' &&
+              (row.id.toLowerCase().includes(lower) || row.name.toLowerCase().includes(lower)),
+          )
+          .map((row) => ({
+            table: t.key,
+            tableLabel: t.label,
+            singular: t.singular,
+            id: row.id,
+            name: row.name,
+          })),
+      )
+      .slice(0, 6);
+    return route.fulfill({ json: found });
   });
 
   await page.route('**/api/admin/tables', (route: Route) => {

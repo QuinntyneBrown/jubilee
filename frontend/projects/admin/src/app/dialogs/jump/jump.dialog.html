@@ -1,0 +1,9 @@
+<div
+  jb-command-palette
+  [text]="text()"
+  [items]="items()"
+  [pending]="pending()"
+  (textChange)="text.set($event)"
+  (choose)="go($event)"
+  (dismiss)="close()"
+></div>

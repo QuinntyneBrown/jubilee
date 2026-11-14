@@ -1,0 +1,53 @@
+<div class="palette__panel">
+  <div class="palette__search">
+    <svg jb-icon name="search"></svg>
+    <input
+      class="palette__input"
+      type="text"
+      role="combobox"
+      aria-expanded="true"
+      aria-autocomplete="list"
+      aria-label="Jump to a table or record"
+      autocomplete="off"
+      spellcheck="false"
+      [attr.aria-controls]="id + '-list'"
+      [attr.aria-activedescendant]="activeId()"
+      [placeholder]="placeholder()"
+      [value]="text()"
+      (input)="textChange.emit($any($event.target).value)"
+      (keydown)="keydown($event)"
+    />
+    <kbd class="palette__key">esc</kbd>
+  </div>
+  <ul class="palette__list" role="listbox" aria-label="Tables and records" [id]="id + '-list'">
+    @for (item of items(); track item.link; let i = $index) {
+      <li role="presentation">
+        <a
+          class="palette__item"
+          role="option"
+          tabindex="-1"
+          [id]="id + '-' + i"
+          [href]="item.link"
+          [attr.aria-selected]="i === active() ? 'true' : 'false'"
+          (click)="picked($event, item)"
+          (mousemove)="active.set(i)"
+        >
+          @if (item.kind === 'table') {
+            <svg jb-icon name="table"></svg>
+          } @else {
+            <span class="palette__kind" aria-hidden="true">R</span>
+          }
+          <span class="palette__label">{{ item.label }}</span>
+          <span class="palette__meta">{{ item.meta }}</span>
+          @if (i === active()) {
+            <svg jb-icon name="enter"></svg>
+          }
+        </a>
+      </li>
+    } @empty {
+      @if (text().trim() && !pending()) {
+        <li class="palette__none" role="presentation">Nothing matches “{{ text().trim() }}”.</li>
+      }
+    }
+  </ul>
+</div>

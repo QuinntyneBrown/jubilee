@@ -223,3 +223,4 @@ export * from './lib/admin-aside/admin-aside';
 export * from './lib/admin-aside-section/admin-aside-section';
 export * from './lib/system-list/system-list';
 export * from './lib/change-list/change-list';
+export * from './lib/command-palette/command-palette';

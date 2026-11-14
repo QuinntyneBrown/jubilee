@@ -6,6 +6,7 @@ import { filter, skip } from 'rxjs';
 import { AdminCatalogService } from '../../services/admin-catalog.service';
 import { AdminRouteService } from '../../services/admin-route.service';
 import { AdminScreenService } from '../../services/admin-screen.service';
+import { JumpService } from '../../services/jump.service';
 import { StaffSessionService } from '../../services/staff-session.service';
 import { AdminOnlyPage } from '../admin-only/admin-only.page';
 
@@ -22,6 +23,8 @@ const ROLE_NAMES = { moderator: 'Moderator', admin: 'Administrator' } as const;
   imports: [RouterOutlet, AdminShell, AdminOnlyPage],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './shell.page.html',
+  // ⌘K or Ctrl K opens "Jump to" from any screen of the shell (L2-273 AC1).
+  host: { '(document:keydown)': 'jump.keydown($event)' },
 })
 export class ShellPage {
   private readonly router = inject(Router);
@@ -29,6 +32,7 @@ export class ShellPage {
   private readonly catalog = inject(AdminCatalogService);
   private readonly screenOutcome = inject(AdminScreenService).outcome;
   protected readonly route = inject(AdminRouteService);
+  protected readonly jump = inject(JumpService);
 
   protected readonly environment = computed(
     () => this.session.staff()?.environment ?? 'Production',

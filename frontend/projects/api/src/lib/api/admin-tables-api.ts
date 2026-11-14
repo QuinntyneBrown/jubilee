@@ -10,12 +10,15 @@ import {
   AdminExportQuery,
   AdminValues,
   AdminOverview,
+  AdminJump,
 } from '../models/admin-tables';
 
 /** Contract of the schema-driven tables of the admin application (L2-276 to L2-284, ADR 0074). */
 export interface AdminTablesApi {
   /** What is waiting on staff, System and Recent changes, read at that moment (L2-274, L2-275). */
   overview(): Observable<AdminOverview>;
+  /** The records, across the tables the staff member may read, whose ID or name contains the text (L2-273 AC3). */
+  jump(text: string): Observable<AdminJump[]>;
   /** The groups and tables the staff member may read, with their counts and rights. */
   catalog(): Observable<AdminCatalog>;
   /** A page of a table, searched, filtered and sorted by the database. */
@@ -46,6 +49,10 @@ export class HttpAdminTablesApi implements AdminTablesApi {
 
   overview(): Observable<AdminOverview> {
     return this.http.get<AdminOverview>('/api/admin/overview');
+  }
+
+  jump(text: string): Observable<AdminJump[]> {
+    return this.http.get<AdminJump[]>('/api/admin/jump', { params: { q: text } });
   }
 
   catalog(): Observable<AdminCatalog> {

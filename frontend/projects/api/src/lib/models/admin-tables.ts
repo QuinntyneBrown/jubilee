@@ -209,6 +209,15 @@ export interface AdminOverview {
   changes: AdminChange[];
 }
 
+/** A record the jump palette lists (L2-273 AC3). */
+export interface AdminJump {
+  table: string;
+  tableLabel: string;
+  singular: string;
+  id: string;
+  name: string;
+}
+
 /** How many records a change of the selection reached (L2-280 AC4). */
 export interface AdminCount {
   count: number;

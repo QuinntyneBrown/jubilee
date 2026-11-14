@@ -1921,6 +1921,27 @@ export const routes = {
     site: 'admin',
     stub: 'admin-overview',
   },
+  'admin-overview.palette': {
+    app: '/',
+    mock: 'pages/admin-overview/palette.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'admin-overview',
+  },
+  'admin-overview.palette-results': {
+    app: '/',
+    mock: 'pages/admin-overview/palette-results.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'admin-overview',
+  },
+  'admin-overview.palette-none': {
+    app: '/',
+    mock: 'pages/admin-overview/palette-none.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'admin-overview',
+  },
   'admin-records': {
     app: '/members',
     mock: 'pages/admin-records/default.html',

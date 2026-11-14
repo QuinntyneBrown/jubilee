@@ -4,6 +4,7 @@
   [staff]="staff()"
   [environment]="environment()"
   (signOut)="signOut()"
+  (jump)="jump.open()"
 >
   @if (route.notForRole(); as role) {
     <jb-admin-only-page [role]="role" (signOut)="signOut()" />
