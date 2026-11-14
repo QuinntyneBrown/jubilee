@@ -23,7 +23,8 @@ public static class JubileeCli
 
         Commands:
           migrate   Apply the EF Core migrations (SQL Server) or create the schema from the model (SQLite),
-                    then give listings whose slug breaks the address rules a new one (the old one redirects).
+                    add the Purpose Tee when there is none, then give listings whose slug breaks the address
+                    rules a new one (the old one redirects).
           seed      Add the demo directory. Safe to run again.
           reset     Delete the database.
           staff grant  --email {address} --role moderator|admin   Give a staff account a role (creates the account).
@@ -65,6 +66,9 @@ public static class JubileeCli
             case "migrate":
                 await PrepareSchemaAsync(db, sqlite);
                 await output.WriteLineAsync("Database is up to date.");
+
+                // Jubilee's own product is not demo data: production, which is never seeded, sells it too (L2-263 AC7).
+                await MerchCatalogue.SeedAsync(db, scope.ServiceProvider.GetRequiredService<TimeProvider>().GetUtcNow(), CancellationToken.None);
 
                 // Listings from before the address rules receive a slug that keeps them (L2-241 AC5, ADR 0071).
                 var realigned = await scope.ServiceProvider.GetRequiredService<ISender>().Send(new Jubilee.Application.Listings.RealignListingSlugsCommand());
