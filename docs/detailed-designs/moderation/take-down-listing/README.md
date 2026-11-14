@@ -158,7 +158,8 @@ Follow them yourself to see what the listing describes." (`L2-295` AC2). Each
 address shows as text; it is also a link, with
 `rel="noopener noreferrer nofollow"` and `target="_blank"`, only when it
 passes `WebAddressRules.IsWebAddress`, and an address that fails the rule
-stays text only. Every field is rendered by interpolation, never as markup
+stays text only. A non-profit with no page for giving has no "Page for giving"
+row, as on its page. Every field is rendered by interpolation, never as markup
 (`L2-297` AC1), and the server never requests either address (`L2-292` AC4).
 No line calls the non-profit verified, approved, registered, vetted or
 endorsed.

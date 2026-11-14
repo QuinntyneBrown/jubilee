@@ -86,7 +86,9 @@ presentation component.
   `jb-button`, at least 44 px high, and opens with Enter (`L2-292` AC6). They
   need no session and no connection check: they work for a visitor and stay
   links offline (`L2-298` AC5). The "Website" and "Page for giving" rows repeat
-  the same links with the host as text.
+  the same links with the host as text and the same arrow icon. While the page
+  loads it says "Loading this non-profit…", as every listing page names what it
+  opens (`L2-291` AC9).
 - **No link without a valid address** (`L2-292` AC5): when `website` is null
   the page shows no "Visit" link and no "Website" row; when `giveUrl` is null
   it shows no "Give" link and no "Page for giving" row. With neither, the page

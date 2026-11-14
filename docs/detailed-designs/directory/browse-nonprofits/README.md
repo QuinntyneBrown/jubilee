@@ -92,8 +92,9 @@ the businesses.
   shelf "Non-profits in Toronto" with the line "Ministries and charities at
   work across the city.", "All {n}" linking to `/c/non-profits`, and up to
   four non-profits as `jb-business-card` items (`L2-289` AC1). With `Count` 0
-  the shelf is not shown. The shelf composes library components only
-  (`jb-section-header` and `jb-card-grid` or their equivalents in the mock).
+  the shelf is not shown. The shelf composes library components only:
+  `jb-section`, whose `subtitle` input draws the muted line under the heading,
+  and `jb-card-grid` of `jb-saveable` business cards.
 - **`CategoryPage`** (`pages/category/`): for `non-profits` it reuses the
   branch of `software-platforms`. The computed `platforms` becomes a check of
   either slug (named for what it does: no filters, Sort kept). The page

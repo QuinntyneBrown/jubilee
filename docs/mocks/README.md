@@ -195,8 +195,7 @@ Magic Patterns design reference. These assumptions shaped it; each one is a deci
     offer?" stay in the two-column `choice-cards` grid, so the fifth sits alone on the third row.
     On the non-profit page the second link out ("Visit {host}") is the default large button; under
     640 px the primary link out takes the full row and the rest wrap under it (the existing
-    `detail-head__actions` rule; L2-298 AC1 names 768 px, see the design system's open
-    questions).
+    `detail-head__actions` rule, which L2-298 AC1 now names).
 
 ## Checking and screenshots
 
