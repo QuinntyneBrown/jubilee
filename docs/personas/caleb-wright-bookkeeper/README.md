@@ -43,8 +43,8 @@ the fields labelled, does focus go where it should, does the page tell him what 
 
 ## How he serves the mission
 
-Caleb is one of the "Christian business people in Toronto" the mission names, and his trade is
-faithfulness with what others entrust to him. If Jubilee "equips" him, it has to equip him without
+Caleb is one of the "Christian business owners in Toronto" the mission names, and his trade is
+faithfulness with what others entrust to him. If Jubilee "helps" him, it has to help him without
 sight, or the word does not hold.
 
 ## In his words

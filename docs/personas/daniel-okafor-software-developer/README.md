@@ -41,8 +41,8 @@ freelance work came later.
 
 ## How he serves the mission
 
-Daniel is one of the "Christian business people in Toronto" the mission names, though his
-business is six hours a week. He wants the side work to "prosper with purpose": it pays for the
+Daniel is one of the "Christian business owners in Toronto" the mission names, though his
+business is six hours a week. He wants the side work to "support God's work": it pays for the
 down payment, and each year he builds one church or charity website without charge.
 
 ## In his words

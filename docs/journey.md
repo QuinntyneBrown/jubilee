@@ -3,8 +3,8 @@
 Every journey serves Jubilee's mission, the single level-0 requirement in
 [`specs/L0.md`](specs/L0.md):
 
-> Abiding in Jesus and for love of Him, Jubilee equips Christian business people in Toronto to
-> prosper with purpose and resource His Kingdom.
+> Jubilee helps Christian business owners in Toronto do well in business and use what they earn to
+> support God's work. We do this because we love Jesus and stay close to Him.
 
 Each row is one end-to-end user journey to implement, ordered by the value it adds to the user, highest first. The journeys are composed
 from the feature designs in [`detailed-designs/`](detailed-designs/README.md), the requirements in

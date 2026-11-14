@@ -4,8 +4,8 @@ Jubilee's mission ([`specs/L0.md`](specs/L0.md)) says why Jubilee exists. This d
 that mission comes from. Every line of copy on the platform, the marketing site, a pitch, an
 e-mail or a message is framed from the passages below.
 
-> Abiding in Jesus and for love of Him, Jubilee equips Christian business people in Toronto to
-> prosper with purpose and resource His Kingdom.
+> Jubilee helps Christian business owners in Toronto do well in business and use what they earn to
+> support God's work. We do this because we love Jesus and stay close to Him.
 
 ## How to use this document
 
@@ -27,8 +27,8 @@ translation exactly, name it beside the reference, and follow its publisher's pe
 
 ## The anchor: John 15
 
-The mission begins "Abiding in Jesus", and John 15 is where that phrase comes from. It also
-carries the legacy: fruit that remains.
+The mission ends "stay close to Him", and John 15 is where that phrase comes from: "Remain in
+me". It also carries the legacy: fruit that remains.
 
 > Remain in me, and I in you. As the branch can't bear fruit by itself unless it remains in the
 > vine, so neither can you, unless you remain in me. I am the vine. You are the branches. He who
@@ -71,16 +71,7 @@ family. Jubilee speaks of freedom and of community, and of Jesus as the one who 
 
 ## The mission, phrase by phrase
 
-### "Abiding in Jesus and for love of Him"
-
-| Passage | Text (WEB) | What it asks of the content |
-|---|---|---|
-| John 15:4-5 | See [the anchor](#the-anchor-john-15). | Abiding comes first. |
-| Matthew 22:37-39 | "'You shall love the Lord your God with all your heart, with all your soul, and with all your mind.' This is the first and great commandment. A second likewise is this, 'You shall love your neighbor as yourself.'" | Love of God, then love of neighbour, is the motive. The customer is a neighbour, not a lead. |
-| Colossians 3:17 | "Whatever you do, in word or in deed, do all in the name of the Lord Jesus, giving thanks to God the Father, through him." | "In Jesus' name" covers the whole of the work, words included. |
-| Psalm 127:1 | "Unless Yahweh builds the house, they who build it labor in vain. Unless Yahweh watches over the city, the watchman guards it in vain." | Jubilee does not claim to be the builder. |
-
-### "equips Christian business people in Toronto"
+### "Jubilee helps Christian business owners in Toronto"
 
 | Passage | Text (WEB) | What it asks of the content |
 |---|---|---|
@@ -90,7 +81,7 @@ family. Jubilee speaks of freedom and of community, and of Jesus as the one who 
 | Jeremiah 29:7 | "Seek the peace of the city where I have caused you to be carried away captive, and pray to Yahweh for it; for in its peace you will have peace." | Toronto is named in the mission for a reason: the good of the city is sought, not only the good of the members. |
 | Acts 16:14-15 | "A certain woman named Lydia, a seller of purple, of the city of Thyatira, one who worshiped God, heard us. The Lord opened her heart to listen to the things which were spoken by Paul. When she and her household were baptized, she begged us, saying, 'If you have judged me to be faithful to the Lord, come into my house and stay.' So she persuaded us." | A merchant whose house became the first church in Philippi. Business people have always carried the mission. |
 
-### "to prosper with purpose"
+### "do well in business"
 
 | Passage | Text (WEB) | What it asks of the content |
 |---|---|---|
@@ -100,16 +91,25 @@ family. Jubilee speaks of freedom and of community, and of Jesus as the one who 
 | Luke 16:10-11 | "He who is faithful in a very little is faithful also in much. He who is dishonest in a very little is also dishonest in much. If therefore you have not been faithful in the unrighteous mammon, who will commit to your trust the true riches?" | Money is a test of trustworthiness, not the prize. |
 | Matthew 6:33 | "But seek first God's Kingdom, and his righteousness; and all these things will be given to you as well." | The order: the Kingdom first, provision after. |
 
-### "and resource His Kingdom"
+### "and use what they earn to support God's work"
 
 | Passage | Text (WEB) | What it asks of the content |
 |---|---|---|
 | 2 Corinthians 9:8 | "And God is able to make all grace abound to you, that you, always having all sufficiency in everything, may abound to every good work." | Sufficiency is given for good works. |
-| 2 Corinthians 9:11 | "you being enriched in everything to all generosity, which produces thanksgiving to God through us." | Enriched in order to be generous. This is "prosper with purpose" in one line. |
+| 2 Corinthians 9:11 | "you being enriched in everything to all generosity, which produces thanksgiving to God through us." | Enriched in order to be generous. This is "do well in business and use what they earn to support God's work" in one line. |
 | Luke 8:1-3 | "Soon afterwards, he went about through cities and villages, preaching and bringing the good news of God's Kingdom. With him were the twelve, and certain women who had been healed of evil spirits and infirmities: Mary who was called Magdalene, from whom seven demons had gone out; and Joanna, the wife of Chuzas, Herod's steward; Susanna; and many others; who served them from their possessions." | The ministry of Jesus was resourced by people who gave from what they had. |
 | 1 Chronicles 29:14 | "But who am I, and what is my people, that we should be able to offer so willingly as this? For all things come from you, and we have given you of your own." | Giving returns to God what is already his. No one is flattered for giving. |
 | Proverbs 3:9-10 | "Honor Yahweh with your substance, with the first fruits of all your increase: so your barns will be filled with plenty, and your vats will overflow with new wine." | God is honoured first, from the first of the increase. |
 | Acts 20:35 | "In all things I gave you an example, that so laboring you ought to help the weak, and to remember the words of the Lord Jesus, that he himself said, 'It is more blessed to give than to receive.'" | Work is for helping the weak. Giving is the greater blessing. |
+
+### "We do this because we love Jesus and stay close to Him"
+
+| Passage | Text (WEB) | What it asks of the content |
+|---|---|---|
+| John 15:4-5 | See [the anchor](#the-anchor-john-15). | Staying close to Him comes first. |
+| Matthew 22:37-39 | "'You shall love the Lord your God with all your heart, with all your soul, and with all your mind.' This is the first and great commandment. A second likewise is this, 'You shall love your neighbor as yourself.'" | Love of God, then love of neighbour, is the motive. The customer is a neighbour, not a lead. |
+| Colossians 3:17 | "Whatever you do, in word or in deed, do all in the name of the Lord Jesus, giving thanks to God the Father, through him." | "In Jesus' name" covers the whole of the work, words included. |
+| Psalm 127:1 | "Unless Yahweh builds the house, they who build it labor in vain. Unless Yahweh watches over the city, the watchman guards it in vain." | Jubilee does not claim to be the builder. |
 
 ## Legacy
 

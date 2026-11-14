@@ -39,8 +39,8 @@ discount. He is looking for a reason to trust someone before the first meeting.
 
 ## How he serves the mission
 
-Rajan is not a business person; he is the neighbour through whom Jubilee "equips Christian
-business people in Toronto". Every roof, will and gift he buys through it is work given to one
+Rajan is not a business person; he is the neighbour through whom Jubilee "helps Christian
+business owners in Toronto". Every roof, will and gift he buys through it is work given to one
 of them, and his hard questions are a service to the rest.
 
 ## In his words

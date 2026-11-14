@@ -40,7 +40,7 @@ order, and to be told about allergies, and she repeats all three in every call.
 ## How she serves the mission
 
 Miriam has fed her parish at its funerals and its feasts for thirty years, often at cost. She is
-already doing what the mission calls "resource His Kingdom"; Jubilee's part is to equip her to be
+already doing what the mission calls "support God's work"; Jubilee's part is to equip her to be
 found and to be paid fairly for the rest.
 
 ## In her words

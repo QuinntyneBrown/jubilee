@@ -39,8 +39,9 @@ Security vulnerabilities are never reported in a public issue; see [`SECURITY.md
    you write code.
 
 Every change serves Jubilee's mission, the single level-0 requirement
-([`docs/specs/L0.md`](docs/specs/L0.md)): "Abiding in Jesus and for love of Him, Jubilee equips
-Christian business people in Toronto to prosper with purpose and resource His Kingdom." A change
+([`docs/specs/L0.md`](docs/specs/L0.md)): "Jubilee helps Christian
+business owners in Toronto do well in business and use what they earn to support God's work. We do
+this because we love Jesus and stay close to Him." A change
 that cannot be traced back to it does not belong here.
 
 Use the words the requirements use ([`docs/specs/L1.md`](docs/specs/L1.md),

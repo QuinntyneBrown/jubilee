@@ -41,7 +41,7 @@ would also like to feel safe in her own home.
 ## How she serves the mission
 
 Ruth has no business. She has a house, and she means to use it for someone else's good, as in the
-passage the mission's "resource His Kingdom" rests on, where those who followed Jesus "served
+passage the mission's "support God's work" rests on, where those who followed Jesus "served
 them from their possessions." (Luke 8:3) A room at a fair rent is what she has to give.
 
 ## In her words

@@ -41,7 +41,7 @@ her name to a process that picks tenants by who knows whom.
 
 ## How she serves the mission
 
-Victoria has prospered. The mission's phrase for her is "prosper with purpose": what she asks of
+Victoria has prospered. The mission's phrase for her is "use what they earn to support God's work": what she asks of
 Jubilee is help in making five homes serve people, without being flattered for it.
 
 ## In her words
