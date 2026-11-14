@@ -23,7 +23,8 @@ test.describe('business pre-registration (L2-216)', () => {
       'Website or social link (optional)',
       'About your business (required)',
     ]);
-    // The categories are the twelve of the directory, after "Choose a category" (L2-248 AC2)
+    // The categories are the thirteen of the directory, after "Choose a category" (L2-248 AC2),
+    // ending with "Non-profits" (L2-296 AC2)
     await expect(form.field('Category').locator('option')).toHaveText([
       'Choose a category',
       'Shops',
@@ -38,6 +39,7 @@ test.describe('business pre-registration (L2-216)', () => {
       'Media',
       'Community',
       'Software platforms',
+      'Non-profits',
     ]);
     await expect(form.form).toContainText(
       'The neighbourhood you work from or serve, for example Leslieville.',

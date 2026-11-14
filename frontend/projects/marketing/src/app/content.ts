@@ -123,7 +123,7 @@ export const INSIDE_CARDS: readonly MarketingBusiness[] = [
   },
 ];
 
-/** The twelve categories of the directory, in its order (L2-023 AC5, L2-248 AC2), for the business pre-registration. */
+/** The thirteen categories of the directory, in its order (L2-023 AC5, L2-248 AC2, L2-296 AC2), for the business pre-registration. */
 export const CATEGORIES: readonly { slug: string; name: string }[] = [
   { slug: 'shops', name: 'Shops' },
   { slug: 'rooms-rentals', name: 'Rooms & rentals' },
@@ -137,4 +137,5 @@ export const CATEGORIES: readonly { slug: string; name: string }[] = [
   { slug: 'media', name: 'Media' },
   { slug: 'community', name: 'Community' },
   { slug: 'software-platforms', name: 'Software platforms' },
+  { slug: 'non-profits', name: 'Non-profits' },
 ];

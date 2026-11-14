@@ -25,7 +25,8 @@ test.describe('marketing home page (L2-183)', () => {
     await expect(home.heading).toHaveText('Toronto’s Christian businesses, in one place.');
     await expect(home.badge).toHaveText('Launching soon');
     await expect(home.lead).toHaveText(
-      'Jubilee is where Toronto’s Christian community will find shops, advisors and trades it can trust. We are launching soon.',
+      // L2-296 AC1: the non-profits doing God's work are named, with no link and no call to give
+      'Jubilee is where Toronto’s Christian community will find shops, advisors and trades it can trust, and the non-profits doing God’s work in the city. We are launching soon.',
     );
     await expect(home.tellMe).toBeVisible();
     await expect(home.watchTheFilm).toBeVisible();
