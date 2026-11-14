@@ -36,6 +36,30 @@ public sealed class AdminTablesTests : IClassFixture<JubileeApiFactory>, IAsyncL
 
     private static JsonElement Table(JsonElement catalog, string key) => Tables(catalog).Single(t => t.GetProperty("key").GetString() == key);
 
+    // L2-099 AC1: the Listings table's sentence and its columns, newest first
+    [Fact]
+    public async Task L2_099_AC1_the_listings_table_says_what_it_holds_and_shows_its_columns()
+    {
+        var listings = Table(await Json(await Miriam().GetAsync("/api/admin/tables")), "listings");
+
+        Assert.Equal(
+            "Every shop, service and space on Jubilee. Unpublishing hides it from Browse immediately.",
+            listings.GetProperty("sentence").GetString());
+        Assert.Equal(
+            ["id", "name", "kind", "status", "ownerId", "category", "neighbourhood"],
+            listings.GetProperty("defaultColumns").EnumerateArray().Select(c => c.GetString()));
+    }
+
+    // L2-272 AC1: the top bar names the environment the API runs in ("Production" in production)
+    [Fact]
+    public async Task L2_272_AC1_the_staff_session_names_the_environment()
+    {
+        var session = await Json(await Ada().GetAsync("/api/staff/session"));
+
+        Assert.Equal("Development", session.GetProperty("environment").GetString());
+        Assert.Equal("AN", session.GetProperty("initials").GetString());
+    }
+
     // L2-272 AC2, L2-276 AC1: the groups in order, each table with its name and count
     [Fact]
     public async Task L2_272_AC2_the_catalog_lists_the_groups_in_order_with_each_tables_count()

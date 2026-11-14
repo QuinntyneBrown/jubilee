@@ -5,7 +5,8 @@ import { fulfil, recordedAnswer } from './mock-api';
 import { legacyMessages, ownerRows, photoMessages, requestCards, stubMessaging } from './messaging';
 import { stubAccountData } from './account-data';
 import { PLATFORM_LISTING, SPACE_LISTING, stubAdmin } from './admin';
-import { daniel, miriam, stubStaff } from './staff';
+import { stubAdminTables } from './admin-tables';
+import { ada, miriam, stubStaff } from './staff';
 import { stubModeration } from './moderation';
 import { defaultVersions, stubPolicies } from './policies';
 import { confirmedRows, stubIncoming } from './incoming-requests';
@@ -859,12 +860,14 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
       return stubCatalogue(page, { hours: 'hangs' });
     case 'services-hours-failing':
       return stubCatalogue(page, { hours: 'fails' });
-    case 'admin-listings':
-      return stubAdmin(page);
-    case 'admin-listings-empty':
-      return stubAdmin(page, { listings: 'empty' });
-    case 'admin-listings-error':
-      return stubAdmin(page, { listings: 'fails' });
+    case 'admin-records':
+      return void (await stubAdminTables(page, ada, { data: 'mock' }));
+    case 'admin-records-loading':
+      return void (await stubAdminTables(page, ada, { data: 'mock', answer: 'slow' }));
+    case 'admin-records-error':
+      return void (await stubAdminTables(page, ada, { data: 'mock', answer: 'fails' }));
+    case 'admin-records-forbidden':
+      return void (await stubAdminTables(page, miriam, { data: 'mock', answer: 'forbidden' }));
     case 'admin-listing':
       return stubAdmin(page);
     case 'admin-listing-taken-down':
@@ -912,8 +915,6 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
       return stubStaff(page, 'signed-out');
     case 'staff-network-refused':
       return stubStaff(page, 'network-refused');
-    case 'staff-admin-only':
-      return stubAdmin(page, {}, daniel);
     case 'admin-policies':
     case 'admin-policy':
       return stubPolicies(page);

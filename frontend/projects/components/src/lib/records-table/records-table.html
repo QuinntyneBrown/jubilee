@@ -1,0 +1,149 @@
+@if (error()) {
+  <ng-content select="[slot=error]" />
+} @else {
+  <div class="records__table">
+    <table>
+      <caption class="visually-hidden">
+        {{
+          caption()
+        }}{{
+          loading() ? ', loading' : ''
+        }}
+      </caption>
+      <thead>
+        <tr>
+          @if (selectable()) {
+            <th class="records__check" scope="col">
+              <input class="records__box" type="checkbox" aria-label="Select all on this page" />
+            </th>
+          }
+          @for (column of columns(); track column.key) {
+            <th
+              scope="col"
+              [class.records__num]="column.type === 'number' || column.type === 'money'"
+            >
+              {{ column.label }}
+            </th>
+          }
+          <th scope="col"><span class="visually-hidden">Actions</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        @if (loading()) {
+          @for (r of skeletons; track r) {
+            <tr class="records__skeleton">
+              @if (selectable()) {
+                <td class="records__check"></td>
+              }
+              @for (column of columns(); track column.key; let c = $index) {
+                <td><span jb-skeleton shape="text" [width]="width(r, c)"></span></td>
+              }
+              <td></td>
+            </tr>
+          }
+        } @else {
+          @for (item of drawn(); track item.row.id) {
+            <tr (click)="choose($event, item.link)">
+              @if (selectable()) {
+                <td class="records__check">
+                  <input
+                    class="records__box"
+                    type="checkbox"
+                    [attr.aria-label]="'Select ' + item.row.name"
+                  />
+                </td>
+              }
+              @for (c of item.cells; track c.column.key) {
+                <td [class.records__name]="c.isName" [class.records__num]="c.numeric">
+                  @if (c.isName) {
+                    <a class="cell--ref" [routerLink]="item.link">{{
+                      item.row.values[c.column.key]
+                    }}</a>
+                  } @else {
+                    <ng-container
+                      [ngTemplateOutlet]="cellTemplate"
+                      [ngTemplateOutletContext]="{ $implicit: c.cell }"
+                    />
+                  }
+                </td>
+              }
+              <td class="records__actions"></td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+  @if (!loading()) {
+    <ul class="records__list">
+      @for (item of drawn(); track item.row.id) {
+        <li>
+          @if (selectable()) {
+            <input
+              class="records__box"
+              type="checkbox"
+              [attr.aria-label]="'Select ' + item.row.name"
+            />
+          }
+          <a class="records__row" [routerLink]="item.link"
+            ><span class="records__row-text"
+              ><span class="records__row-name">{{ item.row.name }}</span
+              ><span class="records__row-id">{{ item.row.id }}</span></span
+            >
+            @if (asText(item.status); as status) {
+              <span jb-status-pill [value]="status"></span>
+            }
+            <svg jb-icon name="chevron-right" size="sm" class="records__chevron"></svg
+          ></a>
+        </li>
+      }
+    </ul>
+    @if (rows().length === 0) {
+      <ng-content select="[slot=empty]" />
+    }
+    <ng-content select="[slot=foot]" />
+  }
+}
+
+<ng-template #cellTemplate let-cell>
+  @switch (cell.kind) {
+    @case ('empty') {
+      <span class="cell--empty" role="img" aria-label="None">—</span>
+    }
+    @case ('mono') {
+      <span class="cell--mono">{{ cell.text }}</span>
+    }
+    @case ('status') {
+      <span jb-status-pill [value]="cell.text"></span>
+    }
+    @case ('bool') {
+      @if (cell.yes) {
+        <span class="cell--yes" role="img" aria-label="Yes"
+          ><svg jb-icon name="check" size="sm"></svg
+        ></span>
+      } @else {
+        <span class="cell--no" role="img" aria-label="No"
+          ><svg jb-icon name="minus" size="sm"></svg
+        ></span>
+      }
+    }
+    @case ('num') {
+      <span class="cell--num">{{ cell.text }}</span>
+    }
+    @case ('muted') {
+      <span class="cell--muted">{{ cell.text }}</span>
+    }
+    @case ('long') {
+      <span class="cell--long">{{ cell.text }}</span>
+    }
+    @case ('ref') {
+      <a class="cell--ref" [routerLink]="cell.link">{{ cell.text }}</a>
+    }
+    @case ('deleted') {
+      <span class="cell--deleted">deleted</span>
+    }
+    @default {
+      {{ cell.text }}
+    }
+  }
+</ng-template>

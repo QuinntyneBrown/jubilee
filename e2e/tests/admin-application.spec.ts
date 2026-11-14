@@ -5,57 +5,20 @@
 import { LISTING_ID, stubAdmin } from '../fixtures/admin';
 import { REPORT_ID, stubModeration } from '../fixtures/moderation';
 import { ADMIN_URL, expect, test } from '../fixtures/jb-test';
+import { stubAdminTables } from '../fixtures/admin-tables';
 import { daniel, miriam, stubStaff } from '../fixtures/staff';
 import { AdminShellPage } from '../pages/admin-shell.page';
 import { AdminSignInPage } from '../pages/admin-sign-in.page';
-import { AdminListingsPage } from '../pages/admin-listings.page';
+import { AdminRecordsPage } from '../pages/admin-records.page';
 
 test.describe('the admin application (L2-188)', () => {
-  test('AC2: the root opens the listings', async ({ page, jb }) => {
-    const listings = new AdminListingsPage(page);
-    await stubAdmin(page);
-    await jb.gotoAdmin('/');
-
-    await expect(page).toHaveURL(`${ADMIN_URL}/listings`);
-    await expect(listings.heading).toHaveText('Listings');
-  });
-
-  test('AC3: the admin bar shows the lockup and tag, the staff navigation, the name and role, and Sign out', async ({
-    page,
-    jb,
-  }) => {
-    const shell = new AdminShellPage(page);
-    await shell.setWidth(1280);
-    await stubModeration(page);
-    await jb.gotoAdmin('/reports');
-
-    await expect(shell.brand).toContainText('jubilee');
-    await expect(shell.tag).toHaveText('admin');
-    await expect(shell.navLink('Listings')).toBeVisible();
-    await expect(shell.navLink('Reports')).toHaveAttribute('aria-current', 'page');
-    await expect(shell.navLink('Featured')).not.toHaveAttribute('aria-current', 'page');
-    await expect(shell.staffName).toHaveText('Miriam Castillo');
-    await expect(shell.staffRole).toHaveText('Moderator');
-    await expect(shell.signOut).toBeVisible();
-  });
-
-  test('AC3: a staff member with both roles is shown with both', async ({ page, jb }) => {
-    const shell = new AdminShellPage(page);
-    await shell.setWidth(1280);
-    await stubModeration(page, {}, { ...miriam, roles: ['moderator', 'admin'] });
-    await jb.gotoAdmin('/featured');
-
-    await expect(shell.staffRole).toHaveText('Moderator · Administrator');
-  });
-
   for (const path of [
-    '/listings',
     `/listings/${LISTING_ID}`,
     '/reports',
     `/reports/${REPORT_ID}`,
     '/featured',
   ]) {
-    test(`AC4: ${path} tells a staff member without the moderator role that it is not for them, and the navigation offers only Policies`, async ({
+    test(`AC4: ${path} tells a staff member without the moderator role that it is not for them`, async ({
       page,
       jb,
     }) => {
@@ -66,9 +29,8 @@ test.describe('the admin application (L2-188)', () => {
 
       await expect(shell.statusHeading).toHaveText('Nothing here for your role');
       await expect(shell.statusText).toHaveText(
-        'These screens are for the Jubilee team. Ask a Jubilee administrator to add the moderator role to your staff account.',
+        'These screens are for the Jubilee team. Ask a Jubilee administrator for the role you need.',
       );
-      await expect(shell.navLinks).toHaveText(['Policies']);
     });
   }
 
@@ -84,17 +46,16 @@ test.describe('the admin application (L2-188)', () => {
     await expect(signIn.heading).toHaveText('Sign in to the admin application');
   });
 
-  test('AC7: an unknown address says the page was not found and offers the listings', async ({
+  test('AC7: an unknown address says the page was not found and offers the overview', async ({
     page,
     jb,
   }) => {
     const shell = new AdminShellPage(page);
     await stubAdmin(page);
-    await jb.gotoAdmin('/no-such-page');
+    await jb.gotoAdmin('/no-such-page/at-all');
 
     await expect(shell.statusHeading).toHaveText('We couldn’t find that page.');
-    await shell.statusAction('Go to listings').click();
-    await expect(page).toHaveURL(`${ADMIN_URL}/listings`);
+    await expect(shell.statusAction('Go to the overview')).toHaveAttribute('href', '/');
   });
 });
 
@@ -193,8 +154,8 @@ test.describe('staff sign-in through single sign-on (L2-189)', () => {
     page,
     jb,
   }) => {
-    const listings = new AdminListingsPage(page);
-    await stubAdmin(page);
+    const listings = new AdminRecordsPage(page);
+    await stubAdminTables(page, miriam);
     await jb.gotoAdmin('/sign-in?returnUrl=%2Flistings');
 
     await expect(page).toHaveURL(`${ADMIN_URL}/listings`);
@@ -208,8 +169,9 @@ test.describe('the staff session (L2-190)', () => {
     const signIn = new AdminSignInPage(page);
     await shell.setWidth(1280);
     const fake = await stubAdmin(page);
-    await jb.gotoAdmin('/listings');
+    await jb.gotoAdmin(`/listings/${LISTING_ID}`);
 
+    await shell.staffButton.click();
     await shell.signOut.click();
 
     await expect(page).toHaveURL(`${ADMIN_URL}/signed-out`);

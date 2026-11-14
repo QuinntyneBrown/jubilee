@@ -62,3 +62,5 @@ export * from './lib/models/merch';
 export * from './lib/api/merch-api';
 export * from './lib/helpers/merch';
 export * from './lib/helpers/bag-store';
+export * from './lib/api/admin-tables-api';
+export * from './lib/models/admin-tables';

@@ -185,9 +185,10 @@ export type StubName =
   | 'services-error'
   | 'services-hours-pending'
   | 'services-hours-failing'
-  | 'admin-listings'
-  | 'admin-listings-empty'
-  | 'admin-listings-error'
+  | 'admin-records'
+  | 'admin-records-loading'
+  | 'admin-records-error'
+  | 'admin-records-forbidden'
   | 'admin-listing'
   | 'admin-listing-taken-down'
   | 'admin-listing-error'
@@ -208,7 +209,6 @@ export type StubName =
   | 'data-download-unavailable'
   | 'staff-signed-out'
   | 'staff-network-refused'
-  | 'staff-admin-only'
   | 'admin-policies'
   | 'admin-policies-loading'
   | 'admin-policies-error'
@@ -1876,26 +1876,62 @@ export const routes = {
     who: 'member',
     stub: 'services',
   },
-  'admin-listings': {
-    app: '/listings',
-    mock: 'pages/admin-listings/default.html',
+
+  'admin-records': {
+    app: '/members',
+    mock: 'pages/admin-records/default.html',
     who: 'visitor',
     site: 'admin',
-    stub: 'admin-listings',
+    stub: 'admin-records',
   },
-  'admin-listings.empty': {
-    app: '/listings',
-    mock: 'pages/admin-listings/empty.html',
+  'admin-records.loading': {
+    app: '/members',
+    mock: 'pages/admin-records/loading.html',
     who: 'visitor',
     site: 'admin',
-    stub: 'admin-listings-empty',
+    stub: 'admin-records-loading',
   },
-  'admin-listings.error': {
-    app: '/listings',
-    mock: 'pages/admin-listings/error.html',
+  'admin-records.error': {
+    app: '/members',
+    mock: 'pages/admin-records/error.html',
     who: 'visitor',
     site: 'admin',
-    stub: 'admin-listings-error',
+    stub: 'admin-records-error',
+  },
+  'admin-records.staff-menu': {
+    app: '/members',
+    mock: 'pages/admin-records/staff-menu.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'admin-records',
+  },
+  'admin-records.forbidden': {
+    app: '/staff',
+    mock: 'pages/admin-records/forbidden.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'admin-records-forbidden',
+  },
+  'admin-records.not-found': {
+    app: '/no-such-table',
+    mock: 'pages/admin-records/not-found.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'admin-records',
+  },
+  'admin-records.listings': {
+    app: '/listings',
+    mock: 'pages/admin-records/listings.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'admin-records',
+  },
+  'admin-records.job-runs': {
+    app: '/job-runs',
+    mock: 'pages/admin-records/job-runs.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'admin-records',
   },
   'admin-listing': {
     app: '/listings/3f1d2c4e-7a55-4c0e-9d3a-0a1b2c3d4e5f',
@@ -2052,13 +2088,7 @@ export const routes = {
     site: 'admin',
     stub: 'staff-signed-out',
   },
-  'admin-shell.admin-only': {
-    app: '/listings',
-    mock: 'pages/admin-shell/admin-only.html',
-    who: 'visitor',
-    site: 'admin',
-    stub: 'staff-admin-only',
-  },
+
   'admin-policies': {
     app: '/policies',
     mock: 'pages/admin-policies/default.html',
@@ -2164,13 +2194,7 @@ export const routes = {
     site: 'admin',
     stub: 'admin-policy-conflict',
   },
-  'admin-shell.not-found': {
-    app: '/no-such-page',
-    mock: 'pages/admin-shell/not-found.html',
-    who: 'visitor',
-    site: 'admin',
-    stub: 'admin-listings',
-  },
+
   'admin-moved': {
     app: '/admin/verifications/3f1d2c4e-7a55-4c0e-9d3a-0a1b2c3d4e5f',
     mock: 'pages/admin-moved/default.html',

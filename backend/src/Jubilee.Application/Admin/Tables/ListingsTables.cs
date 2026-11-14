@@ -27,7 +27,7 @@ internal static class ListingsTables
     [
         new AdminTable<Listing>(
             "listings", "Listings", "Listing", Group,
-            "Every business, shop, space and software platform on Jubilee. Taking one down hides it from members at once.",
+            "Every shop, service and space on Jubilee. Unpublishing hides it from Browse immediately.",
             db => db.Listings, l => l.Id,
             [
                 LF.Id(l => l.Id),
@@ -43,6 +43,8 @@ internal static class ListingsTables
                     ("draft", l => true)),
                 LF.RefText("ownerId", "Owner", "members", l => l.OwnerId),
                 LF.Text("category", "Category", l => l.CategorySlug, AdminFieldType.Mono),
+                // A space's neighbourhood, else where a business meets (L2-099 AC1).
+                LF.Text("neighbourhood", "Neighbourhood", l => l.Space != null ? l.Space.Neighbourhood : l.MeetingArea),
                 LF.When("publishedAt", "Published", l => l.PublishedAt),
                 LF.Text("slug", "Slug", l => l.Slug, AdminFieldType.Mono),
                 LF.Text("tagline", "Tagline", l => l.Tagline, AdminFieldType.Long),

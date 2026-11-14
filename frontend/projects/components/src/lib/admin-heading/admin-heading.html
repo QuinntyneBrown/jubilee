@@ -1,0 +1,5 @@
+@if (eyebrow(); as eyebrow) {
+  <p class="admin-heading__eyebrow">{{ eyebrow }}</p>
+}
+<h1 class="admin-heading__title">{{ heading() }}<ng-content select="[slot=title]" /></h1>
+<p class="admin-heading__lead"><ng-content /></p>

@@ -9,4 +9,6 @@ export interface StaffSessionDto {
   roles: StaffRole[];
   /** The unresolved reports, for the admin bar (L2-105 AC1, L2-188 AC3). */
   reportCount: number;
+  /** The environment the API runs in, named in the top bar: "Production" in production (L2-272 AC1). */
+  environment: string;
 }

@@ -12,7 +12,7 @@ namespace Jubilee.Api.Controllers;
 [ApiController]
 [Route("api/staff/session")]
 [AllowAnonymous]
-public sealed class StaffSessionController(ISender sender) : ControllerBase
+public sealed class StaffSessionController(ISender sender, IHostEnvironment environment) : ControllerBase
 {
     [HttpGet]
     public async Task<IActionResult> Current(CancellationToken cancellationToken)
@@ -32,7 +32,8 @@ public sealed class StaffSessionController(ISender sender) : ControllerBase
             new GetStaffSessionQuery(
                 user.FindFirst("name")?.Value ?? "",
                 user.FindFirst("email")?.Value ?? "",
-                user.FindAll(StaffSession.RoleClaim).Select(c => c.Value).ToList()),
+                user.FindAll(StaffSession.RoleClaim).Select(c => c.Value).ToList(),
+                environment.EnvironmentName),
             cancellationToken));
     }
 

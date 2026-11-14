@@ -1,0 +1,9 @@
+// Element of the menu block: a heading over some of its items.
+:host {
+  display: block;
+  padding: var(--space-2) var(--space-3) var(--space-1);
+  font: var(--text-overline);
+  letter-spacing: var(--letter-spacing-wide);
+  text-transform: uppercase;
+  color: var(--color-fg-subtle);
+}

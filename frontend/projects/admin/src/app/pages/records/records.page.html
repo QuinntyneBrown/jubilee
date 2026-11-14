@@ -1,0 +1,62 @@
+@switch (refused()) {
+  @case ('forbidden') {
+    <jb-admin-only-page (signOut)="signOut()" />
+  }
+  @case ('not-found') {
+    <jb-not-found-page />
+  }
+  @default {
+    @if (table(); as table) {
+      <div
+        jb-admin-page
+        width="wide"
+        [attr.aria-busy]="state().status === 'loading' ? 'true' : null"
+      >
+        <div jb-records-head>
+          <div jb-admin-heading [eyebrow]="table.group" [heading]="table.label">
+            @if (table.readOnly) {
+              <span slot="title" jb-lock-tag></span>
+            }
+            {{ table.sentence }}
+          </div>
+          <button slot="actions" jb-button type="button" aria-haspopup="menu" aria-expanded="false">
+            <svg jb-icon name="download"></svg>Export<svg jb-icon name="chevron-down"></svg>
+          </button>
+          @if (table.canCreate) {
+            <a slot="actions" jb-button variant="primary" routerLink="new"
+              ><svg jb-icon name="plus"></svg>New {{ table.singular.toLowerCase() }}</a
+            >
+          }
+        </div>
+        <div
+          jb-records-table
+          [table]="table.key"
+          [caption]="table.label"
+          [columns]="columns()"
+          [rows]="rows()"
+          [statusKey]="table.statusField"
+          [selectable]="table.canChange"
+          [loading]="state().status === 'loading'"
+          [error]="state().status === 'error'"
+        >
+          @if (errorReference(); as reference) {
+            <div
+              slot="error"
+              jb-empty-state
+              error
+              icon="alert"
+              [heading]="'We couldn’t load ' + table.label.toLowerCase()"
+            >
+              Nothing is lost. Check your connection and try again. If it keeps happening, tell us
+              and quote <code>{{ reference }}</code
+              >.
+              <button slot="actions" jb-button variant="primary" type="button" (click)="load()">
+                <svg jb-icon name="refresh"></svg>Try again
+              </button>
+            </div>
+          }
+        </div>
+      </div>
+    }
+  }
+}

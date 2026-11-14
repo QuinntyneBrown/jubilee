@@ -81,6 +81,28 @@ export const ICONS = {
   key: [circle(8, 15, 4), path('M11 12l9-9M17 6l3 3M14 9l2 2')],
   monitor: [rect(2, 3, 20, 14, 2), path('M8 21h8M12 17v4')],
   lock: [rect(5, 11, 14, 9, 2), path('M8 11V8a4 4 0 0 1 8 0v3')],
+  menu: [path('M4 6h16M4 12h16M4 18h16')],
+  columns: [rect(3, 3, 18, 18, 2), path('M9 3v18M15 3v18')],
+  download: [path('M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3')],
+  copy: [rect(8, 8, 14, 14, 2), path('M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2')],
+  'copy-plus': [
+    rect(8, 8, 14, 14, 2),
+    path('M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2M15 12v6M12 15h6'),
+  ],
+  external: [path('M15 3h6v6M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6')],
+  'file-json': [
+    path('M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7zM14 2v4a2 2 0 0 0 2 2h4'),
+    path(
+      'M10 12a1 1 0 0 0-1 1v1a1 1 0 0 1-1 1 1 1 0 0 1 1 1v1a1 1 0 0 0 1 1M14 18a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1 1 1 0 0 1-1-1v-1a1 1 0 0 0-1-1',
+    ),
+  ],
+  'calendar-clock': [
+    path('M21 7.5V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h3.5M16 2v4M8 2v4M3 10h5'),
+    circle(16, 16, 6),
+    path('M16 14v2l1 1'),
+  ],
+  table: [rect(3, 3, 18, 18, 2), path('M12 3v18M3 9h18M3 15h18')],
+  enter: [path('M20 4v7a4 4 0 0 1-4 4H4M9 10l-5 5 5 5')],
   message: [path('M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z')],
   minus: [path('M5 12h14')],
   more: [circle(12, 5, 1.5), circle(12, 12, 1.5), circle(12, 19, 1.5)],

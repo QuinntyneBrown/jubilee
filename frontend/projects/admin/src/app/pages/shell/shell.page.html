@@ -1,0 +1,13 @@
+<jb-admin-shell
+  [groups]="groups()"
+  [current]="route.notForRole() ? null : route.current()"
+  [staff]="staff()"
+  [environment]="environment()"
+  (signOut)="signOut()"
+>
+  @if (route.notForRole(); as role) {
+    <jb-admin-only-page [role]="role" (signOut)="signOut()" />
+  } @else {
+    <router-outlet />
+  }
+</jb-admin-shell>

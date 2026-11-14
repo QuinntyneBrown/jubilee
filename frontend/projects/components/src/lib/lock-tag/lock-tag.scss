@@ -1,0 +1,27 @@
+// Block: lock-tag. Says a table or a record is read-only (L2-284).
+:host {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-height: var(--target-min);
+  padding-inline: var(--space-3);
+  border-radius: var(--radius-full);
+  background: var(--color-bg-subtle);
+  color: var(--color-fg-muted);
+  font: var(--text-caption);
+  font-family: var(--font-family-sans);
+  font-weight: var(--font-weight-semibold);
+  font-stretch: normal;
+  letter-spacing: normal;
+}
+
+.lock-tag__icon {
+  width: 0.9em;
+  height: 0.9em;
+}
+
+:host(.lock-tag--lg) {
+  min-height: var(--control-height-md);
+  padding-inline: var(--space-4);
+  font: var(--text-label);
+}

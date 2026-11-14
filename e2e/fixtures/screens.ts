@@ -7,7 +7,7 @@ import { TakeDownScreen } from '../pages/report-action.dialog';
 import { AdminShellPage } from '../pages/admin-shell.page';
 import { AdminSignInPage } from '../pages/admin-sign-in.page';
 import { AdminListingPage } from '../pages/admin-listing.page';
-import { AdminListingsPage } from '../pages/admin-listings.page';
+import { AdminRecordsPage, AdminStaffMenuScreen } from '../pages/admin-records.page';
 import { AdminPoliciesPage } from '../pages/admin-policies.page';
 import { AdminPolicyPage } from '../pages/admin-policy.page';
 import {
@@ -269,12 +269,15 @@ export const screens: {
   { key: 'admin-sign-in.network-refused', screen: (page) => new AdminSignInPage(page) },
   { key: 'admin-sign-in.signed-out', screen: (page) => new AdminSignInPage(page) },
   { key: 'admin-sign-in.session-expired', screen: (page) => new AdminSignInPage(page) },
-  { key: 'admin-shell.admin-only', screen: (page) => new AdminShellPage(page) },
-  { key: 'admin-shell.not-found', screen: (page) => new AdminShellPage(page) },
+  { key: 'admin-records', screen: (page) => new AdminRecordsPage(page) },
+  { key: 'admin-records.loading', screen: (page) => new AdminRecordsPage(page) },
+  { key: 'admin-records.error', screen: (page) => new AdminRecordsPage(page) },
+  { key: 'admin-records.staff-menu', screen: (page) => new AdminStaffMenuScreen(page) },
+  { key: 'admin-records.forbidden', screen: (page) => new AdminShellPage(page) },
+  { key: 'admin-records.not-found', screen: (page) => new AdminShellPage(page) },
+  { key: 'admin-records.listings', screen: (page) => new AdminRecordsPage(page) },
+  { key: 'admin-records.job-runs', screen: (page) => new AdminRecordsPage(page) },
   { key: 'admin-moved', screen: (page) => new AdminMovedPage(page) },
-  { key: 'admin-listings', screen: (page) => new AdminListingsPage(page) },
-  { key: 'admin-listings.empty', screen: (page) => new AdminListingsPage(page) },
-  { key: 'admin-listings.error', screen: (page) => new AdminListingsPage(page) },
   { key: 'admin-listing', screen: (page) => new AdminListingPage(page) },
   { key: 'admin-listing.taken-down', screen: (page) => new AdminListingPage(page) },
   { key: 'admin-listing.space', screen: (page) => new AdminListingPage(page) },

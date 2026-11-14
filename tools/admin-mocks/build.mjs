@@ -61,6 +61,7 @@ const ICONS = {
   enter: '<path d="M20 4v7a4 4 0 0 1-4 4H4"/><path d="m9 10-5 5 5 5"/>',
   retry: '<path d="M4 12a8 8 0 0 1 14-5l2 2M20 5v4h-4M20 12a8 8 0 0 1-14 5l-2-2M4 19v-4h4"/>',
   warning: '<path d="M12 4 2.5 20h19zM12 10v4M12 17h.01"/>',
+  signOut: '<path d="M10 4H5v16h5M15 8l4 4-4 4M19 12H9"/>',
 };
 const icon = (name, label) =>
   label
@@ -115,8 +116,8 @@ function cell(field, value) {
 }
 
 /** The top bar, the sidebar and the main column (the design's Shell). */
-function shell({ active, main, overlays = '', drawer = false }) {
-  const activeGroup = active === 'overview' ? '' : getEntity(active).group;
+function shell({ active, main, overlays = '', drawer = false, staffMenu = false }) {
+  const activeGroup = !active || active === 'overview' ? '' : getEntity(active).group;
   const open = new Set([activeGroup || 'Accounts', 'Moderation']);
   const nav = (id) => `<nav class="admin-nav" aria-label="Tables"><div class="admin-nav__scroll">
 <a class="admin-nav__item" href="${OVERVIEW}"${active === 'overview' ? ' aria-current="page"' : ''}><span class="admin-nav__label">Overview</span></a>
@@ -137,7 +138,7 @@ function shell({ active, main, overlays = '', drawer = false }) {
 <a class="admin-top__round admin-top__round--menu" href="../admin-overview/drawer.html" aria-label="Open tables">${icon('menu')}</a>
 <a class="admin-top__home" href="${OVERVIEW}" aria-label="Jubilee Admin home"><span class="admin-top__word">${MARK}jubilee</span><span class="admin-top__app">Admin</span></a>
 <a class="admin-top__jump" href="../admin-overview/palette.html">${icon('search')}<span>Jump to a table or record</span><kbd>⌘K</kbd></a>
-<div class="admin-top__end"><span class="admin-top__env" title="Hosted on Azure">admin.jubilee.to <span class="admin-top__badge">Production</span></span><a class="admin-top__round admin-top__round--search" href="../admin-overview/palette.html" aria-label="Search">${icon('search')}</a><span class="admin-top__avatar" role="img" aria-label="Ada Nwosu, Owner" title="Ada Nwosu, Owner">AN</span></div>
+<div class="admin-top__end"><span class="admin-top__env" title="Hosted on Azure">admin.jubilee.to <span class="admin-top__badge">Production</span></span><a class="admin-top__round admin-top__round--search" href="../admin-overview/palette.html" aria-label="Search">${icon('search')}</a><div class="menu-anchor"><button class="admin-top__avatar" type="button" aria-haspopup="menu" aria-expanded="${staffMenu}" aria-label="Ada Nwosu, Administrator" title="Ada Nwosu, Administrator">AN</button>${staffMenu ? `<div class="menu menu--end" role="menu" aria-label="Staff"><div class="menu__label" role="presentation">Ada Nwosu · Administrator</div><button class="menu__item" role="menuitem" type="button">${icon('signOut')}Sign out</button></div>` : ''}</div></div>
 </header>`;
 
   const drawerHtml = drawer
@@ -187,6 +188,15 @@ function toast(text, undo) {
   return `<div class="toast-region" role="status" aria-live="polite"><div class="toast toast--success">${icon('check')}<div class="toast__body"><span class="toast__title">${esc(text)}</span>${
     undo ? '<button class="toast__action" type="button">Undo</button>' : ''
   }</div><button class="close" type="button" aria-label="Dismiss">${icon('x')}</button></div></div>`;
+}
+
+/** A screen that says only why it has nothing to show, in the app's own icon shapes (L2-188 AC4, AC7). */
+const APP_ICONS = {
+  lock: '<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
+  search: '<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',
+};
+function statusPage(iconName, title, text, action) {
+  return `<div class="container page"><div class="status-page"><div class="empty"><div class="empty__icon" aria-hidden="true"><svg class="icon icon--lg" aria-hidden="true" viewBox="0 0 24 24">${APP_ICONS[iconName]}</svg></div><h1 class="empty__title">${esc(title)}</h1><p class="empty__text">${esc(text)}</p><div class="empty__actions">${action}</div></div></div></div>`;
 }
 
 function errorState(what, ref) {
@@ -543,6 +553,21 @@ function buildRecords() {
     'confirm-delete': { s: { selected: [0, 1] }, bulk: 'closed', dialog: [0, 1], note: 'Deleting more than one record asks for <code>delete</code> to be typed; “Delete 2 members” stays disabled until it is. The dialog names the rows and how many other records point at them.' },
     'confirm-delete-one': { s: { rowMenu: null }, dialog: [0], note: 'Deleting one record from its row menu: the dialog names it and warns of the records that point at it; no typing is asked.' },
     deleted: { s: { deleted: [0, 1] }, toast: ['2 members deleted', true], note: 'After a delete the rows leave the table and a toast offers Undo while it shows.' },
+    'staff-menu': {
+      s: {},
+      staffMenu: true,
+      note: 'The staff member’s initials open their menu (L2-188 AC3): their name and role, then “Sign out”, which ends the staff session (L2-190).',
+    },
+    forbidden: {
+      active: null,
+      main: statusPage('lock', 'Nothing here for your role', 'These screens are for the Jubilee team. Ask a Jubilee administrator for the role you need.', '<button class="btn btn--primary" type="button">Sign out</button>'),
+      note: 'A table the staff member’s role may not read (L2-188 AC4, L2-284), here Staff for a moderator: the screen says so, the table is not in the sidebar and no row is read.',
+    },
+    'not-found': {
+      active: null,
+      main: statusPage('search', 'We couldn’t find that page.', 'The address may be mistyped, or the page may have moved.', '<a class="btn btn--primary" href="../admin-overview/default.html">Go to the overview</a>'),
+      note: 'A table, or a path, that does not exist (L2-188 AC7).',
+    },
   };
   const states = ['default', ...Object.keys(special), ...ENTITIES.filter((e) => e.key !== 'members').map((e) => kebab(e.key))];
   mkdirSync(dir, { recursive: true });
@@ -552,7 +577,8 @@ function buildRecords() {
     if (def.bulk) overlays += bulkBar(members, 2, def.bulk === 'open');
     if (def.dialog) overlays += deleteDialog(members, def.dialog);
     if (def.toast) overlays += toast(...def.toast);
-    const body = shell({ active: 'members', main: recordsMain(members, def.s), overlays });
+    const active = 'active' in def ? def.active : 'members';
+    const body = shell({ active, main: def.main ?? recordsMain(members, def.s), overlays, staffMenu: def.staffMenu });
     writeFileSync(join(dir, `${state}.html`), page({ screen: 'admin-records', title: 'Records', state, states, requirements: RECORDS_REQ, description: `Members, ${state}.`, body, note: def.note }));
   }
   for (const e of ENTITIES) {

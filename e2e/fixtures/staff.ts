@@ -1,4 +1,5 @@
 import type { Page, Route } from '@playwright/test';
+import { catalogFor } from './admin-tables';
 
 // The staff session of the admin application (L2-190) and staff sign-in (L2-189), answered at the
 // network edge (ADR 0009): the admin application sees exactly what these endpoints return.
@@ -12,6 +13,8 @@ export interface StaffMember {
   roles: StaffRole[];
   /** The unresolved reports, for the admin bar (L2-188 AC3, ADR 0058). */
   reportCount: number;
+  /** The environment the API runs in, named in the top bar (L2-272 AC1). */
+  environment: string;
 }
 
 /** Miriam Castillo of the Jubilee team, as the mocks show her. */
@@ -21,6 +24,7 @@ export const miriam: StaffMember = {
   email: 'miriam@jubilee.to',
   roles: ['moderator'],
   reportCount: 3,
+  environment: 'Production',
 };
 
 /** Daniel Osei, an administrator without the moderator role (L2-188 AC4). */
@@ -30,6 +34,17 @@ export const daniel: StaffMember = {
   email: 'daniel@jubilee.to',
   roles: ['admin'],
   reportCount: 0,
+  environment: 'Production',
+};
+
+/** Ada Nwosu, an administrator, as the admin mocks show her. */
+export const ada: StaffMember = {
+  displayName: 'Ada Nwosu',
+  initials: 'AN',
+  email: 'ada@jubilee.to',
+  roles: ['admin'],
+  reportCount: 0,
+  environment: 'Production',
 };
 
 /** What `GET /api/staff/session` answers: a staff member, no session, or a refused network (L2-192). */
@@ -53,6 +68,13 @@ const problem = (status: number, code: string) => ({
 
 export async function stubStaff(page: Page, answer: StaffAnswer = miriam): Promise<FakeStaff> {
   const fake: FakeStaff = { answer, signInStarts: [], signOuts: 0, reads: 0 };
+
+  // The shell reads the catalog of tables of the staff member's role on every screen (L2-272 AC2).
+  await page.route('**/api/admin/tables', (route: Route) => {
+    const current = fake.answer;
+    if (typeof current === 'string') return route.fulfill(problem(401, 'sign_in_required'));
+    return route.fulfill({ json: { groups: catalogFor(current) } });
+  });
 
   await page.route('**/api/staff/session', async (route: Route) => {
     if (route.request().method() === 'DELETE') {
