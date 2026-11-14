@@ -68,10 +68,11 @@ Stripe client in `Jubilee.Infrastructure`, a thin controller in `Jubilee.Api` an
   `MerchOrder.CheckoutSessionId`; an index on `(Status, ExpiresAt)` for the holds and the expiry
   job. The migration `AddMerchandise` adds the four tables; `jubilee migrate` applies it, never
   the API.
-- **Seed** — `jubilee seed` adds the Purpose Tee and its seventeen sizes when there is no product
+- **Seed** — `jubilee migrate`, which every deployment runs, and `jubilee seed` both add the Purpose Tee and its seventeen sizes when there is no product
   `purpose-tee`, with the stock of the frame (Youth L 3, Youth XL 0, Women’s XL 2, Men’s 3XL 2,
   the rest not counted). It never changes a product that exists, so it is safe to run again and
-  never resets a stock the team has set.
+  never resets a stock the team has set. `migrate` adds it because production never receives the
+  demo directory, and the tee is Jubilee's own product, not demo data (`L2-263` AC7).
 - **`MerchFits`** — the fixed content of the three fits: name, note and guide note, in
   `Jubilee.Application/Merch/MerchFits.cs`, like the rest of Jubilee's content (`Content.cs`).
 - **`GetMerchProductQuery`** — answers `MerchProductDto`: the name, colour, price, currency,

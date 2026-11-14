@@ -107,6 +107,37 @@ public sealed class CliTests
         Assert.Equal((0, 0, 0), await RowCounts());
     }
 
+    [Fact]
+    public async Task L2_263_AC7_migrate_adds_the_Purpose_Tee_and_its_seventeen_sizes_without_the_demo_directory()
+    {
+        Assert.Equal(0, await Run("migrate"));
+
+        var tee = await Query(db => db.MerchProducts.Include(p => p.Variants).SingleAsync(p => p.Slug == MerchProduct.PurposeTeeSlug));
+        Assert.Equal(2500, tee.UnitPriceCents);
+        Assert.Equal(17, tee.Variants.Count);
+        Assert.Equal(2, tee.Variants.Single(v => v.Sku == "mens-3XL").Stock);
+        Assert.Equal((0, 0, 0), await RowCounts());
+    }
+
+    [Fact]
+    public async Task L2_263_AC7_migrate_keeps_the_price_and_stock_the_team_has_set()
+    {
+        await Run("migrate");
+        await Query(async db =>
+        {
+            var tee = await db.MerchProducts.Include(p => p.Variants).SingleAsync();
+            tee.Reprice(3000);
+            tee.Variants.Single(v => v.Sku == "mens-L").SetStock(7);
+            return await db.SaveChangesAsync();
+        });
+
+        Assert.Equal(0, await Run("migrate"));
+
+        var again = await Query(db => db.MerchProducts.Include(p => p.Variants).SingleAsync());
+        Assert.Equal(3000, again.UnitPriceCents);
+        Assert.Equal(7, again.Variants.Single(v => v.Sku == "mens-L").Stock);
+    }
+
     [Theory]
     [InlineData("explode")]
     [InlineData("")]
