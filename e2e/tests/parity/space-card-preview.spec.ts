@@ -1,5 +1,4 @@
 import { parity } from '../../fixtures/parity';
-import { AdminListingPage } from '../../pages/admin-listing.page';
 import { EditListingPage } from '../../pages/edit-listing.page';
 import { ListBusinessPage } from '../../pages/list-business.page';
 
@@ -13,12 +12,6 @@ parity('space-card-preview', {
       screen: (page) => new ListBusinessPage(page),
       region: (screen: ListBusinessPage) => screen.spacePreview,
       arrange: (screen: ListBusinessPage) => screen.space.fillExample(screen.name),
-    },
-    {
-      name: 'admin',
-      route: 'admin-listing.space',
-      screen: (page) => new AdminListingPage(page),
-      region: (screen: AdminListingPage) => screen.spacePreview,
     },
     {
       name: 'edit-a-space',

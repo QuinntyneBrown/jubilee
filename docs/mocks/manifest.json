@@ -795,27 +795,6 @@
       ]
     },
     {
-      "id": "admin-shell",
-      "kind": "page",
-      "title": "Admin shell",
-      "route": "/ (admin application)",
-      "states": [
-        "default",
-        "admin-only",
-        "not-found"
-      ],
-      "requirements": [
-        "L2-188",
-        "L2-105",
-        "L2-190"
-      ],
-      "not_applicable": {
-        "loading": "The shell renders with the staff session it was opened with; each screen inside it has its own loading state.",
-        "empty": "The shell has no collection of its own; the screens inside it have their empty states.",
-        "error": "A failed screen load shows that screen's error state inside the shell."
-      }
-    },
-    {
       "id": "admin-sign-in",
       "kind": "page",
       "title": "Staff sign-in",
@@ -859,33 +838,196 @@
       }
     },
     {
-      "id": "admin-listings",
+      "id": "admin-overview",
       "kind": "page",
-      "title": "Listings",
-      "route": "/listings (admin application)",
+      "title": "Admin overview",
+      "route": "/ (admin application)",
       "states": [
         "default",
         "loading",
         "empty",
         "error",
-        "no-results"
+        "palette",
+        "palette-results",
+        "palette-none",
+        "drawer"
+      ],
+      "requirements": [
+        "L2-188",
+        "L2-272",
+        "L2-273",
+        "L2-274",
+        "L2-275"
       ]
     },
     {
-      "id": "admin-listing",
+      "id": "admin-records",
       "kind": "page",
-      "title": "Listing",
-      "route": "/listings/:id (admin application)",
+      "title": "Records",
+      "route": "/:table (admin application)",
+      "states": [
+        "default",
+        "loading",
+        "empty",
+        "error",
+        "filtered",
+        "selected",
+        "bulk-status-menu",
+        "row-menu",
+        "columns-menu",
+        "export-menu",
+        "page-size-menu",
+        "confirm-delete",
+        "confirm-delete-one",
+        "deleted",
+        "staff",
+        "sessions",
+        "sign-in-failures",
+        "link-tokens",
+        "password-resets",
+        "security-alerts",
+        "consent-records",
+        "statement-agreements",
+        "data-exports",
+        "listings",
+        "listing-drafts",
+        "listing-submissions",
+        "listing-slugs",
+        "listing-photos",
+        "listing-views",
+        "products",
+        "product-photos",
+        "services",
+        "delivery-methods",
+        "stock-alerts",
+        "featured-slots",
+        "response-time-stats",
+        "requests",
+        "request-transitions",
+        "conversations",
+        "messages",
+        "message-attachments",
+        "reviews",
+        "listing-reports",
+        "listing-report-entries",
+        "review-reports",
+        "conversation-reports",
+        "report-actions",
+        "saved-items",
+        "recent-searches",
+        "notifications",
+        "feedback",
+        "feedback-screenshots",
+        "merch-products",
+        "merch-variants",
+        "merch-orders",
+        "merch-order-lines",
+        "launch-subscribers",
+        "business-pre-registrations",
+        "access-requests",
+        "content-versions",
+        "maintenance-windows",
+        "audit-records",
+        "outbox-messages",
+        "job-runs"
+      ],
+      "requirements": [
+        "L2-188",
+        "L2-276",
+        "L2-277",
+        "L2-278",
+        "L2-279",
+        "L2-280",
+        "L2-281",
+        "L2-099",
+        "L2-105",
+        "L2-106",
+        "L2-237",
+        "L2-247",
+        "L2-257"
+      ]
+    },
+    {
+      "id": "admin-record",
+      "kind": "page",
+      "title": "Record",
+      "route": "/:table/:id, /:table/new (admin application)",
       "states": [
         "default",
         "loading",
         "error",
-        "taken-down",
-        "space",
-        "platform"
+        "edit",
+        "saving",
+        "saved",
+        "create",
+        "confirm-delete",
+        "staff",
+        "sessions",
+        "sign-in-failures",
+        "link-tokens",
+        "password-resets",
+        "security-alerts",
+        "consent-records",
+        "statement-agreements",
+        "data-exports",
+        "listings",
+        "listing-drafts",
+        "listing-submissions",
+        "listing-slugs",
+        "listing-photos",
+        "listing-views",
+        "products",
+        "product-photos",
+        "services",
+        "delivery-methods",
+        "stock-alerts",
+        "featured-slots",
+        "response-time-stats",
+        "requests",
+        "request-transitions",
+        "conversations",
+        "messages",
+        "message-attachments",
+        "reviews",
+        "listing-reports",
+        "listing-report-entries",
+        "review-reports",
+        "conversation-reports",
+        "report-actions",
+        "saved-items",
+        "recent-searches",
+        "notifications",
+        "feedback",
+        "feedback-screenshots",
+        "merch-products",
+        "merch-variants",
+        "merch-orders",
+        "merch-order-lines",
+        "launch-subscribers",
+        "business-pre-registrations",
+        "access-requests",
+        "content-versions",
+        "maintenance-windows",
+        "audit-records",
+        "outbox-messages",
+        "job-runs"
+      ],
+      "requirements": [
+        "L2-188",
+        "L2-282",
+        "L2-283",
+        "L2-281",
+        "L2-284",
+        "L2-100",
+        "L2-101",
+        "L2-105",
+        "L2-106",
+        "L2-237",
+        "L2-247",
+        "L2-257"
       ],
       "not_applicable": {
-        "empty": "The page shows one listing; it has no collection that could be empty."
+        "empty": "A record screen shows one record; a table with no records is the table’s empty state."
       }
     },
     {
@@ -1254,7 +1396,7 @@
       "id": "take-down-listing",
       "kind": "dialog",
       "title": "Take down listing",
-      "opens_from": "admin-listing",
+      "opens_from": "admin-record",
       "states": [
         "default",
         "invalid",
@@ -1266,7 +1408,7 @@
       "id": "publish-policy",
       "kind": "dialog",
       "title": "Publish a policy version",
-      "opens_from": "admin-policy",
+      "opens_from": "admin-record",
       "states": [
         "default",
         "busy",
@@ -1434,90 +1576,10 @@
       ]
     },
     {
-      "id": "admin-reports",
-      "kind": "page",
-      "title": "Reports",
-      "route": "/reports (admin application)",
-      "states": [
-        "default",
-        "loading",
-        "empty",
-        "error",
-        "no-results"
-      ],
-      "requirements": [
-        "L2-237"
-      ]
-    },
-    {
-      "id": "admin-report",
-      "kind": "page",
-      "title": "Report",
-      "route": "/reports/:id (admin application)",
-      "states": [
-        "default",
-        "conversation",
-        "resolved",
-        "loading",
-        "error",
-        "review"
-      ],
-      "not_applicable": {
-        "empty": "A report page shows one report; it has no collection that could be empty."
-      },
-      "requirements": [
-        "L2-237"
-      ]
-    },
-    {
-      "id": "admin-featured",
-      "kind": "page",
-      "title": "Featured businesses",
-      "route": "/featured (admin application)",
-      "states": [
-        "default",
-        "loading",
-        "empty",
-        "error",
-        "full",
-        "saved"
-      ]
-    },
-    {
-      "id": "admin-policies",
-      "kind": "page",
-      "title": "Policies",
-      "route": "/policies (admin application)",
-      "states": [
-        "default",
-        "loading",
-        "error",
-        "forbidden"
-      ],
-      "not_applicable": {
-        "empty": "There are always four policy pages: each has its built-in first version until one is published."
-      }
-    },
-    {
-      "id": "admin-policy",
-      "kind": "page",
-      "title": "Edit a policy",
-      "route": "/policies/:slug (admin application)",
-      "states": [
-        "default",
-        "loading",
-        "empty",
-        "invalid",
-        "published",
-        "error",
-        "forbidden"
-      ]
-    },
-    {
       "id": "report-action",
       "kind": "dialog",
       "title": "Report action",
-      "opens_from": "admin-report",
+      "opens_from": "admin-record",
       "states": [
         "default",
         "message",
