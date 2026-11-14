@@ -22,6 +22,14 @@ import {
   rowName,
 } from "./entities.mjs";
 import { QUEUES, verb } from "./overview.mjs";
+import {
+  NONPROFIT_DESCRIPTION,
+  NONPROFIT_ITEM,
+  NONPROFIT_MAIN,
+  NONPROFIT_NOTE,
+  NONPROFIT_REQUIREMENT,
+  NONPROFIT_ROW,
+} from "./nonprofit.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const MOCKS = join(ROOT, "docs", "mocks");
@@ -482,8 +490,7 @@ function buildOverview() {
 
 // ---------------------------------------------------------------- Records
 
-const RECORDS_REQ =
-  "L2-188 L2-276 L2-277 L2-278 L2-279 L2-280 L2-281 L2-099 L2-105 L2-106 L2-237 L2-247 L2-257";
+const RECORDS_REQ = `L2-188 L2-276 L2-277 L2-278 L2-279 L2-280 L2-281 L2-099 L2-105 L2-106 L2-237 L2-247 L2-257 ${NONPROFIT_REQUIREMENT}`;
 
 function pageList(page, pages) {
   if (pages <= 7) return Array.from({ length: pages }, (_, i) => i + 1);
@@ -621,6 +628,7 @@ function recordsMain(e, s) {
         }</div></td></tr>`;
       })
       .join("");
+    if (e.key === "listings" && rows.length === e.rows.length) tbody += NONPROFIT_ROW;
   }
 
   const table = `<div class="records__table"><table><caption class="visually-hidden">${esc(e.label)}${s.loading ? ", loading" : ""}</caption><thead><tr>${
@@ -641,7 +649,8 @@ function recordsMain(e, s) {
                   : ""
               }${icon("chevronRight")}</a></li>`,
           )
-          .join("")
+          .join("") +
+        (e.key === "listings" && rows.length === e.rows.length ? NONPROFIT_ITEM : "")
   }${!s.loading && rows.length === 0 ? `<li>${empty}</li>` : ""}</ul>`;
 
   const sizeMenu = `<ul class="menu menu--up" role="menu" aria-label="Rows per page"><li class="menu__label" role="presentation">Rows per page</li>${[
@@ -896,8 +905,7 @@ function buildRecords() {
 
 // ---------------------------------------------------------------- Record
 
-const RECORD_REQ =
-  "L2-188 L2-282 L2-283 L2-281 L2-284 L2-100 L2-101 L2-105 L2-106 L2-237 L2-247 L2-257";
+const RECORD_REQ = `L2-188 L2-282 L2-283 L2-281 L2-284 L2-100 L2-101 L2-105 L2-106 L2-237 L2-247 L2-257 ${NONPROFIT_REQUIREMENT}`;
 
 function describeChange(action, diff) {
   const v = action.split(".")[1];
@@ -1160,6 +1168,7 @@ function buildRecord() {
     "default",
     ...Object.keys(special),
     ...ENTITIES.filter((e) => e.key !== "members").map((e) => kebab(e.key)),
+    "nonprofit",
   ];
   mkdirSync(dir, { recursive: true });
   for (const [state, def] of Object.entries(special)) {
@@ -1213,6 +1222,20 @@ function buildRecord() {
       }),
     );
   }
+  // A non-profit's record, with the panel "The non-profit" (L2-295).
+  writeFileSync(
+    join(dir, "nonprofit.html"),
+    page({
+      screen: "admin-record",
+      title: "Record",
+      state: "nonprofit",
+      states,
+      requirements: RECORD_REQ,
+      description: NONPROFIT_DESCRIPTION,
+      body: shell({ active: "listings", main: NONPROFIT_MAIN }),
+      note: NONPROFIT_NOTE,
+    }),
+  );
   return {
     id: "admin-record",
     kind: "page",
