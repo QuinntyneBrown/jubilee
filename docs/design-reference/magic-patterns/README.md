@@ -183,7 +183,7 @@ components carry them as known differences once the frame is captured.
 | The Bag button with its count in the header | the same button in the page's own header row, beside the back link | The app's top bar is the same on every screen; a count there would sit on screens that sell nothing |
 | "Back to jubilee.to", to the marketing home | "Back to browse", to `/browse` | The page is in the app, and the marketing site links nowhere while launching soon (ADR 0044) |
 | The fit and size choices as buttons with `aria-pressed` | native radios in a fieldset, drawn the same | One choice of several is a radio group: the arrow keys move within it and assistive technology says "1 of 3" |
-| A sold-out size struck through and greyed | the same, and "sold out" in its accessible name and under the grid | Colour and a line are never the only carriers of a state |
+| A sold-out size struck through and greyed | the same, and "sold out" in its accessible name | Colour and a line are never the only carriers of a state |
 | "Pick a size to continue" in red beside "Size" | the same words, in the danger colour with the alert icon, announced | The state is said in words and an icon too |
 | Stock from a sample table (`FITS`) | stock and prices from `GET /api/merch/purpose-tee`, seeded from that table | Honest counts (Proverbs 11:1) |
 | "$25 CAD" and "Ships across Canada in 3–5 business days, free over $60." | the same, and "Tax is added at checkout." | Prices are before tax (ADR 0073) |
@@ -193,6 +193,9 @@ components carry them as known differences once the frame is captured.
 | "Prospering isn't the goal on its own. It's what a business does when it's pointed at something bigger." | "Prospering isn't the goal on its own. The ability is a gift, and it is given for a purpose." | The verse is about the gift and its purpose; the copy promises nothing about prospering |
 | Archivo and Inter from Google Fonts | the bundled Archivo with its width axis; the app's system text face | Fonts are bundled (AGENTS.md); the app does not load Inter |
 | Hex colours (`#0a0a0b`, `#f4f2ec`, `#ffb81c`, `#00875a`, `#e7e3d9`) | the garment tokens and `--color-bg-subtle`, `--color-fg-accent` | Tokens by role, both themes |
+| "Fabric & fit", "The print", "Care" and "Shipping & returns" as ruled rows | the same disclosures in the app's boxed accordion (`jb-accordion`) | One accordion in the app, the one Help uses |
+| The gallery and the purchase column in its own two-column grid | the app's `split split--even`, the gallery sticky beside the column from 1024 px | Layout from the app's utilities, not a page stylesheet |
+| Gaps between the purchase blocks that vary from block to block | one rhythm, `stack--lg` (`--space-8`) | Spacing from the scale |
 | The fit pill slides (`layoutId`) and the shirt fades between front and back | the same, as CSS transitions of the tokens' durations, none under reduced motion | No animation library in the app |
 
 ## Feedback: what the product changes from the frame

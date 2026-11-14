@@ -1,10 +1,11 @@
 # Estimates
 
-- Overall effort: 441 days
+- Overall effort: 449 days
 - Complete: 78%
 
 | Subsystem | Effort | Complete |
 |---|---|---|
+| [merchandise](merchandise.md) | 8 days | 90% |
 | [directory](directory.md) | 25 days | 100% |
 | [trust-content](trust-content.md) | 10 days | 91% |
 | [responsive-design](responsive-design.md) | 6 days | 40% |
@@ -41,11 +42,18 @@ listing page (L2-150 AC1) and the audit record of a role change (L2-098 AC4) are
 Software platforms (journey 33, ADR 0072) are done: browse-platforms, view-platform, describe-platform
 and review-a-platform, 16 days, each with its tests.
 
+The Purpose Tee (journey 34, ADR 0073) is built and tested against a fake payment gateway: the
+page, the bag, checkout, the signed webhook, the return page, holds, expiry and retention. What is
+left is the owner's: a Stripe account, its keys and webhook endpoint, GST/HST registration, and the
+settings on `jubilee-to-app` (`eng/azure/README.md`); and the owner's run of the responsive and
+visual sweeps of L2-271.
+
 ## Roadmap
 
-1. Done: ship without verification (ADR 0057): publish-listing, browse-listings and take-down-listing, the `ShipWithoutVerification` migration, the `moderator` role, and removing the "Verified" mark and the verification copy, with the access audit on the team's listing page and the audit record of a role change (ADR 0059)
-2. design-system, interaction-states: move the remaining presentation into the components library with a parity spec each (ADR 0035, 0036), then validation, dialog confirmation and date and money formats
-3. security, privacy, accessibility: authorization and rate limits, data visibility and retention, screen-reader and keyboard coverage
-4. operations, performance, admin, marketing: backups, availability, latency and page budgets; set up the admin application in production by the owner's checklist (`eng/azure/README.md`, ADR 0070)
-5. Polish the remaining 60–90% designs: the hosted status page of the offline banner (owner step, ADR 0068), the choice of product when a shop's review is edited, and set `Email__MailingAddress` so that promotional e-mail can go out (ADR 0053); the owner publishes the real privacy contact and the final legal wording from `/policies` in the admin application (ADR 0067)
-6. Deferred: the launch-day e-mail, pre-registrations as listing drafts and a staff screen for them (ADR 0044); hourly rent, the sign-up intents, and payment, leases, calendars and double booking for spaces (ADR 0042)
+1. merchandise: the owner sets up Stripe and its settings by the checklist in `eng/azure/README.md`, then runs the sweeps of L2-271
+2. Done: ship without verification (ADR 0057): publish-listing, browse-listings and take-down-listing, the `ShipWithoutVerification` migration, the `moderator` role, and removing the "Verified" mark and the verification copy, with the access audit on the team's listing page and the audit record of a role change (ADR 0059)
+3. design-system, interaction-states: move the remaining presentation into the components library with a parity spec each (ADR 0035, 0036), then validation, dialog confirmation and date and money formats
+4. security, privacy, accessibility: authorization and rate limits, data visibility and retention, screen-reader and keyboard coverage
+5. operations, performance, admin, marketing: backups, availability, latency and page budgets; set up the admin application in production by the owner's checklist (`eng/azure/README.md`, ADR 0070)
+6. Polish the remaining 60–90% designs: the hosted status page of the offline banner (owner step, ADR 0068), the choice of product when a shop's review is edited, and set `Email__MailingAddress` so that promotional e-mail can go out (ADR 0053); the owner publishes the real privacy contact and the final legal wording from `/policies` in the admin application (ADR 0067)
+7. Deferred: the launch-day e-mail, pre-registrations as listing drafts and a staff screen for them (ADR 0044); hourly rent, the sign-up intents, and payment, leases, calendars and double booking for spaces (ADR 0042)

@@ -49,9 +49,9 @@ journey that is implemented: the effort-weighted average of its feature designs 
 | 31 | Get ready for launch | Before Jubilee opens: see that it is launching soon, leave an e-mail address for the launch notice, or send a business's details to be listed on launch day; the team reads them with the CLI. | 7 | 100% |
 | 32 | Write and read reviews | After a request the owner confirmed, write a review of the business, shop or space; read every listing's rating and reviews, sorted and filtered, and its average on the cards; edit or remove your review; the owner replies in public; anyone signed in reports a review and the Jubilee team takes it down. Requirements L2-226 to L2-240. | 14 | 95% |
 | 33 | Discover and review software platforms | A founder lists a software platform (name, one line, web address, what it does, who it is for, pricing); it is found in its own category "Software platforms", in search and on a platform page whose main action is a link out to its website, with Message, save, share and report; a member who states they have used it writes a review, and the rest of reviews applies. Requirements L2-248 to L2-262. | 16 | 100% |
-| 34 | Buy the Purpose Tee | Anyone, with or without an account, opens the Purpose Tee page, chooses the front or back view, a fit (Youth, Women’s, Men’s), a size and a quantity, adds it to a bag kept on the device, chooses shipping in Canada or free pickup at the Jubilee gathering in Toronto, and pays by card on Stripe’s hosted checkout; the order is paid when Stripe says so, and the buyer and the Jubilee team get an e-mail. Requirements L2-263 to L2-271. | 8 | 0% |
+| 34 | Buy the Purpose Tee | Anyone, with or without an account, opens the Purpose Tee page, chooses the front or back view, a fit (Youth, Women’s, Men’s), a size and a quantity, adds it to a bag kept on the device, chooses shipping in Canada or free pickup at the Jubilee gathering in Toronto, and pays by card on Stripe’s hosted checkout; the order is paid when Stripe says so, and the buyer and the Jubilee team get an e-mail. Requirements L2-263 to L2-271. | 8 | 90% |
 
-**Total: 257 days** for the 34 journeys, **96% complete** weighted by effort.
+**Total: 257 days** for the 34 journeys, **99% complete** weighted by effort.
 
 ## Notes
 
