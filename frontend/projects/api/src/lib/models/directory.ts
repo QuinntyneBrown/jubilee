@@ -88,6 +88,12 @@ export interface Welcome {
 }
 
 /** `GET /api/directory/home` */
+/** "Non-profits in Toronto" on the browse home (L2-289 AC1): how many are live and up to four. */
+export interface NonprofitShelf {
+  count: number;
+  listings: BusinessCard[];
+}
+
 export interface BrowseHome {
   liveBusinessCount: number;
   categories: CategoryLink[];
@@ -95,6 +101,7 @@ export interface BrowseHome {
   products: ProductCard[];
   groups: CategoryGroup[];
   rooms: RoomsShelf;
+  nonprofits: NonprofitShelf;
 }
 
 export type OfferFilter = 'free-quote' | 'emergency-calls' | 'open-saturdays';

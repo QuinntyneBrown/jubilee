@@ -360,6 +360,7 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
             products: [],
             groups: [],
             rooms: { count: 0, spaces: [] },
+            nonprofits: { count: 0, listings: [] },
           },
         }),
       );
@@ -401,6 +402,27 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
         route.fulfill({
           json: {
             category: { slug: 'software-platforms', name: 'Software platforms' },
+            totalCount: 0,
+            matchCount: 0,
+            fact: null,
+            filters: { offers: [], areas: [] },
+            sort: 'recommended',
+            page: 1,
+            pageSize: 16,
+            pageCount: 1,
+            businesses: [],
+            spaces: [],
+            suggestions: [],
+            term: null,
+          },
+        }),
+      );
+    case 'nonprofits-empty':
+      // No non-profit is live yet (L2-289 AC6).
+      return page.route(categoryListings, (route) =>
+        route.fulfill({
+          json: {
+            category: { slug: 'non-profits', name: 'Non-profits' },
             totalCount: 0,
             matchCount: 0,
             fact: null,

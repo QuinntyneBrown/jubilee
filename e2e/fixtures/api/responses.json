@@ -1343,6 +1343,116 @@
       "spaces": []
     }
   },
+  "GET /api/categories/non-profits/listings?sort=name&page=1": {
+    "status": 200,
+    "body": {
+      "category": {
+        "slug": "non-profits",
+        "name": "Non-profits"
+      },
+      "totalCount": 3,
+      "matchCount": 3,
+      "fact": null,
+      "filters": {
+        "offers": [],
+        "areas": []
+      },
+      "sort": "name",
+      "page": 1,
+      "pageSize": 16,
+      "pageCount": 1,
+      "businesses": [
+        {
+          "slug": "bread-and-bridges",
+          "name": "Bread & Bridges",
+          "tagline": "A church-run food bank open every Saturday.",
+          "highlight": null,
+          "categorySlug": "non-profits",
+          "coverPhoto": null,
+          "repliesFast": false,
+          "rating": null
+        },
+        {
+          "slug": "hope-house-toronto",
+          "name": "Hope House Toronto",
+          "tagline": "Meals, beds and friendship for men leaving the shelter system.",
+          "highlight": "Volunteers welcome",
+          "categorySlug": "non-profits",
+          "coverPhoto": null,
+          "repliesFast": false,
+          "rating": null
+        },
+        {
+          "slug": "lakeshore-youth-collective",
+          "name": "Lakeshore Youth Collective",
+          "tagline": "A youth ministry on the lakeshore.",
+          "highlight": "Mentors needed",
+          "categorySlug": "non-profits",
+          "coverPhoto": null,
+          "repliesFast": false,
+          "rating": null
+        }
+      ],
+      "suggestions": [],
+      "term": null,
+      "spaces": []
+    }
+  },
+  "GET /api/categories/non-profits/listings?sort=recommended&page=1": {
+    "status": 200,
+    "body": {
+      "category": {
+        "slug": "non-profits",
+        "name": "Non-profits"
+      },
+      "totalCount": 3,
+      "matchCount": 3,
+      "fact": null,
+      "filters": {
+        "offers": [],
+        "areas": []
+      },
+      "sort": "recommended",
+      "page": 1,
+      "pageSize": 16,
+      "pageCount": 1,
+      "businesses": [
+        {
+          "slug": "hope-house-toronto",
+          "name": "Hope House Toronto",
+          "tagline": "Meals, beds and friendship for men leaving the shelter system.",
+          "highlight": "Volunteers welcome",
+          "categorySlug": "non-profits",
+          "coverPhoto": null,
+          "repliesFast": false,
+          "rating": null
+        },
+        {
+          "slug": "lakeshore-youth-collective",
+          "name": "Lakeshore Youth Collective",
+          "tagline": "A youth ministry on the lakeshore.",
+          "highlight": "Mentors needed",
+          "categorySlug": "non-profits",
+          "coverPhoto": null,
+          "repliesFast": false,
+          "rating": null
+        },
+        {
+          "slug": "bread-and-bridges",
+          "name": "Bread & Bridges",
+          "tagline": "A church-run food bank open every Saturday.",
+          "highlight": null,
+          "categorySlug": "non-profits",
+          "coverPhoto": null,
+          "repliesFast": false,
+          "rating": null
+        }
+      ],
+      "suggestions": [],
+      "term": null,
+      "spaces": []
+    }
+  },
   "GET /api/categories/plumbers/listings?sort=recommended&page=1": {
     "status": 404,
     "body": {
@@ -1857,6 +1967,10 @@
         {
           "slug": "software-platforms",
           "name": "Software platforms"
+        },
+        {
+          "slug": "non-profits",
+          "name": "Non-profits"
         }
       ],
       "featured": [
@@ -2351,6 +2465,41 @@
             "rating": null
           }
         ]
+      },
+      "nonprofits": {
+        "count": 3,
+        "listings": [
+          {
+            "slug": "hope-house-toronto",
+            "name": "Hope House Toronto",
+            "tagline": "Meals, beds and friendship for men leaving the shelter system.",
+            "highlight": "Volunteers welcome",
+            "categorySlug": "non-profits",
+            "coverPhoto": null,
+            "repliesFast": false,
+            "rating": null
+          },
+          {
+            "slug": "lakeshore-youth-collective",
+            "name": "Lakeshore Youth Collective",
+            "tagline": "A youth ministry on the lakeshore.",
+            "highlight": "Mentors needed",
+            "categorySlug": "non-profits",
+            "coverPhoto": null,
+            "repliesFast": false,
+            "rating": null
+          },
+          {
+            "slug": "bread-and-bridges",
+            "name": "Bread & Bridges",
+            "tagline": "A church-run food bank open every Saturday.",
+            "highlight": null,
+            "categorySlug": "non-profits",
+            "coverPhoto": null,
+            "repliesFast": false,
+            "rating": null
+          }
+        ]
       }
     }
   },
@@ -2463,7 +2612,7 @@
     "body": {
       "title": "Sign in to continue.",
       "status": 401,
-      "correlationId": "eb553e04c3df4debbbe12bdb9c3644e4",
+      "correlationId": "22966871328e4cf4aab916a5dbfae201",
       "code": "sign_in_required"
     }
   },
@@ -4196,7 +4345,7 @@
     "body": {
       "title": "Sign in to continue.",
       "status": 401,
-      "correlationId": "fba25da0086448de87acb90a15d8192d",
+      "correlationId": "41c185f83dbf40479559edcd02bca856",
       "code": "sign_in_required"
     }
   },
@@ -4291,7 +4440,8 @@
           "space": null
         }
       ],
-      "suggestion": null
+      "suggestion": null,
+      "nonprofitCount": 0
     }
   },
   "GET /api/search?q=plumber": {

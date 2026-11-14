@@ -1,6 +1,6 @@
 import type { SpaceTerm } from './directory';
 
-export type OfferKind = 'products' | 'services' | 'space' | 'platform';
+export type OfferKind = 'products' | 'services' | 'space' | 'platform' | 'nonprofit';
 
 /** The fields of a platform draft, as the founder typed them (L2-250). */
 export interface PlatformDraft {
@@ -9,6 +9,17 @@ export interface PlatformDraft {
   does: string;
   for: string;
   pricing: string;
+}
+
+/** The fields of a non-profit draft, as its leader typed them (L2-287). */
+export interface NonprofitDraft {
+  /** The website; any text while it is a draft. */
+  website: string;
+  /** The page for giving; empty when it has none. */
+  giveUrl: string;
+  mission: string;
+  serves: string;
+  area: string;
 }
 
 export type ItemPriceKind = 'free' | 'amount' | 'ask';
@@ -74,6 +85,8 @@ export interface ListingDraft {
   space?: SpaceDraft | null;
   /** The platform fields; null unless the draft is a software platform. */
   platform?: PlatformDraft | null;
+  /** The non-profit fields; null unless the draft is a non-profit. */
+  nonprofit?: NonprofitDraft | null;
 }
 
 /** What a save or a submit sends: the form, and for a submit the key that makes a repeat safe. */
@@ -90,6 +103,8 @@ export interface ListingDraftBody {
   idempotencyKey: string | null;
   /** The platform fields; sent for a software platform only. */
   platform?: PlatformDraft | null;
+  /** The non-profit fields; sent for a non-profit only. */
+  nonprofit?: NonprofitDraft | null;
 }
 
 /** `POST /api/listing-drafts/{id}/publish`: the listing is live straight away (L2-078, ADR 0057). */

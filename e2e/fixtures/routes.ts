@@ -28,6 +28,7 @@ export type StubName =
   | 'platform-no-website'
   | 'rooms-empty'
   | 'platforms-empty'
+  | 'nonprofits-empty'
   | 'business-loading'
   | 'business-retrying'
   | 'business-empty'
@@ -831,6 +832,30 @@ export const routes = {
   'category.software-platforms-error': {
     app: '/c/software-platforms',
     mock: 'pages/category/software-platforms-error.html',
+    who: 'member',
+    stub: 'category-error',
+  },
+  // Non-profits (L2-289): business cards, a sort and no filters.
+  'category.non-profits': {
+    app: '/c/non-profits',
+    mock: 'pages/category/non-profits.html',
+    who: 'member',
+  },
+  'category.non-profits-empty': {
+    app: '/c/non-profits',
+    mock: 'pages/category/non-profits-empty.html',
+    who: 'member',
+    stub: 'nonprofits-empty',
+  },
+  'category.non-profits-loading': {
+    app: '/c/non-profits',
+    mock: 'pages/category/non-profits-loading.html',
+    who: 'member',
+    stub: 'category-loading',
+  },
+  'category.non-profits-error': {
+    app: '/c/non-profits',
+    mock: 'pages/category/non-profits-error.html',
     who: 'member',
     stub: 'category-error',
   },

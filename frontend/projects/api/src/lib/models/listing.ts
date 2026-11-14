@@ -1,7 +1,7 @@
 import { BusinessCard, CategoryLink, ProductCard, SpaceCard, SpaceTerm } from './directory';
 
 /** Main offer of a listing; it picks the layout of the listing page. */
-export type ListingKind = 'services' | 'shop' | 'space' | 'platform';
+export type ListingKind = 'services' | 'shop' | 'space' | 'platform' | 'nonprofit';
 
 /** The caller's relation to the listing, decided by the server from the session. */
 export type ViewerRelation = 'visitor' | 'member' | 'owner' | 'moderator';
@@ -84,6 +84,23 @@ export interface PlatformDetails {
   pricing: string;
 }
 
+/**
+ * What the page of a non-profit shows (L2-291): its own words and the two addresses the links out
+ * go to. An address and its host are null when the stored address fails the rule, and the page
+ * then links nowhere for it (L2-292 AC5); `giveUrl` is null when it has no page for giving.
+ */
+export interface NonprofitDetails {
+  website: string | null;
+  /** The host "Visit {host}" names, without `www.`. */
+  host: string | null;
+  giveUrl: string | null;
+  /** The host "Give on {host}" names, without `www.`. */
+  giveHost: string | null;
+  mission: string;
+  serves: string;
+  area: string;
+}
+
 /** `GET /api/listings/{slug}`: the listing page of one business (L2-033, L2-034). */
 export interface ListingPage {
   slug: string;
@@ -119,4 +136,6 @@ export interface ListingPage {
   repliesFast: boolean;
   /** The founder's words and the link out; null unless the listing is a software platform. */
   platform?: PlatformDetails | null;
+  /** The non-profit's words and links out; null unless the listing is a non-profit (L2-291 AC10). */
+  nonprofit?: NonprofitDetails | null;
 }

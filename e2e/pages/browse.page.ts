@@ -79,6 +79,10 @@ export class BrowsePage extends ShellPage implements Screen {
   readonly roomsFilter: TermFilter;
   readonly spaceCards: Locator;
   readonly roomsEmpty: Locator;
+  /** "Non-profits in Toronto" (L2-289 AC1). */
+  readonly nonprofits: Locator;
+  readonly nonprofitsAll: Locator;
+  readonly nonprofitCards: Locator;
   readonly directory: Locator;
   readonly directoryHeading: Locator;
   readonly groups: Locator;
@@ -122,6 +126,9 @@ export class BrowsePage extends ShellPage implements Screen {
     this.roomsFilter = new TermFilter(this.rooms.getByRole('group', { name: 'Length of stay' }));
     this.spaceCards = this.rooms.locator('a.space-card');
     this.roomsEmpty = this.rooms.locator('.empty');
+    this.nonprofits = this.main.getByRole('region', { name: 'Non-profits in Toronto' });
+    this.nonprofitsAll = this.nonprofits.locator('.section-head a');
+    this.nonprofitCards = this.nonprofits.locator('a.biz-card');
     this.directory = this.main.locator('section.section:has(.dir-groups)');
     this.directoryHeading = this.directory.getByRole('heading', { level: 2 });
     this.groups = this.directory.locator('section.dir-group');
@@ -144,6 +151,10 @@ export class BrowsePage extends ShellPage implements Screen {
 
   featuredCard(index: number): BusinessCard {
     return new BusinessCard(this.featuredCards.nth(index));
+  }
+
+  nonprofitCard(index: number): BusinessCard {
+    return new BusinessCard(this.nonprofitCards.nth(index));
   }
 
   spaceCard(index: number): SpaceCard {

@@ -1,4 +1,4 @@
-import type { SpaceDraft, PlatformDraft } from './listing-drafts';
+import type { SpaceDraft, PlatformDraft, NonprofitDraft } from './listing-drafts';
 
 /** The owner's workspace: My business, the listing editor, photos, pause and resume (L2-085 to L2-088, L2-096). */
 
@@ -110,6 +110,8 @@ export interface ListingEditor {
   space?: SpaceDraft | null;
   /** A platform's web address and its founder's words (L2-256); absent for a business. */
   platform?: PlatformDraft | null;
+  /** A non-profit's addresses and its own words (L2-294); absent for every other listing. */
+  nonprofit?: NonprofitDraft | null;
 }
 
 /** What the owner saves; `version` is the one the editor opened (L2-087 AC8). */
@@ -129,6 +131,8 @@ export interface ListingChanges {
   space?: SpaceDraft;
   /** A platform's web address and its founder's words (L2-256); omitted for a business. */
   platform?: PlatformDraft;
+  /** A non-profit's addresses and its own words (L2-294); omitted for every other listing. */
+  nonprofit?: NonprofitDraft;
 }
 
 export interface PauseResult {
