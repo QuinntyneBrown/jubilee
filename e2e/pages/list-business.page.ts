@@ -59,6 +59,8 @@ export class ListBusinessPage extends ShellPage implements Screen {
   readonly space: SpaceFields;
   /** The fields of a software platform (L2-249, L2-250). */
   readonly platform: PlatformFields;
+  /** The fields of a non-profit (L2-286, L2-287). */
+  readonly nonprofit: NonprofitFields;
 
   constructor(page: Page) {
     super(page);
@@ -109,6 +111,7 @@ export class ListBusinessPage extends ShellPage implements Screen {
     this.addMore = this.main.getByRole('link', { name: /^Add more/ });
     this.space = new SpaceFields(page, this.main);
     this.platform = new PlatformFields(this.main);
+    this.nonprofit = new NonprofitFields(this.main);
   }
 
   async ready(): Promise<void> {
@@ -211,6 +214,89 @@ export class PlatformFields {
     await this.does.fill('Families log the books their children read.');
     await this.forWhom.fill('Families with children aged 4 to 12.');
     await this.pricing.fill('Free for families.');
+    await list.agree.check();
+  }
+}
+
+/** The non-profit form of List your business (L2-286 to L2-288). */
+export class NonprofitFields {
+  readonly offer: Locator;
+  readonly offerText: Locator;
+  readonly subtitle: Locator;
+  readonly nameLabel: Locator;
+  readonly nameHelp: Locator;
+  readonly taglineLabel: Locator;
+  readonly nameError: Locator;
+  readonly taglineError: Locator;
+  readonly website: Locator;
+  readonly websiteLabel: Locator;
+  readonly websiteHelp: Locator;
+  readonly websiteError: Locator;
+  readonly mission: Locator;
+  readonly missionHelp: Locator;
+  readonly missionCount: Locator;
+  readonly missionError: Locator;
+  readonly serves: Locator;
+  readonly servesHelp: Locator;
+  readonly servesCount: Locator;
+  readonly servesError: Locator;
+  readonly area: Locator;
+  readonly areaHelp: Locator;
+  readonly areaCount: Locator;
+  readonly areaError: Locator;
+  readonly give: Locator;
+  readonly giveHelp: Locator;
+  readonly giveError: Locator;
+  /** "Gifts go straight to the non-profit, on its own website. Jubilee takes no gift and no payment." */
+  readonly note: Locator;
+  readonly photosNote: Locator;
+  readonly previewHeading: Locator;
+
+  constructor(main: Locator) {
+    this.offer = main.getByRole('radio', { name: /^A non-profit/ });
+    this.offerText = main
+      .locator('.choice-card')
+      .filter({ hasText: 'A non-profit' })
+      .locator('.choice-card__text');
+    this.subtitle = main.locator('.subtitle').first();
+    this.nameLabel = main.locator('label[for="name"]');
+    this.nameHelp = main.locator('#name-help');
+    this.taglineLabel = main.locator('label[for="tagline"]');
+    this.nameError = main.locator('#name-error');
+    this.taglineError = main.locator('#tagline-error');
+    this.website = main.locator('#website');
+    this.websiteLabel = main.locator('label[for="website"]');
+    this.websiteHelp = main.locator('#website-help');
+    this.websiteError = main.locator('#website-error');
+    this.mission = main.locator('#mission');
+    this.missionHelp = main.locator('#mission-help');
+    this.missionCount = main.locator('#mission-count');
+    this.missionError = main.locator('#mission-error');
+    this.serves = main.locator('#serves');
+    this.servesHelp = main.locator('#serves-help');
+    this.servesCount = main.locator('#serves-count');
+    this.servesError = main.locator('#serves-error');
+    this.area = main.locator('#area');
+    this.areaHelp = main.locator('#area-help');
+    this.areaCount = main.locator('#area-count');
+    this.areaError = main.locator('#area-error');
+    this.give = main.locator('#give');
+    this.giveHelp = main.locator('#give-help');
+    this.giveError = main.locator('#give-error');
+    this.note = main.locator('#nonprofit-note');
+    this.photosNote = main.getByRole('group', { name: 'Photos' }).locator('.field__help');
+    this.previewHeading = main.getByRole('complementary').getByRole('heading');
+  }
+
+  /** Writes Hope House Toronto, with every field a valid non-profit needs and the agreement. */
+  async fillValid(list: ListBusinessPage): Promise<void> {
+    await list.name.fill('Hope House Toronto');
+    await list.tagline.fill('Meals, beds and friendship for men leaving the shelter system.');
+    await this.website.fill('https://hopehouse.example');
+    await this.mission.fill('We share meals, beds and friendship with men leaving the shelters.');
+    await this.serves.fill('Men aged 18 and over moving out of Toronto’s shelters.');
+    await this.area.fill('Moss Park and Regent Park');
+    await this.give.fill('https://hopehouse.example/give');
     await list.agree.check();
   }
 }

@@ -41,8 +41,17 @@ export interface FakePlatformDraft {
   pricing: string;
 }
 
+/** The fields of a non-profit draft (L2-287). */
+export interface FakeNonprofitDraft {
+  website: string;
+  giveUrl: string;
+  mission: string;
+  serves: string;
+  area: string;
+}
+
 export interface FakeDraftBody {
-  kind: 'products' | 'services' | 'space' | 'platform';
+  kind: 'products' | 'services' | 'space' | 'platform' | 'nonprofit';
   name: string;
   tagline: string;
   categorySlug: string | null;
@@ -53,6 +62,7 @@ export interface FakeDraftBody {
   idempotencyKey: string | null;
   space?: FakeSpaceDraft | null;
   platform?: FakePlatformDraft | null;
+  nonprofit?: FakeNonprofitDraft | null;
 }
 
 export interface FakeDraft extends FakeDraftBody {
