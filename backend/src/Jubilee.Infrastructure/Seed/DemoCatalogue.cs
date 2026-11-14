@@ -267,6 +267,52 @@ internal static class DemoCatalogue
             "$12 a month after a 30-day trial."),
     ];
 
+    /// <summary>
+    /// A non-profit in "Non-profits" (L2-285): its leader, its website, its page for giving when it has one and what
+    /// it says of itself. Every one is invented, on an <c>.example</c> address; no real organisation is seeded (ADR 0074).
+    /// </summary>
+    internal sealed record DemoNonprofit(
+        string Slug, string Name, string Tagline, string? Highlight, string Leader, string Website, string? GiveUrl,
+        string Mission, string Serves, string Area);
+
+    /// <summary>The live non-profits of the design's sample data.</summary>
+    internal static readonly DemoNonprofit[] Nonprofits =
+    [
+        new(
+            "hope-house-toronto",
+            "Hope House Toronto",
+            "Meals, beds and friendship for men leaving the shelter system.",
+            "Volunteers welcome",
+            "Grace Adeyemi",
+            "https://hopehouse.example",
+            "https://hopehouse.example/give",
+            "We share meals, beds and friendship with men leaving the shelter system, and walk with each one until he has a home of his own. Volunteers cook, mentor and help with the move.",
+            "Men aged 18 and over leaving shelters in downtown Toronto.",
+            "Moss Park and Regent Park"),
+        new(
+            "bread-and-bridges",
+            "Bread & Bridges",
+            "A church-run food bank open every Saturday.",
+            null,
+            "Daniel Fraser",
+            "https://breadandbridges.example",
+            null,
+            "Three churches run one food bank together. Every Saturday we hand out groceries, share a hot lunch and pray with anyone who asks.",
+            "Families and seniors in Scarborough who need help with food.",
+            "Scarborough Village and Cliffcrest"),
+        new(
+            "lakeshore-youth-collective",
+            "Lakeshore Youth Collective",
+            "A youth ministry on the lakeshore.",
+            "Mentors needed",
+            "Marcus Bell",
+            "https://lakeshoreyouth.example",
+            "https://lakeshoreyouth.example/donate",
+            "Mentors walk with teenagers through school, faith and their first job, with a drop-in night every Friday.",
+            "Young people aged 12 to 18 and their families.",
+            "Mimico and Long Branch"),
+    ];
+
     /// <summary>"Featured this week", positions 1 to 5.</summary>
     internal static readonly string[] FeaturedSlugs =
     [
