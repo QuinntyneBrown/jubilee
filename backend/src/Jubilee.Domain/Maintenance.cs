@@ -4,8 +4,17 @@ namespace Jubilee.Domain;
 /// One period of maintenance (L2-117). It opens when the switch turns on and closes when it turns off; the length
 /// between the two is how far the e-mailed links that were valid at the start are extended.
 /// </summary>
-public sealed class MaintenanceWindow
+public sealed class MaintenanceWindow : IAdminDeletable
 {
+    /// <inheritdoc />
+    public DateTimeOffset? AdminDeletedAt { get; private set; }
+
+    /// <inheritdoc />
+    public void AdminDelete(DateTimeOffset now) => AdminDeletedAt = now;
+
+    /// <inheritdoc />
+    public void AdminRestore() => AdminDeletedAt = null;
+
     private MaintenanceWindow()
     {
     }

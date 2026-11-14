@@ -49,6 +49,18 @@ public sealed class AdminTablesController(ISender sender) : ControllerBase
     public Task<AdminCountDto> SetStatus(string table, [FromBody] AdminStatusRequest body, CancellationToken cancellationToken) =>
         sender.Send(new SetAdminStatusCommand(User.ToStaff(), table, body.Ids ?? [], body.Status ?? string.Empty), cancellationToken);
 
+    /// <summary>Deletes the selected records of a table that declares deletion (L2-281 AC3).</summary>
+    [HttpPost("{table}/delete")]
+    [ErrorReference("JB-ADM-504")]
+    public Task<AdminCountDto> Delete(string table, [FromBody] AdminIdsRequest body, CancellationToken cancellationToken) =>
+        sender.Send(new DeleteAdminRecordsCommand(User.ToStaff(), table, body.Ids ?? []), cancellationToken);
+
+    /// <summary>Brings back records just deleted ("Undo", L2-281 AC3).</summary>
+    [HttpPost("{table}/restore")]
+    [ErrorReference("JB-ADM-504")]
+    public Task<AdminCountDto> Restore(string table, [FromBody] AdminIdsRequest body, CancellationToken cancellationToken) =>
+        sender.Send(new RestoreAdminRecordsCommand(User.ToStaff(), table, body.Ids ?? []), cancellationToken);
+
     /// <summary>Changes the fields of a record through their bindings (L2-283 AC2).</summary>
     [HttpPatch("{table}/{id}")]
     [ErrorReference("JB-ADM-504")]
@@ -71,3 +83,5 @@ public sealed record AdminValuesRequest(Dictionary<string, string?>? Values);
 
 /// <summary>The selected records and the status to set on them.</summary>
 public sealed record AdminStatusRequest(IReadOnlyList<string>? Ids, string? Status);
+
+public sealed record AdminIdsRequest(IReadOnlyList<string>? Ids);

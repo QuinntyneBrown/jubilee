@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using Jubilee.Application.Abstractions;
+using Jubilee.Domain;
 using Microsoft.EntityFrameworkCore;
 
 namespace Jubilee.Application.Admin;
@@ -85,6 +86,20 @@ public abstract class AdminTable
     /// <summary>Creates a record through the table's creation (L2-283 AC4), without saving; returns its ID.</summary>
     public abstract Task<(string Id, AdminChanged Values)> CreateAsync(
         IAppDbContext db, IReadOnlyDictionary<string, string?> values, AdminChange change, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Marks the records with these IDs deleted (L2-281 AC3), without saving; returns each one's ID and values. An ID
+    /// that is missing or already deleted is left out.
+    /// </summary>
+    public abstract Task<IReadOnlyList<(string Id, AdminChanged Values)>> DeleteAsync(
+        IAppDbContext db, IReadOnlyCollection<string> ids, DateTimeOffset now, CancellationToken cancellationToken);
+
+    /// <summary>Brings back the deleted records with these IDs as they were (L2-281 AC3), without saving.</summary>
+    public abstract Task<IReadOnlyList<(string Id, AdminChanged Values)>> RestoreAsync(
+        IAppDbContext db, IReadOnlyCollection<string> ids, CancellationToken cancellationToken);
+
+    /// <summary>Erases the records deleted before the given time (L2-281 AC4), without saving; returns how many.</summary>
+    public abstract Task<int> PurgeAsync(IAppDbContext db, DateTimeOffset before, CancellationToken cancellationToken);
 
     /// <summary>How many records of this table reference the given record through the field (L2-282 AC4).</summary>
     public abstract Task<int> CountReferencesAsync(IAppDbContext db, string fieldKey, string id, CancellationToken cancellationToken);
@@ -297,6 +312,62 @@ public class AdminTable<T> : AdminTable
         var after = _fields.Where(f => CreateFields.Contains(f.Key)).ToDictionary(f => f.Key, f => AdminWire.Text(f.ValueOf(entity)));
         return (_idOf(entity), new AdminChanged(new Dictionary<string, string?>(), after));
     }
+
+    public override async Task<IReadOnlyList<(string Id, AdminChanged Values)>> DeleteAsync(
+        IAppDbContext db, IReadOnlyCollection<string> ids, DateTimeOffset now, CancellationToken cancellationToken)
+    {
+        var found = await Deletables(_source(db), ids, cancellationToken);
+        foreach (var entity in found)
+        {
+            ((IAdminDeletable)entity).AdminDelete(now);
+        }
+
+        return [.. found.Select(e => (_idOf(e), new AdminChanged(WireValues(e), new Dictionary<string, string?>())))];
+    }
+
+    public override async Task<IReadOnlyList<(string Id, AdminChanged Values)>> RestoreAsync(
+        IAppDbContext db, IReadOnlyCollection<string> ids, CancellationToken cancellationToken)
+    {
+        var found = (await Deletables(_source(db).IgnoreQueryFilters(), ids, cancellationToken))
+            .Where(e => ((IAdminDeletable)e).AdminDeletedAt is not null).ToList();
+        foreach (var entity in found)
+        {
+            ((IAdminDeletable)entity).AdminRestore();
+        }
+
+        return [.. found.Select(e => (_idOf(e), new AdminChanged(new Dictionary<string, string?>(), WireValues(e))))];
+    }
+
+    public override async Task<int> PurgeAsync(IAppDbContext db, DateTimeOffset before, CancellationToken cancellationToken)
+    {
+        if (!Deletable)
+        {
+            return 0;
+        }
+
+        var row = Expression.Parameter(typeof(T), "row");
+        var deletedAt = Expression.Property(row, nameof(IAdminDeletable.AdminDeletedAt));
+        var due = Expression.Lambda<Func<T, bool>>(
+            Expression.LessThan(deletedAt, Expression.Constant(before, typeof(DateTimeOffset?))), row);
+        var set = db.Set<T>();
+        var found = await set.IgnoreQueryFilters().Where(due).ToListAsync(cancellationToken);
+        set.RemoveRange(found);
+        return found.Count;
+    }
+
+    private async Task<List<T>> Deletables(IQueryable<T> query, IReadOnlyCollection<string> ids, CancellationToken cancellationToken)
+    {
+        if (!Deletable || !typeof(IAdminDeletable).IsAssignableFrom(typeof(T)))
+        {
+            throw new InvalidOperationException($"The table {Key} does not declare deletion.");
+        }
+
+        var matches = ids.Distinct().Select(_matchId).OfType<Expression<Func<T, bool>>>().ToList();
+        return matches.Count == 0 ? [] : await query.AsTracking().Where(Predicates.AnyOf(matches)).ToListAsync(cancellationToken);
+    }
+
+    private Dictionary<string, string?> WireValues(T entity) =>
+        _fields.ToDictionary(f => f.Key, f => AdminWire.Text(f.ValueOf(entity)));
 
     public override async Task<int> CountReferencesAsync(IAppDbContext db, string fieldKey, string id, CancellationToken cancellationToken)
     {

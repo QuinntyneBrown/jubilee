@@ -10,8 +10,17 @@ public enum SavedItemKind
 /// One business or one product a member saved for later (L2-041). The list is private to the member and holds at
 /// most <see cref="MaxItems"/> items.
 /// </summary>
-public sealed class SavedItem
+public sealed class SavedItem : IAdminDeletable
 {
+    /// <inheritdoc />
+    public DateTimeOffset? AdminDeletedAt { get; private set; }
+
+    /// <inheritdoc />
+    public void AdminDelete(DateTimeOffset now) => AdminDeletedAt = now;
+
+    /// <inheritdoc />
+    public void AdminRestore() => AdminDeletedAt = null;
+
     public const int MaxItems = 500;
 
     private SavedItem()

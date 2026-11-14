@@ -142,6 +142,9 @@ public sealed class OutageAwareDbContext(AppDbContext inner, DatabaseOutage outa
 
     public DbSet<MerchOrderLine> MerchOrderLines => Use(inner.MerchOrderLines);
 
+    public DbSet<TEntity> Set<TEntity>()
+        where TEntity : class => Use(inner.Set<TEntity>());
+
     public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         outage.ThrowIfUnavailable();

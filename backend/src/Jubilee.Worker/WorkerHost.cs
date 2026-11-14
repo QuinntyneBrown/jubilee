@@ -35,6 +35,7 @@ public static class WorkerHost
         builder.Services.AddHostedService<AccountErasureJob>();
         builder.Services.AddHostedService<LaunchRetentionJob>();
         builder.Services.AddHostedService<MerchOrderJob>();
+        builder.Services.AddHostedService<AdminDeletionPurgeJob>();
         return builder;
     }
 }
@@ -484,6 +485,39 @@ public sealed class LaunchRetentionJob(IServiceScopeFactory scopes, ILogger<Laun
                 catch (Exception exception) when (exception is not OperationCanceledException)
                 {
                     logger.LogError(exception, "The launch sign-ups could not be checked for retention. They will be tried again.");
+                }
+            }
+            while (await timer.WaitForNextTickAsync(stoppingToken));
+        }
+        catch (OperationCanceledException)
+        {
+        }
+    }
+}
+
+/// <summary>
+/// Once a day, erases the records deleted from the admin application more than 30 days ago (L2-281 AC4). It logs the
+/// count only.
+/// </summary>
+public sealed class AdminDeletionPurgeJob(IServiceScopeFactory scopes, ILogger<AdminDeletionPurgeJob> logger) : BackgroundService
+{
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        using var timer = new PeriodicTimer(TimeSpan.FromHours(24));
+        try
+        {
+            do
+            {
+                try
+                {
+                    await using var scope = scopes.CreateAsyncScope();
+                    var erased = await scope.ServiceProvider.GetRequiredService<MediatR.ISender>()
+                        .Send(new Jubilee.Application.Admin.PurgeAdminDeletionsCommand(), stoppingToken);
+                    logger.LogInformation("Admin deletions: erased {Count} records deleted more than 30 days ago.", erased);
+                }
+                catch (Exception exception) when (exception is not OperationCanceledException)
+                {
+                    logger.LogError(exception, "The deleted records could not be erased. They will be tried again.");
                 }
             }
             while (await timer.WaitForNextTickAsync(stoppingToken));

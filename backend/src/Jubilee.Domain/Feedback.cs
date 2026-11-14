@@ -43,8 +43,17 @@ public sealed record AreaScores(int? Finding, int? Listing, int? Messaging, int?
 /// A rating, a bug report, kudos or a moment check-in from one member (L2-214). It belongs to its
 /// member: only they read it in the app. The fields of the other kinds stay null.
 /// </summary>
-public sealed class Feedback
+public sealed class Feedback : IAdminDeletable
 {
+    /// <inheritdoc />
+    public DateTimeOffset? AdminDeletedAt { get; private set; }
+
+    /// <inheritdoc />
+    public void AdminDelete(DateTimeOffset now) => AdminDeletedAt = now;
+
+    /// <inheritdoc />
+    public void AdminRestore() => AdminDeletedAt = null;
+
     public const int MaxNoteLength = 1000;
 
     public const int MaxAnswerLength = 2000;
@@ -235,8 +244,17 @@ public sealed class Feedback
 /// A picture a member added to a bug report (L2-212 AC6): cleaned bytes, kept for the team and never
 /// served to the app. It waits without a report until the report that names it is sent.
 /// </summary>
-public sealed class FeedbackScreenshot
+public sealed class FeedbackScreenshot : IAdminDeletable
 {
+    /// <inheritdoc />
+    public DateTimeOffset? AdminDeletedAt { get; private set; }
+
+    /// <inheritdoc />
+    public void AdminDelete(DateTimeOffset now) => AdminDeletedAt = now;
+
+    /// <inheritdoc />
+    public void AdminRestore() => AdminDeletedAt = null;
+
     private FeedbackScreenshot()
     {
     }

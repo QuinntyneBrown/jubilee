@@ -92,6 +92,71 @@ public sealed class SetAdminStatusCommandHandler(IAppDbContext db, TimeProvider 
     }
 }
 
+/// <summary>Deletes the selected records, each audited with its values (L2-281 AC3, AC5).</summary>
+public sealed record DeleteAdminRecordsCommand(StaffViewer Staff, string Table, IReadOnlyList<string> Ids) : IRequest<AdminCountDto>;
+
+/// <summary>Brings back records deleted by mistake, each audited ("Undo", L2-281 AC3).</summary>
+public sealed record RestoreAdminRecordsCommand(StaffViewer Staff, string Table, IReadOnlyList<string> Ids) : IRequest<AdminCountDto>;
+
+public sealed class DeleteAdminRecordsCommandHandler(IAppDbContext db, TimeProvider clock)
+    : IRequestHandler<DeleteAdminRecordsCommand, AdminCountDto>
+{
+    public async Task<AdminCountDto> Handle(DeleteAdminRecordsCommand request, CancellationToken cancellationToken)
+    {
+        var table = AdminChanges.Deletable(request.Staff, request.Table);
+        var now = clock.GetUtcNow();
+        var deleted = await table.DeleteAsync(db, request.Ids, now, cancellationToken);
+        foreach (var (id, values) in deleted)
+        {
+            AdminChanges.Audit(db, request.Staff, $"{table.Key}.delete", table.Key, id, values, now);
+        }
+
+        await db.SaveChangesAsync(cancellationToken);
+        return new AdminCountDto(deleted.Count);
+    }
+}
+
+public sealed class RestoreAdminRecordsCommandHandler(IAppDbContext db, TimeProvider clock)
+    : IRequestHandler<RestoreAdminRecordsCommand, AdminCountDto>
+{
+    public async Task<AdminCountDto> Handle(RestoreAdminRecordsCommand request, CancellationToken cancellationToken)
+    {
+        var table = AdminChanges.Deletable(request.Staff, request.Table);
+        var now = clock.GetUtcNow();
+        var restored = await table.RestoreAsync(db, request.Ids, cancellationToken);
+        foreach (var (id, values) in restored)
+        {
+            AdminChanges.Audit(db, request.Staff, $"{table.Key}.restore", table.Key, id, values, now);
+        }
+
+        await db.SaveChangesAsync(cancellationToken);
+        return new AdminCountDto(restored.Count);
+    }
+}
+
+/// <summary>Erases the records deleted from the admin application more than 30 days ago (L2-281 AC4).</summary>
+public sealed record PurgeAdminDeletionsCommand : IRequest<int>
+{
+    /// <summary>How long a deleted record is kept apart before it is erased.</summary>
+    public static readonly TimeSpan Kept = TimeSpan.FromDays(30);
+}
+
+public sealed class PurgeAdminDeletionsCommandHandler(IAppDbContext db, TimeProvider clock) : IRequestHandler<PurgeAdminDeletionsCommand, int>
+{
+    public async Task<int> Handle(PurgeAdminDeletionsCommand request, CancellationToken cancellationToken)
+    {
+        var before = clock.GetUtcNow() - PurgeAdminDeletionsCommand.Kept;
+        var erased = 0;
+        foreach (var table in AdminCatalog.Tables.Where(t => t.Deletable))
+        {
+            erased += await table.PurgeAsync(db, before, cancellationToken);
+        }
+
+        await db.SaveChangesAsync(cancellationToken);
+        return erased;
+    }
+}
+
 /// <summary>The checks and the audit every change of the admin application shares (L2-284 AC1, AC5).</summary>
 public static class AdminChanges
 {
@@ -107,6 +172,15 @@ public static class AdminChanges
         return AdminRights.CanChange(staff, table)
             ? table
             : throw new ForbiddenException("FORBIDDEN", "Your staff role may not change this table.");
+    }
+
+    /// <summary>The table, when the role may delete in it: as <see cref="Changeable"/>, and 403 for a table that keeps its records (L2-281 AC5).</summary>
+    public static AdminTable Deletable(StaffViewer staff, string key)
+    {
+        var table = Changeable(staff, key);
+        return AdminRights.CanDelete(staff, table)
+            ? table
+            : throw new ForbiddenException("FORBIDDEN", $"{table.Label} are not deleted here.");
     }
 
     /// <summary>Adds the audit record of a change to the same save: the staff member, the time, the values before and after.</summary>
