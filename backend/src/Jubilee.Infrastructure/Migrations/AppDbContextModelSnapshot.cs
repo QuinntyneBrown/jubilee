@@ -2699,6 +2699,33 @@ namespace Jubilee.Infrastructure.Migrations
 
             modelBuilder.Entity("Jubilee.Domain.Listing", b =>
                 {
+                    b.OwnsOne("Jubilee.Domain.NonprofitDetails", "Nonprofit", b1 =>
+                        {
+                            b1.Property<Guid>("ListingId");
+
+                            b1.Property<string>("Area")
+                                .IsRequired();
+
+                            b1.Property<string>("GiveUrl");
+
+                            b1.Property<string>("Mission")
+                                .IsRequired();
+
+                            b1.Property<string>("Serves")
+                                .IsRequired();
+
+                            b1.HasKey("ListingId");
+
+                            b1.ToTable("Listings");
+
+                            b1
+                                .ToJson("Nonprofit")
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.WithOwner()
+                                .HasForeignKey("ListingId");
+                        });
+
                     b.OwnsOne("Jubilee.Domain.PlatformDetails", "Platform", b1 =>
                         {
                             b1.Property<Guid>("ListingId");
@@ -2768,6 +2795,8 @@ namespace Jubilee.Infrastructure.Migrations
                             b1.WithOwner()
                                 .HasForeignKey("ListingId");
                         });
+
+                    b.Navigation("Nonprofit");
 
                     b.Navigation("Platform");
 
@@ -2776,6 +2805,33 @@ namespace Jubilee.Infrastructure.Migrations
 
             modelBuilder.Entity("Jubilee.Domain.ListingDraft", b =>
                 {
+                    b.OwnsOne("Jubilee.Domain.NonprofitDetails", "Nonprofit", b1 =>
+                        {
+                            b1.Property<Guid>("ListingDraftId");
+
+                            b1.Property<string>("Area")
+                                .IsRequired();
+
+                            b1.Property<string>("GiveUrl");
+
+                            b1.Property<string>("Mission")
+                                .IsRequired();
+
+                            b1.Property<string>("Serves")
+                                .IsRequired();
+
+                            b1.HasKey("ListingDraftId");
+
+                            b1.ToTable("ListingDrafts");
+
+                            b1
+                                .ToJson("Nonprofit")
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.WithOwner()
+                                .HasForeignKey("ListingDraftId");
+                        });
+
                     b.OwnsOne("Jubilee.Domain.PlatformDetails", "Platform", b1 =>
                         {
                             b1.Property<Guid>("ListingDraftId");
@@ -2845,6 +2901,8 @@ namespace Jubilee.Infrastructure.Migrations
                             b1.WithOwner()
                                 .HasForeignKey("ListingDraftId");
                         });
+
+                    b.Navigation("Nonprofit");
 
                     b.Navigation("Platform");
 

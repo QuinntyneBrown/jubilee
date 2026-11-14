@@ -1,36 +1,15 @@
 namespace Jubilee.Domain;
 
-/// <summary>The rules a software platform's web address follows (L2-250 AC4, ADR 0072).</summary>
+/// <summary>The rules a software platform's web address follows (L2-250 AC4, ADR 0072): those of <see cref="WebAddressRules"/>.</summary>
 public static class PlatformRules
 {
-    public const int MaxWebsiteLength = 200;
+    public const int MaxWebsiteLength = WebAddressRules.MaxLength;
 
-    /// <summary>
-    /// True for an absolute <c>https</c> address with a dotted host and no user or password, 200
-    /// characters at most. It is the page's main action, so plain <c>http</c> is not accepted.
-    /// The address is only ever read as text: nothing here or elsewhere requests it (L2-255 AC4).
-    /// </summary>
-    public static bool IsWebAddress(string? value)
-    {
-        var text = value?.Trim() ?? string.Empty;
-        return text.Length is > 0 and <= MaxWebsiteLength
-            && !text.Any(char.IsWhiteSpace)
-            && text.StartsWith("https://", StringComparison.OrdinalIgnoreCase)
-            && Uri.TryCreate(text, UriKind.Absolute, out var uri)
-            && uri.Scheme == Uri.UriSchemeHttps
-            && string.IsNullOrEmpty(uri.UserInfo)
-            && uri.HostNameType == UriHostNameType.Dns
-            && uri.Host.Contains('.')
-            && !uri.Host.StartsWith('.')
-            && !uri.Host.EndsWith('.');
-    }
+    /// <inheritdoc cref="WebAddressRules.IsWebAddress"/>
+    public static bool IsWebAddress(string? value) => WebAddressRules.IsWebAddress(value);
 
     /// <summary>The host the link out names, without <c>www.</c>: "lanternread.example" (L2-255 AC1).</summary>
-    public static string Host(string website)
-    {
-        var host = new Uri(website.Trim()).Host;
-        return host.StartsWith("www.", StringComparison.OrdinalIgnoreCase) ? host[4..] : host;
-    }
+    public static string Host(string website) => WebAddressRules.Host(website);
 }
 
 /// <summary>
