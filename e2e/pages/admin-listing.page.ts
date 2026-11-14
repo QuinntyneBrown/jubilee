@@ -26,6 +26,9 @@ export class AdminListingPage extends AdminShellPage implements Screen {
   readonly platform: Locator;
   /** The platform's address as a link that leaves Jubilee; absent when the address fails the rule. */
   readonly platformLink: Locator;
+  /** The panel of a non-profit (L2-295 AC2) and its addresses as links that leave Jubilee. */
+  readonly nonprofit: Locator;
+  readonly nonprofitLinks: Locator;
   readonly previewTag: Locator;
   readonly previewPerks: Locator;
 
@@ -51,6 +54,8 @@ export class AdminListingPage extends AdminShellPage implements Screen {
     this.spacePreview = this.main.locator('aside .space-card');
     this.platform = this.main.locator('section[aria-labelledby="plt"]');
     this.platformLink = this.platform.getByRole('link');
+    this.nonprofit = this.main.locator('section[aria-labelledby="np"]');
+    this.nonprofitLinks = this.nonprofit.getByRole('link');
     this.previewTag = this.preview.locator('.media__tag');
     this.previewPerks = this.preview.locator('.perk');
   }
@@ -72,6 +77,13 @@ export class AdminListingPage extends AdminShellPage implements Screen {
 
   platformRow(term: string): Locator {
     return this.platform
+      .locator('.dl__item')
+      .filter({ has: this.page.getByText(term, { exact: true }) })
+      .locator('dd');
+  }
+
+  nonprofitRow(term: string): Locator {
+    return this.nonprofit
       .locator('.dl__item')
       .filter({ has: this.page.getByText(term, { exact: true }) })
       .locator('dd');
