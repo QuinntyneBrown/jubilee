@@ -277,9 +277,13 @@ Microsoft Entra ID with a second factor, and the staff endpoints of the API (`/a
 `/api/staff/*`) answer only an allowed network. Every deployment publishes the application.
 
 Where it stands: the App Service, its proxy key, the DNS records and the certificate were set up
-on 11 November 2026 (step 3). Steps 1, 2 and 4 to 8 are open. Until step 5 is done the allow-list
-is empty, so the API refuses every staff request in production, and the application's own files
-answer any network. Write the date beside each step in the table at the end as you finish it.
+on 11 November 2026 (step 3), and steps 1 and 4 to 7 on 14 November 2026. The allow-list holds the
+owner's home network only (`99.245.164.12/32`, `2607:fea8:4ea0:a500::/64`), which the provider
+can change; when the admin application says "You're not on an allowed network.", add the new
+address with step 5. Step 2 is open: the tenant has no Entra ID P1 licence, so it has no
+Conditional Access, and only the API's own refusal of a sign-in without `mfa` (L2-189 AC3) asks
+for the second factor. Step 8 is open. Write the date beside each step in the table at the end
+as you finish it.
 
 ### The owner's checklist
 
@@ -372,13 +376,13 @@ setting() { az webapp config appsettings list -g "$G" -n "$1" --query "[?name=='
 
 | Step | Done on |
 |---|---|
-| 1. Entra ID registration | |
+| 1. Entra ID registration | 14 November 2026 |
 | 2. Second factor | |
 | 3. App Service, proxy key, host name | 11 November 2026 |
-| 4. Staff sign-in settings | |
-| 5. Allowed networks | |
-| 6. Deploy | |
-| 7. First administrator and the Jubilee team | |
+| 4. Staff sign-in settings | 14 November 2026 |
+| 5. Allowed networks | 14 November 2026 |
+| 6. Deploy | 14 November 2026 |
+| 7. First administrator and the Jubilee team | 14 November 2026 |
 | 8. Signed in against production | |
 | 9. Sweeps run | |
 
