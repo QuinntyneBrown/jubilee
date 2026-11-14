@@ -29,6 +29,11 @@ export type StubName =
   | 'rooms-empty'
   | 'platforms-empty'
   | 'nonprofits-empty'
+  | 'nonprofit-owner'
+  | 'nonprofit-preview'
+  | 'nonprofit-loading'
+  | 'nonprofit-error'
+  | 'nonprofit-no-giving'
   | 'business-loading'
   | 'business-retrying'
   | 'business-empty'
@@ -1054,6 +1059,53 @@ export const routes = {
     mock: 'pages/platform/default.html',
     who: 'member',
     stub: 'platform-no-website',
+  },
+  // The page of a non-profit (L2-291): Hope House Toronto, from the seeded non-profits.
+  nonprofit: { app: '/b/hope-house-toronto', mock: 'pages/nonprofit/default.html', who: 'member' },
+  // Bread & Bridges gives no page for giving: "Visit {host}" is the main action (L2-291 AC2).
+  'nonprofit.website-only': {
+    app: '/b/bread-and-bridges',
+    mock: 'pages/nonprofit/website-only.html',
+    who: 'member',
+  },
+  'nonprofit.signed-out': {
+    app: '/b/hope-house-toronto',
+    mock: 'pages/nonprofit/signed-out.html',
+    who: 'visitor',
+  },
+  'nonprofit.owner': {
+    app: '/b/hope-house-toronto',
+    mock: 'pages/nonprofit/owner.html',
+    who: 'member',
+    stub: 'nonprofit-owner',
+  },
+  'nonprofit.preview': {
+    app: '/b/hope-house-toronto',
+    mock: 'pages/nonprofit/preview.html',
+    who: 'member',
+    stub: 'nonprofit-preview',
+  },
+  // Opened from Non-profits, so the page knows it is loading or failed to load a non-profit.
+  'nonprofit.loading': {
+    app: '/b/hope-house-toronto',
+    mock: 'pages/nonprofit/loading.html',
+    who: 'member',
+    stub: 'nonprofit-loading',
+    via: '/c/non-profits',
+  },
+  'nonprofit.error': {
+    app: '/b/hope-house-toronto',
+    mock: 'pages/nonprofit/error.html',
+    who: 'member',
+    stub: 'nonprofit-error',
+    via: '/c/non-profits',
+  },
+  // A stored page for giving the rules refuse: no "Give on" and no row (L2-292 AC5). No mock draws it.
+  'nonprofit.no-giving': {
+    app: '/b/hope-house-toronto',
+    mock: 'pages/nonprofit/website-only.html',
+    who: 'member',
+    stub: 'nonprofit-no-giving',
   },
   'space.short-stay': {
     app: '/b/roncesvalles-guest-suite',

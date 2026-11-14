@@ -119,8 +119,10 @@ const MONTH = new Intl.DateTimeFormat('en-CA', {
 interface DetailRow {
   term: string;
   value: string;
-  /** The value is a link that leaves Jubilee: a platform's website (L2-255). */
+  /** The value is a link that leaves Jubilee: a platform's or a non-profit's website (L2-255, L2-292). */
   href?: string;
+  /** The link carries the icon that says it leaves Jubilee (L2-292 AC1). */
+  leaves?: boolean;
 }
 
 const STATUS_WORDS: Record<ListingStatus, string> = {
@@ -225,12 +227,14 @@ export class BusinessPage {
     return STATUS_WORDS[status];
   }
 
-  /** What the page calls the listing: a shop, a space, a platform or a business. Known before it
-   * loads when the listing was reached from a list (L2-034 AC4, L2-205 AC5, L2-254 AC8). */
+  /** What the page calls the listing: a shop, a space, a platform, a non-profit or a business. Known
+   * before it loads when the listing was reached from a list (L2-034 AC4, L2-205 AC5, L2-254 AC8,
+   * L2-291 AC9). */
   protected readonly thing = computed(() => {
     const state = this.state();
     const kind = state.status === 'loaded' ? state.value.kind : this.hints.kindOf(this.slugValue());
     if (kind === 'platform') return 'platform';
+    if (kind === 'nonprofit') return 'non-profit';
     return kind === 'shop' ? 'shop' : kind === 'space' ? 'space' : 'business';
   });
 
@@ -280,7 +284,27 @@ export class BusinessPage {
   protected readonly details = computed<DetailRow[]>(() => {
     const state = this.state();
     if (state.status !== 'loaded') return [];
-    const { details, platform } = state.value;
+    const { details, platform, nonprofit } = state.value;
+    if (nonprofit) {
+      // A non-profit has no hours or languages: where it works and its two links out (L2-291 AC1).
+      const rows: (DetailRow | null)[] = [
+        row('Works in', nonprofit.area),
+        nonprofit.website && nonprofit.host
+          ? { term: 'Website', value: nonprofit.host, href: nonprofit.website, leaves: true }
+          : null,
+        nonprofit.giveUrl && nonprofit.giveHost
+          ? {
+              term: 'Page for giving',
+              value: nonprofit.giveHost,
+              href: nonprofit.giveUrl,
+              leaves: true,
+            }
+          : null,
+        row('On Jubilee since', MONTH.format(new Date(details.onJubileeSince))),
+        row('Replies', details.replies ? REPLIES[details.replies] : null),
+      ];
+      return rows.filter((r): r is DetailRow => r !== null);
+    }
     if (platform) {
       // A platform has no place, hours or languages: its pricing and its website (L2-254 AC1).
       const rows: (DetailRow | null)[] = [

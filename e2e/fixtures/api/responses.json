@@ -1365,8 +1365,8 @@
         {
           "slug": "bread-and-bridges",
           "name": "Bread & Bridges",
-          "tagline": "A church-run food bank open every Saturday.",
-          "highlight": null,
+          "tagline": "A church-run food bank open to every neighbour in Weston.",
+          "highlight": "Open Saturdays",
           "categorySlug": "non-profits",
           "coverPhoto": null,
           "repliesFast": false,
@@ -1385,8 +1385,8 @@
         {
           "slug": "lakeshore-youth-collective",
           "name": "Lakeshore Youth Collective",
-          "tagline": "A youth ministry on the lakeshore.",
-          "highlight": "Mentors needed",
+          "tagline": "Youth nights, mentoring and summer camp for teens in south Etobicoke.",
+          "highlight": null,
           "categorySlug": "non-profits",
           "coverPhoto": null,
           "repliesFast": false,
@@ -1428,19 +1428,19 @@
           "rating": null
         },
         {
-          "slug": "lakeshore-youth-collective",
-          "name": "Lakeshore Youth Collective",
-          "tagline": "A youth ministry on the lakeshore.",
-          "highlight": "Mentors needed",
+          "slug": "bread-and-bridges",
+          "name": "Bread & Bridges",
+          "tagline": "A church-run food bank open to every neighbour in Weston.",
+          "highlight": "Open Saturdays",
           "categorySlug": "non-profits",
           "coverPhoto": null,
           "repliesFast": false,
           "rating": null
         },
         {
-          "slug": "bread-and-bridges",
-          "name": "Bread & Bridges",
-          "tagline": "A church-run food bank open every Saturday.",
+          "slug": "lakeshore-youth-collective",
+          "name": "Lakeshore Youth Collective",
+          "tagline": "Youth nights, mentoring and summer camp for teens in south Etobicoke.",
           "highlight": null,
           "categorySlug": "non-profits",
           "coverPhoto": null,
@@ -2480,19 +2480,19 @@
             "rating": null
           },
           {
-            "slug": "lakeshore-youth-collective",
-            "name": "Lakeshore Youth Collective",
-            "tagline": "A youth ministry on the lakeshore.",
-            "highlight": "Mentors needed",
+            "slug": "bread-and-bridges",
+            "name": "Bread & Bridges",
+            "tagline": "A church-run food bank open to every neighbour in Weston.",
+            "highlight": "Open Saturdays",
             "categorySlug": "non-profits",
             "coverPhoto": null,
             "repliesFast": false,
             "rating": null
           },
           {
-            "slug": "bread-and-bridges",
-            "name": "Bread & Bridges",
-            "tagline": "A church-run food bank open every Saturday.",
+            "slug": "lakeshore-youth-collective",
+            "name": "Lakeshore Youth Collective",
+            "tagline": "Youth nights, mentoring and summer camp for teens in south Etobicoke.",
             "highlight": null,
             "categorySlug": "non-profits",
             "coverPhoto": null,
@@ -2612,7 +2612,7 @@
     "body": {
       "title": "Sign in to continue.",
       "status": 401,
-      "correlationId": "22966871328e4cf4aab916a5dbfae201",
+      "correlationId": "48f7a56115fa4ce49d6bcdac0d7fc7ac",
       "code": "sign_in_required"
     }
   },
@@ -2781,6 +2781,96 @@
       "detail": "There is no such business.",
       "correlationId": "a7ab721a3b4c4bfb941d54e97420a5ee",
       "code": "listing_not_found"
+    }
+  },
+  "GET /api/listings/bread-and-bridges": {
+    "status": 200,
+    "body": {
+      "slug": "bread-and-bridges",
+      "kind": "nonprofit",
+      "name": "Bread & Bridges",
+      "category": {
+        "slug": "non-profits",
+        "name": "Non-profits"
+      },
+      "stage": "live",
+      "status": "live",
+      "viewerRelation": "visitor",
+      "ownerName": "Daniel Fraser",
+      "tagline": "A church-run food bank open to every neighbour in Weston.",
+      "credentials": [],
+      "highlight": "Open Saturdays",
+      "about": null,
+      "coverPhoto": null,
+      "details": {
+        "where": null,
+        "hours": null,
+        "languages": null,
+        "delivery": null,
+        "madeToOrder": null,
+        "onJubileeSince": "2026-09-09T15:04:54.582918+00:00",
+        "replies": null
+      },
+      "services": [],
+      "productCount": 0,
+      "products": [],
+      "related": [
+        {
+          "slug": "hope-house-toronto",
+          "name": "Hope House Toronto",
+          "tagline": "Meals, beds and friendship for men leaving the shelter system.",
+          "highlight": "Volunteers welcome",
+          "categorySlug": "non-profits",
+          "coverPhoto": null,
+          "repliesFast": false,
+          "rating": null
+        },
+        {
+          "slug": "lakeshore-youth-collective",
+          "name": "Lakeshore Youth Collective",
+          "tagline": "Youth nights, mentoring and summer camp for teens in south Etobicoke.",
+          "highlight": null,
+          "categorySlug": "non-profits",
+          "coverPhoto": null,
+          "repliesFast": false,
+          "rating": null
+        }
+      ],
+      "space": null,
+      "relatedSpaces": [],
+      "openRequestId": null,
+      "repliesFast": false,
+      "address": null,
+      "photos": [],
+      "platform": null,
+      "nonprofit": {
+        "website": "https://breadandbridges.example",
+        "host": "breadandbridges.example",
+        "giveUrl": null,
+        "giveHost": null,
+        "mission": "Every Saturday morning our church opens its hall as a food bank. Anyone may come and no one is asked why. We pack groceries, pour coffee, sit with whoever wants to talk and pray with anyone who asks.",
+        "serves": "Families, seniors, youth and newcomers in Weston and Mount Dennis.",
+        "area": "Weston and Mount Dennis"
+      }
+    }
+  },
+  "GET /api/listings/bread-and-bridges/reviews": {
+    "status": 200,
+    "body": {
+      "summary": {
+        "average": 0,
+        "count": 0,
+        "breakdown": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "viewer": "visitor",
+      "writing": "not-offered",
+      "items": []
     }
   },
   "GET /api/listings/deeks-insurance": {
@@ -3013,6 +3103,96 @@
       },
       "viewer": "visitor",
       "writing": "sign-in",
+      "items": []
+    }
+  },
+  "GET /api/listings/hope-house-toronto": {
+    "status": 200,
+    "body": {
+      "slug": "hope-house-toronto",
+      "kind": "nonprofit",
+      "name": "Hope House Toronto",
+      "category": {
+        "slug": "non-profits",
+        "name": "Non-profits"
+      },
+      "stage": "live",
+      "status": "live",
+      "viewerRelation": "visitor",
+      "ownerName": "Grace Adeyemi",
+      "tagline": "Meals, beds and friendship for men leaving the shelter system.",
+      "credentials": [],
+      "highlight": "Volunteers welcome",
+      "about": null,
+      "coverPhoto": null,
+      "details": {
+        "where": null,
+        "hours": null,
+        "languages": null,
+        "delivery": null,
+        "madeToOrder": null,
+        "onJubileeSince": "2026-09-10T15:04:54.582918+00:00",
+        "replies": null
+      },
+      "services": [],
+      "productCount": 0,
+      "products": [],
+      "related": [
+        {
+          "slug": "bread-and-bridges",
+          "name": "Bread & Bridges",
+          "tagline": "A church-run food bank open to every neighbour in Weston.",
+          "highlight": "Open Saturdays",
+          "categorySlug": "non-profits",
+          "coverPhoto": null,
+          "repliesFast": false,
+          "rating": null
+        },
+        {
+          "slug": "lakeshore-youth-collective",
+          "name": "Lakeshore Youth Collective",
+          "tagline": "Youth nights, mentoring and summer camp for teens in south Etobicoke.",
+          "highlight": null,
+          "categorySlug": "non-profits",
+          "coverPhoto": null,
+          "repliesFast": false,
+          "rating": null
+        }
+      ],
+      "space": null,
+      "relatedSpaces": [],
+      "openRequestId": null,
+      "repliesFast": false,
+      "address": null,
+      "photos": [],
+      "platform": null,
+      "nonprofit": {
+        "website": "https://hopehouse.example",
+        "host": "hopehouse.example",
+        "giveUrl": "https://hopehouse.example/give",
+        "giveHost": "hopehouse.example",
+        "mission": "Hope House is a home in Moss Park for up to eight men at a time as they leave the shelter system. We cook and eat together every night, help each man find work and a place of his own, and stay his friends after he moves on. We do it because Jesus welcomed us first.",
+        "serves": "Men aged 18 and over moving out of Toronto’s shelters.",
+        "area": "Moss Park and Regent Park"
+      }
+    }
+  },
+  "GET /api/listings/hope-house-toronto/reviews": {
+    "status": 200,
+    "body": {
+      "summary": {
+        "average": 0,
+        "count": 0,
+        "breakdown": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "viewer": "visitor",
+      "writing": "not-offered",
       "items": []
     }
   },
@@ -4345,7 +4525,7 @@
     "body": {
       "title": "Sign in to continue.",
       "status": 401,
-      "correlationId": "41c185f83dbf40479559edcd02bca856",
+      "correlationId": "37c44dfded594992b78294b64bbca6f7",
       "code": "sign_in_required"
     }
   },
@@ -4543,11 +4723,19 @@
     "status": 204,
     "body": null
   },
+  "POST /api/listings/bread-and-bridges/views": {
+    "status": 204,
+    "body": null
+  },
   "POST /api/listings/deeks-insurance/views": {
     "status": 204,
     "body": null
   },
   "POST /api/listings/east-york-roommate/views": {
+    "status": 204,
+    "body": null
+  },
+  "POST /api/listings/hope-house-toronto/views": {
     "status": 204,
     "body": null
   },
