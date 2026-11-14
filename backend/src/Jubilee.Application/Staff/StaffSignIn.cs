@@ -34,7 +34,7 @@ public enum StaffSignInOutcome
 /// <summary>The outcome, and on success the account and the member the session acts as (L2-193 AC6).</summary>
 public sealed record StaffSignInResult(StaffSignInOutcome Outcome, StaffMember? Staff = null, Guid? MemberId = null);
 
-public sealed record CompleteStaffSignInCommand(StaffIdentity Identity, string ExpectedTenantId) : IRequest<StaffSignInResult>;
+public sealed record CompleteStaffSignInCommand(StaffIdentity Identity, string ExpectedTenantId, bool RequireSecondFactor = true) : IRequest<StaffSignInResult>;
 
 public sealed class CompleteStaffSignInCommandHandler(IAppDbContext db) : IRequestHandler<CompleteStaffSignInCommand, StaffSignInResult>
 {
@@ -45,7 +45,8 @@ public sealed class CompleteStaffSignInCommandHandler(IAppDbContext db) : IReque
         var identity = request.Identity;
 
         // The API proves the second factor itself; the directory's own policy is not trusted for it (L2-189 AC3).
-        if (!identity.Methods.Contains(SecondFactor, StringComparer.Ordinal))
+        // Production requires none (AC9).
+        if (request.RequireSecondFactor && !identity.Methods.Contains(SecondFactor, StringComparer.Ordinal))
         {
             return new StaffSignInResult(StaffSignInOutcome.NoSecondFactor);
         }

@@ -72,7 +72,9 @@ public sealed partial class StaffSignInController(
             return Failure("sso");
         }
 
-        var result = await sender.Send(new CompleteStaffSignInCommand(identity, directory.TenantId), cancellationToken);
+        var result = await sender.Send(
+            new CompleteStaffSignInCommand(identity, directory.TenantId, configuration.GetValue("StaffSignIn:RequireSecondFactor", true)),
+            cancellationToken);
         if (result.Outcome != StaffSignInOutcome.SignedIn)
         {
             logger.LogWarning("Staff sign-in refused ({Outcome}) for {ObjectId}.", result.Outcome, identity.ObjectId);

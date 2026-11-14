@@ -109,7 +109,7 @@ test.describe('staff sign-in through single sign-on (L2-189)', () => {
 
     await expect(signIn.heading).toHaveText('Sign in to the admin application');
     await expect(signIn.lead).toHaveText(
-      'For the Jubilee team and administrators. You’ll sign in with your Jubilee staff account and confirm it with a second factor.',
+      'For the Jubilee team and administrators. You’ll sign in with your Jubilee staff account.',
     );
     await expect(signIn.signIn).toHaveText('Sign in with your staff account');
     await expect(signIn.frameFoot).toHaveText('Members sign in at app.jubilee.to.');

@@ -10,8 +10,11 @@ Connect (ADR 0040). The admin application has no password form (`L2-189`).
 A *second factor* is a proof beyond the password, such as an authenticator app
 or a passkey. Entra states the methods a sign-in used in the `amr`
 (authentication methods references) claim of the ID token. `Jubilee API` reads
-that claim on every staff sign-in and admits it only when it names `mfa`; the
-provider's own policy is not trusted in place of the proof.
+that claim on every staff sign-in and, while `StaffSignIn:RequireSecondFactor`
+is on (the default), admits it only when it names `mfa`; the provider's own
+policy is not trusted in place of the proof. Production turns the setting off
+(`L2-189` AC9): the staff networks and the staff list still guard the admin
+application.
 
 A *staff account* links an identity of the staff directory to the roles it
 holds in Jubilee, `moderator` and `admin` (`L2-193`). Staff accounts are managed
@@ -50,8 +53,10 @@ session, and never shared with the app (`L2-190`).
   the Development environment.
 - **`StaffIdentity`** — value object with `TenantId`, `ObjectId`, `Email`,
   `DisplayName` and `Methods` (the `amr` values).
-- **`CompleteStaffSignInCommandHandler`** — MediatR handler. It refuses an
-  identity whose `Methods` lack `mfa` (`NoSecondFactor`), then finds the
+- **`CompleteStaffSignInCommandHandler`** — MediatR handler. When the command
+  requires a second factor (the controller passes
+  `StaffSignIn:RequireSecondFactor`, on unless set to `false`), it refuses an
+  identity whose `Methods` lack `mfa` (`NoSecondFactor`); then it finds the
   `StaffMember` bound to the tenant and object ID, or else the unbound account
   with the identity's normalised e-mail and binds it; no account, or an account
   with no role, is `NotStaff`. On `SignedIn` it returns the account, its roles
@@ -87,10 +92,10 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 
 | L2 ID | Refines (L1) | Requirement |
 |-------|--------------|-------------|
-| `L2-189` | `L1-027` | Staff shall sign in to the admin application only through single sign-on; the API shall refuse a sign-in whose `amr` claim does not name `mfa`, an identity that is not a staff account or comes from another tenant, and a callback whose state, nonce or provider answer does not check out, each with its own message, and shall reach the sign-in endpoints only from an allowed network. |
+| `L2-189` | `L1-027` | Staff shall sign in to the admin application only through single sign-on; the API shall refuse a sign-in whose `amr` claim does not name `mfa` while `StaffSignIn:RequireSecondFactor` is on, an identity that is not a staff account or comes from another tenant, and a callback whose state, nonce or provider answer does not check out, each with its own message, and shall reach the sign-in endpoints only from an allowed network. |
 | `L2-190` | `L1-027` | A staff session shall be server-side, in the cookie `__Host-jubilee.staff`, with a new identifier at sign-in, shall end after 30 minutes without a request or 8 hours after sign-in, shall be ended by "Sign out" and by a role revocation, and shall be independent of a member session. |
 | `L2-193` | `L1-027` | Staff accounts and their roles shall be granted, revoked and listed with the CLI only; an account shall be bound to its identity on first sign-in; a staff session's decisions shall respect L2-098 criterion 5 for the member whose confirmed e-mail matches the account. |
-| `L2-098` | `L1-014` | A moderator shall complete a second factor through single sign-on before any admin screen is available. |
+| `L2-098` | `L1-014` | A moderator shall sign in through single sign-on, with a second factor while one is required, before any admin screen is available. |
 
 ## Diagrams
 
@@ -127,8 +132,8 @@ in the `Jubilee database`; the CLI manages staff accounts.
 ### Behaviour — sign in with a second factor
 
 The controller stores state, nonce and the code verifier, and the handler
-admits the identity only with `mfa` in `amr` and a staff account with a role
-(`L2-189`).
+admits the identity only with a staff account with a role, and, while a second
+factor is required, with `mfa` in `amr` (`L2-189`).
 
 ![Sequence diagram for signing in as staff](diagrams/sequence-staff-sign-in.png)
 

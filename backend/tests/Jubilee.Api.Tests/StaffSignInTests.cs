@@ -5,6 +5,8 @@ using Jubilee.Domain;
 using Jubilee.Tests.Shared;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Jubilee.Api.Tests;
 
@@ -22,6 +24,7 @@ public sealed class StaffSignInTests : IClassFixture<JubileeApiFactory>, IAsyncL
     {
         await _factory.Reset();
         _factory.StaffDirectory.Reset();
+        RequireSecondFactor(null);
     }
 
     public Task DisposeAsync() => Task.CompletedTask;
@@ -45,6 +48,10 @@ public sealed class StaffSignInTests : IClassFixture<JubileeApiFactory>, IAsyncL
             $"/api/staff/sign-in/callback?state={state}" + (error is null ? "&code=the-code" : $"&error={error}"));
         return (client, callback);
     }
+
+    /// <summary>Sets <c>StaffSignIn:RequireSecondFactor</c>; null leaves it unset, so a second factor is required.</summary>
+    private void RequireSecondFactor(string? value) =>
+        _factory.Services.GetRequiredService<IConfiguration>()["StaffSignIn:RequireSecondFactor"] = value;
 
     private static bool HasStaffCookie(HttpResponseMessage response) =>
         response.Headers.TryGetValues("Set-Cookie", out var cookies)
@@ -122,6 +129,21 @@ public sealed class StaffSignInTests : IClassFixture<JubileeApiFactory>, IAsyncL
         Assert.Equal("/sign-in?error=second-factor", callback.Headers.Location!.OriginalString);
         Assert.False(HasStaffCookie(callback));
         Assert.Equal(HttpStatusCode.Unauthorized, (await client.GetAsync("/api/staff/session")).StatusCode);
+    }
+
+    // L2-189 AC9
+    [Fact]
+    public async Task L2_189_AC9_with_no_second_factor_required_a_staff_account_signs_in_without_one()
+    {
+        await Grant("esther@jubilee.to", StaffRoles.Moderator);
+        _factory.StaffDirectory.Identity = FakeStaffDirectory.Esther(methods: ["pwd"]);
+        RequireSecondFactor("false");
+
+        var (client, callback) = await SignIn();
+
+        Assert.Equal("/listings", callback.Headers.Location!.OriginalString);
+        Assert.True(HasStaffCookie(callback));
+        Assert.Equal(HttpStatusCode.OK, (await client.GetAsync("/api/staff/session")).StatusCode);
     }
 
     // L2-189 AC4, L2-193 AC2
