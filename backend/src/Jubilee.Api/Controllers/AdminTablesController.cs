@@ -17,7 +17,11 @@ public static class StaffClaims
     public static StaffViewer ToStaff(this ClaimsPrincipal user) => new(
         user.FindFirst("sub")?.Value ?? string.Empty,
         user.FindFirst("name")?.Value ?? "The Jubilee team",
-        [.. user.FindAll(StaffSession.RoleClaim).Select(c => c.Value)]);
+        [.. user.FindAll(StaffSession.RoleClaim).Select(c => c.Value)])
+    {
+        Email = user.FindFirst("email")?.Value,
+        StaffMemberId = Guid.TryParse(user.FindFirst(StaffSession.StaffIdClaim)?.Value, out var id) ? id : null,
+    };
 }
 
 /// <summary>The schema-driven tables of the admin application (L2-276 to L2-284, ADR 0074).</summary>
@@ -48,6 +52,39 @@ public sealed class AdminTablesController(ISender sender) : ControllerBase
     [ErrorReference("JB-ADM-504")]
     public Task<AdminCountDto> SetStatus(string table, [FromBody] AdminStatusRequest body, CancellationToken cancellationToken) =>
         sender.Send(new SetAdminStatusCommand(User.ToStaff(), table, body.Ids ?? [], body.Status ?? string.Empty), cancellationToken);
+
+    /// <summary>
+    /// The table as a CSV (its fields as columns) or JSON (every field), of every record, the matching ones or the
+    /// selected ones; a private table needs a reason (L2-279 AC2, AC4).
+    /// </summary>
+    [HttpGet("{table}/export")]
+    [ErrorReference("JB-ADM-503")]
+    public async Task<IActionResult> Export(
+        string table, [FromQuery] string? format, [FromQuery] string? q, [FromQuery] string? status, [FromQuery] string[]? ids,
+        [FromQuery] string? reason, CancellationToken cancellationToken)
+    {
+        var file = await sender.Send(
+            new ExportAdminTableQuery(User.ToStaff(), table, format ?? "csv", q, status, ids ?? [], reason), cancellationToken);
+        return File(file.Content, file.ContentType, file.FileName);
+    }
+
+    /// <summary>"Email me this weekly": a link to the table's CSV every Monday (L2-279 AC3).</summary>
+    [HttpPut("{table}/weekly-export")]
+    [ErrorReference("JB-ADM-504")]
+    public async Task<IActionResult> StartWeeklyExport(string table, CancellationToken cancellationToken)
+    {
+        await sender.Send(new SetWeeklyExportCommand(User.ToStaff(), table, true), cancellationToken);
+        return NoContent();
+    }
+
+    /// <summary>"Stop the weekly email" (L2-279 AC3).</summary>
+    [HttpDelete("{table}/weekly-export")]
+    [ErrorReference("JB-ADM-504")]
+    public async Task<IActionResult> StopWeeklyExport(string table, CancellationToken cancellationToken)
+    {
+        await sender.Send(new SetWeeklyExportCommand(User.ToStaff(), table, false), cancellationToken);
+        return NoContent();
+    }
 
     /// <summary>Deletes the selected records of a table that declares deletion (L2-281 AC3).</summary>
     [HttpPost("{table}/delete")]

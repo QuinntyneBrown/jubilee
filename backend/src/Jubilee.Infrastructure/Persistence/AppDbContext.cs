@@ -80,6 +80,8 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
 
     public DbSet<FeaturedSlot> FeaturedSlots => Set<FeaturedSlot>();
 
+    public DbSet<AdminExportSubscription> AdminExportSubscriptions => Set<AdminExportSubscription>();
+
     public DbSet<Conversation> Conversations => Set<Conversation>();
 
     public DbSet<Message> Messages => Set<Message>();

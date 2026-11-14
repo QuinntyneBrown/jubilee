@@ -190,3 +190,15 @@ public static class AdminChanges
             changed.Before.Count > 0 ? JsonSerializer.Serialize(changed.Before) : null,
             JsonSerializer.Serialize(changed.After), null, now));
 }
+
+/// <summary>
+/// The weekly export (L2-279 AC3): once it is Monday 08:00 in Toronto, e-mails each staff member who turned on "Email
+/// me this weekly" a link to the table's CSV, while their role reads it. The answer is how many e-mails were queued, or
+/// null before 08:00 or when this week's were already sent.
+/// </summary>
+public sealed record SendWeeklyExportsCommand : IRequest<int?>
+{
+    public const string Job = "admin-weekly-export";
+
+    public static readonly TimeOnly At = new(8, 0);
+}

@@ -306,6 +306,20 @@ public sealed class FeaturedSlotConfiguration : IEntityTypeConfiguration<Feature
     }
 }
 
+/// <summary>"Email me this weekly" (L2-279 AC3): one per staff session subject and table.</summary>
+public sealed class AdminExportSubscriptionConfiguration : IEntityTypeConfiguration<AdminExportSubscription>
+{
+    public void Configure(EntityTypeBuilder<AdminExportSubscription> builder)
+    {
+        builder.ToTable("AdminExportSubscriptions");
+        builder.HasKey(s => s.Id);
+        builder.Property(s => s.Id).ValueGeneratedNever();
+        builder.Property(s => s.StaffSubject).HasMaxLength(200).IsRequired();
+        builder.Property(s => s.TableKey).HasMaxLength(64).IsRequired();
+        builder.HasIndex(s => new { s.StaffSubject, s.TableKey }).IsUnique();
+    }
+}
+
 public sealed class RecentSearchConfiguration : IEntityTypeConfiguration<RecentSearch>
 {
     public void Configure(EntityTypeBuilder<RecentSearch> builder)

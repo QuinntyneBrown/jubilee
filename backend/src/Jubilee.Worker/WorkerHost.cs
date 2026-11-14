@@ -36,6 +36,7 @@ public static class WorkerHost
         builder.Services.AddHostedService<LaunchRetentionJob>();
         builder.Services.AddHostedService<MerchOrderJob>();
         builder.Services.AddHostedService<AdminDeletionPurgeJob>();
+        builder.Services.AddHostedService<WeeklyExportJob>();
         return builder;
     }
 }
@@ -485,6 +486,42 @@ public sealed class LaunchRetentionJob(IServiceScopeFactory scopes, ILogger<Laun
                 catch (Exception exception) when (exception is not OperationCanceledException)
                 {
                     logger.LogError(exception, "The launch sign-ups could not be checked for retention. They will be tried again.");
+                }
+            }
+            while (await timer.WaitForNextTickAsync(stoppingToken));
+        }
+        catch (OperationCanceledException)
+        {
+        }
+    }
+}
+
+/// <summary>
+/// Every ten minutes: once it is Monday 08:00 in Toronto, e-mails each staff member who turned on "Email me this weekly"
+/// a link to the table's CSV (L2-279 AC3). One instance sends a week's e-mails and records its success (L2-182).
+/// </summary>
+public sealed class WeeklyExportJob(IServiceScopeFactory scopes, ILogger<WeeklyExportJob> logger) : BackgroundService
+{
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        using var timer = new PeriodicTimer(TimeSpan.FromMinutes(10));
+        try
+        {
+            do
+            {
+                try
+                {
+                    await using var scope = scopes.CreateAsyncScope();
+                    var sent = await scope.ServiceProvider.GetRequiredService<MediatR.ISender>()
+                        .Send(new Jubilee.Application.Admin.SendWeeklyExportsCommand(), stoppingToken);
+                    if (sent is { } count)
+                    {
+                        logger.LogInformation("Queued {Count} weekly exports.", count);
+                    }
+                }
+                catch (Exception exception) when (exception is not OperationCanceledException)
+                {
+                    logger.LogError(exception, "The weekly exports could not be sent. They will be tried again.");
                 }
             }
             while (await timer.WaitForNextTickAsync(stoppingToken));

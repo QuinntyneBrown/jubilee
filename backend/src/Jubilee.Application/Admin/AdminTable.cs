@@ -98,6 +98,13 @@ public abstract class AdminTable
     public abstract Task<IReadOnlyList<(string Id, AdminChanged Values)>> RestoreAsync(
         IAppDbContext db, IReadOnlyCollection<string> ids, CancellationToken cancellationToken);
 
+    /// <summary>
+    /// Every record that matches the search and the status, or that has one of the IDs when any are given, with every
+    /// field, in the table's order (L2-279 AC2).
+    /// </summary>
+    public abstract Task<IReadOnlyList<AdminRow>> ExportAsync(
+        IAppDbContext db, string? search, string? status, IReadOnlyCollection<string> ids, CancellationToken cancellationToken);
+
     /// <summary>Erases the records deleted before the given time (L2-281 AC4), without saving; returns how many.</summary>
     public abstract Task<int> PurgeAsync(IAppDbContext db, DateTimeOffset before, CancellationToken cancellationToken);
 
@@ -336,6 +343,20 @@ public class AdminTable<T> : AdminTable
         }
 
         return [.. found.Select(e => (_idOf(e), new AdminChanged(new Dictionary<string, string?>(), WireValues(e))))];
+    }
+
+    public override async Task<IReadOnlyList<AdminRow>> ExportAsync(
+        IAppDbContext db, string? search, string? status, IReadOnlyCollection<string> ids, CancellationToken cancellationToken)
+    {
+        var query = Filtered(_source(db), search, status);
+        if (ids.Count > 0)
+        {
+            var matches = ids.Distinct().Select(_matchId).OfType<Expression<Func<T, bool>>>().ToList();
+            query = matches.Count == 0 ? query.Where(_ => false) : query.Where(Predicates.AnyOf(matches));
+        }
+
+        var found = await Sorted(query, null, false).ToListAsync(cancellationToken);
+        return [.. found.Select(e => Row(e, record: true))];
     }
 
     public override async Task<int> PurgeAsync(IAppDbContext db, DateTimeOffset before, CancellationToken cancellationToken)
