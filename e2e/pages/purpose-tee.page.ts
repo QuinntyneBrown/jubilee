@@ -171,6 +171,8 @@ export class PurposeTeeBackScreen extends PurposeTeePage {
     await super.ready();
     if (BASELINE) return;
     await this.backThumb.click();
+    // The stage swaps its picture on the next render; until then it still holds the front.
+    await this.gallery.getByRole('img', { name: /from the back/ }).waitFor();
   }
 }
 
