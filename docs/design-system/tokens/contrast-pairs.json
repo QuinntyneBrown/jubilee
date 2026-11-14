@@ -555,6 +555,24 @@
       "bg": "--color-bg-canvas",
       "min": 3,
       "note": "the accent word of a merchandise heading (large text)"
+    },
+    {
+      "fg": "--color-warning-icon",
+      "bg": "--color-bg-canvas",
+      "min": 3,
+      "note": "admin overview: a retrying system line's icon (Work queue, system list)"
+    },
+    {
+      "fg": "--color-danger-icon",
+      "bg": "--color-bg-canvas",
+      "min": 3,
+      "note": "admin overview: a failed system line's icon (Work queue, system list)"
+    },
+    {
+      "fg": "--color-danger-icon-inverse",
+      "bg": "--color-bg-inverse",
+      "min": 4.5,
+      "note": "admin bulk bar: the Delete label, text in the danger colour on the ink bar (Bulk bar)"
     }
   ]
 }

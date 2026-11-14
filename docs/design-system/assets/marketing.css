@@ -170,7 +170,7 @@
   position: absolute; display: flex; align-items: center; gap: var(--space-2); white-space: nowrap;
   border-radius: var(--radius-full); background: var(--color-bg-surface); padding: var(--space-2) var(--space-4) var(--space-2) var(--space-2);
   font-size: var(--font-size-sm); font-weight: var(--font-weight-medium);
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-fg-default) 10%, transparent), var(--shadow-3, 0 10px 15px -3px rgb(0 0 0 / 0.1));
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-fg-default) 10%, transparent), var(--shadow-3);
 }
 .mkt-note--trust { top: 0; right: var(--space-2); }
 .mkt-note--reply { bottom: 0; left: var(--space-2); }
@@ -203,7 +203,7 @@
 .mkt-player__play {
   position: absolute; left: 50%; top: 50%; display: flex; width: 4rem; height: 4rem; align-items: center; justify-content: center;
   border-radius: var(--radius-full); background: var(--color-accent); color: var(--color-fg-on-accent);
-  box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  box-shadow: var(--shadow-4);
   transform: translate(-50%, -50%); transition: transform 200ms ease-out;
 }
 .mkt-player__play svg { width: 1.875rem; height: 1.875rem; margin-left: var(--space-1); fill: currentColor; stroke: currentColor; stroke-width: 2; stroke-linejoin: round; }
