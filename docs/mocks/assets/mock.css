@@ -37,3 +37,6 @@
 @media (max-width: 39.99rem) { .mock-bar__states { max-width: 40vw; } }
 /* Jubilee: keep the mock bar clear of the phone tab bar. */
 @media (max-width: 47.99rem) { body:has(.tabbar) .mock-bar { bottom: calc(var(--layout-tabbar-height) + var(--space-3)); } }
+/* A note beside a screen that fills the viewport (the admin application): fixed, above the bar. */
+.mock-note--float { position: fixed; right: var(--space-4); bottom: calc(var(--space-12) + var(--space-2)); max-width: 20rem; }
+@media (max-width: 39.99rem) { .mock-note--float { left: var(--space-4); right: var(--space-4); max-width: none; } }

@@ -1,5 +1,4 @@
 import { parity } from '../../fixtures/parity';
-import { AdminListingPage } from '../../pages/admin-listing.page';
 import { BrowsePage } from '../../pages/browse.page';
 import { BusinessPage } from '../../pages/business.page';
 import { ListBusinessPage } from '../../pages/list-business.page';
@@ -31,12 +30,6 @@ parity('business-card', {
       route: 'shop.sold-out',
       screen: (page) => new BusinessPage(page),
       region: (screen: BusinessPage) => screen.productCard(1).root,
-    },
-    {
-      name: 'preview',
-      route: 'admin-listing',
-      screen: (page) => new AdminListingPage(page),
-      region: (screen: AdminListingPage) => screen.preview,
     },
     {
       // The owner's highlight, the green line before "Not published yet" (L2-076 AC1).

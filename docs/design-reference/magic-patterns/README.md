@@ -112,6 +112,11 @@ Until a file is here the case is compared with its mock only, and its test says 
   business and space frames and the listing form. It has no dialog, no loading, empty or error state, no messages, requests,
   account or admin screen. A parity spec for a component these frames do not show says so, names
   the nearest frame and compares with the mock only.
+- **The admin application is a separate design, not captured here.** "Jubilee Admin" is a Magic
+  OS prototype (Overview, Records, Record, the jump palette and the phone drawer) with its own
+  schema of 51 tables. Its mocks (`admin-overview`, `admin-records`, `admin-record`) are generated
+  from that schema by `tools/admin-mocks/build.mjs` (see `docs/mocks/README.md`). No frame of it
+  is captured in this folder, so admin components compare with the mocks only.
 - **One state of Log in and Sign up.** Each is shown ready to fill in. Their other eight states
   (loading, error, invalid, submitting, success and the three Google notices) and the 768 px
   layout are drawn in the mocks from the same measurements (ADR 0038).
