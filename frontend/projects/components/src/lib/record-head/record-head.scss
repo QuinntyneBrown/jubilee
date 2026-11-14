@@ -70,3 +70,18 @@
 .record-head__actions:empty {
   display: none;
 }
+
+.record-head__saved {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  margin-right: var(--space-1);
+  color: var(--color-success-fg);
+  font: var(--text-label);
+  font-size: var(--font-size-sm);
+}
+
+.record-head__check {
+  width: var(--icon-size-sm);
+  height: var(--icon-size-sm);
+}

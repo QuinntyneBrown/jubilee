@@ -52,6 +52,7 @@ const tableOf = (e) => ({
     searchable: true,
     sortable: true,
     editable: !e.readOnly && !f.system,
+    creatable: !e.readOnly && !f.system,
     options: f.options ?? null,
     refTable: f.ref ? kebab(f.ref) : null,
   })),

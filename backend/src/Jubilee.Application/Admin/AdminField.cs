@@ -85,7 +85,7 @@ public sealed class AdminField<T> : AdminField
     internal Func<string, Expression<Func<T, bool>>?>? RefersTo { get; init; }
 
     /// <summary>Applies a new value with the owning feature's rule; returns an error code, or null when applied.</summary>
-    internal Func<T, string?, AdminChange, string?>? Edit { get; init; }
+    internal Func<T, string?, AdminChange, string?>? Edit { get; private set; }
 
     public override bool Searchable => Search is not null;
 
@@ -94,6 +94,20 @@ public sealed class AdminField<T> : AdminField
     public override bool Editable => Edit is not null;
 
     public object? ValueOf(T entity) => Read(entity);
+
+    /// <summary>
+    /// Binds the field to the rule of the feature that owns it (L2-283 AC1, ADR 0074): the binding applies the new
+    /// value, in its wire form, and returns an error code when the rule refuses it.
+    /// </summary>
+    public AdminField<T> EditWith(Func<T, string?, AdminChange, string?> edit)
+    {
+        Edit = edit;
+        return this;
+    }
+
+    /// <summary>Applies a new value through the binding; returns an error code, or null when applied.</summary>
+    public string? Apply(T entity, string? value, AdminChange change) =>
+        Edit is null ? "NOT_EDITABLE" : Edit(entity, value, change);
 
     /// <summary>Keeps the field out of rows and exports (L2-284 AC3).</summary>
     public AdminField<T> RecordOnly()

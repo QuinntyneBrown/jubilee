@@ -7,6 +7,9 @@ namespace Jubilee.Application.Admin;
 /// <summary>One record of a table as the admin application reads it: its ID, its name (L2-282 AC2) and its values.</summary>
 public sealed record AdminRow(string Id, string Name, IReadOnlyDictionary<string, object?> Values);
 
+/// <summary>The fields a change touched, with their values before and after, in their wire form (L2-283 AC5).</summary>
+public sealed record AdminChanged(IReadOnlyDictionary<string, string?> Before, IReadOnlyDictionary<string, string?> After);
+
 /// <summary>What a table screen asks for (L2-277, L2-278).</summary>
 public sealed record AdminRowsRequest(string? Search, string? Status, string? Sort, bool Descending, int Page, int Size);
 
@@ -55,6 +58,9 @@ public abstract class AdminTable
 
     public virtual bool Creatable => false;
 
+    /// <summary>The fields a new record is given, in order (L2-283 AC4); empty when the table has no creation.</summary>
+    public IReadOnlyList<string> CreateFields { get; init; } = [];
+
     public bool Editable => Fields.Any(f => f.Editable);
 
     public abstract Task<int> CountAsync(IAppDbContext db, CancellationToken cancellationToken);
@@ -68,6 +74,17 @@ public abstract class AdminTable
 
     /// <summary>Records whose ID or name contains the text, for the jump palette (L2-273 AC3).</summary>
     public abstract Task<IReadOnlyList<AdminRow>> MatchAsync(IAppDbContext db, string text, int take, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Applies the values through the fields' bindings to the record (L2-283 AC2), without saving; null when the record
+    /// does not exist. A value the rule refuses throws <c>ValidationFailedException</c> with every field's code.
+    /// </summary>
+    public abstract Task<AdminChanged?> UpdateAsync(
+        IAppDbContext db, string id, IReadOnlyDictionary<string, string?> values, AdminChange change, CancellationToken cancellationToken);
+
+    /// <summary>Creates a record through the table's creation (L2-283 AC4), without saving; returns its ID.</summary>
+    public abstract Task<(string Id, AdminChanged Values)> CreateAsync(
+        IAppDbContext db, IReadOnlyDictionary<string, string?> values, AdminChange change, CancellationToken cancellationToken);
 
     /// <summary>How many records of this table reference the given record through the field (L2-282 AC4).</summary>
     public abstract Task<int> CountReferencesAsync(IAppDbContext db, string fieldKey, string id, CancellationToken cancellationToken);
@@ -123,6 +140,14 @@ public class AdminTable<T> : AdminTable
     public IReadOnlyList<AdminField<T>> TypedFields => _fields;
 
     public IQueryable<T> Query(IAppDbContext db) => _source(db);
+
+    /// <summary>
+    /// The creation of the feature that owns the table (L2-283 AC4): it checks the values with that feature's rules,
+    /// throws <c>ValidationFailedException</c> when they refuse them, and adds the new entity to the context.
+    /// </summary>
+    public Func<IAppDbContext, IReadOnlyDictionary<string, string?>, AdminChange, CancellationToken, Task<T>>? Create { get; init; }
+
+    public override bool Creatable => Create is not null;
 
     public Expression<Func<T, bool>>? Matching(string id) => _matchId(id);
 
@@ -212,6 +237,67 @@ public class AdminTable<T> : AdminTable
         return [.. found.Select(Row)];
     }
 
+    public override async Task<AdminChanged?> UpdateAsync(
+        IAppDbContext db, string id, IReadOnlyDictionary<string, string?> values, AdminChange change, CancellationToken cancellationToken)
+    {
+        var match = _matchId(id);
+        var entity = match is null ? null : await _source(db).AsTracking().Where(match).FirstOrDefaultAsync(cancellationToken);
+        if (entity is null)
+        {
+            return null;
+        }
+
+        var errors = new Dictionary<string, string>();
+        var before = new Dictionary<string, string?>();
+        var after = new Dictionary<string, string?>();
+        foreach (var (key, value) in values)
+        {
+            var field = _fields.FirstOrDefault(f => f.Key == key);
+            if (field is null || !field.Editable)
+            {
+                errors[key] = "NOT_EDITABLE";
+                continue;
+            }
+
+            var old = AdminWire.Text(field.ValueOf(entity));
+            if (string.Equals(old ?? string.Empty, value ?? string.Empty, StringComparison.Ordinal))
+            {
+                continue;
+            }
+
+            if (field.Apply(entity, value, change) is { } error)
+            {
+                errors[key] = error;
+                continue;
+            }
+
+            before[key] = old;
+            after[key] = AdminWire.Text(field.ValueOf(entity));
+        }
+
+        if (errors.Count > 0)
+        {
+            throw new Accounts.ValidationFailedException(errors);
+        }
+
+        return new AdminChanged(before, after);
+    }
+
+    public override async Task<(string Id, AdminChanged Values)> CreateAsync(
+        IAppDbContext db, IReadOnlyDictionary<string, string?> values, AdminChange change, CancellationToken cancellationToken)
+    {
+        var create = Create ?? throw new InvalidOperationException($"The table {Key} has no creation.");
+        var unknown = values.Keys.Where(k => !CreateFields.Contains(k)).ToDictionary(k => k, _ => "NOT_EDITABLE");
+        if (unknown.Count > 0)
+        {
+            throw new Accounts.ValidationFailedException(unknown);
+        }
+
+        var entity = await create(db, values, change, cancellationToken);
+        var after = _fields.Where(f => CreateFields.Contains(f.Key)).ToDictionary(f => f.Key, f => AdminWire.Text(f.ValueOf(entity)));
+        return (_idOf(entity), new AdminChanged(new Dictionary<string, string?>(), after));
+    }
+
     public override async Task<int> CountReferencesAsync(IAppDbContext db, string fieldKey, string id, CancellationToken cancellationToken)
     {
         var match = _fields.Single(f => f.Key == fieldKey).RefersTo?.Invoke(id);
@@ -238,4 +324,18 @@ public class AdminTable<T> : AdminTable
         text => Guid.TryParse(text, out var guid)
             ? Expression.Lambda<Func<T, bool>>(Expression.Equal(id.Body, Expression.Constant(guid)), id.Parameters)
             : null;
+}
+
+/// <summary>A value in the text the admin application sends and the audit log keeps.</summary>
+public static class AdminWire
+{
+    public static string? Text(object? value) => value switch
+    {
+        null => null,
+        AdminRef reference => reference.Id,
+        bool yes => yes ? "true" : "false",
+        DateTimeOffset at => at.ToString("O", System.Globalization.CultureInfo.InvariantCulture),
+        IFormattable formattable => formattable.ToString(null, System.Globalization.CultureInfo.InvariantCulture),
+        _ => value.ToString(),
+    };
 }

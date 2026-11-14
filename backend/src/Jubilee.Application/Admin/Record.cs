@@ -108,7 +108,7 @@ public static class AdminHistory
             foreach (var (key, value) in Fields(after))
             {
                 var label = table.Fields.FirstOrDefault(f => f.Key == key)?.Label ?? key;
-                yield return new AdminHistoryDto(at, actor, $"changed {label} from {old.GetValueOrDefault(key) ?? "—"} to {value ?? "—"}");
+                yield return new AdminHistoryDto(at, actor, $"changed {label.ToLowerInvariant()} from {old.GetValueOrDefault(key) ?? "—"} to {value ?? "—"}");
             }
 
             yield break;

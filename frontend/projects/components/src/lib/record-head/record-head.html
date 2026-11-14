@@ -9,18 +9,27 @@
         <span jb-status-pill [value]="status"></span>
       }
     </div>
-    <button
-      class="record-head__id"
-      type="button"
-      title="Copy ID"
-      [attr.aria-label]="'Copy ID ' + id()"
-      [cdkCopyToClipboard]="id()"
-      (cdkCopyToClipboardCopied)="$event && copied.emit()"
-    >
-      {{ id() }}<svg jb-icon name="copy" class="record-head__copy"></svg>
-    </button>
+    @if (id()) {
+      <button
+        class="record-head__id"
+        type="button"
+        title="Copy ID"
+        [attr.aria-label]="'Copy ID ' + id()"
+        [cdkCopyToClipboard]="id()"
+        (cdkCopyToClipboardCopied)="$event && copied.emit()"
+      >
+        {{ id() }}<svg jb-icon name="copy" class="record-head__copy"></svg>
+      </button>
+    }
   }
 </div>
 @if (!loading()) {
-  <div class="record-head__actions"><ng-content select="[slot=actions]" /></div>
+  <div class="record-head__actions">
+    @if (saved()) {
+      <span class="record-head__saved" role="status"
+        ><svg jb-icon name="check" class="record-head__check"></svg>Saved</span
+      >
+    }
+    <ng-content select="[slot=actions]" />
+  </div>
 }

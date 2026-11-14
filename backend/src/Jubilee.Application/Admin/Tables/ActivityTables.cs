@@ -277,13 +277,14 @@ internal static class ActivityTables
                 FF.Number("rating", "Rating", f => f.Rating),
                 FF.Status(
                     "status", "Status", f => f.Status,
-                    (FeedbackStatus.Received, "new"), (FeedbackStatus.Read, "read"), (FeedbackStatus.InProgress, "in progress"), (FeedbackStatus.Fixed, "fixed")),
+                    (FeedbackStatus.Received, "new"), (FeedbackStatus.Read, "read"), (FeedbackStatus.InProgress, "in progress"), (FeedbackStatus.Fixed, "fixed"))
+                    .EditWith(FeedbackEdits.Status),
                 FF.Text("body", "Note", f => f.Note, AdminFieldType.Long),
                 FF.When("createdAt", "Sent", f => f.CreatedAt, system: true),
                 FF.Text("memberName", "Member name", f => f.MemberName),
                 FF.Text("reference", "Reference", f => f.Reference, AdminFieldType.Mono),
                 FF.Text("place", "Where", f => f.Place),
-                FF.Text("reply", "Reply", f => f.Reply, AdminFieldType.Long, searchable: false),
+                FF.Text("reply", "Reply", f => f.Reply, AdminFieldType.Long, searchable: false).EditWith(FeedbackEdits.Reply),
             ],
             nameFields: ["memberName"])
         { Deletable = true },
@@ -301,4 +302,45 @@ internal static class ActivityTables
             ])
         { Deletable = true },
     ];
+}
+
+/// <summary>The rules of the feedback feature a staff member's change goes through (L2-283 AC1, ADR 0074).</summary>
+internal static class FeedbackEdits
+{
+    /// <summary>Feedback is read, worked on and fixed; it never becomes new again.</summary>
+    public static string? Status(Feedback feedback, string? word, AdminChange change)
+    {
+        switch (word)
+        {
+            case "read":
+                feedback.MarkRead();
+                return null;
+            case "in progress":
+                feedback.StartWork();
+                return null;
+            case "fixed":
+                feedback.MarkFixed();
+                return null;
+            case "new":
+                return "NOT_ALLOWED";
+            default:
+                return "REQUIRED";
+        }
+    }
+
+    public static string? Reply(Feedback feedback, string? text, AdminChange change)
+    {
+        if (string.IsNullOrWhiteSpace(text))
+        {
+            return "REQUIRED";
+        }
+
+        if (text.Trim().Length > Feedback.MaxAnswerLength)
+        {
+            return "TOO_LONG";
+        }
+
+        feedback.ReplyWith(text.Trim());
+        return null;
+    }
 }

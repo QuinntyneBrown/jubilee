@@ -106,7 +106,7 @@ public sealed class AdminRecordTests : IClassFixture<JubileeApiFactory>, IAsyncL
         var history = (await Json(await Ada().GetAsync($"/api/admin/tables/members/{_ruth.Id}")))
             .GetProperty("history").EnumerateArray().ToList();
 
-        Assert.Equal("Ada Nwosu changed Phone from — to 416-555-0144", history[0].GetProperty("text").GetString());
+        Assert.Equal("Ada Nwosu changed phone from — to 416-555-0144", history[0].GetProperty("text").GetString());
     }
 
     // L2-282 AC6, L2-188 AC7: a record that does not exist is not found

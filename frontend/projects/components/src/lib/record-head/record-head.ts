@@ -13,7 +13,8 @@ import { StatusPill } from '../status-pill/status-pill';
  *     </div>
  *
  * While `loading` the heading is a skeleton and `loadingLabel` names the page for assistive
- * technology.
+ * technology. A new record has no `id` and so no "Copy ID"; `saved` says "Saved" before the
+ * actions once a change is saved (L2-283 AC2).
  */
 @Component({
   selector: 'div[jb-record-head]',
@@ -29,6 +30,7 @@ export class RecordHead {
   readonly id = input('');
   readonly loading = input(false, { transform: booleanAttribute });
   readonly loadingLabel = input('Loading…');
+  readonly saved = input(false, { transform: booleanAttribute });
 
   /** The ID was put on the clipboard. */
   readonly copied = output<void>();

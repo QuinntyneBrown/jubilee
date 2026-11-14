@@ -31,6 +31,8 @@ export interface AdminField {
   searchable: boolean;
   sortable: boolean;
   editable: boolean;
+  /** Given a value when a record is created (L2-283 AC4). */
+  creatable: boolean;
   options: string[] | null;
   refTable: string | null;
 }
@@ -80,6 +82,7 @@ const field = (
   searchable: true,
   sortable: true,
   editable: false,
+  creatable: false,
   options: null,
   refTable: null,
   ...extra,
@@ -112,7 +115,7 @@ const table = (
     readOnly,
     private: false,
     canChange: !readOnly,
-    canEdit: !readOnly,
+    canEdit: !readOnly && fields.some((f) => f.editable),
     canCreate: false,
     canDelete: false,
     ...extra,
@@ -193,6 +196,50 @@ export const STAFF_TABLE = table('staff', 'Staff', 'Staff member', 'Accounts', 6
   canEdit: false,
 });
 
+const FEEDBACK_FIELDS = [
+  id,
+  field('kind', 'Kind', 'status', {
+    options: ['rating', 'bug', 'kudos', 'check-in'],
+    searchable: false,
+  }),
+  field('memberId', 'Member', 'ref', { refTable: 'members', searchable: false }),
+  field('status', 'Status', 'status', {
+    options: ['new', 'read', 'in progress', 'fixed'],
+    searchable: false,
+    editable: true,
+  }),
+  field('body', 'Note', 'long'),
+  created,
+  field('reply', 'Reply', 'long', { searchable: false, editable: true }),
+];
+
+/** Feedback, whose status and reply a moderator changes through the feedback feature (L2-283). */
+export const FEEDBACK = table('feedback', 'Feedback', 'Feedback', 'Feedback', 1, {
+  fields: FEEDBACK_FIELDS,
+  statusField: 'status',
+});
+
+const SLOT_FIELDS = [
+  id,
+  field('listingId', 'Listing', 'ref', {
+    refTable: 'listings',
+    searchable: false,
+    creatable: true,
+  }),
+  field('position', 'Position', 'number', { searchable: false, creatable: true }),
+  field('startsOn', 'Week of', 'date', { searchable: false, creatable: true }),
+];
+
+/** Featured slots, made through the rules of the featured week (L2-106, L2-283 AC4). */
+export const FEATURED_SLOTS = table(
+  'featured-slots',
+  'Featured slots',
+  'Featured slot',
+  'Listings',
+  0,
+  { fields: SLOT_FIELDS, canCreate: true },
+);
+
 export const JOB_RUNS = table('job-runs', 'Job runs', 'Job run', 'System', 1204);
 
 /** Every group of the sidebar, in order (L2-272 AC2), each with some of its tables. */
@@ -207,10 +254,7 @@ export function catalogFor(staff: StaffMember): AdminGroup[] {
         table('sessions', 'Sessions', 'Session', 'Accounts', 3120),
       ],
     ],
-    [
-      'Listings',
-      [LISTINGS, table('featured-slots', 'Featured slots', 'Featured slot', 'Listings', 12)],
-    ],
+    ['Listings', [LISTINGS, FEATURED_SLOTS]],
     [
       'Requests & messaging',
       [table('requests', 'Requests', 'Request', 'Requests & messaging', 9800)],
@@ -224,7 +268,7 @@ export function catalogFor(staff: StaffMember): AdminGroup[] {
       'Member activity',
       [table('saved-items', 'Saved items', 'Saved item', 'Member activity', 5200)],
     ],
-    ['Feedback', [table('feedback', 'Feedback', 'Feedback', 'Feedback', 87)]],
+    ['Feedback', [FEEDBACK]],
     ['Merch', [MERCH_ORDERS]],
     [
       'Launch',
@@ -274,6 +318,26 @@ export const MEMBER_ROWS: AdminRow[] = [
     },
   },
 ];
+
+/** Ruth's rating, new and unanswered. */
+export const FEEDBACK_ROW: AdminRow = {
+  id: 'f1e2d3c4-b5a6-4978-8a9b-0c1d2e3f4a5b',
+  name: 'Ruth Chen',
+  values: {
+    id: 'f1e2d3c4-b5a6-4978-8a9b-0c1d2e3f4a5b',
+    kind: 'rating',
+    memberId: {
+      table: 'members',
+      id: '6f1c2a90-0d1e-4c55-9a7a-1b2c3d4e5f60',
+      name: 'Ruth Chen',
+      deleted: false,
+    },
+    status: 'new',
+    body: 'Finding a plumber was easy.',
+    createdAt: '2026-11-09T15:00:00+00:00',
+    reply: null,
+  },
+};
 
 /** A run of a job, a record of a read-only table. */
 export const JOB_RUN_ROW: AdminRow = {
@@ -367,6 +431,16 @@ export type RowsAnswer = 'ok' | 'fails' | 'forbidden' | 'not-found' | 'slow';
 /** How a record is answered: as found, failing, or never. */
 export type RecordAnswer = 'ok' | 'fails' | 'slow';
 
+/** How a change or a creation is answered: saved, refused field by field, or never (L2-283 AC2). */
+export type SaveAnswer = 'ok' | 'refused' | 'slow';
+
+/** A change or a creation the admin application sent. */
+export interface AdminSave {
+  method: 'PATCH' | 'POST';
+  path: string;
+  values: Record<string, string | null>;
+}
+
 export interface AdminPointer {
   table: string;
   label: string;
@@ -397,6 +471,12 @@ export interface FakeAdminTables {
   recordAnswer: RecordAnswer;
   /** The pointers and history of records, by `{table}/{id}`. */
   records: Record<string, RecordExtras>;
+  /** How the next change or creation is answered. */
+  saveAnswer: SaveAnswer;
+  /** The codes of a refusal, by field, when `saveAnswer` is 'refused'. */
+  refusal: Record<string, string>;
+  /** Every change and creation sent, in order. */
+  saves: AdminSave[];
   /** The path and query of every request for rows, such as `/members?page=1&size=25`. */
   rowRequests: string[];
   catalogReads: number;
@@ -412,6 +492,28 @@ const text = (value: unknown): string =>
   value !== null && typeof value === 'object' && 'name' in value
     ? String((value as { name: unknown }).name ?? '')
     : String(value ?? '');
+
+/** A refusal of a change, field by field, as the API answers it (L2-283 AC2). */
+const refused = (errors: Record<string, string>) => ({
+  status: 422,
+  contentType: 'application/problem+json',
+  body: JSON.stringify({
+    title: 'Fix the highlighted fields.',
+    status: 422,
+    code: 'validation_failed',
+    errors,
+    correlationId: 'e2e',
+  }),
+});
+
+/** The history of a record no one has changed: Jubilee created it. */
+function creation(table: AdminTable, row: AdminRow): AdminHistoryLine[] {
+  const created = row.values['createdAt'];
+  const what = `created this ${table.singular.toLowerCase()}`;
+  return typeof created === 'string'
+    ? [{ at: created, actor: 'Jubilee', what, text: `Jubilee ${what}` }]
+    : [];
+}
 
 /** The rows that match `q` and `status`, sorted by `sort` and `dir`, as the API answers them. */
 function answerRows(table: AdminTable, rows: AdminRow[], params: URLSearchParams): AdminRow[] {
@@ -436,7 +538,9 @@ function answerRows(table: AdminTable, rows: AdminRow[], params: URLSearchParams
 export async function stubAdminTables(
   page: Page,
   staffMember: StaffMember,
-  options: Partial<Pick<FakeAdminTables, 'rows' | 'answer' | 'recordAnswer' | 'records'>> & {
+  options: Partial<
+    Pick<FakeAdminTables, 'rows' | 'answer' | 'recordAnswer' | 'records' | 'saveAnswer' | 'refusal'>
+  > & {
     /** 'mock' answers with the admin mocks' own tables and rows, for parity (ADR 0036). */
     data?: 'tests' | 'mock';
   } = {},
@@ -448,7 +552,12 @@ export async function stubAdminTables(
       options.rows ??
       (mock
         ? (mockTables.rows as Record<string, AdminRow[]>)
-        : { members: MEMBER_ROWS, listings: LISTING_ROWS, 'merch-orders': ORDER_ROWS }),
+        : {
+            members: MEMBER_ROWS,
+            listings: LISTING_ROWS,
+            'merch-orders': ORDER_ROWS,
+            feedback: [structuredClone(FEEDBACK_ROW)],
+          }),
     answer: options.answer ?? 'ok',
     recordAnswer: options.recordAnswer ?? 'ok',
     records:
@@ -460,6 +569,9 @@ export async function stubAdminTables(
             ),
           )
         : {}),
+    saveAnswer: options.saveAnswer ?? 'ok',
+    refusal: options.refusal ?? {},
+    saves: [],
     rowRequests: [],
     catalogReads: 0,
   };
@@ -491,9 +603,27 @@ export async function stubAdminTables(
     }
     const row = (fake.rows[key] ?? []).find((r) => r.id === id);
     if (!row) return route.fulfill(problem(404, 'NOT_FOUND', 'There is no such record.'));
+    if (route.request().method() === 'PATCH') {
+      const values = (route.request().postDataJSON() as { values: Record<string, string | null> })
+        .values;
+      fake.saves.push({ method: 'PATCH', path: `/${key}/${id}`, values });
+      if (fake.saveAnswer === 'slow') return; // never answered: the record stays saving
+      if (fake.saveAnswer === 'refused') return route.fulfill(refused(fake.refusal));
+      const at = new Date().toISOString();
+      const actor = staffMember.displayName;
+      const lines = Object.entries(values).map(([k, value]) => {
+        const label = known.fields.find((f) => f.key === k)?.label ?? k;
+        const what = `changed ${label.toLowerCase()} from ${text(row.values[k]) || '—'} to ${value || '—'}`;
+        return { at, actor, what, text: `${actor} ${what}` };
+      });
+      const history = fake.records[`${key}/${id}`]?.history ?? creation(known, row);
+      Object.assign(row.values, values);
+      fake.records[`${key}/${id}`] = {
+        ...fake.records[`${key}/${id}`],
+        history: [...lines, ...history],
+      };
+    }
     const extras = fake.records[`${key}/${id}`] ?? {};
-    const created = row.values['createdAt'];
-    const what = `created this ${known.singular.toLowerCase()}`;
     return route.fulfill({
       json: {
         table: key,
@@ -502,11 +632,7 @@ export async function stubAdminTables(
         status: known.statusField ? (row.values[known.statusField] ?? null) : null,
         values: row.values,
         pointsHere: extras.pointsHere ?? [],
-        history:
-          extras.history ??
-          (typeof created === 'string'
-            ? [{ at: created, actor: 'Jubilee', what, text: `Jubilee ${what}` }]
-            : []),
+        history: extras.history ?? creation(known, row),
       },
     });
   });
@@ -514,6 +640,7 @@ export async function stubAdminTables(
   await page.route('**/api/admin/tables/*', async (route: Route) => {
     const url = new URL(route.request().url());
     const key = url.pathname.split('/').pop() ?? '';
+    if (route.request().method() === 'POST') return create(route, key);
     fake.rowRequests.push(`/${key}${url.search}`);
     const known = tables.find((t) => t.key === key);
     if (fake.answer === 'forbidden' || (!known && key === 'staff')) {
@@ -539,6 +666,29 @@ export async function stubAdminTables(
       json: { rows, total: whole ? known.count : found.length, page: pageNumber, size },
     });
   });
+
+  // A new record, made through the table's creation (L2-283 AC4).
+  async function create(route: Route, key: string): Promise<void> {
+    const values = (route.request().postDataJSON() as { values: Record<string, string | null> })
+      .values;
+    fake.saves.push({ method: 'POST', path: `/${key}`, values });
+    if (fake.saveAnswer === 'slow') return;
+    if (fake.saveAnswer === 'refused') return route.fulfill(refused(fake.refusal));
+    const known = tables.find((t) => t.key === key);
+    const id = `new-${fake.saves.length}`;
+    const named = Object.fromEntries(
+      Object.entries(values).map(([k, value]) => {
+        const ref = known?.fields.find((f) => f.key === k && f.type === 'ref')?.refTable;
+        if (!ref || !value) return [k, value];
+        const target = (fake.rows[ref] ?? []).find((r) => r.id === value);
+        return [k, { table: ref, id: value, name: target?.name ?? null, deleted: false }];
+      }),
+    );
+    const row: AdminRow = { id, name: id, values: { id, ...named } };
+    fake.rows[key] = [row, ...(fake.rows[key] ?? [])];
+    const record = { table: key, id, name: id, status: null, values: row.values };
+    return route.fulfill({ status: 201, json: { ...record, pointsHere: [], history: [] } });
+  }
 
   return fake;
 }

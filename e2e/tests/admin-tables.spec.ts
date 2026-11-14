@@ -1,8 +1,9 @@
 // Acceptance Test
-// Traces to: L2-099, L2-188, L2-272, L2-276, L2-277, L2-278, L2-282, L2-284
+// Traces to: L2-099, L2-106, L2-188, L2-272, L2-276, L2-277, L2-278, L2-282, L2-283, L2-284
 // Description: the schema-driven admin application (ADR 0074): its shell with the sidebar of
 // tables in their groups, what a role may read, and one table read from the catalog.
 import {
+  FEEDBACK_ROW,
   JOB_RUN_ROW,
   LISTING_ROWS,
   manyMembers,
@@ -819,8 +820,8 @@ test.describe('a record (L2-282)', () => {
             {
               at: '2026-11-12T15:30:00+00:00',
               actor: 'Ada Nwosu',
-              what: 'changed Phone from — to 416-555-0144',
-              text: 'Ada Nwosu changed Phone from — to 416-555-0144',
+              what: 'changed phone from — to 416-555-0144',
+              text: 'Ada Nwosu changed phone from — to 416-555-0144',
             },
             {
               at: '2026-09-10T14:20:00+00:00',
@@ -836,7 +837,7 @@ test.describe('a record (L2-282)', () => {
 
     await expect(record.history).toHaveCount(2);
     await expect(record.history.nth(0)).toContainText(
-      'Ada Nwosu changed Phone from — to 416-555-0144',
+      'Ada Nwosu changed phone from — to 416-555-0144',
     );
     await expect(record.history.nth(0)).toContainText('12 Nov 2026 10:30');
     await expect(record.history.nth(1)).toContainText('Jubilee created this member');
@@ -892,5 +893,172 @@ test.describe('a record (L2-282)', () => {
     await records.row('Naomi Laurent').locator('td').nth(3).click();
 
     await expect(record.heading).toHaveText('Naomi Laurent');
+  });
+});
+
+test.describe('edit and create a record (L2-283)', () => {
+  const rating = FEEDBACK_ROW;
+  const ruth = MEMBER_ROWS[0];
+
+  test('AC1: "Edit" turns each field the role may change into the editor of its type', async ({
+    page,
+    jb,
+  }) => {
+    const record = new AdminRecordPage(page);
+    await record.setWidth(1280);
+    await stubAdminTables(page, miriam);
+    await jb.gotoAdmin(`/feedback/${rating.id}`);
+
+    await record.edit.click();
+
+    await expect(page).toHaveURL(new RegExp(`/feedback/${rating.id}/edit$`));
+    await expect(page.locator('body')).toHaveAttribute('data-page', 'admin-record-edit');
+    const status = record.editor('Status');
+    await expect(status).toHaveRole('combobox');
+    await expect(status.locator('option')).toHaveText(['—', 'new', 'read', 'in progress', 'fixed']);
+    await expect(status).toHaveValue('new');
+    await expect(record.editor('Reply')).toHaveRole('textbox');
+    await expect(record.editor('Note')).toHaveCount(0);
+    await expect(record.field('Note')).toHaveText('Finding a plumber was easy.');
+    await expect(record.cancel).toBeVisible();
+    await expect(record.save).toHaveText('Save changes');
+  });
+
+  test('AC1: a table with no field the role may change offers no "Edit"', async ({ page, jb }) => {
+    const record = new AdminRecordPage(page);
+    await record.setWidth(1280);
+    await stubAdminTables(page, ada);
+    await jb.gotoAdmin(`/members/${ruth.id}`);
+
+    await expect(record.heading).toHaveText('Ruth Chen');
+    await expect(record.edit).toHaveCount(0);
+  });
+
+  test('AC2: "Save changes" says "Saving…", then the record reads again with "Saved" and the change heads its history', async ({
+    page,
+    jb,
+  }) => {
+    const record = new AdminRecordPage(page);
+    await record.setWidth(1280);
+    const fake = await stubAdminTables(page, miriam, { saveAnswer: 'slow' });
+    await jb.gotoAdmin(`/feedback/${rating.id}/edit`);
+    await record.editor('Status').selectOption('read');
+    await record.editor('Reply').fill('Thank you, Ruth.');
+
+    await record.save.click();
+
+    await expect(record.save).toHaveText('Saving…');
+    await expect(record.save).toHaveAttribute('aria-disabled', 'true');
+    await record.save.click({ force: true });
+    expect(fake.saves).toEqual([
+      {
+        method: 'PATCH',
+        path: `/feedback/${rating.id}`,
+        values: { status: 'read', reply: 'Thank you, Ruth.' },
+      },
+    ]);
+
+    fake.saveAnswer = 'ok';
+    await jb.gotoAdmin(`/feedback/${rating.id}/edit`);
+    await record.editor('Status').selectOption('read');
+    await record.save.click();
+
+    await expect(page).toHaveURL(new RegExp(`/feedback/${rating.id}$`));
+    await expect(record.saved).toHaveText('Saved');
+    await expect(record.status).toHaveText('read');
+    await expect(record.history.first()).toContainText(
+      'Miriam Castillo changed status from new to read',
+    );
+  });
+
+  test('AC2: a refusal says what is wrong under each field, and nothing is saved', async ({
+    page,
+    jb,
+  }) => {
+    const record = new AdminRecordPage(page);
+    await record.setWidth(1280);
+    await stubAdminTables(page, miriam, {
+      saveAnswer: 'refused',
+      refusal: { status: 'NOT_ALLOWED', reply: 'TOO_LONG' },
+    });
+    await jb.gotoAdmin(`/feedback/${rating.id}/edit`);
+    await record.editor('Status').selectOption('fixed');
+    await record.editor('Reply').fill('A very long reply');
+
+    await record.save.click();
+
+    await expect(record.fieldError('Status')).toHaveText('Status can’t change to that.');
+    await expect(record.fieldError('Reply')).toHaveText('Reply is too long.');
+    await expect(record.editor('Reply')).toHaveAttribute('aria-invalid', 'true');
+    await expect(record.editor('Reply')).toHaveAccessibleDescription('Reply is too long.');
+    await expect(record.editor('Reply')).toHaveValue('A very long reply');
+    await expect(page).toHaveURL(new RegExp(`/feedback/${rating.id}/edit$`));
+    await expect(record.save).toHaveText('Save changes');
+  });
+
+  test('AC3: "Cancel" drops the changes and the record reads again', async ({ page, jb }) => {
+    const record = new AdminRecordPage(page);
+    await record.setWidth(1280);
+    const fake = await stubAdminTables(page, miriam);
+    await jb.gotoAdmin(`/feedback/${rating.id}/edit`);
+    await record.editor('Reply').fill('Not sent');
+
+    await record.cancel.click();
+
+    await expect(page).toHaveURL(new RegExp(`/feedback/${rating.id}$`));
+    await expect(record.field('Reply').getByRole('img', { name: 'None' })).toBeVisible();
+    expect(fake.saves).toEqual([]);
+  });
+
+  test('AC4: "New featured slot" opens empty editors and creates the record', async ({
+    page,
+    jb,
+  }) => {
+    const records = new AdminRecordsPage(page);
+    const record = new AdminRecordPage(page);
+    await records.setWidth(1280);
+    const fake = await stubAdminTables(page, miriam);
+    await jb.gotoAdmin('/featured-slots');
+
+    await expect(records.newRecord).toHaveText('New featured slot');
+    await records.newRecord.click();
+
+    await expect(page).toHaveURL(/\/featured-slots\/new$/);
+    await expect(record.heading).toHaveText('New featured slot');
+    await expect(record.here).toHaveText('New');
+    await expect(record.system).toContainText('ID set on create');
+    await expect(record.aside).toHaveCount(0);
+    const listing = record.editor('Listing');
+    await expect(listing.locator('option').first()).toHaveText('None');
+    await expect(listing.locator('option', { hasText: 'Luzandre.com' })).toHaveText(
+      `Luzandre.com · ${LISTING_ROWS[0].id}`,
+    );
+    await expect(record.editor('Position')).toHaveValue('');
+    await expect(record.cancel).toHaveAttribute('href', '/featured-slots');
+
+    await listing.selectOption({ label: `Luzandre.com · ${LISTING_ROWS[0].id}` });
+    await record.editor('Position').fill('1');
+    await record.editor('Week of').fill('2026-11-16');
+    await record.create('featured slot').click();
+
+    expect(fake.saves).toEqual([
+      {
+        method: 'POST',
+        path: '/featured-slots',
+        values: { listingId: LISTING_ROWS[0].id, position: '1', startsOn: '2026-11-16' },
+      },
+    ]);
+    await expect(page).toHaveURL(/\/featured-slots\/new-1$/);
+    await expect(record.field('Listing')).toHaveText('Luzandre.com');
+  });
+
+  test('AC4: a table the role cannot create in offers no "New"', async ({ page, jb }) => {
+    const records = new AdminRecordsPage(page);
+    await records.setWidth(1280);
+    await stubAdminTables(page, ada);
+    await jb.gotoAdmin('/members');
+
+    await expect(records.heading).toHaveText('Members');
+    await expect(records.newRecord).toHaveCount(0);
   });
 });

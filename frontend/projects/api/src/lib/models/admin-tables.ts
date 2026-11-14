@@ -26,6 +26,8 @@ export interface AdminField {
   sortable: boolean;
   /** The staff member may change it (L2-283, L2-284). */
   editable: boolean;
+  /** Given a value when a record is created (L2-283 AC4). */
+  creatable: boolean;
   /** The words of a status. */
   options: string[] | null;
   /** The table a reference points at. */
@@ -150,3 +152,6 @@ export function isAdminRef(value: unknown): value is AdminRefValue {
     'deleted' in value
   );
 }
+
+/** The values of a change or a creation, by field key, in their wire form (L2-283). */
+export type AdminValues = Record<string, string | null>;

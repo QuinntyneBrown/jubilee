@@ -75,8 +75,13 @@ record as an action. The featured slots follow the rules of the featured week (`
 | `SetWeeklyExportCommand` | `PUT` / `DELETE /api/admin/tables/{table}/weekly-export` | Turns the weekly e-mail on or off |
 
 `AdminTablesController` (`[RequiresStaff]`, any staff role) maps them; the handlers check
-`AdminRights` and answer 403 `FORBIDDEN`, 404 `NOT_FOUND`, 409 `READ_ONLY`, 400 `VALIDATION` or
-`REASON_REQUIRED`; a failed read answers `JB-ADM-503` (a table) or `JB-ADM-504` (a record).
+`AdminRights` and answer 403 `FORBIDDEN`, 404 `NOT_FOUND`, 409 `READ_ONLY`, 422
+`validation_failed` with an `errors` object of field key to code (`REQUIRED`, `TOO_LONG`,
+`NOT_ALLOWED`, `NOT_EDITABLE`, `NOT_LIVE`, `OUT_OF_RANGE`, `START_IN_PAST`, `WEEK_FULL`,
+`WEEK_OVERLAPS`) or 400 `REASON_REQUIRED`; a failed read answers `JB-ADM-503` (a table) or
+`JB-ADM-504` (a record). A change and a creation send `{ "values": { field: text } }`, each value in
+its wire form (a reference by its ID); the catalog marks the fields a role may change (`editable`)
+and those a new record is given (`creatable`).
 
 ### Backend — fields and bindings of this change
 
@@ -115,15 +120,40 @@ record as an action. The featured slots follow the rules of the featured week (`
   menus, `jb-records-table`, `jb-bulk-bar`, the delete dialog, toasts. Reads the query from the URL
   (`q`, `status`, `sort`, `dir`, `page`) so a table can be linked and the back button works;
   columns and rows per page from `localStorage` (`AdminTablePreferences`, `L2-278` AC5).
-- **`RecordPage`** (`/:table/:id`, `/:table/new`) — container: `jb-record-head`,
-  `jb-record-fields` in reading or editing mode, `jb-backlinks`, `jb-history`, the delete dialog
-  and the record actions' dialogs (`take-down-listing`, `report-action`, `publish-policy`).
+- **`RecordPage`** (`/:table/:id`) — container: `jb-record-crumbs`, `jb-record-head` with "Edit"
+  where the table has a field the role may change and "Saved" after a change, `jb-record-fields`,
+  `jb-record-system`, `jb-record-aside`, the delete dialog and the record actions' dialogs
+  (`take-down-listing`, `report-action`, `publish-policy`).
+- **`RecordEditPage`** (`/:table/:id/edit`, `/:table/new`) — container: the same parts with
+  `jb-record-fields` in its editing mode, "Cancel" (a link back) and "Save changes" or "Create
+  {singular}". It sends only the fields that changed, says each refusal under its field and, once
+  saved, opens the record with "Saved". A reference's select offers the first 250 records of its
+  table as "{name} · {ID}".
 - **`DeleteRecordsDialog`** (`dialogs/delete-records`) — CDK alert dialog of `L2-281` AC1 and AC2.
 - **Components** (`components`): `jb-records-table` (`records`, the `cell--*` values, the phone
   list, skeleton rows, the empty state), `jb-status-pill` (`status status--{tone}`), `jb-lock-tag`,
   `jb-record-head`, `jb-record-fields`, `jb-backlinks`, `jb-history`, `jb-bulk-bar`, `jb-doomed`,
   reusing `jb-menu`, `jb-chip`, `jb-checkbox`, `jb-switch`, `jb-select`, `jb-input`,
   `jb-textarea`, `jb-skeleton`, `jb-empty-state` and `jb-toast-region`.
+
+### Open questions
+
+The choices below are recorded where the requirements, the mocks and the rules differ or leave a
+gap.
+
+- **Editing on its own screen**: the mocks reach the editors through links (`edit.html`,
+  `create.html`), and the repository's rules forbid an inline form on a page. "Edit" therefore opens
+  `/{table}/{id}/edit` and "New {singular}" opens `/{table}/new`; "Cancel" is a link back.
+- **Featured slot placement and end date**: `L2-106` AC1 names a placement ("home hero", "browse
+  top", "category") and an end date, but `FeaturedSlot` holds a listing, a position and the week it
+  starts, and the home page shows one week of five. A slot is created with those three values under
+  the featured week's rules; the placement and the end date wait for a change to the entity and the
+  home page.
+- **Clear search**: `L2-277` AC1 asks for a "Clear search" button that the admin mocks do not draw.
+  The search is a `type="search"` field, which clears with Escape, and the empty state offers
+  "Clear search and filters".
+- **History words**: a change reads "changed {field} from {old} to {new}" with the field in lower
+  case, as the mock `saved.html` writes it.
 
 ## Requirements
 

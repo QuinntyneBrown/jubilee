@@ -191,6 +191,7 @@ export type StubName =
   | 'admin-records-forbidden'
   | 'admin-record-loading'
   | 'admin-record-error'
+  | 'admin-record-saving'
   | 'admin-listing'
   | 'admin-listing-taken-down'
   | 'admin-listing-error'
@@ -1955,6 +1956,34 @@ export const routes = {
     who: 'visitor',
     site: 'admin',
     stub: 'admin-record-error',
+  },
+  'admin-record.edit': {
+    app: '/members/mem_8F2kQa/edit',
+    mock: 'pages/admin-record/edit.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'admin-records',
+  },
+  'admin-record.saving': {
+    app: '/members/mem_8F2kQa/edit',
+    mock: 'pages/admin-record/saving.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'admin-record-saving',
+  },
+  'admin-record.saved': {
+    app: '/members/mem_8F2kQa/edit',
+    mock: 'pages/admin-record/saved.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'admin-records',
+  },
+  'admin-record.create': {
+    app: '/members/new',
+    mock: 'pages/admin-record/create.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'admin-records',
   },
   'admin-record.job-runs': {
     app: '/job-runs/job_9874',

@@ -42,4 +42,23 @@ public sealed class AdminTablesController(ISender sender) : ControllerBase
     [ErrorReference("JB-ADM-504")]
     public Task<AdminRecordDto> Record(string table, string id, CancellationToken cancellationToken) =>
         sender.Send(new GetAdminRecordQuery(User.ToStaff(), table, id), cancellationToken);
+
+    /// <summary>Changes the fields of a record through their bindings (L2-283 AC2).</summary>
+    [HttpPatch("{table}/{id}")]
+    [ErrorReference("JB-ADM-504")]
+    public Task<AdminRecordDto> Update(string table, string id, [FromBody] AdminValuesRequest body, CancellationToken cancellationToken) =>
+        sender.Send(new UpdateAdminRecordCommand(User.ToStaff(), table, id, body.Values ?? new Dictionary<string, string?>()), cancellationToken);
+
+    /// <summary>Creates a record through the table's creation (L2-283 AC4).</summary>
+    [HttpPost("{table}")]
+    [ErrorReference("JB-ADM-504")]
+    public async Task<ActionResult<AdminRecordDto>> Create(string table, [FromBody] AdminValuesRequest body, CancellationToken cancellationToken)
+    {
+        var record = await sender.Send(
+            new CreateAdminRecordCommand(User.ToStaff(), table, body.Values ?? new Dictionary<string, string?>()), cancellationToken);
+        return Created($"/api/admin/tables/{record.Table}/{record.Id}", record);
+    }
 }
+
+/// <summary>The values of a change or a creation, by field key, in their wire form.</summary>
+public sealed record AdminValuesRequest(Dictionary<string, string?>? Values);

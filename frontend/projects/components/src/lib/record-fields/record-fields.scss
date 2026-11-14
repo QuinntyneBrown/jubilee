@@ -33,6 +33,34 @@
   overflow-wrap: anywhere;
 }
 
+// While editing, a label sits level with the text of its editor (L2-283 AC1).
+:host(.record-fields--editing) .record-fields__label {
+  padding-top: var(--space-3);
+}
+
+.record-fields__value .input,
+.record-fields__value .select,
+.record-fields__value .textarea {
+  width: 100%;
+}
+
+.record-fields__short {
+  max-width: 12.5rem;
+}
+
+.record-fields__mid {
+  max-width: 20rem;
+}
+
+.record-fields__ref {
+  max-width: 24rem;
+}
+
+.record-fields__mono {
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-xs);
+}
+
 @include cells.cells;
 
 @media (min-width: 40rem) {

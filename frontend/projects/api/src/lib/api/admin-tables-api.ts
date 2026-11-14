@@ -1,7 +1,13 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, InjectionToken, inject } from '@angular/core';
 import { Observable } from 'rxjs';
-import { AdminCatalog, AdminRecord, AdminRows, AdminRowsQuery } from '../models/admin-tables';
+import {
+  AdminCatalog,
+  AdminRecord,
+  AdminRows,
+  AdminRowsQuery,
+  AdminValues,
+} from '../models/admin-tables';
 
 /** Contract of the schema-driven tables of the admin application (L2-276 to L2-284, ADR 0074). */
 export interface AdminTablesApi {
@@ -11,6 +17,10 @@ export interface AdminTablesApi {
   rows(table: string, query?: AdminRowsQuery): Observable<AdminRows>;
   /** One record, its pointers and its history (L2-282). */
   record(table: string, id: string): Observable<AdminRecord>;
+  /** Changes the fields of a record through their bindings; a refusal is 422 with a code per field (L2-283 AC2). */
+  update(table: string, id: string, values: AdminValues): Observable<AdminRecord>;
+  /** Creates a record through the table's creation (L2-283 AC4). */
+  create(table: string, values: AdminValues): Observable<AdminRecord>;
 }
 
 export const ADMIN_TABLES_API = new InjectionToken<AdminTablesApi>('ADMIN_TABLES_API');
@@ -36,5 +46,18 @@ export class HttpAdminTablesApi implements AdminTablesApi {
     return this.http.get<AdminRecord>(
       `/api/admin/tables/${encodeURIComponent(table)}/${encodeURIComponent(id)}`,
     );
+  }
+
+  update(table: string, id: string, values: AdminValues): Observable<AdminRecord> {
+    return this.http.patch<AdminRecord>(
+      `/api/admin/tables/${encodeURIComponent(table)}/${encodeURIComponent(id)}`,
+      { values },
+    );
+  }
+
+  create(table: string, values: AdminValues): Observable<AdminRecord> {
+    return this.http.post<AdminRecord>(`/api/admin/tables/${encodeURIComponent(table)}`, {
+      values,
+    });
   }
 }

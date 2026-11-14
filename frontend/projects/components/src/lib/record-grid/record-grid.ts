@@ -10,7 +10,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
  *     </div>
  */
 @Component({
-  selector: 'div[jb-record-grid]',
+  selector: 'div[jb-record-grid], form[jb-record-grid]',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'record-grid' },
   templateUrl: './record-grid.html',

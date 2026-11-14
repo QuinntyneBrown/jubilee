@@ -1,4 +1,5 @@
 using Jubilee.Domain;
+using Microsoft.EntityFrameworkCore;
 using DF = Jubilee.Application.Admin.AdminFields<Jubilee.Domain.ListingDraft>;
 using DMF = Jubilee.Application.Admin.AdminFields<Jubilee.Domain.DeliveryMethod>;
 using FSF = Jubilee.Application.Admin.AdminFields<Jubilee.Domain.FeaturedSlot>;
@@ -211,7 +212,7 @@ internal static class ListingsTables
                 FSF.Day("startsOn", "Week of", s => s.StartsOn),
             ],
             defaultSort: "startsOn")
-        { Deletable = true },
+        { Deletable = true, CreateFields = ["listingId", "position", "startsOn"], Create = FeaturedSlotCreation.Create },
 
         new AdminTable<ResponseTimeStat>(
             "response-time-stats", "Response time stats", "Response time stat", Group,
@@ -231,4 +232,69 @@ internal static class ListingsTables
         where T : class =>
         text => System.Linq.Expressions.Expression.Lambda<Func<T, bool>>(
             System.Linq.Expressions.Expression.Equal(key.Body, System.Linq.Expressions.Expression.Constant(text)), key.Parameters);
+}
+
+/// <summary>
+/// A featured slot made in the admin application, under the rules of the featured week (L2-106 AC1, L2-283 AC4): a live
+/// listing, a position from 1 to 5, a week that starts today or later, does not overlap another week and is not full.
+/// </summary>
+internal static class FeaturedSlotCreation
+{
+    public static async Task<FeaturedSlot> Create(
+        Abstractions.IAppDbContext db, IReadOnlyDictionary<string, string?> values, AdminChange change, CancellationToken cancellationToken)
+    {
+        var errors = new Dictionary<string, string>();
+        var today = TorontoClock.Today(change.Now);
+
+        Guid listingId = Guid.Empty;
+        if (!Guid.TryParse(values.GetValueOrDefault("listingId"), out listingId))
+        {
+            errors["listingId"] = "REQUIRED";
+        }
+        else if (!await db.Listings.WherePublic().AnyAsync(l => l.Id == listingId, cancellationToken))
+        {
+            errors["listingId"] = "NOT_LIVE";
+        }
+
+        var position = 0;
+        if (!int.TryParse(values.GetValueOrDefault("position"), System.Globalization.NumberStyles.Integer, System.Globalization.CultureInfo.InvariantCulture, out position))
+        {
+            errors["position"] = "REQUIRED";
+        }
+        else if (position is < 1 or > Moderation.SetFeaturedWeekCommandHandler.MaxSlots)
+        {
+            errors["position"] = "OUT_OF_RANGE";
+        }
+
+        var startsOn = default(DateOnly);
+        if (!DateOnly.TryParseExact(values.GetValueOrDefault("startsOn"), "yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out startsOn))
+        {
+            errors["startsOn"] = "REQUIRED";
+        }
+        else if (startsOn < today)
+        {
+            errors["startsOn"] = "START_IN_PAST";
+        }
+        else if (await db.FeaturedSlots.CountAsync(s => s.StartsOn == startsOn, cancellationToken) >= Moderation.SetFeaturedWeekCommandHandler.MaxSlots)
+        {
+            errors["startsOn"] = "WEEK_FULL";
+        }
+        else if (await db.FeaturedSlots.AnyAsync(
+            s => s.StartsOn != startsOn
+                && s.StartsOn > startsOn.AddDays(-FeaturedSlot.DurationDays)
+                && s.StartsOn < startsOn.AddDays(FeaturedSlot.DurationDays),
+            cancellationToken))
+        {
+            errors["startsOn"] = "WEEK_OVERLAPS";
+        }
+
+        if (errors.Count > 0)
+        {
+            throw new Accounts.ValidationFailedException(errors);
+        }
+
+        var slot = FeaturedSlot.Create(listingId, position, startsOn);
+        db.FeaturedSlots.Add(slot);
+        return slot;
+    }
 }

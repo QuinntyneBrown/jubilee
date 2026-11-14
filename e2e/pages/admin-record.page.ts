@@ -24,6 +24,10 @@ export class AdminRecordPage extends AdminShellPage implements Screen {
   readonly noPointers: Locator;
   readonly history: Locator;
   readonly error: Locator;
+  readonly edit: Locator;
+  readonly cancel: Locator;
+  readonly save: Locator;
+  readonly saved: Locator;
 
   constructor(page: Page) {
     super(page);
@@ -44,6 +48,10 @@ export class AdminRecordPage extends AdminShellPage implements Screen {
     this.noPointers = this.aside.getByText('No other records reference this one.');
     this.history = this.aside.locator('.history li');
     this.error = this.main.getByRole('alert');
+    this.edit = this.head.getByRole('link', { name: 'Edit' });
+    this.cancel = this.head.getByRole('link', { name: 'Cancel' });
+    this.save = this.head.getByRole('button', { name: /^(Save changes|Saving…)$/ });
+    this.saved = this.head.getByRole('status');
   }
 
   /** The value of a field by its label. */
@@ -54,12 +62,52 @@ export class AdminRecordPage extends AdminShellPage implements Screen {
       .locator('dd');
   }
 
+  /** The editor of a field, by its label (L2-283 AC1). */
+  editor(label: string): Locator {
+    return this.fields.getByLabel(label, { exact: true });
+  }
+
+  /** What is wrong with a field, after a refusal (L2-283 AC2). */
+  fieldError(label: string): Locator {
+    return this.fields
+      .locator('.record-fields__row')
+      .filter({ has: this.page.locator('dt', { hasText: new RegExp(`^${label}$`) }) })
+      .locator('.field__error');
+  }
+
+  /** "Create {singular}", on a new record (L2-283 AC4). */
+  create(singular: string): Locator {
+    return this.head.getByRole('button', { name: new RegExp(`^(Create ${singular}|Creating…)$`) });
+  }
+
+  /** Changes a field and saves the record, as a staff member does (L2-283 AC2). */
+  async change(label: string, value: string): Promise<void> {
+    await this.editor(label).fill(value);
+    await this.save.click();
+  }
+
+  /** The saving state the mock draws: a field typed over with its own value, then saved. */
+  async saveAsDrawn(): Promise<void> {
+    const neighbourhood = this.editor('Neighbourhood');
+    await this.change('Neighbourhood', await neighbourhood.inputValue());
+    await this.save.filter({ hasText: 'Saving…' }).waitFor();
+  }
+
+  /** The saved state the mock draws: the neighbourhood changed to Riverdale and saved. */
+  async saveRiverdale(): Promise<void> {
+    await this.change('Neighbourhood', 'Riverdale');
+    await this.saved.waitFor();
+    // The pointer stays where "Save changes" was, now over "Edit"; the mock draws no hover.
+    await this.page.mouse.move(0, 0);
+  }
+
   retry(): Locator {
     return this.error.getByRole('button', { name: 'Try again' });
   }
 
   async ready(): Promise<void> {
     await this.crumbs.waitFor();
+    await this.head.waitFor();
   }
 
   override regions(): Region[] {

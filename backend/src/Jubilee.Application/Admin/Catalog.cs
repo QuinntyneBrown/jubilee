@@ -5,7 +5,7 @@ using MediatR;
 namespace Jubilee.Application.Admin;
 
 public sealed record AdminFieldDto(
-    string Key, string Label, string Type, bool System, bool Searchable, bool Sortable, bool Editable,
+    string Key, string Label, string Type, bool System, bool Searchable, bool Sortable, bool Editable, bool Creatable,
     IReadOnlyList<string>? Options, string? RefTable);
 
 public sealed record AdminTableDto(
@@ -62,7 +62,8 @@ public static class AdminTables
         return new AdminTableDto(
             table.Key, table.Label, table.Singular, table.Group, table.Sentence, table.Empty, count,
             [.. table.Fields.Select(f => new AdminFieldDto(
-                f.Key, f.Label, Wire(f.Type), f.System, f.Searchable, f.Sortable, f.Editable && canChange, f.Options, f.RefTable))],
+                f.Key, f.Label, Wire(f.Type), f.System, f.Searchable, f.Sortable, f.Editable && canChange,
+                canChange && table.Creatable && table.CreateFields.Contains(f.Key), f.Options, f.RefTable))],
             table.DefaultColumns, table.StatusField,
             AdminRights.IsReadOnly(table), table.Private, canChange,
             canChange && table.Editable, canChange && table.Creatable, AdminRights.CanDelete(staff, table));

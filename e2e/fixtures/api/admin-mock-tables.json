@@ -21,6 +21,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             },
@@ -32,6 +33,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -43,6 +45,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -54,6 +57,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": ["active", "suspended", "banned", "pending"],
               "refTable": null
             },
@@ -65,6 +69,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": ["member", "seller", "host"],
               "refTable": null
             },
@@ -76,6 +81,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -87,6 +93,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -98,6 +105,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -109,6 +117,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -120,6 +129,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -131,6 +141,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             },
@@ -142,6 +153,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             }
@@ -172,6 +184,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             },
@@ -183,6 +196,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -194,6 +208,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -205,6 +220,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": ["owner", "admin", "moderator", "support", "read only"],
               "refTable": null
             },
@@ -216,6 +232,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": ["active", "invited"],
               "refTable": null
             },
@@ -227,6 +244,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -238,6 +256,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -249,6 +268,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             }
@@ -279,6 +299,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             },
@@ -290,6 +311,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": "members"
             },
@@ -301,6 +323,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -312,6 +335,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -323,6 +347,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -334,6 +359,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": ["active", "expired", "revoked"],
               "refTable": null
             },
@@ -345,6 +371,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -356,6 +383,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -367,6 +395,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             }
@@ -397,6 +426,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             },
@@ -408,6 +438,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -419,6 +450,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": ["wrong password", "unknown email", "locked", "expired link"],
               "refTable": null
             },
@@ -430,6 +462,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -441,6 +474,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -452,6 +486,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -463,6 +498,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             }
@@ -493,6 +529,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             },
@@ -504,6 +541,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -515,6 +553,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": ["sign in", "verify email", "change email"],
               "refTable": null
             },
@@ -526,6 +565,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": ["pending", "used", "expired", "revoked"],
               "refTable": null
             },
@@ -537,6 +577,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -548,6 +589,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -559,6 +601,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -570,6 +613,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             }
@@ -600,6 +644,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             },
@@ -611,6 +656,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": "members"
             },
@@ -622,6 +668,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -633,6 +680,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": ["pending", "completed", "expired"],
               "refTable": null
             },
@@ -644,6 +692,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -655,6 +704,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -666,6 +716,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -677,6 +728,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             }
@@ -707,6 +759,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             },
@@ -718,6 +771,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -729,6 +783,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": ["low", "medium", "high", "critical"],
               "refTable": null
             },
@@ -740,6 +795,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": ["open", "investigating", "resolved", "dismissed"],
               "refTable": null
             },
@@ -751,6 +807,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": "members"
             },
@@ -762,6 +819,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -773,6 +831,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": "staff"
             },
@@ -784,6 +843,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             }
@@ -814,6 +874,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             },
@@ -825,6 +886,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": "members"
             },
@@ -836,6 +898,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": ["marketing email", "analytics", "personalised listings", "sms"],
               "refTable": null
             },
@@ -847,6 +910,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -858,6 +922,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -869,6 +934,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -880,6 +946,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -891,6 +958,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             }
@@ -921,6 +989,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             },
@@ -932,6 +1001,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": "members"
             },
@@ -943,6 +1013,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -954,6 +1025,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -965,6 +1037,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": ["signed", "withdrawn", "superseded"],
               "refTable": null
             },
@@ -976,6 +1049,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             }
@@ -1006,6 +1080,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             },
@@ -1017,6 +1092,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": "members"
             },
@@ -1028,6 +1104,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": ["queued", "processing", "ready", "expired", "failed"],
               "refTable": null
             },
@@ -1039,6 +1116,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -1050,6 +1128,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -1061,6 +1140,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -1072,6 +1152,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -1083,6 +1164,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             }
@@ -1119,6 +1201,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             },
@@ -1130,6 +1213,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -1141,6 +1225,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": ["Shop", "Service", "Space"],
               "refTable": null
             },
@@ -1152,6 +1237,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": ["draft", "in review", "published", "unpublished", "removed"],
               "refTable": null
             },
@@ -1163,6 +1249,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": "members"
             },
@@ -1174,6 +1261,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -1185,6 +1273,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -1196,6 +1285,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -1207,6 +1297,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -1218,6 +1309,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -1229,6 +1321,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -1240,6 +1333,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -1251,6 +1345,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             }
@@ -1289,6 +1384,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             },
@@ -1300,6 +1396,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": "members"
             },
@@ -1311,6 +1408,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -1322,6 +1420,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": ["Shop", "Service", "Space"],
               "refTable": null
             },
@@ -1333,6 +1432,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -1344,6 +1444,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -1355,6 +1456,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             },
@@ -1366,6 +1468,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             }
@@ -1396,6 +1499,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             },
@@ -1407,6 +1511,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": "listings"
             },
@@ -1418,6 +1523,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": "members"
             },
@@ -1429,6 +1535,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": ["submitted", "in review", "approved", "rejected", "withdrawn"],
               "refTable": null
             },
@@ -1440,6 +1547,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": "staff"
             },
@@ -1451,6 +1559,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -1462,6 +1571,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -1473,6 +1583,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             }
@@ -1510,6 +1621,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             },
@@ -1521,6 +1633,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -1532,6 +1645,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": "listings"
             },
@@ -1543,6 +1657,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -1554,6 +1669,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -1565,6 +1681,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             }
@@ -1595,6 +1712,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             },
@@ -1606,6 +1724,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": "listings"
             },
@@ -1617,6 +1736,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -1628,6 +1748,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -1639,6 +1760,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -1650,6 +1772,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": ["passed", "flagged", "pending"],
               "refTable": null
             },
@@ -1661,6 +1784,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -1672,6 +1796,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             }
@@ -1702,6 +1827,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             },
@@ -1713,6 +1839,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": "listings"
             },
@@ -1724,6 +1851,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": "members"
             },
@@ -1735,6 +1863,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": ["browse", "search", "direct", "share", "featured"],
               "refTable": null
             },
@@ -1746,6 +1875,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -1757,6 +1887,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             }
@@ -1787,6 +1918,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             },
@@ -1798,6 +1930,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -1809,6 +1942,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": "listings"
             },
@@ -1820,6 +1954,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -1831,6 +1966,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -1842,6 +1978,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": ["active", "low stock", "out of stock", "archived"],
               "refTable": null
             },
@@ -1853,6 +1990,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -1864,6 +2002,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -1875,6 +2014,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             }
@@ -1905,6 +2045,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             },
@@ -1916,6 +2057,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": "products"
             },
@@ -1927,6 +2069,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -1938,6 +2081,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -1949,6 +2093,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -1960,6 +2105,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             }
@@ -1990,6 +2136,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             },
@@ -2001,6 +2148,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -2012,6 +2160,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": "listings"
             },
@@ -2023,6 +2172,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -2034,6 +2184,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -2045,6 +2196,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": ["active", "archived"],
               "refTable": null
             },
@@ -2056,6 +2208,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -2067,6 +2220,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             }
@@ -2097,6 +2251,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             },
@@ -2108,6 +2263,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": "listings"
             },
@@ -2119,6 +2275,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": ["pickup", "local delivery", "shipping"],
               "refTable": null
             },
@@ -2130,6 +2287,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -2141,6 +2299,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -2152,6 +2311,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -2163,6 +2323,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             }
@@ -2193,6 +2354,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             },
@@ -2204,6 +2366,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": "products"
             },
@@ -2215,6 +2378,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": "members"
             },
@@ -2226,6 +2390,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": ["waiting", "sent", "cancelled"],
               "refTable": null
             },
@@ -2237,6 +2402,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -2248,6 +2414,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             }
@@ -2278,6 +2445,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             },
@@ -2289,6 +2457,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": ["home hero", "browse top", "category"],
               "refTable": null
             },
@@ -2300,6 +2469,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": "listings"
             },
@@ -2311,6 +2481,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -2322,6 +2493,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -2333,6 +2505,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -2344,6 +2517,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": ["scheduled", "live", "ended"],
               "refTable": null
             },
@@ -2355,6 +2529,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             }
@@ -2385,6 +2560,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             },
@@ -2396,6 +2572,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": "listings"
             },
@@ -2407,6 +2584,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -2418,6 +2596,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -2429,6 +2608,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -2440,6 +2620,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": ["within an hour", "within a day", "slow", "none"],
               "refTable": null
             },
@@ -2451,6 +2632,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             }
@@ -2494,6 +2676,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             },
@@ -2505,6 +2688,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": ["order", "booking", "rental"],
               "refTable": null
             },
@@ -2516,6 +2700,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": "listings"
             },
@@ -2527,6 +2712,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": "members"
             },
@@ -2538,6 +2724,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": ["requested", "accepted", "declined", "completed", "cancelled"],
               "refTable": null
             },
@@ -2549,6 +2736,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -2560,6 +2748,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -2571,6 +2760,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -2582,6 +2772,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             }
@@ -2612,6 +2803,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             },
@@ -2623,6 +2815,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": "requests"
             },
@@ -2634,6 +2827,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": ["requested", "accepted"],
               "refTable": null
             },
@@ -2645,6 +2839,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": ["accepted", "declined", "completed"],
               "refTable": null
             },
@@ -2656,6 +2851,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": "members"
             },
@@ -2667,6 +2863,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -2678,6 +2875,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             }
@@ -2708,6 +2906,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             },
@@ -2719,6 +2918,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": "listings"
             },
@@ -2730,6 +2930,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": "members"
             },
@@ -2741,6 +2942,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": "requests"
             },
@@ -2752,6 +2954,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": ["open", "archived", "blocked"],
               "refTable": null
             },
@@ -2763,6 +2966,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -2774,6 +2978,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -2785,6 +2990,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             }
@@ -2815,6 +3021,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             },
@@ -2826,6 +3033,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": "conversations"
             },
@@ -2837,6 +3045,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": "members"
             },
@@ -2848,6 +3057,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -2859,6 +3069,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": ["sent", "read", "removed"],
               "refTable": null
             },
@@ -2870,6 +3081,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -2881,6 +3093,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             }
@@ -2911,6 +3124,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             },
@@ -2922,6 +3136,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": "messages"
             },
@@ -2933,6 +3148,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -2944,6 +3160,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -2955,6 +3172,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -2966,6 +3184,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": ["passed", "flagged", "pending"],
               "refTable": null
             },
@@ -2977,6 +3196,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             }
@@ -3013,6 +3233,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             },
@@ -3024,6 +3245,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": "listings"
             },
@@ -3035,6 +3257,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": "members"
             },
@@ -3046,6 +3269,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -3057,6 +3281,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": ["published", "hidden", "removed", "pending"],
               "refTable": null
             },
@@ -3068,6 +3293,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -3079,6 +3305,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -3090,6 +3317,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -3101,6 +3329,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             }
@@ -3137,6 +3366,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             },
@@ -3148,6 +3378,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": "listings"
             },
@@ -3159,6 +3390,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": ["scam", "misleading", "prohibited item", "offensive", "duplicate"],
               "refTable": null
             },
@@ -3170,6 +3402,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": ["open", "in review", "resolved", "dismissed"],
               "refTable": null
             },
@@ -3181,6 +3414,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -3192,6 +3426,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": "staff"
             },
@@ -3203,6 +3438,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -3214,6 +3450,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             }
@@ -3244,6 +3481,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             },
@@ -3255,6 +3493,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": "listing-reports"
             },
@@ -3266,6 +3505,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": "members"
             },
@@ -3277,6 +3517,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": ["scam", "misleading"],
               "refTable": null
             },
@@ -3288,6 +3529,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -3299,6 +3541,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             }
@@ -3329,6 +3572,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             },
@@ -3340,6 +3584,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": "reviews"
             },
@@ -3351,6 +3596,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": "members"
             },
@@ -3362,6 +3608,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": ["fake", "personal info"],
               "refTable": null
             },
@@ -3373,6 +3620,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": ["open", "in review", "resolved", "dismissed"],
               "refTable": null
             },
@@ -3384,6 +3632,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -3395,6 +3644,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             }
@@ -3425,6 +3675,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             },
@@ -3436,6 +3687,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": "conversations"
             },
@@ -3447,6 +3699,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": "members"
             },
@@ -3458,6 +3711,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": ["off-platform payment", "spam"],
               "refTable": null
             },
@@ -3469,6 +3723,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": ["open", "in review", "resolved", "dismissed"],
               "refTable": null
             },
@@ -3480,6 +3735,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -3491,6 +3747,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             }
@@ -3521,6 +3778,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             },
@@ -3532,6 +3790,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -3543,6 +3802,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": ["warned", "unpublished", "removed", "suspended", "dismissed"],
               "refTable": null
             },
@@ -3554,6 +3814,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": "staff"
             },
@@ -3565,6 +3826,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -3576,6 +3838,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -3587,6 +3850,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             }
@@ -3623,6 +3887,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             },
@@ -3634,6 +3899,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": "members"
             },
@@ -3645,6 +3911,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": ["listing", "product"],
               "refTable": null
             },
@@ -3656,6 +3923,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -3667,6 +3935,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -3678,6 +3947,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             }
@@ -3708,6 +3978,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             },
@@ -3719,6 +3990,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": "members"
             },
@@ -3730,6 +4002,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -3741,6 +4014,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -3752,6 +4026,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -3763,6 +4038,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             }
@@ -3793,6 +4069,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             },
@@ -3804,6 +4081,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": "members"
             },
@@ -3815,6 +4093,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": ["in app", "email", "push"],
               "refTable": null
             },
@@ -3826,6 +4105,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -3837,6 +4117,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": ["queued", "sent", "read", "failed"],
               "refTable": null
             },
@@ -3848,6 +4129,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -3859,6 +4141,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -3870,6 +4153,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             }
@@ -3906,6 +4190,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             },
@@ -3917,6 +4202,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": ["rate", "bug", "kudos"],
               "refTable": null
             },
@@ -3928,6 +4214,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": "members"
             },
@@ -3939,6 +4226,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -3950,6 +4238,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": ["new", "triaged", "done", "dismissed"],
               "refTable": null
             },
@@ -3961,6 +4250,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -3972,6 +4262,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -3983,6 +4274,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             }
@@ -4013,6 +4305,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             },
@@ -4024,6 +4317,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": "feedback"
             },
@@ -4035,6 +4329,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -4046,6 +4341,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -4057,6 +4353,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -4068,6 +4365,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             }
@@ -4104,6 +4402,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             },
@@ -4115,6 +4414,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -4126,6 +4426,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": ["active", "draft", "archived"],
               "refTable": null
             },
@@ -4137,6 +4438,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -4148,6 +4450,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -4159,6 +4462,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -4170,6 +4474,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             }
@@ -4200,6 +4505,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             },
@@ -4211,6 +4517,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": "merch-products"
             },
@@ -4222,6 +4529,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -4233,6 +4541,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -4244,6 +4553,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -4255,6 +4565,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -4266,6 +4577,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": ["in stock", "low stock", "out of stock"],
               "refTable": null
             },
@@ -4277,6 +4589,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             }
@@ -4307,6 +4620,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             },
@@ -4318,6 +4632,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -4329,6 +4644,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": ["paid", "fulfilled", "shipped", "delivered", "refunded", "cancelled"],
               "refTable": null
             },
@@ -4340,6 +4656,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -4351,6 +4668,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -4362,6 +4680,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -4373,6 +4692,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -4384,6 +4704,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             }
@@ -4414,6 +4735,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             },
@@ -4425,6 +4747,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": "merch-orders"
             },
@@ -4436,6 +4759,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": "merch-variants"
             },
@@ -4447,6 +4771,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -4458,6 +4783,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -4469,6 +4795,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             }
@@ -4505,6 +4832,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             },
@@ -4516,6 +4844,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -4527,6 +4856,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -4538,6 +4868,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": ["home", "gala", "instagram", "referral"],
               "refTable": null
             },
@@ -4549,6 +4880,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": ["pending", "confirmed", "unsubscribed"],
               "refTable": null
             },
@@ -4560,6 +4892,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -4571,6 +4904,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             }
@@ -4601,6 +4935,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             },
@@ -4612,6 +4947,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -4623,6 +4959,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -4634,6 +4971,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -4645,6 +4983,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": ["Shop", "Service", "Space"],
               "refTable": null
             },
@@ -4656,6 +4995,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -4667,6 +5007,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": ["new", "contacted", "invited", "listed", "declined"],
               "refTable": null
             },
@@ -4678,6 +5019,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             }
@@ -4708,6 +5050,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             },
@@ -4719,6 +5062,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -4730,6 +5074,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -4741,6 +5086,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -4752,6 +5098,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": "members"
             },
@@ -4763,6 +5110,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": ["pending", "approved", "declined", "waitlisted"],
               "refTable": null
             },
@@ -4774,6 +5122,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -4785,6 +5134,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             }
@@ -4821,6 +5171,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             },
@@ -4832,6 +5183,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -4843,6 +5195,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -4854,6 +5207,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": ["draft", "published", "superseded"],
               "refTable": null
             },
@@ -4865,6 +5219,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": "staff"
             },
@@ -4876,6 +5231,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -4887,6 +5243,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -4898,6 +5255,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             }
@@ -4928,6 +5286,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             },
@@ -4939,6 +5298,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -4950,6 +5310,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": ["scheduled", "live", "completed", "cancelled"],
               "refTable": null
             },
@@ -4961,6 +5322,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -4972,6 +5334,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -4983,6 +5346,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -4994,6 +5358,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": null
             },
@@ -5005,6 +5370,7 @@
               "searchable": true,
               "sortable": true,
               "editable": true,
+              "creatable": true,
               "options": null,
               "refTable": "staff"
             }
@@ -5041,6 +5407,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             },
@@ -5052,6 +5419,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": "staff"
             },
@@ -5063,6 +5431,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             },
@@ -5074,6 +5443,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             },
@@ -5085,6 +5455,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             },
@@ -5096,6 +5467,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             },
@@ -5107,6 +5479,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             },
@@ -5118,6 +5491,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             }
@@ -5148,6 +5522,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             },
@@ -5159,6 +5534,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             },
@@ -5170,6 +5546,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": ["queued", "sent", "retrying", "dead"],
               "refTable": null
             },
@@ -5181,6 +5558,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             },
@@ -5192,6 +5570,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             },
@@ -5203,6 +5582,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             },
@@ -5214,6 +5594,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             },
@@ -5225,6 +5606,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             }
@@ -5255,6 +5637,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             },
@@ -5266,6 +5649,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             },
@@ -5277,6 +5661,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": ["running", "succeeded", "failed"],
               "refTable": null
             },
@@ -5288,6 +5673,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             },
@@ -5299,6 +5685,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             },
@@ -5310,6 +5697,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             },
@@ -5321,6 +5709,7 @@
               "searchable": true,
               "sortable": true,
               "editable": false,
+              "creatable": false,
               "options": null,
               "refTable": null
             }

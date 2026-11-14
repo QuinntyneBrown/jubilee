@@ -115,11 +115,27 @@ export const routes: Routes = [
         title: 'Tables · Jubilee admin',
       },
       {
+        // A new record of a table that creates (L2-283 AC4).
+        path: ':table/new',
+        loadComponent: () =>
+          import('./pages/record-edit/record-edit.page').then((m) => m.RecordEditPage),
+        data: { ...data({ shell: 'admin', page: 'admin-record-new' }), mode: 'new' },
+        title: 'New record · Jubilee admin',
+      },
+      {
         // One record of any table (L2-282).
         path: ':table/:id',
         loadComponent: () => import('./pages/record/record.page').then((m) => m.RecordPage),
         data: data({ shell: 'admin', page: 'admin-record' }),
         title: 'Record · Jubilee admin',
+      },
+      {
+        // A record's fields, changed (L2-283 AC1).
+        path: ':table/:id/edit',
+        loadComponent: () =>
+          import('./pages/record-edit/record-edit.page').then((m) => m.RecordEditPage),
+        data: { ...data({ shell: 'admin', page: 'admin-record-edit' }), mode: 'edit' },
+        title: 'Edit record · Jubilee admin',
       },
       {
         path: '**',

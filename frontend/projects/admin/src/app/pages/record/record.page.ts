@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Title } from '@angular/platform-browser';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ADMIN_TABLES_API, AdminRecord, errorReference, LoadState } from 'api';
 import {
   AdminPage,
@@ -35,6 +35,7 @@ import { AdminScreenService } from '../../services/admin-screen.service';
 import { StaffSessionService } from '../../services/staff-session.service';
 import { AdminOnlyPage } from '../admin-only/admin-only.page';
 import { NotFoundPage } from '../not-found/not-found.page';
+import { ownFields, systemValues } from './record-values';
 
 /**
  * One record of any table, `/{table}/{id}` (L2-282): the way back to its table, its name with its
@@ -44,6 +45,7 @@ import { NotFoundPage } from '../not-found/not-found.page';
 @Component({
   selector: 'jb-record-page',
   imports: [
+    RouterLink,
     AdminPage,
     Button,
     EmptyState,
@@ -76,6 +78,8 @@ export class RecordPage {
   protected readonly id = signal('');
   protected readonly state = signal<LoadState<AdminRecord>>({ status: 'loading' });
   protected readonly refused = signal<'forbidden' | 'not-found' | null>(null);
+  /** A change was just saved: the head says "Saved" (L2-283 AC2). */
+  protected readonly saved = signal(false);
 
   protected readonly table = computed(() => this.catalog.table(this.key()));
   protected readonly singular = computed(() => this.table()?.singular.toLowerCase() ?? 'record');
@@ -90,31 +94,11 @@ export class RecordPage {
     return state.status === 'error' ? state.reference : null;
   });
 
-  /** The fields a staff member reads and changes; the system ones go in the line below (L2-282 AC3). */
-  protected readonly fields = computed<RecordsColumn[]>(() =>
-    (this.table()?.fields ?? [])
-      .filter((f) => !f.system)
-      .map((f) => ({ key: f.key, label: f.label, type: f.type })),
-  );
+  protected readonly fields = computed<RecordsColumn[]>(() => ownFields(this.table()));
 
-  protected readonly system = computed<RecordSystemValue[]>(() => {
-    const record = this.record();
-    if (!record) return [];
-    return (this.table()?.fields ?? [])
-      .filter((f) => f.system && record.values[f.key] != null)
-      .map((f) => {
-        const value = String(record.values[f.key]);
-        return f.type === 'id'
-          ? { label: f.label, value, code: true }
-          : {
-              label: f.label,
-              value:
-                f.type === 'date' || f.type === 'datetime'
-                  ? formatAdminDate(value, f.type === 'datetime')
-                  : value,
-            };
-      });
-  });
+  protected readonly system = computed<RecordSystemValue[]>(() =>
+    systemValues(this.table(), this.record()),
+  );
 
   protected readonly history = computed<RecordHistoryLine[]>(() =>
     (this.record()?.history ?? []).map((line) => ({
@@ -137,6 +121,8 @@ export class RecordPage {
         takeUntilDestroyed(),
       )
       .subscribe(([key, id]) => {
+        const state = this.router.getCurrentNavigation()?.extras.state;
+        this.saved.set(state?.['saved'] === true);
         this.key.set(key);
         this.id.set(id);
         this.load();

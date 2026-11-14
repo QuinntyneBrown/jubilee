@@ -1,7 +1,8 @@
 import { parity } from '../../fixtures/parity';
 import { AdminRecordPage } from '../../pages/admin-record.page';
 
-// jb-record-fields: the fields of a member's record by type; the same while loading.
+// jb-record-fields: the fields of a member's record by type; the same while loading; each
+// field as the editor of its type while editing, and empty while creating (L2-283).
 parity('record-fields', {
   cases: [
     {
@@ -16,6 +17,18 @@ parity('record-fields', {
       screen: (page) => new AdminRecordPage(page),
       region: (screen: AdminRecordPage) => screen.fields,
       widths: [1280],
+    },
+    {
+      name: 'editing',
+      route: 'admin-record.edit',
+      screen: (page) => new AdminRecordPage(page),
+      region: (screen: AdminRecordPage) => screen.fields,
+    },
+    {
+      name: 'creating',
+      route: 'admin-record.create',
+      screen: (page) => new AdminRecordPage(page),
+      region: (screen: AdminRecordPage) => screen.fields,
     },
   ],
   reference: {
