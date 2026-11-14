@@ -39,9 +39,9 @@ building something, and not only as customers.
 
 ## How she serves the mission
 
-Grace reads "equips Christian business people in Toronto" as being about people like her parents:
+Grace reads "helps Christian business owners in Toronto" as being about people like her parents:
 her craft is what lets a faithful small business be seen clearly. The bulletin she designs each
-week, unpaid, is her own small way to "resource His Kingdom".
+week, unpaid, is her own small way to "support God's work".
 
 ## In her words
 

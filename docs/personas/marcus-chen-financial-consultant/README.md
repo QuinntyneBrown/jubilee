@@ -42,7 +42,7 @@ raise business at church. If someone from church wants his help, they ask him.
 
 ## How he serves the mission
 
-Marcus helps families "prosper with purpose": he asks every new client what the money is for
+Marcus helps families do well and "support God's work": he asks every new client what the money is for
 before he asks how much there is. He holds his own work to one verse, which he keeps to himself
 and does not print on anything: "He who is faithful in a very little is faithful also in much. He
 who is dishonest in a very little is also dishonest in much." (Luke 16:10)

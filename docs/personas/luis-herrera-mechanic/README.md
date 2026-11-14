@@ -40,9 +40,9 @@ he reads messages after the children are asleep, usually past ten at night.
 
 ## How he serves the mission
 
-Luis is one of the "Christian business people in Toronto" the mission names: a small trade run
+Luis is one of the "Christian business owners in Toronto" the mission names: a small trade run
 faithfully, where honest measures are the whole reputation. Training an apprentice from his church
-is how he understands "prosper with purpose".
+is how he understands "use what they earn to support God's work".
 
 ## In his words
 

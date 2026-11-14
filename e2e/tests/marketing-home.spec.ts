@@ -130,7 +130,7 @@ test.describe('marketing home page (L2-183)', () => {
     await expect(home.missionHeading).toHaveText('Our mission.');
     // And under it stands the mission (L0-001), word for word
     await expect(home.missionStatement).toHaveText(
-      'Abiding in Jesus and for love of Him, Jubilee equips Christian business people in Toronto to prosper with purpose and resource His Kingdom.',
+      'Jubilee helps Christian business owners in Toronto do well in business and use what they earn to support God’s work. We do this because we love Jesus and stay close to Him.',
     );
   });
 

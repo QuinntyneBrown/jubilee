@@ -41,7 +41,7 @@ to December she is booked most Saturdays, and every unanswered message is a sess
 
 ## How she serves the mission
 
-Sofia's work is the faithful, careful kind the mission means by "prosper with purpose": the
+Sofia's work is the faithful, careful kind the mission means by "do well in business": the
 studio pays for her children's school and lets her photograph every baptism in her parish for a
 price any family can manage. Much of what she records is the life of the church itself.
 

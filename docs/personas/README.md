@@ -5,8 +5,8 @@ person, congregation or business. They exist so that requirements, designs, mock
 tested against someone in particular, and each is read in the light of the mission
 ([`../specs/L0.md`](../specs/L0.md)):
 
-> Abiding in Jesus and for love of Him, Jubilee equips Christian business people in Toronto to
-> prosper with purpose and resource His Kingdom.
+> Jubilee helps Christian business owners in Toronto do well in business and use what they earn to
+> support God's work. We do this because we love Jesus and stay close to Him.
 
 The personas use the roles of [`../specs/L1.md`](../specs/L1.md): visitor, member, owner and
 renter. What they say Jubilee does today follows [`../specs/L2.md`](../specs/L2.md); what they
