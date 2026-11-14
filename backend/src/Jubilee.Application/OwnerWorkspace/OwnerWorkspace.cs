@@ -75,7 +75,8 @@ public sealed record ListingEditorDto(
     IReadOnlyList<ListingPhotoDto> Photos,
     Onboarding.SpaceDraftDto? Space = null,
     string Subtitle = "",
-    Onboarding.PlatformDraftDto? Platform = null) : Listings.IAddressed
+    Onboarding.PlatformDraftDto? Platform = null,
+    Onboarding.NonprofitDraftDto? Nonprofit = null) : Listings.IAddressed
 {
     /// <summary>The listing's address, written by <see cref="Listings.AddressBehavior{TRequest, TResponse}"/> (L2-244).</summary>
     public string? Address { get; set; }
@@ -173,18 +174,20 @@ internal static class Workspace
             Subtitle(listing, listing.PublishedAt ?? listing.CreatedAt),
             listing.Platform is null
                 ? null
-                : new Onboarding.PlatformDraftDto(listing.Website ?? string.Empty, listing.Platform.Does, listing.Platform.For, listing.Platform.Pricing));
+                : new Onboarding.PlatformDraftDto(listing.Website ?? string.Empty, listing.Platform.Does, listing.Platform.For, listing.Platform.Pricing),
+            listing.Nonprofit is null ? null : Onboarding.NonprofitDraftDto.From(listing.Website, listing.Nonprofit));
     }
 
     /// <summary>
     /// The categories a listing may sit in: a space only in Rooms &amp; rentals, a platform only in Software
-    /// platforms, a business in any other (L2-209 AC1, L2-256 AC3).
+    /// platforms, a non-profit only in Non-profits, a business in any other (L2-209 AC1, L2-256 AC3, L2-294 AC3).
     /// </summary>
     public static bool Offered(string categorySlug, ListingKind kind) => kind switch
     {
         ListingKind.Space => categorySlug == Category.RoomsSlug,
         ListingKind.Platform => categorySlug == Category.PlatformsSlug,
-        _ => categorySlug is not (Category.RoomsSlug or Category.PlatformsSlug),
+        ListingKind.Nonprofit => categorySlug == Category.NonprofitsSlug,
+        _ => categorySlug is not (Category.RoomsSlug or Category.PlatformsSlug or Category.NonprofitsSlug),
     };
 }
 
@@ -316,7 +319,8 @@ public sealed class GetListingEditorQueryHandler(IAppDbContext db) : IRequestHan
 public sealed record SaveListingCommand(
     string Subject, int Version, string? Name, string? Tagline, string? CategorySlug, string? About, string? Where,
     string? Hours, string? Website, string? Highlight, Onboarding.SpaceInput? Space = null, Guid? ListingId = null,
-    Onboarding.PlatformInput? Platform = null) : IRequest<ListingEditorDto>;
+    Onboarding.PlatformInput? Platform = null,
+    Onboarding.NonprofitInput? Nonprofit = null) : IRequest<ListingEditorDto>;
 
 public sealed partial class SaveListingCommandHandler(IAppDbContext db, TimeProvider clock, AddressSettings addresses)
     : IRequestHandler<SaveListingCommand, ListingEditorDto>
@@ -349,7 +353,20 @@ public sealed partial class SaveListingCommandHandler(IAppDbContext db, TimeProv
 
         var isSpace = listing.Kind == ListingKind.Space;
         var isPlatform = listing.Kind == ListingKind.Platform;
-        if (isPlatform)
+        var isNonprofit = listing.Kind == ListingKind.Nonprofit;
+        if (isNonprofit)
+        {
+            // A non-profit stays in Non-profits and has no hours; its addresses and its own words are checked as when
+            // it was listed (L2-294 AC2, AC3).
+            if (request.CategorySlug != Category.NonprofitsSlug)
+            {
+                errors["category"] = "CATEGORY_LOCKED";
+            }
+
+            Onboarding.Drafts.ValidateNonprofit(request.Nonprofit, errors);
+            website = string.Empty;
+        }
+        else if (isPlatform)
         {
             // A platform stays in Software platforms and has no hours; its address and the founder's words are
             // checked as when it was listed (L2-256 AC2, AC3).
@@ -377,7 +394,7 @@ public sealed partial class SaveListingCommandHandler(IAppDbContext db, TimeProv
             {
                 errors["category"] = "INVALID";
             }
-            else if (request.CategorySlug is Category.RoomsSlug or Category.PlatformsSlug)
+            else if (request.CategorySlug is Category.RoomsSlug or Category.PlatformsSlug or Category.NonprofitsSlug)
             {
                 errors["category"] = "CATEGORY_LOCKED";
             }
@@ -440,6 +457,11 @@ public sealed partial class SaveListingCommandHandler(IAppDbContext db, TimeProv
         if (isPlatform)
         {
             listing.DescribePlatform(Onboarding.Drafts.PlatformFrom(request.Platform), request.Platform!.Website);
+        }
+
+        if (isNonprofit)
+        {
+            listing.DescribeNonprofit(Onboarding.Drafts.NonprofitFrom(request.Nonprofit), request.Nonprofit!.Website);
         }
 
         // A new name or category is live at once and tells nobody; the audit log keeps it (L2-087 AC6, ADR 0057).
