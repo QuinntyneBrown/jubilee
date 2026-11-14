@@ -1,8 +1,9 @@
 import { parity } from '../../fixtures/parity';
+import { AdminOverviewDrawerScreen } from '../../pages/admin-overview.page';
 import { AdminRecordsPage } from '../../pages/admin-records.page';
 
 // jb-admin-shell: the ink top bar at both widths, and the sidebar of tables beside the screen from
-// 1024 px, on the Members table.
+// 1024 px, on the Members table; under 1024 px the drawer of tables over the overview.
 parity('admin-shell', {
   cases: [
     {
@@ -17,6 +18,13 @@ parity('admin-shell', {
       screen: (page) => new AdminRecordsPage(page),
       region: (screen: AdminRecordsPage) => screen.sidebar,
       widths: [1280],
+    },
+    {
+      name: 'drawer',
+      route: 'admin-overview.drawer',
+      screen: (page) => new AdminOverviewDrawerScreen(page),
+      region: (screen: AdminOverviewDrawerScreen) => screen.drawer.locator('.admin-drawer__panel'),
+      widths: [360],
     },
   ],
   reference: {

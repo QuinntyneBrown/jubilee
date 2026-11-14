@@ -10378,5 +10378,141 @@
     "job-runs/job_9873": [],
     "job-runs/job_9872": [],
     "job-runs/job_9871": []
+  },
+  "overview": {
+    "waiting": 10,
+    "since": {
+      "members": 14,
+      "listings": 3,
+      "orders": 5,
+      "requests": 212
+    },
+    "sections": [
+      {
+        "title": "Safety",
+        "note": "Answer within 24 hours",
+        "lines": [
+          {
+            "table": "security-alerts",
+            "label": "Security alerts",
+            "count": 2,
+            "urgent": true,
+            "nextId": "sal_023",
+            "next": "Brute force",
+            "oldestAt": "2026-11-10T11:00:00.000Z"
+          },
+          {
+            "table": "listing-reports",
+            "label": "Listing reports",
+            "count": 2,
+            "urgent": true,
+            "nextId": "lrp_141",
+            "next": "Guest suite near Roncesvalles",
+            "oldestAt": "2026-11-07T14:00:00.000Z"
+          },
+          {
+            "table": "conversation-reports",
+            "label": "Conversation reports",
+            "count": 1,
+            "urgent": false,
+            "nextId": "crp_037",
+            "next": "off-platform payment",
+            "oldestAt": "2026-11-07T14:00:00.000Z"
+          },
+          {
+            "table": "review-reports",
+            "label": "Review reports",
+            "count": 1,
+            "urgent": false,
+            "nextId": "rrp_064",
+            "next": "Marked fake",
+            "oldestAt": "2026-11-08T14:00:00.000Z"
+          }
+        ]
+      },
+      {
+        "title": "Waiting on us",
+        "note": "Members are waiting for a decision",
+        "lines": [
+          {
+            "table": "data-exports",
+            "label": "Data exports not delivered",
+            "count": 2,
+            "urgent": false,
+            "nextId": "dex_038",
+            "next": "Hannah Bergstrom",
+            "oldestAt": "2026-10-31T14:00:00.000Z"
+          },
+          {
+            "table": "feedback",
+            "label": "New feedback",
+            "count": 2,
+            "urgent": false,
+            "nextId": "fbk_289",
+            "next": "“Upload spinner never stops on Android when I add a 4th photo.”",
+            "oldestAt": "2026-11-09T14:00:00.000Z"
+          }
+        ]
+      }
+    ],
+    "system": [
+      {
+        "kind": "failed",
+        "table": "job-runs",
+        "subject": "exports.build",
+        "at": "2026-11-18T07:00:00.000Z"
+      },
+      {
+        "kind": "retrying",
+        "table": "outbox-messages",
+        "subject": "email.account_suspended",
+        "at": "2026-11-18T14:52:00.000Z",
+        "attempts": 3
+      },
+      {
+        "kind": "gave-up",
+        "table": "outbox-messages",
+        "subject": "webhook.stripe_refund",
+        "at": "2026-11-02T22:41:00.000Z",
+        "attempts": 8
+      },
+      {
+        "kind": "maintenance",
+        "table": "maintenance-windows",
+        "subject": null,
+        "at": "2026-11-23T07:00:00.000Z",
+        "until": "2026-11-23T08:30:00.000Z"
+      }
+    ],
+    "changes": [
+      {
+        "actor": "Esi",
+        "what": "updated member",
+        "table": "members",
+        "recordId": "mem_c9JmEe",
+        "at": "2026-11-18T11:32:00.000Z"
+      },
+      {
+        "actor": "Esi",
+        "what": "updated listing",
+        "table": "listings",
+        "recordId": "lst_roncsuite",
+        "at": "2026-11-18T11:30:00.000Z"
+      },
+      {
+        "actor": "Esi",
+        "what": "read message",
+        "table": "messages",
+        "recordId": "msg_14386",
+        "at": "2026-11-18T11:21:00.000Z"
+      },
+      {
+        "actor": "Ben",
+        "what": "created featured slot",
+        "table": "featured-slots",
+        "recordId": "fts_052",
+        "at": "2026-11-17T14:00:00.000Z"
+      }
+    ]
   }
 }

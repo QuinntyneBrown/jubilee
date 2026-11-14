@@ -34,6 +34,11 @@
   color: var(--color-fg-muted);
 }
 
+.admin-heading__lead strong {
+  color: var(--color-fg-default);
+  font-weight: var(--font-weight-regular);
+}
+
 .admin-heading__lead:empty {
   display: none;
 }

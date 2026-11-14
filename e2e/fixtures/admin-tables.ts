@@ -508,7 +508,51 @@ export interface FakeAdminTables {
   /** The path and query of every request for rows, such as `/members?page=1&size=25`. */
   rowRequests: string[];
   catalogReads: number;
+  /** The overview `GET /api/admin/overview` answers (L2-274, L2-275). */
+  overview: AdminOverview;
+  /** How the overview is answered: at once, never (loading) or with a failure. */
+  overviewAnswer: 'ok' | 'slow' | 'fails';
+  /** How many times the overview was read; nothing polls it (L2-274 AC7). */
+  overviewReads: number;
 }
+
+/** The overview as the API answers it (L2-274, L2-275). */
+export interface AdminOverview {
+  waiting: number;
+  since: { members: number; listings: number; orders: number; requests: number };
+  sections: {
+    title: string;
+    note: string;
+    lines: {
+      table: string;
+      label: string;
+      count: number;
+      urgent: boolean;
+      nextId: string;
+      next: string;
+      oldestAt: string | null;
+    }[];
+  }[];
+  system: {
+    kind: 'failed' | 'retrying' | 'gave-up' | 'maintenance';
+    table: string;
+    subject: string | null;
+    at: string;
+    attempts?: number;
+    until?: string;
+  }[];
+  changes: { actor: string; what: string; table: string | null; recordId: string; at: string }[];
+}
+
+/** The overview of the mocks, drawn from their rows at the e2e clock (L2-274, L2-275). */
+export const MOCK_OVERVIEW = mockTables.overview as AdminOverview;
+
+/** The overview with nothing waiting: the sections are empty, System and the changes stay. */
+export const CLEAR_OVERVIEW: AdminOverview = {
+  ...MOCK_OVERVIEW,
+  waiting: 0,
+  sections: MOCK_OVERVIEW.sections.map((s) => ({ ...s, lines: [] })),
+};
 
 const problem = (status: number, code: string, title: string) => ({
   status,
@@ -567,7 +611,17 @@ export async function stubAdminTables(
   page: Page,
   staffMember: StaffMember,
   options: Partial<
-    Pick<FakeAdminTables, 'rows' | 'answer' | 'recordAnswer' | 'records' | 'saveAnswer' | 'refusal'>
+    Pick<
+      FakeAdminTables,
+      | 'rows'
+      | 'answer'
+      | 'recordAnswer'
+      | 'records'
+      | 'saveAnswer'
+      | 'refusal'
+      | 'overview'
+      | 'overviewAnswer'
+    >
   > & {
     /** 'mock' answers with the admin mocks' own tables and rows, for parity (ADR 0036). */
     data?: 'tests' | 'mock';
@@ -604,12 +658,27 @@ export async function stubAdminTables(
     deleted: {},
     rowRequests: [],
     catalogReads: 0,
+    overview: options.overview ?? structuredClone(MOCK_OVERVIEW),
+    overviewAnswer: options.overviewAnswer ?? 'ok',
+    overviewReads: 0,
   };
   // A copy per test: "Email me this weekly" changes its table (L2-279 AC3).
   const groups = structuredClone(
     mock ? (mockTables.groups as AdminGroup[]) : catalogFor(staffMember),
   );
   const tables = groups.flatMap((g) => g.tables);
+
+  // What is waiting on staff, read when the overview opens (L2-274 AC7).
+  await page.route('**/api/admin/overview', (route: Route) => {
+    fake.overviewReads++;
+    if (fake.overviewAnswer === 'slow') return; // never answered: the overview stays loading
+    if (fake.overviewAnswer === 'fails') {
+      return route.fulfill(
+        problem(503, 'JB-ADM-503', 'We couldn’t load what is waiting on staff.'),
+      );
+    }
+    return route.fulfill({ json: fake.overview });
+  });
 
   await page.route('**/api/admin/tables', (route: Route) => {
     fake.catalogReads++;

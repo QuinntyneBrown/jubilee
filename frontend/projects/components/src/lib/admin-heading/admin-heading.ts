@@ -1,5 +1,11 @@
 import { booleanAttribute, ChangeDetectionStrategy, Component, input } from '@angular/core';
 
+/** A count in the lead of a heading, such as "14 new members". */
+export interface AdminHeadingFact {
+  count: number;
+  what: string;
+}
+
 /**
  * The heading of a screen of the admin application (L2-274, L2-276): the eyebrow, the title and the
  * lead.
@@ -10,7 +16,8 @@ import { booleanAttribute, ChangeDetectionStrategy, Component, input } from '@an
  *     </div>
  *
  * `greeting` is the overview's larger title. What follows the title in it (a lock tag) goes in the
- * `title` slot; the rest is the lead, left out when empty.
+ * `title` slot; the rest is the lead, left out when empty. `facts` draws a lead of counts after
+ * `factsLabel`, each count stressed: "Since yesterday: 14 new members, 3 listings published." (L2-274 AC1)
  */
 @Component({
   selector: 'div[jb-admin-heading]',
@@ -23,4 +30,6 @@ export class AdminHeading {
   readonly eyebrow = input<string | null>(null);
   readonly heading = input.required<string>();
   readonly greeting = input(false, { transform: booleanAttribute });
+  readonly facts = input<readonly AdminHeadingFact[]>([]);
+  readonly factsLabel = input<string | null>(null);
 }

@@ -1,0 +1,64 @@
+<div jb-admin-page [attr.aria-busy]="state().status === 'loading' ? 'true' : null">
+  <div
+    jb-admin-heading
+    greeting
+    [eyebrow]="day"
+    [heading]="heading()"
+    factsLabel="Since yesterday:"
+    [facts]="since()"
+  >
+    @if (state().status === 'loading') {
+      <span class="visually-hidden">Loading what is waiting on staff…</span
+      ><span jb-skeleton shape="text" width="70"></span>
+    }
+  </div>
+  @if (errorReference(); as reference) {
+    <div jb-empty-state error icon="alert" heading="We couldn’t load what is waiting on staff">
+      Nothing is lost. Check your connection and try again. If it keeps happening, tell us and quote
+      <code>{{ reference }}</code
+      >.
+      <button slot="actions" jb-button variant="primary" type="button" (click)="load()">
+        <svg jb-icon name="refresh"></svg>Try again
+      </button>
+    </div>
+  } @else {
+    <div jb-work-grid>
+      <div>
+        @if (state().status === 'loading') {
+          @for (title of loadingSections; track title) {
+            <section jb-work-queue [heading]="title" loading></section>
+          }
+        } @else if (sections().length) {
+          @for (section of sections(); track section.title) {
+            <section
+              jb-work-queue
+              [heading]="section.title"
+              [note]="section.note"
+              [lines]="section.lines"
+            ></section>
+          }
+        } @else {
+          <section jb-work-queue heading="All clear" note="Nothing to answer">
+            No reports, alerts, listings or requests are waiting. New ones show here as they arrive;
+            the tables in the sidebar hold everything else.
+          </section>
+        }
+      </div>
+      <aside jb-admin-aside aria-label="System and recent changes">
+        <section jb-admin-aside-section heading="System">
+          <ul jb-system-list [items]="system()" [loading]="state().status === 'loading'"></ul>
+        </section>
+        @if (state().status !== 'loading') {
+          <section
+            jb-admin-aside-section
+            heading="Recent changes"
+            link="/audit-records"
+            linkText="Audit log"
+          >
+            <ol jb-change-list [changes]="changes()"></ol>
+          </section>
+        }
+      </aside>
+    </div>
+  }
+</div>

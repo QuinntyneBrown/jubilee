@@ -13,6 +13,7 @@ import {
   lookup,
   rowName,
 } from "./entities.mjs";
+import { overviewApi } from "./overview.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const out = join(
@@ -146,8 +147,11 @@ const pointsHere = Object.fromEntries(
   ),
 );
 
+// The overview, at the e2e clock: Tuesday 10 November 2026, 09:00 in Toronto (L2-274, L2-275).
+const overview = overviewApi(new Date("2026-11-10T14:00:00Z"), instant);
+
 writeFileSync(
   out,
-  `${JSON.stringify({ groups, rows, pointsHere }, null, 2)}\n`,
+  `${JSON.stringify({ groups, rows, pointsHere, overview }, null, 2)}\n`,
 );
 console.log(`Wrote ${groups.flatMap((g) => g.tables).length} tables to ${out}`);

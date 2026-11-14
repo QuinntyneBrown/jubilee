@@ -27,7 +27,23 @@ const screen = (page: string, current: string, role: StaffRole = 'moderator') =>
   data({ shell: 'admin', page, current, role });
 
 export const routes: Routes = [
-  { path: '', pathMatch: 'full', redirectTo: 'listings' },
+  {
+    // The overview, in the shell, ahead of the sign-in frame: an empty path would match that
+    // frame's parent with no screen in it.
+    path: '',
+    pathMatch: 'full',
+    component: ShellPage,
+    canActivateChild: [staffGuard],
+    children: [
+      {
+        // What is waiting on staff, System and Recent changes (L2-274, L2-275).
+        path: '',
+        loadComponent: () => import('./pages/overview/overview.page').then((m) => m.OverviewPage),
+        data: data({ shell: 'admin', page: 'admin-overview', current: 'overview' }),
+        title: 'Overview · Jubilee admin',
+      },
+    ],
+  },
   {
     // The sign-in frame (L2-189): no shell, only the screen in `main`.
     path: '',

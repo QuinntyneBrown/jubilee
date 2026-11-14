@@ -5,7 +5,7 @@ import { fulfil, recordedAnswer } from './mock-api';
 import { legacyMessages, ownerRows, photoMessages, requestCards, stubMessaging } from './messaging';
 import { stubAccountData } from './account-data';
 import { PLATFORM_LISTING, SPACE_LISTING, stubAdmin } from './admin';
-import { stubAdminTables } from './admin-tables';
+import { CLEAR_OVERVIEW, stubAdminTables } from './admin-tables';
 import { ada, miriam, stubStaff } from './staff';
 import { stubModeration } from './moderation';
 import { defaultVersions, stubPolicies } from './policies';
@@ -860,8 +860,18 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
       return stubCatalogue(page, { hours: 'hangs' });
     case 'services-hours-failing':
       return stubCatalogue(page, { hours: 'fails' });
+    case 'admin-overview':
     case 'admin-records':
       return void (await stubAdminTables(page, ada, { data: 'mock' }));
+    case 'admin-overview-loading':
+      return void (await stubAdminTables(page, ada, { data: 'mock', overviewAnswer: 'slow' }));
+    case 'admin-overview-error':
+      return void (await stubAdminTables(page, ada, { data: 'mock', overviewAnswer: 'fails' }));
+    case 'admin-overview-empty':
+      return void (await stubAdminTables(page, ada, {
+        data: 'mock',
+        overview: structuredClone(CLEAR_OVERVIEW),
+      }));
     case 'admin-records-loading':
       return void (await stubAdminTables(page, ada, { data: 'mock', answer: 'slow' }));
     case 'admin-record-loading':

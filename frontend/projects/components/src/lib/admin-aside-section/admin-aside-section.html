@@ -1,0 +1,7 @@
+<div class="admin-aside__head">
+  <h2 class="admin-aside__title">{{ heading() }}</h2>
+  @if (link(); as link) {
+    <a class="admin-aside__link" [routerLink]="link">{{ linkText() }}</a>
+  }
+</div>
+<ng-content />

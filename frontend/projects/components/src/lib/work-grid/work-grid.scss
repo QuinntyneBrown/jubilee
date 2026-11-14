@@ -1,0 +1,12 @@
+// Block: work-grid. The work queue of the overview and, from 1024 px, the aside beside it.
+:host {
+  display: grid;
+  gap: var(--space-12);
+  margin-top: var(--space-10);
+}
+
+@media (min-width: 64rem) {
+  :host {
+    grid-template-columns: minmax(0, 1fr) 20rem;
+  }
+}

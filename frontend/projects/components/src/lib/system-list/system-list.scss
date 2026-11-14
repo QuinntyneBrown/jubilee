@@ -1,0 +1,50 @@
+// Block: system-list. What is wrong or under way on Jubilee's system, beside the overview.
+:host {
+  display: block;
+  margin: var(--space-1) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.system-list__item {
+  display: flex;
+  gap: var(--space-2);
+  padding-block: var(--space-3);
+  border-bottom: var(--border-width-hairline) solid var(--color-border-default);
+  color: inherit;
+  font: var(--text-body-sm);
+  text-decoration: none;
+}
+
+.system-list__item:focus-visible {
+  outline: var(--focus-ring-width) solid var(--color-focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.system-list__item .icon {
+  flex: none;
+  width: var(--icon-size-sm);
+  height: var(--icon-size-sm);
+  margin-top: var(--space-0-5);
+  color: var(--color-fg-muted);
+}
+
+.system-list__item--bad .icon {
+  color: var(--color-danger-icon);
+}
+
+.system-list__item--wait .icon {
+  color: var(--color-warning-icon);
+}
+
+.system-list__text {
+  min-width: 0;
+}
+
+.system-list__detail {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--color-fg-muted);
+}

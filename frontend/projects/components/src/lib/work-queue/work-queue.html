@@ -1,0 +1,40 @@
+<div class="work-queue__head">
+  <h2 class="work-queue__title" [id]="id">{{ heading() }}</h2>
+  @if (note(); as note) {
+    <span class="work-queue__note">{{ note }}</span>
+  }
+</div>
+@if (loading()) {
+  <ul class="work-queue__list">
+    @for (width of skeletons; track $index) {
+      <li class="work-queue__item">
+        <div>
+          <span jb-skeleton shape="text" [width]="width"></span
+          ><span jb-skeleton shape="text" width="70"></span>
+        </div>
+        <span jb-skeleton shape="button" size="sm"></span>
+      </li>
+    }
+  </ul>
+} @else if (lines().length) {
+  <ul class="work-queue__list">
+    @for (line of lines(); track line.all) {
+      <li class="work-queue__item">
+        <a class="work-queue__open" [routerLink]="line.open"
+          ><span class="work-queue__name"
+            >{{ line.label }}<svg jb-icon name="chevron-right"></svg></span
+          ><span class="work-queue__next"
+            >Next: <b>{{ line.next }}</b></span
+          ></a
+        ><a class="work-queue__all" [routerLink]="line.all" [attr.aria-label]="allName(line)"
+          ><span class="work-queue__age">{{ line.age }}</span
+          ><span class="work-queue__count" [class.work-queue__count--urgent]="line.urgent">{{
+            line.count
+          }}</span></a
+        >
+      </li>
+    }
+  </ul>
+} @else {
+  <p class="work-queue__clear"><ng-content /></p>
+}

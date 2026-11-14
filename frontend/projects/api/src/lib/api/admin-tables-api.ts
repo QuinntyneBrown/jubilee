@@ -9,10 +9,13 @@ import {
   AdminCount,
   AdminExportQuery,
   AdminValues,
+  AdminOverview,
 } from '../models/admin-tables';
 
 /** Contract of the schema-driven tables of the admin application (L2-276 to L2-284, ADR 0074). */
 export interface AdminTablesApi {
+  /** What is waiting on staff, System and Recent changes, read at that moment (L2-274, L2-275). */
+  overview(): Observable<AdminOverview>;
   /** The groups and tables the staff member may read, with their counts and rights. */
   catalog(): Observable<AdminCatalog>;
   /** A page of a table, searched, filtered and sorted by the database. */
@@ -40,6 +43,10 @@ export const ADMIN_TABLES_API = new InjectionToken<AdminTablesApi>('ADMIN_TABLES
 @Injectable()
 export class HttpAdminTablesApi implements AdminTablesApi {
   private readonly http = inject(HttpClient);
+
+  overview(): Observable<AdminOverview> {
+    return this.http.get<AdminOverview>('/api/admin/overview');
+  }
 
   catalog(): Observable<AdminCatalog> {
     return this.http.get<AdminCatalog>('/api/admin/tables');

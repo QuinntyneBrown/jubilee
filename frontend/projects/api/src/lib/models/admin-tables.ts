@@ -162,6 +162,53 @@ export function isAdminRef(value: unknown): value is AdminRefValue {
 /** The values of a change or a creation, by field key, in their wire form (L2-283). */
 export type AdminValues = Record<string, string | null>;
 
+/** One line of the overview's work queue: a table and what waits in it (L2-274 AC3). */
+export interface AdminQueueLine {
+  table: string;
+  label: string;
+  count: number;
+  urgent: boolean;
+  /** The ID of the oldest record waiting, which the line's name opens (L2-274 AC4). */
+  nextId: string;
+  next: string;
+  oldestAt: string | null;
+}
+
+/** A section of the work queue, "Safety" or "Waiting on us", with the lines that wait. */
+export interface AdminQueueSection {
+  title: string;
+  note: string;
+  lines: AdminQueueLine[];
+}
+
+/** An item of System: a failed job run, a troubled outbox message or maintenance (L2-275). */
+export interface AdminSystemItem {
+  kind: 'failed' | 'retrying' | 'gave-up' | 'maintenance';
+  table: string;
+  subject: string | null;
+  at: string;
+  attempts?: number | null;
+  until?: string | null;
+}
+
+/** One line of Recent changes (L2-275 AC4). */
+export interface AdminChange {
+  actor: string;
+  what: string;
+  table: string | null;
+  recordId: string;
+  at: string;
+}
+
+/** The overview (L2-274, L2-275): what is waiting on staff, System and Recent changes. */
+export interface AdminOverview {
+  waiting: number;
+  since: { members: number; listings: number; orders: number; requests: number };
+  sections: AdminQueueSection[];
+  system: AdminSystemItem[];
+  changes: AdminChange[];
+}
+
 /** How many records a change of the selection reached (L2-280 AC4). */
 export interface AdminCount {
   count: number;

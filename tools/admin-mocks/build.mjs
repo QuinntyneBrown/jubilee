@@ -21,6 +21,7 @@ import {
   lookup,
   rowName,
 } from "./entities.mjs";
+import { QUEUES, verb } from "./overview.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const MOCKS = join(ROOT, "docs", "mocks");
@@ -258,95 +259,6 @@ function errorState(what, ref) {
 // ---------------------------------------------------------------- Overview
 
 const OVERVIEW_REQ = "L2-188 L2-272 L2-273 L2-274 L2-275";
-const name = (entity, id) => {
-  const hit = lookup(entity, id);
-  return hit ? rowName(hit.row) : String(id);
-};
-const QUEUES = [
-  {
-    title: "Safety",
-    note: "Answer within 24 hours",
-    items: [
-      {
-        entity: "securityAlerts",
-        when: (r) => r.status === "open",
-        describe: (r) => `${esc(r.kind)} · ${status(r.severity)}`,
-        age: "oldest 3h",
-        urgent: true,
-      },
-      {
-        entity: "listingReports",
-        when: (r) => r.status === "open",
-        describe: (r) =>
-          esc(
-            `${name("listings", r.listingId)}, ${r.reason}, ${r.entryCount} reports`,
-          ),
-        age: "oldest 3d",
-        urgent: true,
-      },
-      {
-        entity: "conversationReports",
-        when: (r) => r.status === "open" || r.status === "in review",
-        describe: (r) => esc(`${r.reason}: “${r.details}”`),
-        age: "oldest 3d",
-      },
-      {
-        entity: "reviewReports",
-        when: (r) => r.status === "open",
-        describe: (r) => esc(`Marked ${r.reason}: “${r.details}”`),
-        age: "oldest 2d",
-      },
-    ],
-  },
-  {
-    title: "Waiting on us",
-    note: "Members are waiting for a decision",
-    items: [
-      {
-        entity: "listingSubmissions",
-        label: "Listings to review",
-        when: (r) => r.status === "submitted" || r.status === "in review",
-        describe: (r) => esc(name("listings", r.listingId)),
-        age: "oldest 3d",
-      },
-      {
-        entity: "accessRequests",
-        when: (r) => r.status === "pending",
-        describe: (r) => esc(`${r.name}, ${r.church}`),
-        age: "oldest 1d",
-      },
-      {
-        entity: "dataExports",
-        label: "Data exports not delivered",
-        when: (r) => r.status === "failed" || r.status === "processing",
-        describe: (r) => esc(`${name("members", r.memberId)}, due ${r.dueBy}`),
-        age: "oldest 10d",
-      },
-      {
-        entity: "feedback",
-        label: "New feedback",
-        when: (r) => r.status === "new",
-        describe: (r) => esc(`“${r.body}”`),
-        age: "oldest 1d",
-      },
-    ],
-  },
-];
-
-function verb(action) {
-  const [table, v] = action.split(".");
-  const words = {
-    update: "updated",
-    create: "created",
-    read: "read",
-    delete: "deleted",
-  };
-  return `${words[v] ?? v} ${table
-    .replace(/([A-Z])/g, " $1")
-    .toLowerCase()
-    .replace(/s$/, "")}`;
-}
-
 function overviewMain(variant) {
   const sections = QUEUES.map((s) => ({
     ...s,
@@ -367,14 +279,14 @@ function overviewMain(variant) {
           (n, s) => n + s.items.reduce((m, q) => m + q.hits.length, 0),
           0,
         );
-  const head = `<p class="admin-heading__eyebrow">Tuesday 18 November</p><h1 class="admin-heading__title">Good morning, Ada. ${
+  const head = `<p class="admin-heading__eyebrow">Tuesday 10 November</p><h1 class="admin-heading__title">Good morning, Ada. ${
     total
       ? `${total} things are waiting on staff.`
       : "Nothing is waiting on staff."
   }</h1><p class="admin-heading__lead">Since yesterday: <strong>14 new members</strong>, <strong>3 listings published</strong>, <strong>5 merch orders</strong>, <strong>212 requests sent</strong>.</p>`;
 
   if (variant === "error") {
-    return `<div class="admin-page"><div class="admin-heading admin-heading--greeting"><p class="admin-heading__eyebrow">Tuesday 18 November</p><h1 class="admin-heading__title">Good morning, Ada.</h1></div>${errorState("what is waiting on staff", "JB-ADM-503")}</div>`;
+    return `<div class="admin-page"><div class="admin-heading admin-heading--greeting"><p class="admin-heading__eyebrow">Tuesday 10 November</p><h1 class="admin-heading__title">Good morning, Ada.</h1></div>${errorState("what is waiting on staff", "JB-ADM-503")}</div>`;
   }
   if (variant === "loading") {
     const bars = (n) =>
@@ -383,7 +295,7 @@ function overviewMain(variant) {
         (_, i) =>
           `<li class="work-queue__item"><div><span class="skeleton skeleton--text skeleton--w${[50, 70, 30][i % 3]}"></span><span class="skeleton skeleton--text skeleton--w70"></span></div><span class="skeleton skeleton--btn-sm"></span></li>`,
       ).join("");
-    return `<div class="admin-page" aria-busy="true"><div class="admin-heading admin-heading--greeting"><p class="admin-heading__eyebrow">Tuesday 18 November</p><h1 class="admin-heading__title">Good morning, Ada.</h1><p class="admin-heading__lead"><span class="visually-hidden">Loading what is waiting on staff…</span><span class="skeleton skeleton--text skeleton--w70"></span></p></div><div class="work-grid"><div>${[
+    return `<div class="admin-page" aria-busy="true"><div class="admin-heading admin-heading--greeting"><p class="admin-heading__eyebrow">Tuesday 10 November</p><h1 class="admin-heading__title">Good morning, Ada.</h1><p class="admin-heading__lead"><span class="visually-hidden">Loading what is waiting on staff…</span><span class="skeleton skeleton--text skeleton--w70"></span></p></div><div class="work-grid"><div>${[
       "Safety",
       "Waiting on us",
     ]
@@ -393,7 +305,7 @@ function overviewMain(variant) {
       )
       .join(
         "",
-      )}</div><aside class="admin-aside"><section><h2 class="admin-aside__head admin-aside__title">System</h2><ul class="work-queue__list">${bars(3)}</ul></section></aside></div></div>`;
+      )}</div><aside class="admin-aside" aria-label="System and recent changes"><section><div class="admin-aside__head"><h2 class="admin-aside__title">System</h2></div><ul class="system-list">${Array.from({ length: 3 }, () => '<li class="system-list__item"><span class="skeleton skeleton--text skeleton--w70"></span></li>').join("")}</ul></section></aside></div></div>`;
   }
 
   const queues =
@@ -405,7 +317,7 @@ function overviewMain(variant) {
               `<section class="work-queue" aria-labelledby="q-${kebab(s.title.replace(/ /g, ""))}"><div class="work-queue__head"><h2 class="work-queue__title" id="q-${kebab(s.title.replace(/ /g, ""))}">${esc(s.title)}</h2><span class="work-queue__note">${esc(s.note)}</span></div><ul class="work-queue__list">${s.items
                 .map((q) => {
                   const first = q.hits[0];
-                  return `<li class="work-queue__item"><a class="work-queue__open" href="${recordHref(q.entity)}"><span class="work-queue__name">${esc(q.label)}${icon("chevronRight")}</span><span class="work-queue__next">Next: <b>${q.describe(first.row)}</b></span></a><a class="work-queue__all" href="${recordsHref(q.entity)}" aria-label="See all ${esc(q.label)}, ${q.hits.length} waiting${q.urgent ? ", urgent" : ""}"><span class="work-queue__age">${q.age}</span><span class="work-queue__count${q.urgent ? " work-queue__count--urgent" : ""}">${q.hits.length}</span></a></li>`;
+                  return `<li class="work-queue__item"><a class="work-queue__open" href="${recordHref(q.entity)}"><span class="work-queue__name">${esc(q.label)}${icon("chevronRight")}</span><span class="work-queue__next">Next: <b>${esc(q.describe(first.row))}</b></span></a><a class="work-queue__all" href="${recordsHref(q.entity)}" aria-label="See all ${esc(q.label)}, ${q.hits.length} waiting${q.urgent ? ", urgent" : ""}"><span class="work-queue__age">${q.age}</span><span class="work-queue__count${q.urgent ? " work-queue__count--urgent" : ""}">${q.hits.length}</span></a></li>`;
                 })
                 .join("")}</ul></section>`,
           )
@@ -420,19 +332,25 @@ function overviewMain(variant) {
   );
   const staff = getEntity("staff");
   const audit = getEntity("auditRecords").rows.slice(0, 4);
+  // System says what the records hold (L2-275): a job run keeps no error and an outbox message
+  // keeps no text of its failure, so each names its state and when.
   const system = [
     ...jobs.map(
       (j) =>
-        `<li><a class="system-list__item system-list__item--bad" href="${recordsHref("jobRuns")}">${icon("alert", "Failed")}<span class="system-list__text"><code>${esc(j.job)}</code> failed at ${esc(String(j.startedAt).slice(-5))}<span class="system-list__detail">${esc(j.error)}</span></span></a></li>`,
+        `<li><a class="system-list__item system-list__item--bad" href="${recordsHref("jobRuns")}">${icon("alert", "Failed")}<span class="system-list__text"><code>${esc(j.job)}</code> failed at ${esc(String(j.startedAt).slice(-5))}<span class="system-list__detail">It did not finish within an hour.</span></span></a></li>`,
     ),
     ...outbox.map(
       (o) =>
         `<li><a class="system-list__item system-list__item--${o.status === "dead" ? "bad" : "wait"}" href="${recordsHref("outboxMessages")}">${icon("alert", o.status === "dead" ? "Gave up" : "Retrying")}<span class="system-list__text"><code>${esc(o.topic)}</code> ${
           o.status === "dead" ? "gave up" : `retrying, attempt ${o.attempts}`
-        }<span class="system-list__detail">${esc(o.lastError)}</span></span></a></li>`,
+        }<span class="system-list__detail">${
+          o.status === "dead"
+            ? `Not sent after ${o.attempts} attempts in 24 hours.`
+            : `Next attempt at ${esc(String(o.nextAttemptAt).slice(-5))}.`
+        }</span></span></a></li>`,
     ),
     maint
-      ? `<li><a class="system-list__item" href="${recordsHref("maintenanceWindows")}">${icon("wrench", "Maintenance")}<span class="system-list__text">${esc(maint.title)}<span class="system-list__detail">${esc(maint.startsAt)} – ${esc(String(maint.endsAt).slice(-5))}, read-only</span></span></a></li>`
+      ? `<li><a class="system-list__item" href="${recordsHref("maintenanceWindows")}">${icon("wrench", "Maintenance")}<span class="system-list__text">Maintenance under way<span class="system-list__detail">Since ${esc(String(maint.startsAt).slice(-5))}, back by ${esc(String(maint.endsAt).slice(-5))}, read-only</span></span></a></li>`
       : "",
   ].join("");
   const changes = audit

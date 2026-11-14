@@ -185,6 +185,10 @@ export type StubName =
   | 'services-error'
   | 'services-hours-pending'
   | 'services-hours-failing'
+  | 'admin-overview'
+  | 'admin-overview-loading'
+  | 'admin-overview-empty'
+  | 'admin-overview-error'
   | 'admin-records'
   | 'admin-records-loading'
   | 'admin-records-error'
@@ -1882,6 +1886,41 @@ export const routes = {
     stub: 'services',
   },
 
+  'admin-overview': {
+    app: '/',
+    mock: 'pages/admin-overview/default.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'admin-overview',
+  },
+  'admin-overview.loading': {
+    app: '/',
+    mock: 'pages/admin-overview/loading.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'admin-overview-loading',
+  },
+  'admin-overview.empty': {
+    app: '/',
+    mock: 'pages/admin-overview/empty.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'admin-overview-empty',
+  },
+  'admin-overview.error': {
+    app: '/',
+    mock: 'pages/admin-overview/error.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'admin-overview-error',
+  },
+  'admin-overview.drawer': {
+    app: '/',
+    mock: 'pages/admin-overview/drawer.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'admin-overview',
+  },
   'admin-records': {
     app: '/members',
     mock: 'pages/admin-records/default.html',
