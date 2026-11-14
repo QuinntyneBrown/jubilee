@@ -16,8 +16,9 @@ marketing site, e-mail, pitch) from it, and quote Scripture word for word with i
 
 Jubilee is Toronto's Christian marketplace: a directory of Christian-owned businesses
 where members find a business, message it, book a meeting, ask for a quote or request a product,
-and the business confirms or declines. Jubilee does not take payment; members pay the business
-directly. The .NET backend owns accounts, listings, requests, messaging, notifications and
+and the business confirms or declines. Jubilee takes no payment between members and businesses;
+members pay the business directly. The one thing Jubilee sells is its own merchandise, the
+Purpose Tee (L1-034, ADR 0073). The .NET backend owns accounts, listings, requests, messaging, notifications and
 moderation; the Angular frontend provides the app, and Playwright covers behaviour (and, run by
 hand, visual parity with the design reference).
 

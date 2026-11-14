@@ -168,6 +168,9 @@ public sealed class DemoDataSeeder(AppDbContext db, TimeProvider clock)
 
         await db.SaveChangesAsync(cancellationToken);
         await SeedReviewsAsync(cancellationToken);
+
+        // Jubilee's own merchandise (L1-034): added once, never reset.
+        await MerchCatalogue.SeedAsync(db, now, cancellationToken);
     }
 
     /// <summary>

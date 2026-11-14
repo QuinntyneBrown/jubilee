@@ -1,0 +1,21 @@
+<div class="bag-line__media" aria-hidden="true"><svg jb-tee view="front"></svg></div>
+<div class="bag-line__text">
+  <p class="bag-line__name">{{ name() }}</p>
+  <p class="bag-line__meta">{{ meta() }}</p>
+</div>
+<p class="bag-line__amount">{{ amount() }}</p>
+<div class="bag-line__controls">
+  <ng-content />
+  <button
+    class="bag-line__remove"
+    type="button"
+    [attr.aria-label]="removeLabel()"
+    [disabled]="disabled()"
+    (click)="remove.emit()"
+  >
+    Remove
+  </button>
+</div>
+@if (problem(); as problem) {
+  <p class="bag-line__problem" role="status"><svg jb-icon name="alert"></svg>{{ problem }}</p>
+}

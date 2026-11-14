@@ -1,0 +1,19 @@
+<button
+  class="quantity-stepper__button"
+  type="button"
+  aria-label="One fewer"
+  [disabled]="disabled() || value() <= min()"
+  (click)="valueChange.emit(value() - 1)"
+>
+  <svg jb-icon name="minus"></svg>
+</button>
+<output class="quantity-stepper__value" aria-live="polite">{{ value() }}</output>
+<button
+  class="quantity-stepper__button"
+  type="button"
+  aria-label="One more"
+  [disabled]="disabled() || value() >= max()"
+  (click)="valueChange.emit(value() + 1)"
+>
+  <svg jb-icon name="plus"></svg>
+</button>

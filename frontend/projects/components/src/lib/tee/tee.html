@@ -1,0 +1,30 @@
+<svg:path
+  class="tee__fabric"
+  [attr.d]="
+    'M225 40 L130 70 L20 178 L96 258 L142 218 L142 680 L458 680 L458 218 L504 258 L580 178 L470 70 L375 40 ' +
+    collar() +
+    ' 225 40 Z'
+  "
+/>
+<svg:g class="tee__seams">
+  <svg:path d="M130 70 Q152 146 142 218" />
+  <svg:path d="M470 70 Q448 146 458 218" />
+  <svg:path d="M34 192 L106 268" transform="translate(4 -6)" />
+  <svg:path d="M566 192 L494 268" transform="translate(-4 -6)" />
+  <svg:path d="M142 664 L458 664" />
+</svg:g>
+<svg:path class="tee__rib" [attr.d]="'M225 40 ' + collar() + ' 375 40'" />
+@if (view() === 'front') {
+  <svg:text class="tee__print">
+    <svg:tspan x="186" y="195">Prosper</svg:tspan>
+    <svg:tspan x="186" y="236">with</svg:tspan>
+    <svg:tspan class="tee__highlight" x="186" y="277">purpose.</svg:tspan>
+  </svg:text>
+} @else {
+  <svg:path class="tee__seams" d="M225 40 Q300 64 375 40" transform="translate(0 9)" />
+  <svg:g class="tee__mark" transform="translate(270 105) scale(0.6)">
+    <svg:path class="tee__mark-j" d="M60 8V60A20 20 0 0 1 20 60V38" />
+    <svg:path class="tee__mark-bar" d="M36 27H84" />
+  </svg:g>
+  <svg:text class="tee__domain" x="300" y="184" text-anchor="middle">jubilee.to</svg:text>
+}

@@ -330,6 +330,14 @@
   --color-danger-solid: var(--palette-red-600);      /* destructive buttons, invalid borders */
   --color-danger-solid-hover: var(--palette-red-700);
 
+  /* Garment: the Purpose Tee drawn as it is printed (ADR 0073). The shirt is black in both themes,
+     so these are not redefined for dark. */
+  --color-garment-fabric: var(--palette-ink-975);
+  --color-garment-rib: var(--palette-black);
+  --color-garment-print: var(--palette-ink-50);      /* the cream ink */
+  --color-garment-highlight: var(--palette-gold-400); /* "purpose." and the cross bar */
+  --color-garment-seam: rgb(11 14 20 / 0.18);         /* ink-950 at 18%: the shirt's outline and seams */
+
   --shadow-color: 20 25 35;
   --shadow-1: 0 1px 2px rgb(var(--shadow-color) / 0.08);
   --shadow-2: 0 2px 6px rgb(var(--shadow-color) / 0.10), 0 1px 2px rgb(var(--shadow-color) / 0.06);

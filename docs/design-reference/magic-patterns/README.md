@@ -157,6 +157,47 @@ Until a file is here the case is compared with its mock only, and its test says 
   and the `corner` dialog, the `segmented` tab list) are compared with the mocks only. The mocks
   were drawn from the frame's source: its sizes, radii, copy and motion.
 
+- **The "Purpose Tee" frame (ADR 0073).** The frame "Purpose Tee" of the "Marketing Site"
+  prototype (OS file `wysAbxwFYt2Pbhhaxdjgrh`,
+  <https://www.magicpatterns.com/os/vjQEdxvHPvuznVPfxRXYfe/wysAbxwFYt2Pbhhaxdjgrh>) and the shirt it
+  draws (`shared/merch/Tee`: `PrintedTee`, `TEE_COLORS`) exist in the editor only; the published
+  site does not reach them, so there is no `purpose-tee-360.png` or `purpose-tee-1280.png`. The
+  mocks (`pages/purpose-tee/`, `pages/purpose-tee-thanks/`, `dialogs/bag/`) were drawn from the
+  frame's source: its sizes, radii, copy, `FITS` table and motion. The shirt is
+  `docs/assets/purpose-tee-front.svg` and `purpose-tee-back.svg`, converted from `PrintedTee`. The
+  repository owner exports the frame here as `purpose-tee-360.png` and `purpose-tee-1280.png` and
+  adds their rows to the table; until then the merchandise components (`tee-gallery`,
+  `segmented-choice`, `size-picker`, `quantity-stepper`, `add-to-bag`, `bag-button`, `bag-line`,
+  `merch-head`, `merch-story`) are compared with the mocks only. The frame has no bag, no checkout,
+  no loading, error or sold-out state and no return page; those are drawn in the mocks only.
+
+## Purpose Tee: what the product changes from the frame
+
+The frame is a marketing-site prototype with sample data. The product keeps its layout, measures,
+copy and motion and changes these, by decision (ADR 0073). The parity specs of the merchandise
+components carry them as known differences once the frame is captured.
+
+| Frame | Product | Why |
+|---|---|---|
+| Its own header (the lockup, "Why Jubilee", "Shop", the Bag button) and its ink footer | the app's top bar, tab bar and footer (`shell: 'app'`) | The page is in the app; one chrome on every screen |
+| The Bag button with its count in the header | the same button in the page's own header row, beside the back link | The app's top bar is the same on every screen; a count there would sit on screens that sell nothing |
+| "Back to jubilee.to", to the marketing home | "Back to browse", to `/browse` | The page is in the app, and the marketing site links nowhere while launching soon (ADR 0044) |
+| The fit and size choices as buttons with `aria-pressed` | native radios in a fieldset, drawn the same | One choice of several is a radio group: the arrow keys move within it and assistive technology says "1 of 3" |
+| A sold-out size struck through and greyed | the same, and "sold out" in its accessible name | Colour and a line are never the only carriers of a state |
+| "Pick a size to continue" in red beside "Size" | the same words, in the danger colour with the alert icon, announced | The state is said in words and an icon too |
+| Stock from a sample table (`FITS`) | stock and prices from `GET /api/merch/purpose-tee`, seeded from that table | Honest counts (Proverbs 11:1) |
+| "$25 CAD" and "Ships across Canada in 3–5 business days, free over $60." | the same, and "Tax is added at checkout." | Prices are before tax (ADR 0073) |
+| "Added to bag" with "Check out" that does nothing | "Check out" opens the bag, which says how it is delivered and sends the buyer to Stripe | The frame stops at the bag |
+| Deuteronomy 8:18 in the NIV ("Remember the LORD your God, for it is he who gives you the ability to produce wealth") | the World English Bible, word for word: "But you shall remember Yahweh your God, for it is he who gives you power to get wealth, that he may establish his covenant which he swore to your fathers, as it is today." (Deuteronomy 8:18) | The repository quotes the WEB (`docs/scripture.md`); the whole verse keeps its purpose, which is the point of the gold word |
+| "Every shirt sold helps keep Jubilee free … and gives you an easy way to tell someone what it's for." in the same section as the verse | the same sentence, in its own paragraph after the verse, nowhere near the price | A verse is never placed beside a price as its reason (`docs/scripture.md`) |
+| "Prospering isn't the goal on its own. It's what a business does when it's pointed at something bigger." | "Prospering isn't the goal on its own. The ability is a gift, and it is given for a purpose." | The verse is about the gift and its purpose; the copy promises nothing about prospering |
+| Archivo and Inter from Google Fonts | the bundled Archivo with its width axis; the app's system text face | Fonts are bundled (AGENTS.md); the app does not load Inter |
+| Hex colours (`#0a0a0b`, `#f4f2ec`, `#ffb81c`, `#00875a`, `#e7e3d9`) | the garment tokens and `--color-bg-subtle`, `--color-fg-accent` | Tokens by role, both themes |
+| "Fabric & fit", "The print", "Care" and "Shipping & returns" as ruled rows | the same disclosures in the app's boxed accordion (`jb-accordion`) | One accordion in the app, the one Help uses |
+| The gallery and the purchase column in its own two-column grid | the app's `split split--even`, the gallery sticky beside the column from 1024 px | Layout from the app's utilities, not a page stylesheet |
+| Gaps between the purchase blocks that vary from block to block | one rhythm, `stack--lg` (`--space-8`) | Spacing from the scale |
+| The fit pill slides (`layoutId`) and the shirt fades between front and back | the same, as CSS transitions of the tokens' durations, none under reduced motion | No animation library in the app |
+
 ## Feedback: what the product changes from the frame
 
 The frame is a prototype with sample data. The product keeps its layout and changes these, by

@@ -1,0 +1,96 @@
+// Block: tee-gallery. The host is the section. A thumbnail is a toggle button (aria-pressed); the
+// chosen one has a 2 px ring.
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.tee-gallery__stage {
+  overflow: hidden;
+  padding: var(--space-10) var(--space-6);
+  border-radius: var(--radius-xl);
+  background: var(--color-bg-subtle);
+}
+
+.tee-gallery__view {
+  animation: tee-in var(--duration-base) var(--ease-enter);
+}
+
+.tee-gallery__thumbs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+
+.tee-gallery__thumb {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border: 0;
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-subtle);
+  color: var(--color-fg-default);
+  font: var(--text-label);
+  text-align: left;
+  cursor: pointer;
+  box-shadow: 0 0 0 var(--border-width-hairline) transparent;
+  transition: box-shadow var(--duration-fast) var(--ease-standard);
+}
+
+.tee-gallery__thumb .tee {
+  width: 60%;
+}
+
+.tee-gallery__thumb:hover {
+  box-shadow: 0 0 0 var(--border-width-hairline) var(--color-border-strong);
+}
+
+.tee-gallery__thumb[aria-pressed='true'] {
+  box-shadow: 0 0 0 var(--border-width-thick) var(--color-fg-default);
+}
+
+.tee-gallery__thumb:focus-visible {
+  outline: var(--focus-ring-width) solid var(--color-focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+@keyframes tee-in {
+  from {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (min-width: 40rem) {
+  .tee-gallery__stage {
+    padding: var(--space-12);
+  }
+
+  .tee-gallery__thumbs {
+    max-width: 24rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tee-gallery__view {
+    animation: none;
+  }
+
+  .tee-gallery__thumb {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .tee-gallery__thumb[aria-pressed='true'] {
+    outline: var(--border-width-thick) solid Highlight;
+  }
+}

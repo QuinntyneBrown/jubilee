@@ -1,0 +1,72 @@
+@let current = state();
+@switch (current.status) {
+  @case ('paid') {
+    <div
+      jb-empty-state
+      [status]="true"
+      [level]="1"
+      icon="check-circle"
+      heading="Thank you. Your order is paid."
+    >
+      {{ paidText() }}
+      <a slot="actions" jb-button variant="primary" routerLink="/">Back to browse</a>
+      <a slot="actions" jb-button routerLink="/purpose-tee">See the tee</a>
+    </div>
+  }
+  @case ('pending') {
+    @if (current.long) {
+      <div
+        jb-empty-state
+        [status]="true"
+        [level]="1"
+        icon="clock"
+        heading="We’re confirming your payment"
+      >
+        This is taking longer than usual. Your receipt comes by e-mail once it’s confirmed; you
+        don’t need to stay here.
+        <button slot="actions" jb-button variant="primary" type="button" (click)="again()">
+          <svg jb-icon name="refresh"></svg>Check again
+        </button>
+      </div>
+    } @else {
+      <div jb-empty-state [loading]="true" [level]="1" heading="We’re confirming your payment">
+        Stripe is telling us your payment went through. This takes a few seconds, and the page
+        updates by itself. Please don’t pay again.
+      </div>
+    }
+  }
+  @case ('not-paid') {
+    <div jb-empty-state [level]="1" icon="info" heading="Nothing was paid">
+      You left checkout before paying, so nothing was charged. Your bag is as you left it.
+      <a slot="actions" jb-button variant="primary" routerLink="/purpose-tee">Back to the tee</a>
+      <a slot="actions" jb-button routerLink="/">Back to browse</a>
+    </div>
+  }
+  @case ('not-found') {
+    <div jb-empty-state [level]="1" icon="search" heading="We can’t find that order">
+      The link may be incomplete. If you paid, your receipt is in your e-mail with its order number.
+      <a slot="actions" jb-button variant="primary" routerLink="/purpose-tee">Back to the tee</a>
+      <a slot="actions" jb-button routerLink="/">Back to browse</a>
+    </div>
+  }
+  @case ('error') {
+    <div
+      jb-empty-state
+      [error]="true"
+      [level]="1"
+      icon="alert"
+      heading="We couldn’t check your order"
+    >
+      If you paid, nothing is lost: your receipt comes by e-mail. Check your connection and try
+      again. If it keeps happening, tell us and quote <code>{{ current.reference }}</code
+      >.
+      <button slot="actions" jb-button variant="primary" type="button" (click)="again()">
+        <svg jb-icon name="refresh"></svg>Try again
+      </button>
+      <a slot="actions" jb-button routerLink="/">Back to browse</a>
+    </div>
+  }
+  @default {
+    <div jb-empty-state [loading]="true" [level]="1" heading="Checking your order">One moment…</div>
+  }
+}

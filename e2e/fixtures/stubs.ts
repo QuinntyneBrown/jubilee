@@ -21,6 +21,7 @@ import { LANTERNREAD, OTHER_BUSINESSES, SUITE, stubMyBusiness } from './my-busin
 import { DRAIN, stubMemberRequests } from './member-requests';
 import { stubListingDrafts } from './listing-drafts';
 import { stubOrder } from './order';
+import { PAID_ORDER, seedBag, stubMerch, youthSoldOut } from './merch';
 import { stubQuote } from './quote';
 import {
   deeksForm,
@@ -246,6 +247,71 @@ const publishing: typeof stubListingDrafts = (page, initial = {}) =>
 /** Installs the API answers that put a screen in a state the seeded data cannot produce. */
 export async function applyStub(page: Page, name: StubName): Promise<unknown> {
   switch (name) {
+    // The Purpose Tee (L1-034): the bag holds Men’s L and Women’s M, as the mocks show it.
+    case 'purpose-tee':
+      return stubMerch(page);
+    case 'purpose-tee-loading':
+      return stubMerch(page, { productAnswer: 'hang' });
+    case 'purpose-tee-error':
+      return stubMerch(page, { productAnswer: 'error' });
+    case 'purpose-tee-fit-sold-out':
+      return stubMerch(page, { product: youthSoldOut() });
+    case 'bag':
+    case 'bag-busy':
+    case 'bag-unavailable':
+    case 'bag-failed':
+    case 'bag-rate-limited': {
+      const checkout =
+        (
+          {
+            'bag-busy': 'hang',
+            'bag-unavailable': 'unavailable',
+            'bag-failed': 'failed',
+            'bag-rate-limited': 'rate-limited',
+          } as const
+        )[name as 'bag-busy'] ?? 'ok';
+      await seedBag(page, [
+        { sku: 'mens-L', fit: 'Men’s', size: 'L', quantity: 1 },
+        { sku: 'womens-M', fit: 'Women’s', size: 'M', quantity: 1 },
+      ]);
+      return stubMerch(page, { checkout });
+    }
+    case 'bag-invalid': {
+      // Someone bought the last but one Men’s 3XL while the buyer was choosing.
+      await seedBag(page, [
+        { sku: 'mens-L', fit: 'Men’s', size: 'L', quantity: 1 },
+        { sku: 'mens-3XL', fit: 'Men’s', size: '3XL', quantity: 2 },
+      ]);
+      return stubMerch(page, {
+        checkout: 'invalid',
+        invalid: { 'lines[1].quantity': 'ONLY_LEFT:1' },
+      });
+    }
+    case 'bag-error': {
+      // The page reads the tee; the bag's second read fails.
+      await seedBag(page, [
+        { sku: 'mens-L', fit: 'Men’s', size: 'L', quantity: 1 },
+        { sku: 'womens-M', fit: 'Women’s', size: 'M', quantity: 1 },
+      ]);
+      const merch = await stubMerch(page);
+      let reads = 0;
+      return page.route('**/api/merch/purpose-tee', (route) =>
+        reads++ === 0
+          ? route.fulfill({ json: merch.product })
+          : route.fulfill(unavailable('JB-MERCH-503')),
+      );
+    }
+    case 'purpose-tee-thanks':
+      return stubMerch(page, { orders: [PAID_ORDER] });
+    case 'purpose-tee-thanks-loading':
+      return stubMerch(page, { orders: ['hang'] });
+    case 'purpose-tee-thanks-pending':
+    case 'purpose-tee-thanks-cancelled':
+      return stubMerch(page, { orders: [{ ...PAID_ORDER, status: 'pending' }] });
+    case 'purpose-tee-thanks-not-found':
+      return stubMerch(page, { orders: ['missing'] });
+    case 'purpose-tee-thanks-error':
+      return stubMerch(page, { orders: ['error'] });
     case 'messages':
       return stubMessaging(page);
     case 'messages-empty':

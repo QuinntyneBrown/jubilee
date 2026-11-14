@@ -256,6 +256,24 @@ export const routes: Routes = [
     title: `${title} · Jubilee`,
   })),
   {
+    path: 'purpose-tee',
+    pathMatch: 'full',
+    loadComponent: () =>
+      import('./pages/purpose-tee/purpose-tee.page').then((m) => m.PurposeTeePage),
+    data: data({ shell: 'app', page: 'purpose-tee' }),
+    title: 'Purpose Tee · Jubilee',
+  },
+  {
+    path: 'purpose-tee/thanks',
+    pathMatch: 'full',
+    loadComponent: () =>
+      import('./pages/purpose-tee-thanks/purpose-tee-thanks.page').then(
+        (m) => m.PurposeTeeThanksPage,
+      ),
+    data: data({ shell: 'app', page: 'purpose-tee-thanks' }),
+    title: 'Purpose Tee · Jubilee',
+  },
+  {
     path: 'help',
     pathMatch: 'full',
     loadComponent: () => import('./pages/help/help.page').then((m) => m.HelpPage),

@@ -1,0 +1,127 @@
+@startuml
+title UML class structure — Buy the Purpose Tee, backend
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+package "Jubilee.Domain" {
+  class MerchProduct {
+    Slug
+    Name
+    Colour
+    UnitPriceCents
+    Currency
+    ShippingCents
+    FreeShippingFromCents
+  }
+  class MerchVariant {
+    Sku
+    Fit
+    Size
+    Ages
+    ChestInches
+    LengthInches
+    Stock : int?
+    SortOrder
+    +TakeStock(quantity) : bool
+  }
+  class MerchOrder {
+    Number
+    Reference
+    Status
+    Delivery
+    SubtotalCents
+    ShippingCents
+    TaxCents
+    TotalCents
+    CheckoutSessionId
+    ExpiresAt
+    PaidAt
+    BuyerEmail
+    BuyerName
+    ShippingAddress
+    +Start()
+    +MarkPaid()
+    +Expire()
+    +ErasePersonalData()
+  }
+  class MerchOrderLine {
+    Sku
+    Fit
+    Size
+    Quantity
+    UnitPriceCents
+  }
+  enum MerchFit {
+    Youth
+    Womens
+    Mens
+  }
+  enum MerchOrderStatus {
+    Pending
+    Paid
+    Expired
+  }
+  enum MerchDelivery {
+    Ship
+    Pickup
+  }
+  MerchProduct "1" *-- "many" MerchVariant
+  MerchOrder "1" *-- "many" MerchOrderLine
+  MerchOrderLine --> MerchVariant
+}
+package "Jubilee.Application.Merch" {
+  interface IPaymentGateway {
+    IsConfigured
+    CreateCheckoutSessionAsync(request) : CheckoutSession
+  }
+  class StripeSignature {
+    +Verify(body, header, secret, now) : bool
+  }
+  class MerchStock {
+    +LeftAsync(db, now)
+  }
+  class MerchSettings {
+    SecretKey
+    WebhookSecret
+    AutomaticTax
+    TeamEmail
+    PublicBaseUrl
+  }
+  class GetMerchProductQueryHandler
+  class StartCheckoutCommandHandler
+  class CompleteCheckoutCommandHandler
+  class GetMerchOrderQueryHandler
+  class ExpireMerchOrdersCommandHandler
+  class PurgeMerchOrdersCommandHandler
+  class MerchEmails
+  StartCheckoutCommandHandler --> IPaymentGateway
+  StartCheckoutCommandHandler --> MerchStock
+  GetMerchProductQueryHandler --> MerchStock
+  CompleteCheckoutCommandHandler --> StripeSignature
+  CompleteCheckoutCommandHandler --> MerchEmails
+  CompleteCheckoutCommandHandler --> MerchSettings
+}
+package "Jubilee.Infrastructure" {
+  class StripePaymentGateway
+  StripePaymentGateway ..|> IPaymentGateway
+}
+package "Jubilee.Api" {
+  class MerchController
+  class MerchRateLimit {
+    Checkouts
+    OrderReads
+    Webhooks
+  }
+  MerchController --> GetMerchProductQueryHandler : ISender
+  MerchController --> StartCheckoutCommandHandler : ISender
+  MerchController --> GetMerchOrderQueryHandler : ISender
+  MerchController --> CompleteCheckoutCommandHandler : ISender
+}
+package "Jubilee.Worker" {
+  class MerchOrderJob
+  MerchOrderJob --> ExpireMerchOrdersCommandHandler : ISender
+  MerchOrderJob --> PurgeMerchOrdersCommandHandler : ISender
+}
+@enduml

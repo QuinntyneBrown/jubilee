@@ -83,6 +83,20 @@ public sealed class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<Ex
                 context, StatusCodes.Status429TooManyRequests, "Slow down for a moment.", "You're doing that too often.", limited.Code);
         }
 
+        if (exception is UnavailableException unavailable)
+        {
+            var unavailableReference = context.GetEndpoint()?.Metadata.GetMetadata<ErrorReferenceAttribute>()?.Reference;
+            logger.LogWarning(
+                "{Code}: could not serve {Method} {Path}. CorrelationId {CorrelationId}",
+                unavailable.Code,
+                context.Request.Method,
+                LoggedPath.Of(context),
+                context.TraceIdentifier);
+            return ProblemWriter.WriteAsync(
+                context, StatusCodes.Status503ServiceUnavailable, "The service is unavailable.", unavailable.Message, unavailable.Code,
+                reference: unavailableReference);
+        }
+
         if (exception is ConflictException conflict)
         {
             return ProblemWriter.WriteAsync(

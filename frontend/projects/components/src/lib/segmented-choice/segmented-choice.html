@@ -1,0 +1,16 @@
+<legend class="segmented-choice__legend">{{ legend() }}</legend>
+<div class="segmented-choice__track">
+  <span class="segmented-choice__pill" aria-hidden="true"></span>
+  @for (option of options(); track option.value) {
+    <label class="segmented-choice__option"
+      ><input
+        type="radio"
+        [name]="name()"
+        [value]="option.value"
+        [checked]="option.value === value()"
+        (change)="valueChange.emit(option.value)"
+      />{{ option.label }}</label
+    >
+  }
+</div>
+<p class="segmented-choice__note" [id]="noteId()">{{ note() }}</p>

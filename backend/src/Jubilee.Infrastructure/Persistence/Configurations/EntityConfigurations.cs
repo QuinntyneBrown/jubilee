@@ -868,3 +868,78 @@ public sealed class ReviewReportConfiguration : IEntityTypeConfiguration<ReviewR
         builder.HasOne<Review>().WithMany().HasForeignKey(r => r.ReviewId).OnDelete(DeleteBehavior.Cascade);
     }
 }
+
+public sealed class MerchProductConfiguration : IEntityTypeConfiguration<MerchProduct>
+{
+    public void Configure(EntityTypeBuilder<MerchProduct> builder)
+    {
+        builder.ToTable("MerchProducts");
+        builder.HasKey(p => p.Id);
+        builder.Property(p => p.Id).ValueGeneratedNever();
+        builder.Property(p => p.Slug).HasMaxLength(40).IsRequired();
+        builder.HasIndex(p => p.Slug).IsUnique();
+        builder.Property(p => p.Name).HasMaxLength(80).IsRequired();
+        builder.Property(p => p.Colour).HasMaxLength(40).IsRequired();
+        builder.Property(p => p.Currency).HasMaxLength(3).IsRequired();
+        builder.HasMany(p => p.Variants).WithOne().HasForeignKey(v => v.ProductId).OnDelete(DeleteBehavior.Cascade);
+        builder.Navigation(p => p.Variants).UsePropertyAccessMode(PropertyAccessMode.Field);
+    }
+}
+
+public sealed class MerchVariantConfiguration : IEntityTypeConfiguration<MerchVariant>
+{
+    public void Configure(EntityTypeBuilder<MerchVariant> builder)
+    {
+        builder.ToTable("MerchVariants");
+        builder.HasKey(v => v.Id);
+        builder.Property(v => v.Id).ValueGeneratedNever();
+        builder.Property(v => v.Sku).HasMaxLength(20).IsRequired();
+        builder.HasIndex(v => v.Sku).IsUnique();
+        builder.Property(v => v.Fit).HasConversion<string>().HasMaxLength(16);
+        builder.Property(v => v.Size).HasMaxLength(8).IsRequired();
+        builder.Property(v => v.Ages).HasMaxLength(16);
+        builder.Property(v => v.ChestInches).HasPrecision(5, 2);
+        builder.Property(v => v.LengthInches).HasPrecision(5, 2);
+    }
+}
+
+public sealed class MerchOrderConfiguration : IEntityTypeConfiguration<MerchOrder>
+{
+    public void Configure(EntityTypeBuilder<MerchOrder> builder)
+    {
+        builder.ToTable("MerchOrders");
+        builder.HasKey(o => o.Id);
+        builder.Property(o => o.Id).ValueGeneratedNever();
+        builder.Property(o => o.Number).HasMaxLength(12).IsRequired();
+        builder.HasIndex(o => o.Number).IsUnique();
+        builder.Property(o => o.Reference).HasMaxLength(32).IsRequired();
+        builder.HasIndex(o => o.Reference).IsUnique();
+        builder.Property(o => o.Status).HasConversion<string>().HasMaxLength(16);
+        builder.Property(o => o.Delivery).HasConversion<string>().HasMaxLength(16);
+        builder.Property(o => o.Currency).HasMaxLength(3).IsRequired();
+        builder.Property(o => o.CheckoutSessionId).HasMaxLength(255);
+        builder.HasIndex(o => o.CheckoutSessionId).IsUnique().HasFilter("[CheckoutSessionId] IS NOT NULL");
+        builder.HasIndex(o => new { o.Status, o.ExpiresAt });
+        builder.Property(o => o.BuyerEmail).HasMaxLength(EmailAddress.MaxLength);
+        builder.Property(o => o.BuyerName).HasMaxLength(200);
+        builder.Property(o => o.ShippingAddress).HasMaxLength(600);
+        builder.HasMany(o => o.Lines).WithOne().HasForeignKey(l => l.OrderId).OnDelete(DeleteBehavior.Cascade);
+        builder.Navigation(o => o.Lines).UsePropertyAccessMode(PropertyAccessMode.Field);
+        builder.Ignore(o => o.OrderedLines);
+    }
+}
+
+public sealed class MerchOrderLineConfiguration : IEntityTypeConfiguration<MerchOrderLine>
+{
+    public void Configure(EntityTypeBuilder<MerchOrderLine> builder)
+    {
+        builder.ToTable("MerchOrderLines");
+        builder.HasKey(l => l.Id);
+        builder.Property(l => l.Id).ValueGeneratedNever();
+        builder.Property(l => l.Sku).HasMaxLength(20).IsRequired();
+        builder.Property(l => l.Fit).HasConversion<string>().HasMaxLength(16);
+        builder.Property(l => l.Size).HasMaxLength(8).IsRequired();
+        builder.HasIndex(l => l.VariantId);
+        builder.HasOne<MerchVariant>().WithMany().HasForeignKey(l => l.VariantId).OnDelete(DeleteBehavior.Restrict);
+    }
+}

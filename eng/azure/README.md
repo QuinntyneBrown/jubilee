@@ -68,6 +68,7 @@ certificates for the four host names.
 | `Addresses__Reserved` | optional: more words that are never a slug, separated by commas, beside the built-in list (L2-242 AC4) |
 | `Launch__TeamEmail` | where each pre-registration and each new launch sign-up is e-mailed; set by `deploy.sh` (see "The launching-soon forms" below) |
 | `Security__OnCallEmail` | the on-call security contact, e-mailed "Security alert: a burst of password reset requests" when more than 100 reset requests arrive in 5 minutes (L2-143 AC4, ADR 0064); without it the Jubilee team's address (`Moderation__TeamEmail`, else `Launch__TeamEmail`) is e-mailed. **Set** on `jubilee-to-app` by the owner on 13 November 2026. Change it with `az webapp config appsettings set -g "$G" -n "$APP" -o none --settings Security__OnCallEmail=<address>` |
+| `Stripe__SecretKey`, `Stripe__WebhookSecret`, `Stripe__AutomaticTax`, `Merch__TeamEmail` | the Purpose Tee's checkout (see "The Purpose Tee and Stripe" below). **Not set yet: an owner step.** Without the first, "Check out" says "Checkout isn’t open yet" |
 | `Deletions__LedgerPath` | `/home/data/deletions/ledger.jsonl`: the deletion ledger, outside the database (L2-017 AC7, ADR 0069); set by `deploy.sh` |
 | `Exports__Root` | `/home/data/exports`: the export store, where data archives are kept for the 7 days their link works (L2-018 AC5, ADR 0069); set by `deploy.sh` |
 
@@ -128,6 +129,36 @@ Still open, and the owner's to decide (L2-138 AC2): moving the media folder to A
 and serving photos from a separate cookieless domain. A message photo is delivered by the API on
 `app.jubilee.to`, behind its signed link, with `X-Content-Type-Options: nosniff` and
 `Cache-Control: private, no-store`.
+
+## The Purpose Tee and Stripe
+
+The app sells the Purpose Tee through Stripe's hosted checkout (L1-034, ADR 0073); the card never
+reaches Jubilee. Nothing is deployed for it by `deploy.sh`: the settings below are the owner's,
+because they need Jubilee's Stripe account. Until they are set, the page and the bag work and the
+bag says "Checkout isn’t open yet".
+
+### The owner's checklist
+
+1. **A Stripe account for Jubilee**, in Canadian dollars, with its business details and payout bank
+   account. Turn on Stripe Tax and register Jubilee for GST/HST in Stripe when Jubilee is
+   registered with the CRA; until then set `Stripe__AutomaticTax=false`.
+2. **A restricted key** (Developers → API keys → Create restricted key) with write access to
+   Checkout Sessions only. Keep it in a Key Vault secret and reference it from the app (ADR 0073):
+   `az webapp config appsettings set -g "$G" -n "$APP" -o none --settings
+   Stripe__SecretKey='@Microsoft.KeyVault(SecretUri=https://<vault>.vault.azure.net/secrets/stripe-secret-key/)'`,
+   with the app's managed identity allowed to read the vault's secrets.
+3. **A webhook endpoint** (Developers → Webhooks → Add endpoint) at
+   `https://app.jubilee.to/api/merch/webhooks/stripe`, sending `checkout.session.completed`,
+   `checkout.session.async_payment_succeeded` and `checkout.session.expired`. Keep its signing
+   secret (`whsec_…`) in the vault as `stripe-webhook-secret` and reference it as
+   `Stripe__WebhookSecret` the same way.
+4. **Where orders are e-mailed**: `Merch__TeamEmail=<address>`; without it `Launch__TeamEmail`.
+5. **Check**: open `https://app.jubilee.to/purpose-tee`, add a shirt and check out: Stripe's page
+   opens. Pay with a test card in test mode first (keys `sk_test_…`/`whsec_…` of the test-mode
+   endpoint), then swap to the live keys. In Stripe, the endpoint's recent deliveries answer 200.
+
+Neither secret is ever committed or logged. Rotating one means rolling it in Stripe, updating the
+vault secret and restarting the app.
 
 ## The launching-soon forms
 

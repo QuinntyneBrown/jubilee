@@ -1,0 +1,11 @@
+<p class="merch-head__kicker">{{ kicker() }}</p>
+<h1 class="merch-head__title" [id]="titleId()">
+  {{ heading() }}
+  @if (accent(); as accent) {
+    <span class="merch-head__accent">{{ accent }}</span>
+  }
+</h1>
+<p class="merch-head__price">
+  {{ price() }} <span class="merch-head__currency">{{ currency() }}</span>
+</p>
+<p class="merch-head__text"><ng-content /></p>

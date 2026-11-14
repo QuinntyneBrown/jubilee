@@ -1,0 +1,18 @@
+<div class="add-to-bag__row">
+  <ng-content />
+  @if (added()) {
+    <button class="add-to-bag__button add-to-bag__button--added" type="button" (click)="add.emit()">
+      <svg jb-icon name="check"></svg>Added to bag
+    </button>
+  } @else {
+    <button class="add-to-bag__button" type="button" (click)="add.emit()">
+      Add to bag · {{ amount() }}
+    </button>
+  }
+</div>
+@if (added(); as line) {
+  <div class="add-to-bag__added" role="status">
+    <span class="add-to-bag__line">{{ line }}</span>
+    <button class="add-to-bag__checkout" type="button" (click)="checkout.emit()">Check out</button>
+  </div>
+}

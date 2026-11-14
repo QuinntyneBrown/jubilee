@@ -40,7 +40,7 @@ Jubilee is a directory of Christian-owned businesses in Toronto. A member finds 
 messages it, books a meeting, asks for a quote or requests a product, and the business confirms or
 declines. An owner agrees to the statement of faith, publishes their listing and is live straight
 away; the Jubilee team looks through listings and takes down any that misrepresent a business.
-Jubilee does not take payment; members pay the business directly.
+Jubilee takes no payment between members and businesses; members pay the business directly. The one thing Jubilee sells is its own merchandise, the Purpose Tee (L1-034, ADR 0073).
 
 ## Contents
 
@@ -163,6 +163,27 @@ and reads what the forms collected with the CLI; each run is audited:
 ```shell
 dotnet run --project backend/src/Jubilee.Cli -- launch list --kind notifications
 ```
+
+### The Purpose Tee
+
+Jubilee sells one thing of its own, the Purpose Tee, at `/purpose-tee` (L1-034, ADR 0073). The
+card is entered on Stripe's hosted checkout page; Jubilee never sees it. Locally, with no Stripe
+settings, the page and the bag work and "Check out" says "Checkout isn’t open yet". To try a real
+checkout against Stripe's test mode, set these with `dotnet user-secrets` on `Jubilee.Api` (never
+in a committed file):
+
+| Setting | What it is |
+|---|---|
+| `Stripe:SecretKey` | a test-mode secret or restricted key (`sk_test_…` or `rk_test_…`); without it checkout answers 503 `checkout_unavailable` |
+| `Stripe:WebhookSecret` | the signing secret of the webhook endpoint (`whsec_…`); without it every event is refused with 400 `signature_invalid` |
+| `Stripe:AutomaticTax` | `true` (the default) to have Stripe compute GST/HST; `false` until Jubilee is registered for it |
+| `Merch:TeamEmail` | where each paid order is e-mailed; `Launch:TeamEmail` when empty |
+| `App:PublicBaseUrl` | the app's address, from which the return pages `/purpose-tee/thanks?order=…` are built |
+
+Stripe sends its events to `POST /api/merch/webhooks/stripe`; locally `stripe listen --forward-to
+http://localhost:5080/api/merch/webhooks/stripe` forwards them and prints the signing secret. The
+worker expires unpaid orders and applies the retention of L2-270 AC5. No test reaches Stripe: the
+backend tests use a fake gateway and the e2e suite answers every merchandise call itself.
 
 ### Admin application
 

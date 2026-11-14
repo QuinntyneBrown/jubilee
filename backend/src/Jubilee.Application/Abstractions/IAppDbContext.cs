@@ -99,5 +99,13 @@ public interface IAppDbContext
 
     DbSet<BusinessPreRegistration> BusinessPreRegistrations { get; }
 
+    DbSet<MerchProduct> MerchProducts { get; }
+
+    DbSet<MerchVariant> MerchVariants { get; }
+
+    DbSet<MerchOrder> MerchOrders { get; }
+
+    DbSet<MerchOrderLine> MerchOrderLines { get; }
+
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

@@ -1,0 +1,64 @@
+// Block: tee. The host is the svg, 600 × 700. The shirt is black whatever the theme, so it is drawn
+// with the garment tokens only.
+:host {
+  display: block;
+  width: 100%;
+  max-width: 28.75rem;
+  height: auto;
+  margin-inline: auto;
+}
+
+.tee__fabric {
+  fill: var(--color-garment-fabric);
+  stroke: var(--color-garment-seam);
+  stroke-width: 2;
+  stroke-linejoin: round;
+}
+
+.tee__seams {
+  fill: none;
+  stroke: var(--color-garment-seam);
+  stroke-width: 2;
+}
+
+.tee__rib {
+  fill: none;
+  stroke: var(--color-garment-rib);
+  stroke-width: 16;
+  stroke-linecap: round;
+}
+
+.tee__print {
+  fill: var(--color-garment-print);
+  font-family: var(--font-family-display);
+  font-weight: var(--font-weight-extrabold);
+  font-stretch: var(--font-stretch-wide);
+  letter-spacing: var(--letter-spacing-tighter);
+  font-size: 46px;
+}
+
+.tee__highlight {
+  fill: var(--color-garment-highlight);
+}
+
+.tee__mark {
+  fill: none;
+  stroke-width: 14.5;
+}
+
+.tee__mark-j {
+  stroke: var(--color-garment-print);
+}
+
+.tee__mark-bar {
+  stroke: var(--color-garment-highlight);
+}
+
+.tee__domain {
+  fill: var(--color-garment-print);
+  font-family: var(--font-family-display);
+  font-weight: var(--font-weight-semibold);
+  font-stretch: var(--font-stretch-wide);
+  letter-spacing: 0.02em;
+  font-size: 12px;
+}

@@ -28,6 +28,20 @@ import {
   ProductPage,
   ProductWithSizeScreen,
 } from '../pages/product.page';
+import {
+  PurposeTeeAddedScreen,
+  PurposeTeeBackScreen,
+  PurposeTeeErrorScreen,
+  PurposeTeeFitSoldOutScreen,
+  PurposeTeeLoadingScreen,
+  PurposeTeeLowStockScreen,
+  PurposeTeePage,
+  PurposeTeePickSizeScreen,
+  PurposeTeeSizeGuideScreen,
+  PurposeTeeSoldOutSizeScreen,
+} from '../pages/purpose-tee.page';
+import { BagCheckoutScreen, BagPickupScreen, BagScreen } from '../pages/bag.dialog';
+import { PurposeTeeThanksPage } from '../pages/purpose-tee-thanks.page';
 import { EditListingPage } from '../pages/edit-listing.page';
 import { IncomingConfirmedTab, IncomingRequestsPage } from '../pages/incoming-requests.page';
 import {
@@ -336,6 +350,31 @@ export const screens: {
   { key: 'product.error', screen: (page) => new ProductPage(page) },
   { key: 'product.sold-out', screen: (page) => new ProductPage(page) },
   { key: 'product.alert-requested', screen: (page) => new ProductPage(page) },
+  { key: 'purpose-tee', screen: (page) => new PurposeTeePage(page) },
+  { key: 'purpose-tee.back', screen: (page) => new PurposeTeeBackScreen(page) },
+  { key: 'purpose-tee.size-guide', screen: (page) => new PurposeTeeSizeGuideScreen(page) },
+  { key: 'purpose-tee.pick-size', screen: (page) => new PurposeTeePickSizeScreen(page) },
+  { key: 'purpose-tee.low-stock', screen: (page) => new PurposeTeeLowStockScreen(page) },
+  { key: 'purpose-tee.sold-out-size', screen: (page) => new PurposeTeeSoldOutSizeScreen(page) },
+  { key: 'purpose-tee.fit-sold-out', screen: (page) => new PurposeTeeFitSoldOutScreen(page) },
+  { key: 'purpose-tee.added', screen: (page) => new PurposeTeeAddedScreen(page) },
+  { key: 'purpose-tee.loading', screen: (page) => new PurposeTeeLoadingScreen(page) },
+  { key: 'purpose-tee.error', screen: (page) => new PurposeTeeErrorScreen(page) },
+  { key: 'bag', screen: (page) => new BagScreen(page) },
+  { key: 'bag.empty', screen: (page) => new BagScreen(page) },
+  { key: 'bag.pickup', screen: (page) => new BagPickupScreen(page) },
+  { key: 'bag.busy', screen: (page) => new BagCheckoutScreen(page) },
+  { key: 'bag.invalid', screen: (page) => new BagCheckoutScreen(page) },
+  { key: 'bag.unavailable', screen: (page) => new BagCheckoutScreen(page) },
+  { key: 'bag.failed', screen: (page) => new BagCheckoutScreen(page) },
+  { key: 'bag.rate-limited', screen: (page) => new BagCheckoutScreen(page) },
+  { key: 'bag.error', screen: (page) => new BagScreen(page) },
+  { key: 'purpose-tee-thanks', screen: (page) => new PurposeTeeThanksPage(page) },
+  { key: 'purpose-tee-thanks.loading', screen: (page) => new PurposeTeeThanksPage(page) },
+  { key: 'purpose-tee-thanks.pending', screen: (page) => new PurposeTeeThanksPage(page) },
+  { key: 'purpose-tee-thanks.cancelled', screen: (page) => new PurposeTeeThanksPage(page) },
+  { key: 'purpose-tee-thanks.not-found', screen: (page) => new PurposeTeeThanksPage(page) },
+  { key: 'purpose-tee-thanks.error', screen: (page) => new PurposeTeeThanksPage(page) },
   { key: 'messages', screen: (page) => new MessagesPage(page) },
   { key: 'messages.empty', screen: (page) => new MessagesPage(page) },
   { key: 'messages.loading', screen: (page) => new MessagesPage(page) },

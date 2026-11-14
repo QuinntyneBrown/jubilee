@@ -64,7 +64,7 @@ public static class ContentDefaults
                 new("How does Jubilee keep listings honest?", "how-does-jubilee-keep-listings-honest",
                     "Every owner agrees to Jubilee's statement of faith and to deal honestly with every customer when they list. If a listing isn't honest about its business, report it from the listing page: the Jubilee team reads every report and takes down listings that misrepresent a business."),
                 new("Does Jubilee take payment?", "does-jubilee-take-payment",
-                    "No. You send a booking, quote or order request, the business confirms it, and you pay the business directly in the way they offer."),
+                    "Not for anything you buy from a business. You send a booking, quote or order request, the business confirms it, and you pay the business directly in the way they offer. The one thing Jubilee sells is its own shirt, the Purpose Tee, paid by card on Stripe’s secure checkout."),
                 new("Is it free?", "is-it-free", "Yes. Joining, messaging and listing a business are all free."),
                 new("Who can see my messages?", "who-can-see-my-messages",
                     "Only you and the business you are writing to. Our team reads a conversation only when one of you reports it."),

@@ -1,0 +1,68 @@
+<legend class="size-picker__legend">
+  {{ legend() }}
+  @if (nudge()) {
+    <span class="size-picker__nudge" role="alert"
+      ><svg jb-icon name="alert"></svg>Pick a size to continue</span
+    >
+  }
+</legend>
+<button
+  class="size-picker__guide-toggle"
+  type="button"
+  [attr.aria-expanded]="guideOpen()"
+  [attr.aria-controls]="guideId()"
+  (click)="guideToggle.emit()"
+>
+  Size guide<svg jb-icon name="chevron-down"></svg>
+</button>
+<div class="size-picker__sizes">
+  @for (size of sizes(); track size.value) {
+    <label class="size-picker__size"
+      ><input
+        type="radio"
+        [name]="name()"
+        [value]="size.value"
+        [disabled]="size.soldOut"
+        [checked]="!size.soldOut && size.value === value()"
+        [attr.aria-label]="size.soldOut ? soldOutName(size) : null"
+        (change)="valueChange.emit(size.value)"
+      /><span>{{ size.label }}</span>
+      @if (size.ages) {
+        <span class="size-picker__ages">{{ size.ages }}</span>
+      }
+    </label>
+  }
+</div>
+<p class="size-picker__status" [id]="statusId()" aria-live="polite">{{ status() }}</p>
+@if (guideOpen()) {
+  <div class="size-picker__guide" [id]="guideId()">
+    <table class="size-picker__table">
+      <caption class="size-picker__caption">
+        {{
+          guideCaption()
+        }}
+      </caption>
+      <thead>
+        <tr>
+          <th scope="col">Size</th>
+          <th scope="col">Chest width</th>
+          <th scope="col">Body length</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (row of guide(); track row.label) {
+          <tr>
+            <th scope="row">
+              {{ row.label }}
+              @if (row.ages) {
+                <span class="size-picker__table-ages">({{ row.ages }})</span>
+              }
+            </th>
+            <td>{{ row.chest }}</td>
+            <td>{{ row.length }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+}

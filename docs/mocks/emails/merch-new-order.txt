@@ -1,0 +1,17 @@
+Subject: New Purpose Tee order PT-4F7K2Q: ship
+
+A Purpose Tee order was paid.
+
+Order: PT-4F7K2Q
+Paid: 13 Nov 2026, 3:15 p.m. Eastern
+Buyer: Joanna Adeyemi (joanna.adeyemi@example.com)
+Delivery: ship to Joanna Adeyemi, 48 Woodmount Ave, East York, ON M4C 3X8
+
+Men's L × 1
+Women's M × 1
+
+Shirts $50.00 · shipping $9.00 · tax $7.67 · total $66.67 CAD
+
+The stock is already lowered. Refunds and exchanges are made in the Stripe dashboard.
+
+Jubilee · Toronto's Christian marketplace

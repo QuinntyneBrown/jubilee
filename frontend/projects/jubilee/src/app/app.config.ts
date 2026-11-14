@@ -11,6 +11,8 @@ import { provideServiceWorker } from '@angular/service-worker';
 import {
   ACCOUNT_API,
   HELP_API,
+  MERCH_API,
+  HttpMerchApi,
   HttpContentApi,
   HttpHelpApi,
   CONTENT_API,
@@ -93,6 +95,7 @@ export const appConfig: ApplicationConfig = {
     { provide: ACCOUNT_API, useClass: HttpAccountApi },
     { provide: CONTENT_API, useClass: HttpContentApi },
     { provide: HELP_API, useClass: HttpHelpApi },
+    { provide: MERCH_API, useClass: HttpMerchApi },
     { provide: REPORTS_API, useClass: HttpReportsApi },
     { provide: FEEDBACK_API, useClass: HttpFeedbackApi },
     { provide: PROFILE_API, useClass: HttpProfileApi },

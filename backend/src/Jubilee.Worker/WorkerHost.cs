@@ -34,6 +34,7 @@ public static class WorkerHost
         builder.Services.AddHostedService<DataExportJob>();
         builder.Services.AddHostedService<AccountErasureJob>();
         builder.Services.AddHostedService<LaunchRetentionJob>();
+        builder.Services.AddHostedService<MerchOrderJob>();
         return builder;
     }
 }
@@ -603,6 +604,55 @@ public sealed class OwnerTipJob(IServiceScopeFactory scopes, ILogger<OwnerTipJob
         catch (OperationCanceledException)
         {
             logger.LogInformation("The owner tip job is stopping.");
+        }
+    }
+}
+
+/// <summary>
+/// Every 5 minutes: expires the pending merchandise orders whose checkout ended without the provider's
+/// event (L2-270 AC6). Once a day: deletes orders never paid after 30 days and erases the buyer of paid
+/// orders after 6 years (L2-270 AC5). It logs counts only.
+/// </summary>
+public sealed class MerchOrderJob(IServiceScopeFactory scopes, TimeProvider clock, ILogger<MerchOrderJob> logger) : BackgroundService
+{
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        using var timer = new PeriodicTimer(TimeSpan.FromMinutes(5));
+        DateTimeOffset? purgedAt = null;
+        try
+        {
+            do
+            {
+                try
+                {
+                    await using var scope = scopes.CreateAsyncScope();
+                    var sender = scope.ServiceProvider.GetRequiredService<MediatR.ISender>();
+                    var expired = await sender.Send(new Jubilee.Application.Merch.ExpireMerchOrdersCommand(), stoppingToken);
+                    if (expired > 0)
+                    {
+                        logger.LogInformation("Expired {Count} merchandise orders that were never paid.", expired);
+                    }
+
+                    var now = clock.GetUtcNow();
+                    if (purgedAt is null || now - purgedAt >= TimeSpan.FromDays(1))
+                    {
+                        var purged = await sender.Send(new Jubilee.Application.Merch.PurgeMerchOrdersCommand(), stoppingToken);
+                        logger.LogInformation(
+                            "Retention: deleted {Deleted} merchandise orders never paid and erased the buyer of {Erased} paid 6 years ago.",
+                            purged.Deleted,
+                            purged.Erased);
+                        purgedAt = now;
+                    }
+                }
+                catch (Exception exception) when (exception is not OperationCanceledException)
+                {
+                    logger.LogError(exception, "Merchandise orders could not be expired or purged. They will be tried again.");
+                }
+            }
+            while (await timer.WaitForNextTickAsync(stoppingToken));
+        }
+        catch (OperationCanceledException)
+        {
         }
     }
 }

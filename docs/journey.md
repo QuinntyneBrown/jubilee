@@ -49,14 +49,15 @@ journey that is implemented: the effort-weighted average of its feature designs 
 | 31 | Get ready for launch | Before Jubilee opens: see that it is launching soon, leave an e-mail address for the launch notice, or send a business's details to be listed on launch day; the team reads them with the CLI. | 7 | 100% |
 | 32 | Write and read reviews | After a request the owner confirmed, write a review of the business, shop or space; read every listing's rating and reviews, sorted and filtered, and its average on the cards; edit or remove your review; the owner replies in public; anyone signed in reports a review and the Jubilee team takes it down. Requirements L2-226 to L2-240. | 14 | 95% |
 | 33 | Discover and review software platforms | A founder lists a software platform (name, one line, web address, what it does, who it is for, pricing); it is found in its own category "Software platforms", in search and on a platform page whose main action is a link out to its website, with Message, save, share and report; a member who states they have used it writes a review, and the rest of reviews applies. Requirements L2-248 to L2-262. | 16 | 100% |
+| 34 | Buy the Purpose Tee | Anyone, with or without an account, opens the Purpose Tee page, chooses the front or back view, a fit (Youth, Women’s, Men’s), a size and a quantity, adds it to a bag kept on the device, chooses shipping in Canada or free pickup at the Jubilee gathering in Toronto, and pays by card on Stripe’s hosted checkout; the order is paid when Stripe says so, and the buyer and the Jubilee team get an e-mail. Requirements L2-263 to L2-271. | 8 | 90% |
 
-**Total: 249 days** for the 32 journeys, **99% complete** weighted by effort.
+**Total: 257 days** for the 34 journeys, **99% complete** weighted by effort.
 
 ## Notes
 
 - The order is by user value: first finding and viewing businesses, then joining and contacting
   them, then the supply side that fills the directory, then follow-up, convenience and housekeeping. It is
-  not a strict dependency order. Journeys 28 to 33 were added later and keep the number they were given.
+  not a strict dependency order. Journeys 28 to 34 were added later and keep the number they were given.
 - [`AGENTS.md`](../AGENTS.md) holds the rules and the folder structure every journey follows.
 - The first journey implemented also paid a one-off foundation cost of about 15 days (the `backend/`,
   `frontend/`, `e2e/` and `eng/` skeleton, design tokens and base components, CI). It is not in the figures
