@@ -1,0 +1,116 @@
+@let outcome = this.outcome();
+<jb-dialog
+  heading="Your bag"
+  [description]="description()"
+  icon="bag"
+  [busy]="busy()"
+  (closed)="close()"
+  (outsideClick)="close()"
+>
+  @if (bag.lines().length) {
+    <div jb-dialog-body class="stack">
+      @switch (outcome?.kind) {
+        @case ('invalid') {
+          <div jb-alert tone="danger" role="alert" heading="Your bag needs a change">
+            Someone bought the last of a size while you were choosing. Nothing was charged.
+          </div>
+        }
+        @case ('unavailable') {
+          <div jb-alert tone="warning" heading="Checkout isn’t open yet">
+            The shirts are ready, and we’re still setting up payment. Nothing was charged. Your bag
+            is kept on this device; come back soon.
+          </div>
+        }
+        @case ('rate-limited') {
+          <div jb-alert tone="warning" heading="You’ve tried to check out a lot">
+            {{ outcome?.kind === 'rate-limited' ? outcome.wait : '' }} Nothing was charged.
+          </div>
+        }
+        @case ('failed') {
+          <div jb-alert tone="danger" role="alert" heading="We couldn’t open checkout">
+            Nothing was charged. Try again. If it keeps happening, tell us and quote
+            <code>JB-MERCH-503</code>.
+          </div>
+        }
+      }
+      @if (unchecked()) {
+        <div jb-alert tone="danger" role="alert" heading="We couldn’t check the prices">
+          Nothing was charged. Close the bag and open it again in a moment.
+        </div>
+      }
+      <ul jb-list>
+        @for (line of bag.lines(); track line.sku) {
+          <li
+            jb-bag-line
+            name="Purpose Tee · Black"
+            [meta]="line.fit + ' ' + line.size + ' · ' + price(line.unitPriceCents) + ' each'"
+            [amount]="money(line.quantity * line.unitPriceCents)"
+            [removeLabel]="'Remove ' + line.fit + ' ' + line.size"
+            [problem]="problem(line)"
+            [disabled]="busy()"
+            (remove)="remove(line)"
+          >
+            <div
+              jb-quantity-stepper
+              size="sm"
+              [label]="'Quantity of ' + line.fit + ' ' + line.size"
+              [value]="line.quantity"
+              [max]="max(line)"
+              [disabled]="busy()"
+              (valueChange)="setQuantity(line, $event)"
+            ></div>
+          </li>
+        }
+      </ul>
+      @if (product()) {
+        <fieldset
+          jb-radio-group
+          legend="How would you like to get it?"
+          name="delivery"
+          [options]="deliveries()"
+          [value]="delivery()"
+          [disabled]="busy()"
+          (valueChange)="chooseDelivery($event)"
+        ></fieldset>
+        <dl jb-description-list>
+          <div jb-description-item term="Shirts" [value]="money(bag.subtotalCents())"></div>
+          <div
+            jb-description-item
+            term="Shipping"
+            [value]="shipping() ? money(shipping()) : 'Free'"
+          ></div>
+          <div jb-description-item term="Total before tax" [value]="money(total()) + ' CAD'"></div>
+        </dl>
+      }
+      <p class="text-caption">
+        <svg jb-icon name="lock"></svg> Tax is added on Stripe’s secure checkout page. Jubilee never
+        sees your card.
+      </p>
+    </div>
+    <div jb-dialog-footer>
+      <button jb-button type="button" [disabled]="busy()" (click)="close()">Keep shopping</button>
+      <button
+        jb-button
+        variant="primary"
+        type="button"
+        cdkFocusInitial
+        [busy]="busy()"
+        [disabled]="blocked()"
+        (click)="checkout()"
+      >
+        @if (busy()) {
+          Opening checkout…
+        } @else {
+          Check out · {{ money(total()) }}
+        }
+      </button>
+    </div>
+  } @else {
+    <div jb-dialog-body>
+      <p>Your bag is empty. Choose a fit and a size, then “Add to bag”.</p>
+    </div>
+    <div jb-dialog-footer>
+      <button jb-button variant="primary" type="button" (click)="close()">Choose a size</button>
+    </div>
+  }
+</jb-dialog>

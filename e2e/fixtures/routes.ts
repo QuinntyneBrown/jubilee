@@ -213,7 +213,24 @@ export type StubName =
   | 'admin-policy-error'
   | 'admin-policy-publishing'
   | 'admin-policy-publish-failing'
-  | 'admin-policy-conflict';
+  | 'admin-policy-conflict'
+  | 'purpose-tee'
+  | 'purpose-tee-loading'
+  | 'purpose-tee-error'
+  | 'purpose-tee-fit-sold-out'
+  | 'bag'
+  | 'bag-invalid'
+  | 'bag-busy'
+  | 'bag-unavailable'
+  | 'bag-failed'
+  | 'bag-rate-limited'
+  | 'bag-error'
+  | 'purpose-tee-thanks'
+  | 'purpose-tee-thanks-loading'
+  | 'purpose-tee-thanks-pending'
+  | 'purpose-tee-thanks-cancelled'
+  | 'purpose-tee-thanks-not-found'
+  | 'purpose-tee-thanks-error';
 
 export interface ScreenRoute {
   app: string;
@@ -577,6 +594,157 @@ export const routes = {
   terms: { app: '/terms', mock: 'pages/terms/default.html', who: 'visitor' },
   privacy: { app: '/privacy', mock: 'pages/privacy/default.html', who: 'visitor' },
   help: { app: '/help', mock: 'pages/help/default.html', who: 'visitor' },
+  // The Purpose Tee, the bag and the return page (L1-034, L2-263 – L2-271).
+  'purpose-tee': {
+    app: '/purpose-tee',
+    mock: 'pages/purpose-tee/default.html',
+    who: 'visitor',
+    stub: 'purpose-tee',
+  },
+  'purpose-tee.back': {
+    app: '/purpose-tee',
+    mock: 'pages/purpose-tee/back.html',
+    who: 'visitor',
+    stub: 'purpose-tee',
+  },
+  'purpose-tee.size-guide': {
+    app: '/purpose-tee',
+    mock: 'pages/purpose-tee/size-guide.html',
+    who: 'visitor',
+    stub: 'purpose-tee',
+  },
+  'purpose-tee.pick-size': {
+    app: '/purpose-tee',
+    mock: 'pages/purpose-tee/pick-size.html',
+    who: 'visitor',
+    stub: 'purpose-tee',
+  },
+  'purpose-tee.low-stock': {
+    app: '/purpose-tee',
+    mock: 'pages/purpose-tee/low-stock.html',
+    who: 'visitor',
+    stub: 'purpose-tee',
+  },
+  'purpose-tee.sold-out-size': {
+    app: '/purpose-tee',
+    mock: 'pages/purpose-tee/sold-out-size.html',
+    who: 'visitor',
+    stub: 'purpose-tee',
+  },
+  'purpose-tee.added': {
+    app: '/purpose-tee',
+    mock: 'pages/purpose-tee/added.html',
+    who: 'visitor',
+    stub: 'purpose-tee',
+  },
+  'purpose-tee.fit-sold-out': {
+    app: '/purpose-tee',
+    mock: 'pages/purpose-tee/fit-sold-out.html',
+    who: 'visitor',
+    stub: 'purpose-tee-fit-sold-out',
+  },
+  'purpose-tee.loading': {
+    app: '/purpose-tee',
+    mock: 'pages/purpose-tee/loading.html',
+    who: 'visitor',
+    stub: 'purpose-tee-loading',
+  },
+  'purpose-tee.error': {
+    app: '/purpose-tee',
+    mock: 'pages/purpose-tee/error.html',
+    who: 'visitor',
+    stub: 'purpose-tee-error',
+  },
+  bag: {
+    app: '/purpose-tee',
+    mock: 'dialogs/bag/default.html',
+    who: 'visitor',
+    stub: 'bag',
+  },
+  'bag.empty': {
+    app: '/purpose-tee',
+    mock: 'dialogs/bag/empty.html',
+    who: 'visitor',
+    stub: 'purpose-tee',
+  },
+  'bag.pickup': {
+    app: '/purpose-tee',
+    mock: 'dialogs/bag/pickup.html',
+    who: 'visitor',
+    stub: 'bag',
+  },
+  'bag.busy': {
+    app: '/purpose-tee',
+    mock: 'dialogs/bag/busy.html',
+    who: 'visitor',
+    stub: 'bag-busy',
+  },
+  'bag.invalid': {
+    app: '/purpose-tee',
+    mock: 'dialogs/bag/invalid.html',
+    who: 'visitor',
+    stub: 'bag-invalid',
+  },
+  'bag.unavailable': {
+    app: '/purpose-tee',
+    mock: 'dialogs/bag/unavailable.html',
+    who: 'visitor',
+    stub: 'bag-unavailable',
+  },
+  'bag.failed': {
+    app: '/purpose-tee',
+    mock: 'dialogs/bag/failed.html',
+    who: 'visitor',
+    stub: 'bag-failed',
+  },
+  'bag.rate-limited': {
+    app: '/purpose-tee',
+    mock: 'dialogs/bag/rate-limited.html',
+    who: 'visitor',
+    stub: 'bag-rate-limited',
+  },
+  'bag.error': {
+    app: '/purpose-tee',
+    mock: 'dialogs/bag/error.html',
+    who: 'visitor',
+    stub: 'bag-error',
+  },
+  'purpose-tee-thanks': {
+    app: '/purpose-tee/thanks?order=q3v8XkR2mLp7TfZ1nWc4Yb',
+    mock: 'pages/purpose-tee-thanks/default.html',
+    who: 'visitor',
+    stub: 'purpose-tee-thanks',
+  },
+  'purpose-tee-thanks.loading': {
+    app: '/purpose-tee/thanks?order=q3v8XkR2mLp7TfZ1nWc4Yb',
+    mock: 'pages/purpose-tee-thanks/loading.html',
+    who: 'visitor',
+    stub: 'purpose-tee-thanks-loading',
+  },
+  'purpose-tee-thanks.pending': {
+    app: '/purpose-tee/thanks?order=q3v8XkR2mLp7TfZ1nWc4Yb',
+    mock: 'pages/purpose-tee-thanks/pending.html',
+    who: 'visitor',
+    stub: 'purpose-tee-thanks-pending',
+  },
+  'purpose-tee-thanks.cancelled': {
+    app: '/purpose-tee/thanks?order=q3v8XkR2mLp7TfZ1nWc4Yb&cancelled=1',
+    mock: 'pages/purpose-tee-thanks/cancelled.html',
+    who: 'visitor',
+    stub: 'purpose-tee-thanks-cancelled',
+  },
+  'purpose-tee-thanks.not-found': {
+    app: '/purpose-tee/thanks?order=q3v8XkR2mLp7TfZ1nWc4Yb',
+    mock: 'pages/purpose-tee-thanks/not-found.html',
+    who: 'visitor',
+    stub: 'purpose-tee-thanks-not-found',
+  },
+  'purpose-tee-thanks.error': {
+    app: '/purpose-tee/thanks?order=q3v8XkR2mLp7TfZ1nWc4Yb',
+    mock: 'pages/purpose-tee-thanks/error.html',
+    who: 'visitor',
+    stub: 'purpose-tee-thanks-error',
+  },
   welcome: { app: '/welcome', mock: 'pages/welcome/default.html', who: 'visitor' },
   browse: { app: '/', mock: 'pages/browse/default.html', who: 'member' },
   'browse.signed-out': { app: '/', mock: 'pages/browse/signed-out.html', who: 'visitor' },

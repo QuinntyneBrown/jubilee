@@ -1,0 +1,55 @@
+// Block: merch-head. The host is the div that holds the kicker, the name, the price and the text.
+:host {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.merch-head__kicker {
+  margin: 0;
+  font: var(--text-label);
+  color: var(--color-fg-muted);
+}
+
+.merch-head__title {
+  margin: var(--space-2) 0 0;
+  font: var(--text-h1);
+  font-size: var(--font-size-4xl);
+  font-weight: var(--font-weight-bold);
+  font-stretch: var(--font-stretch-wide);
+  line-height: 1;
+  letter-spacing: var(--letter-spacing-tight);
+  text-wrap: balance;
+}
+
+.merch-head__accent {
+  color: var(--color-fg-accent);
+}
+
+.merch-head__price {
+  margin: var(--space-4) 0 0;
+  font: var(--text-h2);
+  font-weight: var(--font-weight-semibold);
+  font-stretch: var(--font-stretch-wide);
+  font-variant-numeric: tabular-nums;
+}
+
+.merch-head__currency {
+  font: var(--text-body);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-fg-muted);
+}
+
+.merch-head__text {
+  max-width: 28rem;
+  margin: var(--space-5) 0 0;
+  font: var(--text-body);
+  line-height: var(--line-height-relaxed);
+  color: var(--color-fg-muted);
+}
+
+@media (min-width: 40rem) {
+  .merch-head__title {
+    font-size: var(--font-size-5xl);
+  }
+}

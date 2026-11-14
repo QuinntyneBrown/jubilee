@@ -1,0 +1,20 @@
+<div class="tee-gallery__stage">
+  <!-- A view of its own per side, so the new side fades in when it is chosen. -->
+  @if (view() === 'front') {
+    <div class="tee-gallery__view"><svg jb-tee view="front" [label]="labels.front"></svg></div>
+  } @else {
+    <div class="tee-gallery__view"><svg jb-tee view="back" [label]="labels.back"></svg></div>
+  }
+</div>
+<div class="tee-gallery__thumbs" role="group" aria-label="Show the tee from">
+  @for (each of views; track each) {
+    <button
+      class="tee-gallery__thumb"
+      type="button"
+      [attr.aria-pressed]="each === view()"
+      (click)="viewChange.emit(each)"
+    >
+      <svg jb-tee [view]="each"></svg><span>{{ each === 'front' ? 'Front' : 'Back' }}</span>
+    </button>
+  }
+</div>

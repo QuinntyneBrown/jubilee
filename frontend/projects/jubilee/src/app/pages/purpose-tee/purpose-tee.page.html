@@ -1,0 +1,139 @@
+@let current = state();
+<div class="stack">
+  <div class="cluster cluster--between">
+    <a jb-back-link routerLink="/">Back to browse</a>
+    <button jb-bag-button type="button" [count]="bag.count()" (click)="openBag()"></button>
+  </div>
+  @switch (current.status) {
+    @case ('loaded') {
+      @let product = current.value;
+      <div class="split split--even">
+        <div class="split__sticky">
+          <section jb-tee-gallery [view]="view()" (viewChange)="view.set($event)"></section>
+        </div>
+        <section class="stack stack--lg" aria-labelledby="tee-title">
+          <div
+            jb-merch-head
+            [kicker]="'Jubilee tee · ' + product.colour"
+            heading="Prosper with"
+            accent="purpose."
+            [price]="price(product.unitPriceCents)"
+            [currency]="product.currency"
+            titleId="tee-title"
+          >
+            Heavyweight black cotton with the line from our business card across the chest,
+            “purpose” in gold. The J mark and jubilee.to sit on the upper back, so the conversation
+            can start from behind you in line.
+          </div>
+          <fieldset
+            jb-segmented-choice
+            legend="Fit"
+            name="fit"
+            [options]="fits()"
+            [value]="fitKey()"
+            [note]="fit()?.note ?? null"
+            (valueChange)="chooseFit($event)"
+          ></fieldset>
+          <fieldset
+            jb-size-picker
+            name="size"
+            [sizes]="sizes()"
+            [value]="sizeLabel()"
+            [status]="status()"
+            [nudge]="nudge()"
+            [guide]="guide()"
+            [guideCaption]="guideCaption()"
+            [guideOpen]="guideOpen()"
+            (valueChange)="chooseSize($event)"
+            (guideToggle)="guideOpen.set(!guideOpen())"
+          ></fieldset>
+          <div
+            jb-add-to-bag
+            [amount]="amount()"
+            [added]="added()"
+            (add)="add()"
+            (checkout)="openBag()"
+          >
+            <div
+              jb-quantity-stepper
+              [value]="quantity()"
+              [max]="max()"
+              [disabled]="soldOut()"
+              (valueChange)="setQuantity($event)"
+            ></div>
+          </div>
+          <p class="text-muted">
+            Ships across Canada in 3–5 business days, free over
+            {{ price(product.freeShippingFromCents) }}. Pick up free at the Jubilee gathering in
+            Toronto. Tax is added at checkout.
+          </p>
+          <div jb-accordion>
+            <details jb-accordion-item heading="Fabric & fit">
+              100% combed ring-spun cotton, 6 oz heavyweight, pre-shrunk. Ribbed crew collar,
+              double-stitched hems.
+            </details>
+            <details jb-accordion-item heading="The print">
+              Front: “Prosper with purpose.” in Archivo ExtraBold, cream with “purpose” in Jubilee
+              gold, about 9″ wide. Back: the J mark and jubilee.to, 3″ below the collar. Water-based
+              ink, soft to the touch.
+            </details>
+            <details jb-accordion-item heading="Care">
+              Machine wash cold, inside out. Tumble dry low or hang dry. Don’t iron over the print.
+            </details>
+            <details jb-accordion-item heading="Shipping & returns">
+              Ships in 3–5 business days across Canada, {{ price(product.shippingCents) }} or free
+              over {{ price(product.freeShippingFromCents) }}. Pick up free at the Jubilee gathering
+              in Toronto. Wrong size? Swap it free within 30 days, unworn: write to us with your
+              order number.
+            </details>
+          </div>
+        </section>
+      </div>
+      <section jb-merch-story before="Why" accent="“purpose”" after="is the gold word.">
+        <p>
+          “But you shall remember Yahweh your God, for it is he who gives you power to get wealth,
+          that he may establish his covenant which he swore to your fathers, as it is today.”
+          (Deuteronomy 8:18, WEB) Prospering isn’t the goal on its own. The ability is a gift, and
+          it is given for a purpose.
+        </p>
+        <p>
+          Every shirt sold helps keep Jubilee free for the Christian business people of Toronto, and
+          gives you an easy way to tell someone what it’s for.
+        </p>
+      </section>
+    }
+    @case ('error') {
+      <div
+        jb-empty-state
+        [error]="true"
+        [level]="1"
+        icon="alert"
+        heading="We couldn’t load the tee"
+      >
+        Nothing is lost. Check your connection and try again. If it keeps happening, tell us and
+        quote <code>{{ current.reference }}</code
+        >.
+        <button slot="actions" jb-button variant="primary" type="button" (click)="load()">
+          <svg jb-icon name="refresh"></svg>Try again
+        </button>
+        <a slot="actions" jb-button routerLink="/">Back to browse</a>
+      </div>
+    }
+    @default {
+      <h1 class="visually-hidden">Loading the Purpose Tee</h1>
+      <p class="visually-hidden" role="status">Loading the Purpose Tee…</p>
+      <div class="split split--even" aria-hidden="true">
+        <div><span jb-skeleton shape="square"></span></div>
+        <div class="stack">
+          <span jb-skeleton shape="text" width="30"></span>
+          <span jb-skeleton shape="h1"></span>
+          <span jb-skeleton shape="text" width="30"></span>
+          <span jb-skeleton shape="text"></span>
+          <span jb-skeleton shape="text"></span>
+          <span jb-skeleton shape="button" size="block"></span>
+          <span jb-skeleton shape="button" size="block"></span>
+        </div>
+      </div>
+    }
+  }
+</div>

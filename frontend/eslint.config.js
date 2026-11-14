@@ -33,10 +33,11 @@ module.exports = defineConfig([
     files: ['**/*.html'],
     extends: [angular.configs.templateRecommended, angular.configs.templateAccessibility],
     rules: {
-      // A card or row component renders the content of its anchor from this input.
+      // A card or row component renders the content of its anchor from this input; the bag
+      // button draws "Bag" and its count from `count`.
       '@angular-eslint/template/elements-content': [
         'error',
-        { allowList: ['business', 'product', 'preview', 'heading', 'space', 'average'] },
+        { allowList: ['business', 'product', 'preview', 'heading', 'space', 'average', 'count'] },
       ],
     },
   },

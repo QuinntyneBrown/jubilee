@@ -58,3 +58,7 @@ export * from './lib/api/launch-api';
 export * from './lib/models/launch';
 export * from './lib/api/reviews-api';
 export * from './lib/models/reviews';
+export * from './lib/models/merch';
+export * from './lib/api/merch-api';
+export * from './lib/helpers/merch';
+export * from './lib/helpers/bag-store';
