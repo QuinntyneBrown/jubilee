@@ -12,6 +12,7 @@
     "/b/:slug/request",
     "/b/:slug/share",
     "/b/:slug/report",
+    "/b/:slug/review",
     "/b/:slug/p/:product",
     "/b/:slug/p/:product/request",
     "/feedback",
@@ -44,7 +45,9 @@
     "/reset-password/:token",
     "/join/agreement",
     "/verify-email",
-    "/verify-email/:token"
+    "/verify-email/:token",
+    "/purpose-tee",
+    "/purpose-tee/thanks"
   ],
   "owner": [
     "/my-business",

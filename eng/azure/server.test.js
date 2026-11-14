@@ -347,6 +347,16 @@ test('Given an address that is no page of the app, when it is loaded, then it an
   }
 });
 
+test('Given the Purpose Tee and the review pages, when they are loaded, then each is a page of the app and answers 200', async () => {
+  const { site } = await appHost(status(200));
+
+  for (const path_ of ['/purpose-tee', '/purpose-tee/thanks?order=q3v8XkR2mLp7TfZ1nWc4Yb', '/b/luzandre/review']) {
+    const answer = await page(site, path_);
+    assert.equal(answer.status, 200, path_);
+    assert.equal(answer.body, APP, path_);
+  }
+});
+
 test('Given a listing that is missing or not public, when its page is loaded, then the API\'s 404 is the page load\'s', async () => {
   const { site } = await appHost(status(404));
 
