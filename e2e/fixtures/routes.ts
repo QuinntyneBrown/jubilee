@@ -1978,6 +1978,27 @@ export const routes = {
     site: 'admin',
     stub: 'admin-records',
   },
+  'admin-records.confirm-delete': {
+    app: '/members',
+    mock: 'pages/admin-records/confirm-delete.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'admin-records',
+  },
+  'admin-records.confirm-delete-one': {
+    app: '/members',
+    mock: 'pages/admin-records/confirm-delete-one.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'admin-records',
+  },
+  'admin-record.confirm-delete': {
+    app: '/members/mem_8F2kQa',
+    mock: 'pages/admin-record/confirm-delete.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'admin-records',
+  },
   'admin-record.edit': {
     app: '/members/mem_8F2kQa/edit',
     mock: 'pages/admin-record/edit.html',

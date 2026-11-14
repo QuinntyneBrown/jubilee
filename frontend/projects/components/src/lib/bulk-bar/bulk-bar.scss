@@ -56,6 +56,10 @@
   outline-offset: var(--focus-ring-offset);
 }
 
+.bulk-bar__btn--danger {
+  color: var(--color-danger-icon-inverse);
+}
+
 .bulk-bar__btn--clear {
   width: var(--control-height-sm);
   justify-content: center;

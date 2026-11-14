@@ -1,6 +1,7 @@
 import type { Locator, Page } from '@playwright/test';
 import type { Region, Screen } from '../fixtures/visual';
 import { AdminShellPage } from './admin-shell.page';
+import { DeleteRecordsDialog } from './delete-records.dialog';
 
 /**
  * One record of the admin application, `/{table}/{id}` (L2-282): the breadcrumb, the name with its
@@ -25,6 +26,7 @@ export class AdminRecordPage extends AdminShellPage implements Screen {
   readonly history: Locator;
   readonly error: Locator;
   readonly edit: Locator;
+  readonly delete: Locator;
   readonly cancel: Locator;
   readonly save: Locator;
   readonly saved: Locator;
@@ -49,6 +51,7 @@ export class AdminRecordPage extends AdminShellPage implements Screen {
     this.history = this.aside.locator('.history li');
     this.error = this.main.getByRole('alert');
     this.edit = this.head.getByRole('link', { name: 'Edit' });
+    this.delete = this.head.getByRole('button', { name: 'Delete' });
     this.cancel = this.head.getByRole('link', { name: 'Cancel' });
     this.save = this.head.getByRole('button', { name: /^(Save changes|Saving…)$/ });
     this.saved = this.head.getByRole('status');
@@ -116,5 +119,21 @@ export class AdminRecordPage extends AdminShellPage implements Screen {
       { name: 'record-crumbs', locator: this.crumbs },
       { name: 'record-head', locator: this.head },
     ];
+  }
+}
+
+/** Mara Okafor's record with "Delete" pressed (L2-281 AC1). */
+export class AdminRecordConfirmDeleteScreen extends AdminRecordPage {
+  readonly dialog = new DeleteRecordsDialog(this.page);
+
+  override async ready(): Promise<void> {
+    if (await this.dialog.title.isVisible()) return; // the mock is drawn open
+    await super.ready();
+    await this.delete.click();
+    await this.dialog.title.waitFor();
+  }
+
+  override regions(): Region[] {
+    return [{ name: 'delete-dialog', locator: this.dialog.root.locator('.dialog__panel') }];
   }
 }

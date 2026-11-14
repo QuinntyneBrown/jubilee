@@ -24,6 +24,10 @@ export interface AdminTablesApi {
   create(table: string, values: AdminValues): Observable<AdminRecord>;
   /** Sets one status on the selected records; answers how many it reached (L2-280 AC4). */
   setStatus(table: string, ids: readonly string[], status: string): Observable<AdminCount>;
+  /** Deletes the selected records of a table that declares deletion (L2-281 AC3). */
+  remove(table: string, ids: readonly string[]): Observable<AdminCount>;
+  /** Brings back records just deleted: "Undo" (L2-281 AC3). */
+  restore(table: string, ids: readonly string[]): Observable<AdminCount>;
 }
 
 export const ADMIN_TABLES_API = new InjectionToken<AdminTablesApi>('ADMIN_TABLES_API');
@@ -68,6 +72,18 @@ export class HttpAdminTablesApi implements AdminTablesApi {
     return this.http.post<AdminCount>(`/api/admin/tables/${encodeURIComponent(table)}/status`, {
       ids,
       status,
+    });
+  }
+
+  remove(table: string, ids: readonly string[]): Observable<AdminCount> {
+    return this.http.post<AdminCount>(`/api/admin/tables/${encodeURIComponent(table)}/delete`, {
+      ids,
+    });
+  }
+
+  restore(table: string, ids: readonly string[]): Observable<AdminCount> {
+    return this.http.post<AdminCount>(`/api/admin/tables/${encodeURIComponent(table)}/restore`, {
+      ids,
     });
   }
 }

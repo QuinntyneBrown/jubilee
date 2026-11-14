@@ -1,6 +1,7 @@
 import type { Locator, Page } from '@playwright/test';
 import type { Region, Screen } from '../fixtures/visual';
 import { AdminShellPage } from './admin-shell.page';
+import { DeleteRecordsDialog } from './delete-records.dialog';
 
 /**
  * A table of the admin application, `/{table}` (L2-276 to L2-281): its heading with the group, the
@@ -68,6 +69,7 @@ export class AdminRecordsPage extends AdminShellPage implements Screen {
   /** The selection: the heading's checkbox and the bar it brings up (L2-280 AC3). */
   readonly selectAll: Locator;
   readonly bulkBar: Locator;
+  readonly deleteSelected: Locator;
   readonly bulkCount: Locator;
   readonly setStatus: Locator;
   readonly statusMenu: Locator;
@@ -115,6 +117,7 @@ export class AdminRecordsPage extends AdminShellPage implements Screen {
     this.setStatus = this.bulkBar.getByRole('button', { name: /^Set / });
     this.statusMenu = page.getByRole('menu', { name: /^Set / });
     this.clearSelection = this.bulkBar.getByRole('button', { name: 'Clear selection' });
+    this.deleteSelected = this.bulkBar.getByRole('button', { name: 'Delete' });
   }
 
   /** The cells of a row of the table. */
@@ -216,9 +219,11 @@ export class AdminRecordsPage extends AdminShellPage implements Screen {
     return menu;
   }
 
-  /** Checks the rows with these names (L2-280 AC3). */
+  /** Checks the rows with these names, in the table or, under 768 px, the list (L2-280 AC3). */
   async select(...names: string[]): Promise<void> {
-    for (const name of names) await this.checkbox(this.row(name)).check();
+    for (const name of names) {
+      await this.records.getByRole('checkbox', { name: `Select ${name}`, exact: true }).check();
+    }
   }
 
   async setStatusTo(word: string): Promise<void> {
@@ -299,6 +304,39 @@ export class AdminBulkStatusMenuScreen extends AdminSelectedScreen {
 
   override regions(): Region[] {
     return [{ name: 'status-menu', locator: this.statusMenu }];
+  }
+}
+
+/** Mara Okafor's "Delete" chosen from her row's actions (L2-281 AC1). */
+export class AdminConfirmDeleteOneScreen extends AdminRecordsPage {
+  readonly dialog = new DeleteRecordsDialog(this.page);
+
+  override async ready(): Promise<void> {
+    await super.ready();
+    if (await this.dialog.title.isVisible()) return; // the mock is drawn open
+    const menu = await this.openRowMenu('Mara Okafor');
+    await menu.getByRole('menuitem', { name: 'Delete' }).click();
+    await this.dialog.title.waitFor();
+  }
+
+  override regions(): Region[] {
+    return [{ name: 'delete-dialog', locator: this.dialog.root.locator('.dialog__panel') }];
+  }
+}
+
+/** Two rows selected and "Delete" chosen in the bar: "Type delete to confirm" (L2-281 AC2). */
+export class AdminConfirmDeleteScreen extends AdminSelectedScreen {
+  readonly dialog = new DeleteRecordsDialog(this.page);
+
+  override async ready(): Promise<void> {
+    if (await this.dialog.title.isVisible()) return; // the mock is drawn open
+    await super.ready();
+    await this.deleteSelected.click();
+    await this.dialog.title.waitFor();
+  }
+
+  override regions(): Region[] {
+    return [{ name: 'delete-dialog', locator: this.dialog.root.locator('.dialog__panel') }];
   }
 }
 

@@ -516,24 +516,26 @@ function bulkBar(e, n, menu) {
   }<button class="bulk-bar__btn bulk-bar__btn--export" type="button">${icon('download')}Export</button><a class="bulk-bar__btn bulk-bar__btn--danger" href="confirm-delete.html">${icon('trash')}Delete</a><a class="bulk-bar__btn bulk-bar__btn--clear" href="default.html" aria-label="Clear selection">${icon('x')}</a></div></div>`;
 }
 
-function deleteDialog(e, indexes) {
+function deleteDialog(e, indexes, deletedHref = 'deleted.html') {
   const rows = indexes.map((i) => e.rows[i]);
   const one = rows.length === 1;
   const unit = lower(e.label);
-  const linked = rows.reduce((n, r) => n + backlinks(e.key, r.id).reduce((m, l) => m + l.count, 0), 0);
+  const links = rows.flatMap((r) => backlinks(e.key, r.id)).filter((l) => l.count > 0);
+  const linked = links.reduce((m, l) => m + l.count, 0);
+  const tables = [...new Set(links.map((l) => l.entity.label))].join(', ');
   const title = one ? `Delete ${rowName(rows[0])}?` : `Delete ${rows.length} ${unit}?`;
   return `<div class="backdrop"></div><div class="dialog" role="alertdialog" aria-modal="true" aria-labelledby="dlg-title" aria-describedby="dlg-desc"><div class="dialog__panel dialog__panel--sm"><div class="dialog__header"><div class="dialog__heading"><h2 class="dialog__title" id="dlg-title">${esc(title)}</h2><p class="dialog__desc" id="dlg-desc">This removes ${one ? 'it' : 'them'} for everyone on Jubilee. The deletion is kept in Audit records, but the data can’t be brought back after 30 days.</p></div><a class="btn btn--ghost btn--icon" href="default.html" aria-label="Close">${icon('x')}</a></div><div class="dialog__body stack"><ul class="doomed">${rows
     .slice(0, 4)
     .map((r) => `<li><b>${esc(rowName(r))}</b><code>${esc(r.id)}</code></li>`)
     .join('')}</ul>${
     linked > 0
-      ? `<div class="alert alert--danger">${icon('warning')}<div class="alert__body">${linked} other ${linked === 1 ? 'record points' : 'records point'} here. They’ll show “deleted” where this used to be.</div></div>`
+      ? `<div class="alert alert--danger">${icon('warning')}<div class="alert__body">${linked} other ${linked === 1 ? 'record points' : 'records point'} here, in ${esc(tables)}. They’ll show “deleted” where this used to be.</div></div>`
       : ''
   }${
     one
       ? ''
       : '<div class="field"><label class="field__label" for="type-delete">Type <code>delete</code> to confirm</label><input class="input" id="type-delete" type="text" autocomplete="off" autofocus></div>'
-  }</div><div class="dialog__footer"><a class="btn" href="default.html">Keep ${one ? 'it' : 'them'}</a><a class="btn btn--danger" href="deleted.html"${one ? '' : ' aria-disabled="true"'}>Delete ${one ? esc(lower(e.singular)) : `${rows.length} ${esc(unit)}`}</a></div></div></div>`;
+  }</div><div class="dialog__footer"><a class="btn" href="default.html">Keep ${one ? 'it' : 'them'}</a><a class="btn btn--danger" href="${deletedHref}"${one ? '' : ' aria-disabled="true"'}>Delete ${one ? esc(lower(e.singular)) : `${rows.length} ${esc(unit)}`}</a></div></div></div>`;
 }
 
 function buildRecords() {
@@ -728,14 +730,8 @@ function recordMain(e, mode, phase) {
 }
 
 function recordDeleteDialog(e) {
-  const row = e.rows[shownIndex(e.key)];
-  const links = backlinks(e.key, row.id);
-  const n = links.reduce((m, l) => m + l.count, 0);
-  return `<div class="backdrop"></div><div class="dialog" role="alertdialog" aria-modal="true" aria-labelledby="dlg-title" aria-describedby="dlg-desc"><div class="dialog__panel dialog__panel--sm"><div class="dialog__header"><div class="dialog__heading"><h2 class="dialog__title" id="dlg-title">Delete ${esc(rowName(row))}?</h2><p class="dialog__desc" id="dlg-desc">This removes the ${esc(lower(e.singular))} for everyone on Jubilee. The deletion is kept in Audit records.</p></div><a class="btn btn--ghost btn--icon" href="default.html" aria-label="Close">${icon('x')}</a></div>${
-    n
-      ? `<div class="dialog__body"><div class="alert alert--danger">${icon('warning')}<div class="alert__body">${n} other records point here, in ${esc(links.map((l) => l.entity.label).join(', '))}. They’ll show “deleted” where this used to be.</div></div></div>`
-      : ''
-  }<div class="dialog__footer"><a class="btn" href="default.html">Keep it</a><a class="btn btn--danger" href="${recordsHref(e.key)}">Delete ${esc(lower(e.singular))}</a></div></div></div>`;
+  // The record's own dialog is the row's (L2-281 AC1): its name and ID, and the tables that point at it.
+  return deleteDialog(e, [shownIndex(e.key)], '../admin-records/deleted.html');
 }
 
 function buildRecord() {
@@ -748,7 +744,7 @@ function buildRecord() {
     saving: { mode: 'edit', phase: 'saving', note: 'Saving: “Save changes” says “Saving…” and cannot be pressed again until the answer comes.' },
     saved: { mode: 'view', phase: 'saved', note: 'Saved: the record returns to reading, “Saved” is announced beside the actions, and the change heads its history.' },
     create: { mode: 'create', phase: 'default', note: 'A new record (Magic Patterns “Members: new member”): empty editors, the first status chosen, “set on create” for the system fields, and no related or history column. “Cancel” returns to the table.' },
-    'confirm-delete': { mode: 'view', phase: 'confirm-delete', note: 'Deleting the record (Magic Patterns “Record delete dialog”): it names how many records in which tables point at it. “Delete member” returns to the table with the toast of the table’s <code>deleted</code> state.' },
+    'confirm-delete': { mode: 'view', phase: 'confirm-delete', note: 'Deleting the record (Magic Patterns “Record delete dialog”): the dialog of a row’s “Delete” (L2-281 AC1), naming the record and its ID and how many records in which tables point at it. “Delete member” returns to the table with the toast of the table’s <code>deleted</code> state.' },
   };
   const states = ['default', ...Object.keys(special), ...ENTITIES.filter((e) => e.key !== 'members').map((e) => kebab(e.key))];
   mkdirSync(dir, { recursive: true });

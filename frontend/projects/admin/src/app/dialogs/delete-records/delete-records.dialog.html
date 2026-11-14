@@ -1,0 +1,47 @@
+<jb-dialog
+  size="sm"
+  [heading]="heading"
+  [description]="description"
+  [busy]="busy()"
+  (closed)="close()"
+>
+  <form jb-dialog-body class="stack" id="delete-form" novalidate (ngSubmit)="remove()">
+    @if (view() === 'failed') {
+      <div jb-alert tone="danger" heading="We couldn’t delete them." role="alert">
+        <div>Nothing was deleted. Try again.</div>
+      </div>
+    }
+    <ul jb-doomed-list [records]="shown"></ul>
+    @if (pointing; as pointing) {
+      <div jb-alert tone="danger" icon="alert">{{ pointing }}</div>
+    }
+    @if (!one) {
+      <div jb-field label="Type delete to confirm" controlId="type-delete">
+        <input
+          jb-input
+          name="confirm"
+          type="text"
+          autocomplete="off"
+          cdkFocusInitial
+          [readOnly]="busy()"
+          [ngModel]="typed()"
+          (ngModelChange)="typed.set($event)"
+        />
+      </div>
+    }
+  </form>
+  <div jb-dialog-footer>
+    <button jb-button type="button" [disabled]="busy()" (click)="close()">{{ keep }}</button>
+    <button
+      jb-button
+      variant="danger"
+      type="submit"
+      form="delete-form"
+      [attr.aria-disabled]="ready() ? null : 'true'"
+      [disabled]="busy()"
+      [busy]="busy()"
+    >
+      {{ confirm }}
+    </button>
+  </div>
+</jb-dialog>

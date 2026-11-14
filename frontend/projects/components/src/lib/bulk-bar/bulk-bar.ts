@@ -1,6 +1,6 @@
 import { CdkMenuTrigger } from '@angular/cdk/menu';
 import { ConnectedPosition } from '@angular/cdk/overlay';
-import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
+import { booleanAttribute, ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { Icon } from '../icon/icon';
 import { Menu } from '../menu/menu';
 import { MenuItem } from '../menu/menu-item';
@@ -31,9 +31,12 @@ export class BulkBar {
   /** The status field's name in lower case, or null when the status is not set here. */
   readonly statusLabel = input<string | null>(null);
   readonly statuses = input<readonly string[]>([]);
+  /** The role may delete in the table: "Delete" (L2-281 AC2). */
+  readonly deletable = input(false, { transform: booleanAttribute });
 
   readonly statusChosen = output<string>();
   readonly cleared = output<void>();
+  readonly deleteChosen = output<void>();
 
   protected readonly upward: ConnectedPosition[] = [
     { originX: 'start', originY: 'top', overlayX: 'start', overlayY: 'bottom', offsetY: -8 },

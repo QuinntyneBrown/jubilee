@@ -10,7 +10,14 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { ADMIN_PAGE_SIZES, ADMIN_TABLES_API, AdminRows, errorReference, LoadState } from 'api';
+import {
+  ADMIN_PAGE_SIZES,
+  ADMIN_TABLES_API,
+  AdminRows,
+  AdminTable,
+  errorReference,
+  LoadState,
+} from 'api';
 import {
   AdminHeading,
   AdminPage,
@@ -33,6 +40,7 @@ import {
 } from 'components';
 import { distinctUntilChanged, map, Subscription } from 'rxjs';
 import { AdminCatalogService } from '../../services/admin-catalog.service';
+import { AdminDeletionService } from '../../services/admin-deletion.service';
 import { AdminPreferencesService } from '../../services/admin-preferences.service';
 import { AdminScreenService } from '../../services/admin-screen.service';
 import { StaffSessionService } from '../../services/staff-session.service';
@@ -79,6 +87,7 @@ export class RecordsPage {
   private readonly session = inject(StaffSessionService);
   private readonly preferences = inject(AdminPreferencesService);
   private readonly toasts = inject(ToastService);
+  private readonly deletion = inject(AdminDeletionService);
 
   protected readonly key = signal('');
   protected readonly state = signal<LoadState<AdminRows>>({ status: 'loading' });
@@ -194,6 +203,10 @@ export class RecordsPage {
         this.size.set(ADMIN_PAGE_SIZES.find((n) => n === kept.size) ?? ADMIN_PAGE_SIZES[0]);
         this.load();
       });
+    // "Undo" brought records of this table back: read the rows again (L2-281 AC3).
+    this.deletion.restored.pipe(takeUntilDestroyed()).subscribe((key) => {
+      if (key === this.key()) this.load();
+    });
   }
 
   protected search(q: string): void {
@@ -273,6 +286,25 @@ export class RecordsPage {
           text: `Nothing was changed. If it keeps happening, tell us and quote ${errorReference(error, 'JB-ADM-504')}.`,
         }),
     });
+  }
+
+  /** Asks, then deletes the rows and reads the page again (L2-281 AC1, AC3). */
+  protected remove(table: AdminTable, rows: readonly RecordsRow[]): void {
+    this.deletion
+      .ask(
+        table,
+        rows.map((r) => ({ id: r.id, name: r.name })),
+      )
+      .subscribe(() => this.load());
+  }
+
+  /** "Delete" in the bar: the selected rows of the page (L2-281 AC2). */
+  protected removeSelected(table: AdminTable): void {
+    const ids = this.selected();
+    this.remove(
+      table,
+      this.rows().filter((r) => ids.includes(r.id)),
+    );
   }
 
   protected load(): void {

@@ -161,6 +161,18 @@ gap.
   table without one (Job runs) opens a record by its row or its "Open".
 - **History words**: a change reads "changed {field} from {old} to {new}" with the field in lower
   case, as the mock `saved.html` writes it.
+- **Members in the delete mocks**: the mocks draw deleting members, but Members are not deletable
+  (a member deletes their own account, `L2-017`). The application offers "Delete" wherever the
+  catalog's `canDelete` says so; the mocks stay as a drawing of the dialog.
+- **One delete dialog**: the record's dialog (`admin-record/confirm-delete.html`) now names the record
+  and its ID and says the data can't be brought back after 30 days, as `L2-281` AC1 asks; it was
+  drawn with neither. Both dialogs name the tables that point at the records.
+- **Deleting on a phone**: under 768 px the rows have no actions menu, so one record is deleted from
+  its own page; checked rows still bring up the bar with "Delete".
+- **Undo after a new record took the place**: the unique indexes of saved items, stock alerts and
+  launch sign-ups skip deleted rows, so a member can save again what was deleted. If they do,
+  "Undo" of the old one would break the index and is refused with `JB-ADM-504`. <TO SUPPLY>
+  whether "Undo" should then drop the older copy.
 
 ## Requirements
 

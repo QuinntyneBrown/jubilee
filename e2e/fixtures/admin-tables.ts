@@ -477,6 +477,8 @@ export interface FakeAdminTables {
   refusal: Record<string, string>;
   /** Every change and creation sent, in order. */
   saves: AdminSave[];
+  /** The rows deleted, by table, until "Undo" brings them back (L2-281 AC3). */
+  deleted: Record<string, AdminRow[]>;
   /** The path and query of every request for rows, such as `/members?page=1&size=25`. */
   rowRequests: string[];
   catalogReads: number;
@@ -572,6 +574,7 @@ export async function stubAdminTables(
     saveAnswer: options.saveAnswer ?? 'ok',
     refusal: options.refusal ?? {},
     saves: [],
+    deleted: {},
     rowRequests: [],
     catalogReads: 0,
   };
@@ -611,6 +614,24 @@ export async function stubAdminTables(
       const chosen = (fake.rows[key] ?? []).filter((r) => body.ids.includes(r.id));
       for (const r of chosen) r.values[field] = body.status;
       return route.fulfill({ json: { count: chosen.length } });
+    }
+    if (route.request().method() === 'POST' && (id === 'delete' || id === 'restore')) {
+      // The selected rows deleted, or brought back by "Undo" (L2-281 AC3).
+      const body = route.request().postDataJSON() as { ids: string[] };
+      fake.saves.push({ method: 'POST', path: `/${key}/${id}`, values: body });
+      if (fake.saveAnswer === 'slow') return;
+      if (fake.saveAnswer === 'refused') return route.fulfill(refused(fake.refusal));
+      const from = id === 'delete' ? (fake.rows[key] ?? []) : (fake.deleted[key] ?? []);
+      const moved = from.filter((r) => body.ids.includes(r.id));
+      const left = from.filter((r) => !body.ids.includes(r.id));
+      if (id === 'delete') {
+        fake.rows[key] = left;
+        fake.deleted[key] = [...(fake.deleted[key] ?? []), ...moved];
+      } else {
+        fake.deleted[key] = left;
+        fake.rows[key] = [...moved, ...(fake.rows[key] ?? [])];
+      }
+      return route.fulfill({ json: { count: moved.length } });
     }
     const row = (fake.rows[key] ?? []).find((r) => r.id === id);
     if (!row) return route.fulfill(problem(404, 'NOT_FOUND', 'There is no such record.'));

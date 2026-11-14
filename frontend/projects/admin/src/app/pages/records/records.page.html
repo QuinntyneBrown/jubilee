@@ -65,6 +65,8 @@
           (emptyAction)="clear()"
           (copied)="copied()"
           (duplicate)="duplicate($event)"
+          [deletable]="table.canDelete"
+          (remove)="remove(table, [$event])"
         >
           @if (rows().length > 0) {
             <div
@@ -103,6 +105,8 @@
             [statuses]="settable()?.options ?? []"
             (statusChosen)="setStatus($event)"
             (cleared)="selected.set([])"
+            [deletable]="table.canDelete"
+            (deleteChosen)="removeSelected(table)"
           ></div>
         }
       </div>

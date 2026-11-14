@@ -31,6 +31,7 @@ import {
 } from 'components';
 import { distinctUntilChanged, map, Subscription } from 'rxjs';
 import { AdminCatalogService } from '../../services/admin-catalog.service';
+import { AdminDeletionService } from '../../services/admin-deletion.service';
 import { AdminScreenService } from '../../services/admin-screen.service';
 import { StaffSessionService } from '../../services/staff-session.service';
 import { AdminOnlyPage } from '../admin-only/admin-only.page';
@@ -72,6 +73,7 @@ export class RecordPage {
   private readonly router = inject(Router);
   private readonly session = inject(StaffSessionService);
   private readonly toasts = inject(ToastService);
+  private readonly deletion = inject(AdminDeletionService);
   private reading?: Subscription;
 
   protected readonly key = signal('');
@@ -146,6 +148,15 @@ export class RecordPage {
         this.state.set({ status: 'error', reference: errorReference(error, 'JB-ADM-504') });
       },
     });
+  }
+
+  /** Asks, then deletes the record and opens its table, where the toast offers "Undo" (L2-281 AC3). */
+  protected remove(record: AdminRecord): void {
+    const table = this.table();
+    if (!table) return;
+    this.deletion
+      .ask(table, [{ id: record.id, name: record.name }], record.pointsHere)
+      .subscribe(() => void this.router.navigate(['/', table.key]));
   }
 
   protected copied(): void {

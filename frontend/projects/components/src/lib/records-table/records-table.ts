@@ -16,6 +16,7 @@ import { Router, RouterLink } from '@angular/router';
 import { Button } from '../button/button';
 import { Icon } from '../icon/icon';
 import { Menu } from '../menu/menu';
+import { MenuDivider } from '../menu/menu-divider';
 import { MenuItem } from '../menu/menu-item';
 import { Skeleton } from '../skeleton/skeleton';
 import { StatusPill } from '../status-pill/status-pill';
@@ -160,7 +161,8 @@ export function cellOf(type: RecordsColumnType, value: unknown): Cell {
  *
  * Each row's actions (L2-280 AC1), "Actions for {name}", open a menu: "Open", "Edit" when
  * `editable`, "Copy ID" with the start of the ID (emitting `copied`) and "Duplicate" when
- * `duplicable` (emitting `duplicate`). The checked rows are `selected`, by ID, two-way (L2-280
+ * `duplicable` (emitting `duplicate`), and, after a divider, "Delete" when `deletable` (emitting
+ * `remove`, L2-281 AC1). The checked rows are `selected`, by ID, two-way (L2-280
  * AC3); a checked row is tinted and `aria-selected`, and the heading's checkbox checks every row of
  * the page.
  */
@@ -173,6 +175,7 @@ export function cellOf(type: RecordsColumnType, value: unknown): Cell {
     Button,
     Icon,
     Menu,
+    MenuDivider,
     MenuItem,
     Skeleton,
     StatusPill,
@@ -203,6 +206,8 @@ export class RecordsTable {
   readonly editable = input(false, { transform: booleanAttribute });
   /** The row menu offers "Duplicate" (L2-280 AC2). */
   readonly duplicable = input(false, { transform: booleanAttribute });
+  /** The role may delete in the table: the row's "Delete" (L2-281 AC1). */
+  readonly deletable = input(false, { transform: booleanAttribute });
   /** The IDs of the checked rows (L2-280 AC3). */
   readonly selected = model<readonly string[]>([]);
 
@@ -211,6 +216,7 @@ export class RecordsTable {
   /** A row's ID was put on the clipboard. */
   readonly copied = output<void>();
   readonly duplicate = output<RecordsRow>();
+  readonly remove = output<RecordsRow>();
 
   /** A row's menu opens under its button, aligned to its end. */
   protected readonly endAligned: ConnectedPosition[] = [

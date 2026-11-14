@@ -1,5 +1,5 @@
 // Acceptance Test
-// Traces to: L2-099, L2-106, L2-188, L2-272, L2-276, L2-277, L2-278, L2-280, L2-282, L2-283,
+// Traces to: L2-099, L2-106, L2-188, L2-272, L2-276, L2-277, L2-278, L2-280, L2-281, L2-282, L2-283,
 // L2-284
 // Description: the schema-driven admin application (ADR 0074): its shell with the sidebar of
 // tables in their groups, what a role may read, and one table read from the catalog.
@@ -16,6 +16,7 @@ import { ADMIN_URL, expect, test } from '../fixtures/jb-test';
 import { ada, miriam } from '../fixtures/staff';
 import { AdminRecordPage } from '../pages/admin-record.page';
 import { AdminRecordsPage } from '../pages/admin-records.page';
+import { DeleteRecordsDialog } from '../pages/delete-records.dialog';
 import { Toasts } from '../pages/toasts';
 
 test.describe('the shell of the admin application (L2-272)', () => {
@@ -1205,5 +1206,157 @@ test.describe('row actions and selection (L2-280)', () => {
     await expect(new Toasts(page).withTitle('1 set to read')).toBeVisible();
     await expect(records.bulkBar).toHaveCount(0);
     await expect(await records.cell(records.row('Ruth Chen'), 'Status')).toHaveText('read');
+  });
+});
+
+test.describe('delete records (L2-281)', () => {
+  const [ruth, naomi] = MEMBER_ROWS;
+
+  test('AC1: "Delete" on a row asks first, naming the record and what points at it; "Keep it" keeps it', async ({
+    page,
+    jb,
+  }) => {
+    const records = new AdminRecordsPage(page);
+    const dialog = new DeleteRecordsDialog(page);
+    await records.setWidth(1280);
+    const fake = await stubAdminTables(page, ada, {
+      records: {
+        [`members/${ruth.id}`]: {
+          pointsHere: [
+            { table: 'sessions', label: 'Sessions', field: 'memberId', count: 2 },
+            { table: 'listings', label: 'Listings', field: 'ownerId', count: 1 },
+          ],
+        },
+      },
+    });
+    await jb.gotoAdmin('/members');
+
+    const menu = await records.openRowMenu('Ruth Chen');
+    await menu.getByRole('menuitem', { name: 'Delete' }).click();
+
+    await expect(dialog.title).toHaveText('Delete Ruth Chen?');
+    await expect(dialog.description).toHaveText(
+      'This removes it for everyone on Jubilee. The deletion is kept in Audit records, but the data can’t be brought back after 30 days.',
+    );
+    await expect(dialog.doomed).toHaveText([`Ruth Chen${ruth.id}`]);
+    await expect(dialog.pointing).toHaveText(
+      '3 other records point here, in Sessions, Listings. They’ll show “deleted” where this used to be.',
+    );
+    await expect(dialog.confirmation).toHaveCount(0);
+    await expect(dialog.delete).toHaveText('Delete member');
+
+    await dialog.keep.click();
+    await expect(dialog.root).toHaveCount(0);
+    await expect(records.row('Ruth Chen')).toBeVisible();
+    expect(fake.saves).toEqual([]);
+  });
+
+  test('AC3: a deleted record leaves the table, and "Undo" brings it back as it was', async ({
+    page,
+    jb,
+  }) => {
+    const records = new AdminRecordsPage(page);
+    const dialog = new DeleteRecordsDialog(page);
+    await records.setWidth(1280);
+    const fake = await stubAdminTables(page, ada);
+    await jb.gotoAdmin('/members');
+
+    const menu = await records.openRowMenu('Ruth Chen');
+    await menu.getByRole('menuitem', { name: 'Delete' }).click();
+    await dialog.delete.click();
+
+    const toast = new Toasts(page).withTitle('1 member deleted');
+    await expect(toast).toBeVisible();
+    await expect(records.row('Ruth Chen')).toHaveCount(0);
+    expect(fake.saves).toEqual([
+      { method: 'POST', path: '/members/delete', values: { ids: [ruth.id] } },
+    ]);
+
+    await toast.getByRole('button', { name: 'Undo' }).click();
+
+    await expect(records.row('Ruth Chen')).toBeVisible();
+    expect(fake.saves.at(-1)).toEqual({
+      method: 'POST',
+      path: '/members/restore',
+      values: { ids: [ruth.id] },
+    });
+  });
+
+  test('AC2: deleting the selection waits for "delete" to be typed', async ({ page, jb }) => {
+    const records = new AdminRecordsPage(page);
+    const dialog = new DeleteRecordsDialog(page);
+    await records.setWidth(1280);
+    const fake = await stubAdminTables(page, ada);
+    await jb.gotoAdmin('/members');
+    await records.select('Ruth Chen', 'Naomi Laurent');
+
+    await records.deleteSelected.click();
+
+    await expect(dialog.title).toHaveText('Delete 2 members?');
+    await expect(dialog.doomed).toHaveText([`Ruth Chen${ruth.id}`, `Naomi Laurent${naomi.id}`]);
+    await expect(dialog.keep).toHaveText('Keep them');
+    await expect(dialog.delete).toHaveText('Delete 2 members');
+    await expect(dialog.delete).toHaveAttribute('aria-disabled', 'true');
+    await dialog.confirmation.press('Enter');
+    await expect(dialog.title).toBeVisible();
+    expect(fake.saves).toEqual([]);
+
+    await dialog.confirmation.fill('delete');
+    await expect(dialog.delete).not.toHaveAttribute('aria-disabled', 'true');
+    await dialog.delete.click();
+
+    await expect(new Toasts(page).withTitle('2 members deleted')).toBeVisible();
+    await expect(records.bulkBar).toHaveCount(0);
+    await expect(records.row('Naomi Laurent')).toHaveCount(0);
+    expect(fake.saves).toEqual([
+      { method: 'POST', path: '/members/delete', values: { ids: [ruth.id, naomi.id] } },
+    ]);
+  });
+
+  test('AC3: deleting from the record opens the table with the toast', async ({ page, jb }) => {
+    const record = new AdminRecordPage(page);
+    const records = new AdminRecordsPage(page);
+    const dialog = new DeleteRecordsDialog(page);
+    await record.setWidth(1280);
+    await stubAdminTables(page, ada, {
+      records: {
+        [`members/${ruth.id}`]: {
+          pointsHere: [{ table: 'sessions', label: 'Sessions', field: 'memberId', count: 1 }],
+        },
+      },
+    });
+    await jb.gotoAdmin(`/members/${ruth.id}`);
+
+    await record.delete.click();
+
+    await expect(dialog.title).toHaveText('Delete Ruth Chen?');
+    await expect(dialog.pointing).toHaveText(
+      '1 other record points here, in Sessions. They’ll show “deleted” where this used to be.',
+    );
+    await dialog.delete.click();
+
+    await expect(page).toHaveURL(/\/members$/);
+    await expect(new Toasts(page).withTitle('1 member deleted')).toBeVisible();
+    await expect(records.row('Naomi Laurent')).toBeVisible();
+    await expect(records.row('Ruth Chen')).toHaveCount(0);
+  });
+
+  test('AC5: a table the role may not delete in offers no "Delete"', async ({ page, jb }) => {
+    const records = new AdminRecordsPage(page);
+    const record = new AdminRecordPage(page);
+    await records.setWidth(1280);
+    await stubAdminTables(page, miriam);
+    await jb.gotoAdmin('/feedback');
+
+    const menu = await records.openRowMenu('Ruth Chen');
+    await expect(menu.getByRole('menuitem', { name: 'Delete' })).toHaveCount(0);
+    await page.keyboard.press('Escape');
+    await records.select('Ruth Chen');
+    await expect(records.bulkBar).toBeVisible();
+    await expect(records.deleteSelected).toHaveCount(0);
+
+    await jb.gotoAdmin(`/feedback/${FEEDBACK_ROW.id}`);
+    await expect(record.heading).toBeVisible();
+    await expect(record.delete).toHaveCount(0);
   });
 });

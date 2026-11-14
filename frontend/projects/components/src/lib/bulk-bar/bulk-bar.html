@@ -19,7 +19,11 @@
       </jb-menu>
     </ng-template>
   }
-  <ng-content />
+  @if (deletable()) {
+    <button class="bulk-bar__btn bulk-bar__btn--danger" type="button" (click)="deleteChosen.emit()">
+      <svg jb-icon name="trash-can"></svg>Delete
+    </button>
+  }
   <button
     class="bulk-bar__btn bulk-bar__btn--clear"
     type="button"

@@ -194,6 +194,10 @@
     @if (duplicable()) {
       <button jb-menu-item icon="copy-plus" (chosen)="duplicate.emit(item.row)">Duplicate</button>
     }
+    @if (deletable()) {
+      <div jb-menu-divider></div>
+      <button jb-menu-item icon="trash-can" danger (chosen)="remove.emit(item.row)">Delete</button>
+    }
   </jb-menu>
 </ng-template>
 
