@@ -15,7 +15,6 @@ import {
   AdminPage,
   Button,
   EmptyState,
-  formatAdminDate,
   Icon,
   LockTag,
   RecordAside,
@@ -24,10 +23,12 @@ import {
   RecordGrid,
   RecordHead,
   RecordHistoryLine,
-  RecordsColumn,
+  RecordNote,
   RecordSystem,
   RecordSystemValue,
+  RecordsColumn,
   ToastService,
+  formatAdminDate,
 } from 'components';
 import { distinctUntilChanged, map, Subscription } from 'rxjs';
 import { AdminCatalogService } from '../../services/admin-catalog.service';
@@ -57,6 +58,7 @@ import { ownFields, systemValues } from './record-values';
     RecordFields,
     RecordGrid,
     RecordHead,
+    RecordNote,
     RecordSystem,
     AdminOnlyPage,
     NotFoundPage,
@@ -79,7 +81,7 @@ export class RecordPage {
   protected readonly key = signal('');
   protected readonly id = signal('');
   protected readonly state = signal<LoadState<AdminRecord>>({ status: 'loading' });
-  protected readonly refused = signal<'forbidden' | 'not-found' | null>(null);
+  protected readonly refused = signal<'forbidden' | 'not-found' | 'private' | null>(null);
   /** A change was just saved: the head says "Saved" (L2-283 AC2). */
   protected readonly saved = signal(false);
 
@@ -140,6 +142,11 @@ export class RecordPage {
       next: (record) => this.state.set({ status: 'loaded', value: record }),
       error: (error: unknown) => {
         const status = error instanceof HttpErrorResponse ? error.status : 0;
+        // A message whose conversation has no open report does not open (L2-284 AC3).
+        if (status === 403 && (error as HttpErrorResponse).error?.code === 'PRIVATE') {
+          this.refused.set('private');
+          return;
+        }
         if (status === 403 || status === 404) {
           this.refused.set(status === 403 ? 'forbidden' : 'not-found');
           this.screen.outcome.set(status === 403 ? 'admin-only' : 'admin-not-found');

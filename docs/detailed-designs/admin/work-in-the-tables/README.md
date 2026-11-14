@@ -58,6 +58,13 @@ record as an action. The featured slots follow the rules of the featured week (`
   when the record is gone.
 - **`AdminAudit`** — adds the audit record of a change (`{table}.update`, `.create`, `.delete`,
   `.restore`, `.export`, `messages.read`) to the same `SaveChanges`.
+- **`AdminPrivacy`** — what is guarded beyond the role (`L2-284` AC3, AC4). `AuditReadAsync`
+  opens a message or a message attachment only while its conversation has a report that is not
+  resolved, and writes `messages.read` with that report's ID as the reason; without one it refuses
+  with 403 `PRIVATE` and writes nothing. `IsOwnListingAsync` says whether a record of Listings,
+  Listing reports or Listing report entries belongs to a listing the staff member owns (its
+  `OwnerId` is their subject); `EnsureNotOwnAsync` refuses a change or "Set {status}" of it with
+  403 `OWN_LISTING`. The record answers `readAudited` and `ownListing`.
 
 ### Backend — handlers and endpoints
 
@@ -130,6 +137,11 @@ and those a new record is given (`creatable`).
   saved, opens the record with "Saved". A reference's select offers the first 250 records of its
   table as "{name} · {ID}".
 - **`DeleteRecordsDialog`** (`dialogs/delete-records`) — CDK alert dialog of `L2-281` AC1 and AC2.
+- **Record notes** (`L2-284`): under the heading, `jb-record-note` says "Jubilee writes these
+  records itself…" for a System table, "Messages are private. Opening this one was written to
+  Audit records under your name." when `readAudited`, and "This is your own listing…" when
+  `ownListing`, which also removes Edit and Delete. A message that answers `PRIVATE` shows "This
+  message is private" with "Back to messages" in place of the record.
 - **`AdminExportService`** (admin application) — downloads an export: asks for the reason first
   where the table is private (`ExportReasonDialog`, `dialogs/export-reason`, `L2-279` AC4), calls
   the export endpoint and saves the file under the name of its `Content-Disposition`; turns "Email
@@ -139,6 +151,7 @@ and those a new record is given (`creatable`).
   list, skeleton rows, the empty state), `jb-status-pill` (`status status--{tone}`), `jb-lock-tag`,
   `jb-record-head`, `jb-record-fields`, `jb-backlinks`, `jb-history`, `jb-bulk-bar`, `jb-doomed-list`,
   `jb-export-menu` (Export and its menu, the matching rows first while a search or a filter is on),
+  `jb-record-note`,
   reusing `jb-menu`, `jb-chip`, `jb-checkbox`, `jb-switch`, `jb-select`, `jb-input`,
   `jb-textarea`, `jb-skeleton`, `jb-empty-state` and `jb-toast-region`.
 
@@ -185,6 +198,13 @@ gap.
 - **The reason field focused in a dialog**: a field's focus ring sits on its border, as everywhere
   else; the design system's rule that sets the ring off inside a dialog applies to the other
   controls only.
+- **One's own listing, as far as the tables reach**: `L2-284` AC4 is enforced on Listings, Listing
+  reports and Listing report entries. A Review or a Review report of one's own listing is not
+  guarded here; "Take down" and "Act on report" keep the checks of `L2-098` AC5 in their own
+  handlers. The record of a listing opens the moderation screen until the old screens retire; the
+  behaviour is proved on a listing report until then.
+- **A note is not muted inside an alert**: the design system's `.record-note` made the text of the
+  warning and information notes muted; it now keeps the alert's colour, as every other alert does.
 - **"Type delete to confirm"**: the label is plain text, as its accessible name reads; the mock's
   `<code>` around "delete" is dropped because `jb-field` takes its label as text.
 

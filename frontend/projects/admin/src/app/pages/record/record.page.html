@@ -5,6 +5,24 @@
   @case ('not-found') {
     <jb-not-found-page />
   }
+  @case ('private') {
+    <div jb-admin-page width="record">
+      <nav
+        jb-record-crumbs
+        [label]="table()?.label ?? ''"
+        [link]="['/', key()]"
+        [here]="id()"
+      ></nav>
+      <h1 class="visually-hidden">{{ table()?.singular }} {{ id() }}</h1>
+      <div jb-empty-state icon="eye" [heading]="'This ' + singular() + ' is private'">
+        It opens only while its conversation has an open report. Nothing was written to Audit
+        records.
+        <a slot="actions" jb-button [routerLink]="['/', key()]"
+          ><svg jb-icon name="arrow-left"></svg>Back to {{ table()?.label?.toLowerCase() }}</a
+        >
+      </div>
+    </div>
+  }
   @default {
     <div
       jb-admin-page
@@ -51,7 +69,7 @@
               @if (table()?.readOnly) {
                 <span slot="actions" jb-lock-tag large></span>
               }
-              @if (table()?.canDelete) {
+              @if (table()?.canDelete && !record.ownListing) {
                 <button
                   slot="actions"
                   jb-button
@@ -62,12 +80,28 @@
                   <svg jb-icon name="trash-can"></svg>Delete
                 </button>
               }
-              @if (table()?.canEdit) {
+              @if (table()?.canEdit && !record.ownListing) {
                 <a slot="actions" jb-button variant="ink" [routerLink]="['/', key(), id(), 'edit']"
                   ><svg jb-icon name="pencil"></svg>Edit</a
                 >
               }
             </div>
+            @if (record.readAudited) {
+              <div jb-record-note tone="warning" icon="eye">
+                Messages are private. Opening this one was written to Audit records under your name.
+              </div>
+            }
+            @if (table()?.readOnly) {
+              <p jb-record-note>
+                Jubilee writes these records itself. They can be read and exported, never changed.
+              </p>
+            }
+            @if (record.ownListing) {
+              <div jb-record-note tone="info" icon="info">
+                This is your own listing. Another member of the Jubilee team has to act on it and
+                its reports.
+              </div>
+            }
             <div jb-record-grid>
               <section aria-label="Fields">
                 <dl jb-record-fields [fields]="fields()" [values]="record.values"></dl>

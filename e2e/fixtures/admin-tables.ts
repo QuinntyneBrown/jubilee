@@ -375,6 +375,17 @@ export function manyMembers(count: number): AdminRow[] {
   });
 }
 
+/** Naomi's message in the reported conversation with Luzandre.com (L2-284 AC3). */
+export const MESSAGE_ROW: AdminRow = {
+  id: '7c1e9a2b-4d3f-4e5a-8b6c-1d2e3f4a5b6c',
+  name: 'Naomi Laurent',
+  values: {
+    id: '7c1e9a2b-4d3f-4e5a-8b6c-1d2e3f4a5b6c',
+    name: 'Naomi Laurent',
+    createdAt: '2026-11-12T16:20:00+00:00',
+  },
+};
+
 export const LISTING_ROWS: AdminRow[] = [
   {
     id: '3b2a1c0d-9e8f-4a7b-b6c5-d4e3f2a1b0c9',
@@ -466,6 +477,12 @@ export interface AdminHistoryLine {
 export interface RecordExtras {
   pointsHere?: AdminPointer[];
   history?: AdminHistoryLine[];
+  /** Opening it was written to Audit records, as a message's is (L2-284 AC3). */
+  readAudited?: boolean;
+  /** The staff member's own listing, or a report of it (L2-284 AC4). */
+  ownListing?: boolean;
+  /** A message whose conversation has no open report: it does not open (L2-284 AC3). */
+  closed?: boolean;
 }
 
 export interface FakeAdminTables {
@@ -673,6 +690,15 @@ export async function stubAdminTables(
     }
     const row = (fake.rows[key] ?? []).find((r) => r.id === id);
     if (!row) return route.fulfill(problem(404, 'NOT_FOUND', 'There is no such record.'));
+    if (fake.records[`${key}/${id}`]?.closed) {
+      return route.fulfill(
+        problem(
+          403,
+          'PRIVATE',
+          'Messages are private. One opens only while its conversation has an open report.',
+        ),
+      );
+    }
     if (route.request().method() === 'PATCH') {
       const values = (route.request().postDataJSON() as { values: Record<string, string | null> })
         .values;
@@ -703,6 +729,8 @@ export async function stubAdminTables(
         values: row.values,
         pointsHere: extras.pointsHere ?? [],
         history: extras.history ?? creation(known, row),
+        readAudited: extras.readAudited ?? false,
+        ownListing: extras.ownListing ?? false,
       },
     });
   });

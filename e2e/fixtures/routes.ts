@@ -189,6 +189,8 @@ export type StubName =
   | 'admin-records-loading'
   | 'admin-records-error'
   | 'admin-records-forbidden'
+  | 'admin-record-message'
+  | 'admin-record-private'
   | 'admin-record-loading'
   | 'admin-record-error'
   | 'admin-record-saving'
@@ -2047,6 +2049,20 @@ export const routes = {
     who: 'visitor',
     site: 'admin',
     stub: 'admin-records',
+  },
+  'admin-record.messages': {
+    app: '/messages/msg_14386',
+    mock: 'pages/admin-record/messages.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'admin-record-message',
+  },
+  'admin-record.private': {
+    app: '/messages/msg_14386',
+    mock: 'pages/admin-record/private.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'admin-record-private',
   },
   'admin-record.job-runs': {
     app: '/job-runs/job_9874',

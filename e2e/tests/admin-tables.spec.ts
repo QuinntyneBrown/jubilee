@@ -1,5 +1,5 @@
 // Acceptance Test
-// Traces to: L2-099, L2-106, L2-188, L2-272, L2-276, L2-277, L2-278, L2-279, L2-280, L2-281, L2-282, L2-283,
+// Traces to: L2-098, L2-099, L2-106, L2-188, L2-272, L2-276, L2-277, L2-278, L2-279, L2-280, L2-281, L2-282, L2-283,
 // L2-284
 // Description: the schema-driven admin application (ADR 0074): its shell with the sidebar of
 // tables in their groups, what a role may read, and one table read from the catalog.
@@ -8,6 +8,8 @@ import {
   JOB_RUN_ROW,
   LISTING_ROWS,
   manyMembers,
+  MESSAGE_ROW,
+  type AdminRow,
   MEMBER_ROWS,
   ORDER_ROWS,
   stubAdminTables,
@@ -1497,5 +1499,95 @@ test.describe('export a table (L2-279)', () => {
       '/messages/export?format=csv&reason=Report+JB-4411+asks+for+the+thread',
     ]);
     await expect(dialog.title).toHaveCount(0);
+  });
+});
+
+test.describe('private records and one’s own listing (L2-284)', () => {
+  test('AC2: a record of System says Jubilee writes it itself', async ({ page, jb }) => {
+    const record = new AdminRecordPage(page);
+    await record.setWidth(1280);
+    await stubAdminTables(page, ada, { rows: { 'job-runs': [JOB_RUN_ROW] } });
+    await jb.gotoAdmin(`/job-runs/${JOB_RUN_ROW.id}`);
+
+    await expect(record.note).toHaveText(
+      'Jubilee writes these records itself. They can be read and exported, never changed.',
+    );
+  });
+
+  test('AC3: a message of a reported conversation says its read was written to Audit records', async ({
+    page,
+    jb,
+  }) => {
+    const record = new AdminRecordPage(page);
+    await record.setWidth(1280);
+    await stubAdminTables(page, miriam, {
+      rows: { messages: [MESSAGE_ROW] },
+      records: { [`messages/${MESSAGE_ROW.id}`]: { readAudited: true } },
+    });
+    await jb.gotoAdmin(`/messages/${MESSAGE_ROW.id}`);
+
+    await expect(record.heading).toHaveText('Naomi Laurent');
+    await expect(record.note).toHaveText(
+      'Messages are private. Opening this one was written to Audit records under your name.',
+    );
+  });
+
+  test('AC3: a message without an open report does not open, and says why', async ({
+    page,
+    jb,
+  }) => {
+    const record = new AdminRecordPage(page);
+    await record.setWidth(1280);
+    await stubAdminTables(page, miriam, {
+      rows: { messages: [MESSAGE_ROW] },
+      records: { [`messages/${MESSAGE_ROW.id}`]: { closed: true } },
+    });
+    await jb.gotoAdmin(`/messages/${MESSAGE_ROW.id}`);
+
+    await expect(record.closed.getByRole('heading')).toHaveText('This message is private');
+    await expect(record.closed).toContainText(
+      'It opens only while its conversation has an open report. Nothing was written to Audit records.',
+    );
+    await expect(record.closedBack).toHaveText('Back to messages');
+    await expect(record.closedBack).toHaveAttribute('href', '/messages');
+    await expect(record.fields).toHaveCount(0);
+  });
+
+  // A listing's own record opens the moderation screen until the old screens retire, so its
+  // report shows the record of the admin tables (L2-284 AC4: "its record or a report of it").
+  const report: AdminRow = {
+    id: '5d4c3b2a-1f0e-4d9c-8b7a-6f5e4d3c2b1a',
+    name: '5d4c3b2a',
+    values: { id: '5d4c3b2a-1f0e-4d9c-8b7a-6f5e4d3c2b1a', name: '5d4c3b2a' },
+  };
+
+  test('AC4: a report of one’s own listing offers no action and says another member of the team acts on it', async ({
+    page,
+    jb,
+  }) => {
+    const record = new AdminRecordPage(page);
+    await record.setWidth(1280);
+    await stubAdminTables(page, miriam, {
+      rows: { 'listing-reports': [report] },
+      records: { [`listing-reports/${report.id}`]: { ownListing: true } },
+    });
+    await jb.gotoAdmin(`/listing-reports/${report.id}`);
+
+    await expect(record.heading).toHaveText('5d4c3b2a');
+    await expect(record.note).toHaveText(
+      'This is your own listing. Another member of the Jubilee team has to act on it and its reports.',
+    );
+    await expect(record.edit).toHaveCount(0);
+    await expect(record.delete).toHaveCount(0);
+  });
+
+  test('AC3, AC4: another record says nothing more', async ({ page, jb }) => {
+    const record = new AdminRecordPage(page);
+    await record.setWidth(1280);
+    await stubAdminTables(page, miriam, { rows: { 'listing-reports': [report] } });
+    await jb.gotoAdmin(`/listing-reports/${report.id}`);
+
+    await expect(record.heading).toHaveText('5d4c3b2a');
+    await expect(record.note).toHaveCount(0);
   });
 });

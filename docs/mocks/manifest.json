@@ -1014,6 +1014,8 @@
         "saved",
         "create",
         "confirm-delete",
+        "private",
+        "own-listing",
         "staff",
         "sessions",
         "sign-in-failures",

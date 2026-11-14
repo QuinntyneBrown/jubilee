@@ -118,6 +118,10 @@ export interface AdminRecord {
   values: Record<string, unknown>;
   pointsHere: AdminPointer[];
   history: AdminHistoryLine[];
+  /** Opening it was written to Audit records under the staff member's name (L2-284 AC3). */
+  readAudited: boolean;
+  /** The staff member's own listing, or a report of it: they may not act on it (L2-284 AC4). */
+  ownListing: boolean;
 }
 
 export interface AdminRowsQuery {

@@ -79,6 +79,7 @@ const ICONS = {
   check: '<path d="M20 6 9 17l-5-5"/>',
   minus: '<path d="M5 12h14"/>',
   eye: '<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>',
+  info: '<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/>',
   table:
     '<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M12 3v18M3 9h18M3 15h18"/>',
   enter: '<path d="M20 4v7a4 4 0 0 1-4 4H4"/><path d="m9 10-5 5 5 5"/>',
@@ -1086,9 +1087,14 @@ function recordMain(e, mode, phase) {
     return `<div class="admin-page admin-page--record">${crumbs}<h1 class="visually-hidden">${esc(e.singular)} ${esc(source.id)}</h1>${errorState(`${lower(e.singular)} ${source.id}`, "JB-ADM-504")}</div>`;
   }
 
+  if (phase === "private") {
+    return `<div class="admin-page admin-page--record">${crumbs}<h1 class="visually-hidden">${esc(e.singular)} ${esc(source.id)}</h1><div class="empty"><div class="empty__icon" aria-hidden="true">${icon("eye")}</div><h2 class="empty__title">This ${esc(lower(e.singular))} is private</h2><p class="empty__text">It opens only while its conversation has an open report. Nothing was written to Audit records.</p><div class="empty__actions"><a class="btn" href="${recordsHref(e.key)}">${icon("arrowLeft")}Back to ${esc(lower(e.label))}</a></div></div></div>`;
+  }
+
   let actions;
   if (e.readOnly)
     actions = `<span class="lock-tag lock-tag--lg">${icon("lock")}Read-only</span>`;
+  else if (phase === "own") actions = "";
   else if (editing)
     actions = `<a class="btn" href="${creating ? recordsHref(e.key) : "default.html"}">Cancel</a><button class="btn btn--primary" type="${phase === "saving" ? "button" : "submit"}" form="record-form"${phase === "saving" ? ' aria-disabled="true"' : ""}>${
       phase === "saving"
@@ -1109,11 +1115,14 @@ function recordMain(e, mode, phase) {
   }</div><div class="record-head__actions">${actions}</div></div>`;
 
   const notes = [
-    e.key === "messages" && !creating
+    (e.key === "messages" || e.key === "message-attachments") && !creating
       ? `<div class="alert alert--warning record-note">${icon("eye")}<div class="alert__body">Messages are private. Opening this one was written to Audit records under your name.</div></div>`
       : "",
     e.readOnly
       ? '<p class="record-note">Jubilee writes these records itself. They can be read and exported, never changed.</p>'
+      : "",
+    phase === "own"
+      ? `<div class="alert alert--info record-note">${icon("info")}<div class="alert__body">This is your own listing. Another member of the Jubilee team has to act on it and its reports.</div></div>`
       : "",
   ].join("");
 
@@ -1216,6 +1225,18 @@ function buildRecord() {
       phase: "confirm-delete",
       note: "Deleting the record (Magic Patterns “Record delete dialog”): the dialog of a row’s “Delete” (L2-281 AC1), naming the record and its ID and how many records in which tables point at it. “Delete member” returns to the table with the toast of the table’s <code>deleted</code> state.",
     },
+    private: {
+      mode: "view",
+      phase: "private",
+      entity: "messages",
+      note: "A message whose conversation has no open report (L2-284 AC3, L2-063 AC3): it does not open, nothing is written to Audit records, and the screen says why. The API answers 403 <code>PRIVATE</code>.",
+    },
+    "own-listing": {
+      mode: "view",
+      phase: "own",
+      entity: "listings",
+      note: "A staff member’s own listing (L2-284 AC4, L2-098 AC5): it offers no action, and the notice says another member of the Jubilee team acts on it and its reports. A report of it reads the same, and the API refuses a change of either with 403 <code>OWN_LISTING</code>.",
+    },
   };
   const states = [
     "default",
@@ -1224,11 +1245,12 @@ function buildRecord() {
   ];
   mkdirSync(dir, { recursive: true });
   for (const [state, def] of Object.entries(special)) {
+    const entity = def.entity ? getEntity(def.entity) : members;
     const overlays =
       def.phase === "confirm-delete" ? recordDeleteDialog(members) : "";
     const body = shell({
-      active: "members",
-      main: recordMain(members, def.mode, def.phase),
+      active: entity.key,
+      main: recordMain(entity, def.mode, def.phase),
       overlays,
     });
     writeFileSync(
@@ -1239,7 +1261,7 @@ function buildRecord() {
         state,
         states,
         requirements: RECORD_REQ,
-        description: `A member record, ${state}.`,
+        description: `A ${lower(entity.singular)} record, ${state}.`,
         body,
         note: def.note,
       }),

@@ -17,14 +17,19 @@ public sealed record AdminHistoryDto(DateTimeOffset At, string Actor, string Wha
     public string Text => $"{Actor} {What}";
 }
 
-/// <summary>One record of a table: its name, status, values, the records that point at it and its history (L2-282).</summary>
+/// <summary>
+/// One record of a table: its name, status, values, the records that point at it and its history (L2-282);
+/// <see cref="ReadAudited"/> when opening it was written to the audit log, as a message's is (L2-284 AC3), and
+/// <see cref="OwnListing"/> when it is the staff member's own listing or a report of it (L2-284 AC4).
+/// </summary>
 public sealed record AdminRecordDto(
     string Table, string Id, string Name, string? Status, IReadOnlyDictionary<string, object?> Values,
-    IReadOnlyList<AdminPointerDto> PointsHere, IReadOnlyList<AdminHistoryDto> History);
+    IReadOnlyList<AdminPointerDto> PointsHere, IReadOnlyList<AdminHistoryDto> History,
+    bool ReadAudited = false, bool OwnListing = false);
 
 public sealed record GetAdminRecordQuery(StaffViewer Staff, string Table, string Id) : IRequest<AdminRecordDto>;
 
-public sealed class GetAdminRecordQueryHandler(IAppDbContext db) : IRequestHandler<GetAdminRecordQuery, AdminRecordDto>
+public sealed class GetAdminRecordQueryHandler(IAppDbContext db, TimeProvider clock) : IRequestHandler<GetAdminRecordQuery, AdminRecordDto>
 {
     public async Task<AdminRecordDto> Handle(GetAdminRecordQuery request, CancellationToken cancellationToken)
     {
@@ -33,12 +38,21 @@ public sealed class GetAdminRecordQueryHandler(IAppDbContext db) : IRequestHandl
         {
             var row = await table.FindAsync(db, request.Id, cancellationToken)
                 ?? throw new NotFoundException("NOT_FOUND", "There is no such record.");
+            // A message opens only while its conversation has an open report, and the read is audited (L2-284 AC3).
+            var readAudited = AdminPrivacy.IsMessages(table);
+            if (readAudited)
+            {
+                await AdminPrivacy.AuditReadAsync(db, request.Staff, table, request.Id, clock.GetUtcNow(), cancellationToken);
+            }
+
             var resolved = (await AdminValues.Resolve(db, request.Staff, [row], cancellationToken))[0];
             var status = table.StatusField is { } key ? resolved.Values.GetValueOrDefault(key) as string : null;
             return new AdminRecordDto(
                 table.Key, resolved.Id, resolved.Name, status, resolved.Values,
                 await PointsHere(table, request, cancellationToken),
-                await History(table, resolved, cancellationToken));
+                await History(table, resolved, cancellationToken),
+                readAudited,
+                await AdminPrivacy.IsOwnListingAsync(db, request.Staff, table, request.Id, cancellationToken));
         }
         catch (Exception exception) when (exception is not OperationCanceledException and not ForbiddenException and not NotFoundException)
         {

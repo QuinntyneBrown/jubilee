@@ -872,6 +872,17 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
       return void (await stubAdminTables(page, ada, { data: 'mock', saveAnswer: 'slow' }));
     case 'admin-records-error':
       return void (await stubAdminTables(page, ada, { data: 'mock', answer: 'fails' }));
+    case 'admin-record-message':
+    case 'admin-record-private': {
+      // The message the mocks show, opened with its conversation reported, or without (L2-284 AC3).
+      const fake = await stubAdminTables(page, ada, { data: 'mock' });
+      const key = 'messages/msg_14386';
+      fake.records[key] = {
+        ...fake.records[key],
+        ...(name === 'admin-record-message' ? { readAudited: true } : { closed: true }),
+      };
+      return;
+    }
     case 'admin-records-forbidden':
       return void (await stubAdminTables(page, miriam, { data: 'mock', answer: 'forbidden' }));
     case 'admin-listing':

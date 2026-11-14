@@ -1,0 +1,10 @@
+// Block: record-note. A note under a record's heading: plain and muted, or an alert of its tone.
+:host {
+  display: block;
+  margin: var(--space-5) 0 0;
+  font: var(--text-body-sm);
+}
+
+:host(.record-note--plain) {
+  color: var(--color-fg-muted);
+}

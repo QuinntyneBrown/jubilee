@@ -20,6 +20,7 @@ public sealed class UpdateAdminRecordCommandHandler(IAppDbContext db, TimeProvid
     public async Task<AdminRecordDto> Handle(UpdateAdminRecordCommand request, CancellationToken cancellationToken)
     {
         var table = AdminChanges.Changeable(request.Staff, request.Table);
+        await AdminPrivacy.EnsureNotOwnAsync(db, request.Staff, table, request.Id, cancellationToken);
         var now = clock.GetUtcNow();
         var changed = await table.UpdateAsync(db, request.Id, request.Values, new AdminChange(request.Staff, now), cancellationToken)
             ?? throw new NotFoundException("NOT_FOUND", "There is no such record.");
@@ -65,6 +66,11 @@ public sealed class SetAdminStatusCommandHandler(IAppDbContext db, TimeProvider 
     public async Task<AdminCountDto> Handle(SetAdminStatusCommand request, CancellationToken cancellationToken)
     {
         var table = AdminChanges.Changeable(request.Staff, request.Table);
+        foreach (var id in request.Ids.Distinct())
+        {
+            await AdminPrivacy.EnsureNotOwnAsync(db, request.Staff, table, id, cancellationToken);
+        }
+
         var field = table.StatusField is { } key ? table.Fields.Single(f => f.Key == key) : null;
         if (field is null || !field.Editable)
         {

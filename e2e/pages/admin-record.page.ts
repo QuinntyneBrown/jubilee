@@ -30,6 +30,11 @@ export class AdminRecordPage extends AdminShellPage implements Screen {
   readonly cancel: Locator;
   readonly save: Locator;
   readonly saved: Locator;
+  /** What the record says above its fields: a private read, a System table, one's own listing (L2-284). */
+  readonly note: Locator;
+  /** A message that does not open: "This message is private" (L2-284 AC3). */
+  readonly closed: Locator;
+  readonly closedBack: Locator;
 
   constructor(page: Page) {
     super(page);
@@ -55,6 +60,9 @@ export class AdminRecordPage extends AdminShellPage implements Screen {
     this.cancel = this.head.getByRole('link', { name: 'Cancel' });
     this.save = this.head.getByRole('button', { name: /^(Save changes|Saving…)$/ });
     this.saved = this.head.getByRole('status');
+    this.note = this.column.locator('.record-note');
+    this.closed = this.column.locator('.empty');
+    this.closedBack = this.closed.getByRole('link');
   }
 
   /** The value of a field by its label. */
@@ -135,5 +143,21 @@ export class AdminRecordConfirmDeleteScreen extends AdminRecordPage {
 
   override regions(): Region[] {
     return [{ name: 'delete-dialog', locator: this.dialog.root.locator('.dialog__panel') }];
+  }
+}
+
+/** A message whose conversation has no open report: "This message is private" (L2-284 AC3). */
+export class AdminRecordPrivateScreen extends AdminRecordPage {
+  override async ready(): Promise<void> {
+    await this.crumbs.waitFor();
+    await this.closed.waitFor();
+  }
+
+  override regions(): Region[] {
+    return [
+      ...this.chromeRegions(),
+      { name: 'record-crumbs', locator: this.crumbs },
+      { name: 'private', locator: this.closed },
+    ];
   }
 }
