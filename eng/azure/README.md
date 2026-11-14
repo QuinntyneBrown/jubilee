@@ -280,10 +280,9 @@ Where it stands: the App Service, its proxy key, the DNS records and the certifi
 on 11 November 2026 (step 3), and steps 1 and 4 to 7 on 14 November 2026. The allow-list holds the
 owner's home network only (`99.245.164.12/32`, `2607:fea8:4ea0:a500::/64`), which the provider
 can change; when the admin application says "You're not on an allowed network.", add the new
-address with step 5. Step 2 is open: the tenant has no Entra ID P1 licence, so it has no
-Conditional Access, and only the API's own refusal of a sign-in without `mfa` (L2-189 AC3) asks
-for the second factor. Step 8 is open. Write the date beside each step in the table at the end
-as you finish it.
+address with step 5. The owner chose to sign in without a second factor (step 2,
+`StaffSignIn__RequireSecondFactor=false`). Step 8 is open. Write the date beside each step in the
+table at the end as you finish it.
 
 ### The owner's checklist
 
@@ -299,18 +298,23 @@ setting() { az webapp config appsettings list -g "$G" -n "$1" --query "[?name=='
    registration, `Jubilee admin`, single tenant, platform Web, redirect URI
    `https://admin.jubilee.to/api/staff/sign-in/callback`. Under Authentication, tick "ID tokens".
    Under Certificates and secrets, add a client secret and keep it for step 4. The API uses the
-   v1.0 endpoints, whose ID token carries `amr`.
+   v1.0 endpoints, whose ID token carries `amr`. They ask for no resource, so Entra ID falls back
+   to Azure AD Graph: the application needs its delegated `User.Read` with consent for the tenant,
+   or every sign-in ends in `AADSTS650056` ("Misconfigured application"):
+   `az ad app permission add --id "$CLIENT" --api 00000002-0000-0000-c000-000000000000 --api-permissions 311a71cc-e848-46a1-bdf8-97ff7156d8e6=Scope`
+   and then
+   `az ad app permission grant --id "$CLIENT" --api 00000002-0000-0000-c000-000000000000 --scope User.Read`.
    Check:
    `az ad app list --display-name "Jubilee admin" --query "[0].{client:appId, redirect:web.redirectUris[0], idTokens:web.implicitGrantSettings.enableIdTokenIssuance}"`
    prints the client ID, the callback address above and `true`.
-2. **Require a second factor.** A Conditional Access policy for the `Jubilee admin` application
-   that grants access only with multifactor authentication, for every staff member. The API also
-   refuses a sign-in whose `amr` does not name `mfa` (L2-189 AC3), so a staff member without a
-   second factor is told to set one up rather than let in.
-   Check: Entra ID, Conditional Access, Policies lists the policy as On, with the `Jubilee admin`
-   application under Target resources and "Require multifactor authentication" under Grant. After
-   step 8, the sign-in logs show the staff sign-in with "Multifactor authentication" as its
-   authentication requirement.
+2. **The second factor.** Production signs staff in without one:
+   `az webapp config appsettings set -g "$G" -n "$APP" --settings StaffSignIn__RequireSecondFactor=false -o none`
+   (L2-189 AC9). The staff networks (step 5) and the staff list (step 7) still guard the admin
+   application. To require one again, delete the setting: the API then refuses a sign-in whose
+   `amr` does not name `mfa` (AC3), so also add a Conditional Access policy for the `Jubilee admin`
+   application that requires multifactor authentication (it needs an Entra ID P1 licence), or
+   turn on the tenant's security defaults.
+   Check: `setting $APP StaffSignIn__RequireSecondFactor` prints `false`.
 3. **The App Service, its proxy key and its host name** (done 11 November 2026):
    `bash eng/azure/create-admin.sh`. It creates `jubilee-to-admin` on `jubilee-plan` (Node 22,
    `node server.js`, HTTPS only, TLS 1.2, Always On, FTP off, `API_ORIGIN=https://app.jubilee.to`),
@@ -367,7 +371,7 @@ setting() { az webapp config appsettings list -g "$G" -n "$1" --query "[?name=='
    open (step 5).
    Check: the sign-in works as above, and `az webapp log tail -g "$G" -n "$APP"` shows no
    `Failed authorization` for your address. Write the date and your initials beside step 8 below.
-   If the screen says "Sign-in needs a second factor", step 2 is not in force; if it says "This
+   If the screen says "Sign-in needs a second factor", the setting of step 2 is not set; if it says "This
    account isn't on the Jubilee staff list", step 7 used another address; "We couldn't sign you
    in" with `JB-STAFF-503` points at the settings of step 4.
 9. **Run the sweeps by hand** (ADR 0010, for the repository owner only): in `e2e/`, `npm run
@@ -377,7 +381,7 @@ setting() { az webapp config appsettings list -g "$G" -n "$1" --query "[?name=='
 | Step | Done on |
 |---|---|
 | 1. Entra ID registration | 14 November 2026 |
-| 2. Second factor | |
+| 2. Second factor | 14 November 2026 |
 | 3. App Service, proxy key, host name | 11 November 2026 |
 | 4. Staff sign-in settings | 14 November 2026 |
 | 5. Allowed networks | 14 November 2026 |
