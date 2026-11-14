@@ -97,6 +97,8 @@ export interface FakeBusiness {
     space?: Record<string, unknown> | null;
     /** A platform's web address and its founder's words (L2-256); absent for a business. */
     platform?: Record<string, unknown> | null;
+    /** A non-profit's addresses and its own words (L2-294); absent for every other listing. */
+    nonprofit?: Record<string, unknown> | null;
   };
   /** The field codes a save is refused with (HTTP 422), when there are any. */
   saveErrors?: Record<string, string>;
@@ -167,6 +169,26 @@ export const LANTERNREAD: FakeBusiness['listing'] = {
     does: 'Families log the books their children read, set a weekly reading goal together and see the streak grow.',
     for: 'Families with children aged 4 to 12, and the teachers who cheer them on.',
     pricing: 'Free for families. Schools pay per classroom.',
+  },
+};
+
+/** Hope House Toronto, an invented non-profit, as its leader's editor opens it (L2-294). */
+export const HOPE_HOUSE: FakeBusiness['listing'] = {
+  name: 'Hope House Toronto',
+  tagline: 'Meals, beds and friendship for men leaving the shelter system.',
+  categorySlug: 'non-profits',
+  about: '',
+  where: '',
+  hours: '',
+  website: 'https://hopehouse.example',
+  highlight: 'Volunteers welcome',
+  nonprofit: {
+    website: 'https://hopehouse.example',
+    giveUrl: 'https://hopehouse.example/give',
+    mission:
+      'Hope House is a home in Moss Park for up to eight men at a time as they leave the shelter system.',
+    serves: 'Men aged 18 and over moving out of Toronto’s shelters.',
+    area: 'Moss Park and Regent Park',
   },
 };
 
@@ -294,7 +316,9 @@ export async function stubMyBusiness(
           ? 'Rooms & rentals'
           : fake.listing.categorySlug === 'software-platforms'
             ? 'Software platforms'
-            : 'Shops',
+            : fake.listing.categorySlug === 'non-profits'
+              ? 'Non-profits'
+              : 'Shops',
       subtitle: fake.paused
         ? 'Paused · not public'
         : live
@@ -418,6 +442,7 @@ export async function stubMyBusiness(
         highlight: String(body['highlight']),
         space: (body['space'] as unknown as Record<string, unknown> | undefined) ?? null,
         platform: (body['platform'] as unknown as Record<string, unknown> | undefined) ?? null,
+        nonprofit: (body['nonprofit'] as unknown as Record<string, unknown> | undefined) ?? null,
       };
       return route.fulfill({ json: editor() });
     }

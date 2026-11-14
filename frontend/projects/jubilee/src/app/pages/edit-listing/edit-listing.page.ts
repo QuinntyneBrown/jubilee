@@ -73,6 +73,20 @@ import {
   platformMessage,
   platformSummary,
 } from '../../services/platform-form';
+import {
+  AREA_MAX,
+  GIVE_MAX,
+  MISSION_MAX,
+  NONPROFIT_FIELDS,
+  NONPROFIT_NAME_MESSAGE,
+  NONPROFIT_NAME_SUMMARY,
+  NONPROFIT_TAGLINE_MESSAGE,
+  NonprofitField,
+  SERVES_MAX,
+  checkNonprofit,
+  nonprofitMessage,
+  nonprofitSummary,
+} from '../../services/nonprofit-form';
 import { FormDraftDirective } from '../../drafts/form-draft.directive';
 
 export const MAX_NAME = 80;
@@ -92,7 +106,11 @@ type DraftField =
   | 'highlight'
   | 'does'
   | 'for'
-  | 'pricing';
+  | 'pricing'
+  | 'giveUrl'
+  | 'mission'
+  | 'serves'
+  | 'area';
 
 type FieldName = DraftField | SpaceField;
 
@@ -103,7 +121,8 @@ type Saving = 'idle' | 'saving';
 /**
  * The listing editor at /my-business/listing (L2-087, L2-088): the words, the photos and the live
  * preview. A space edits its own fields instead of the category, hours and website (L2-209), and
- * a software platform its web address and its founder's words (L2-256).
+ * a software platform its web address and its founder's words (L2-256), and a non-profit its two
+ * addresses and its own words (L2-294).
  */
 @Component({
   selector: 'jb-edit-listing-page',
@@ -157,6 +176,10 @@ export class EditListingPage implements OnInit {
   protected readonly maxDoes = DOES_MAX;
   protected readonly maxFor = FOR_MAX;
   protected readonly maxPricing = PRICING_MAX;
+  protected readonly maxGive = GIVE_MAX;
+  protected readonly maxMission = MISSION_MAX;
+  protected readonly maxServes = SERVES_MAX;
+  protected readonly maxArea = AREA_MAX;
 
   protected readonly state = signal<LoadState<ListingEditor>>({ status: 'loading' });
   protected readonly draft = signal<Draft>(this.blank());
@@ -209,6 +232,9 @@ export class EditListingPage implements OnInit {
   protected readonly busy = computed(() => this.saving() === 'saving');
   protected readonly isSpace = computed(() => !!this.editor()?.space);
   protected readonly isPlatform = computed(() => !!this.editor()?.platform);
+  protected readonly isNonprofit = computed(() => !!this.editor()?.nonprofit);
+  /** A platform or a non-profit: its one category, no about, place or hours. */
+  protected readonly isOwnCategory = computed(() => this.isPlatform() || this.isNonprofit());
 
   protected readonly dirty = computed(() => {
     const editor = this.editor();
@@ -222,7 +248,9 @@ export class EditListingPage implements OnInit {
   });
 
   protected readonly preview = computed(() => ({
-    name: this.draft().name || (this.isPlatform() ? 'Your platform' : 'Your business'),
+    name:
+      this.draft().name ||
+      (this.isPlatform() ? 'Your platform' : this.isNonprofit() ? 'Its name' : 'Your business'),
     tagline: this.draft().tagline,
     highlight: this.draft().highlight || null,
     categorySlug: this.draft().category || 'shops',
@@ -271,6 +299,10 @@ export class EditListingPage implements OnInit {
       does: '',
       for: '',
       pricing: '',
+      giveUrl: '',
+      mission: '',
+      serves: '',
+      area: '',
     };
   }
 
@@ -282,12 +314,17 @@ export class EditListingPage implements OnInit {
       category: editor.categorySlug,
       where: editor.where ?? '',
       hours: editor.hours ?? '',
-      // A platform's web address is its own field: the link out of its page (L2-256 AC1).
-      website: editor.platform?.website ?? editor.website ?? '',
+      // A platform's or a non-profit's web address is its own field: the link out of its page
+      // (L2-256 AC1, L2-294 AC1).
+      website: editor.platform?.website ?? editor.nonprofit?.website ?? editor.website ?? '',
       highlight: editor.highlight ?? '',
       does: editor.platform?.does ?? '',
       for: editor.platform?.for ?? '',
       pricing: editor.platform?.pricing ?? '',
+      giveUrl: editor.nonprofit?.giveUrl ?? '',
+      mission: editor.nonprofit?.mission ?? '',
+      serves: editor.nonprofit?.serves ?? '',
+      area: editor.nonprofit?.area ?? '',
     };
   }
 
@@ -296,8 +333,8 @@ export class EditListingPage implements OnInit {
     this.saved.set(false);
   }
 
-  /** A change of a platform field: its error goes as the founder types (L2-256). */
-  protected setPlatform(field: PlatformField, value: string): void {
+  /** A change of a platform's or a non-profit's field: its error goes as they type (L2-256, L2-294). */
+  protected setPlatform(field: PlatformField | NonprofitField, value: string): void {
     this.set(field, value);
     if (this.errors()[field]) {
       this.errors.update((errors) => ({ ...errors, [field]: undefined }));
@@ -339,6 +376,7 @@ export class EditListingPage implements OnInit {
     const tagline = draft.tagline.trim();
     const space = this.isSpace();
     const platform = this.isPlatform();
+    const nonprofit = this.isNonprofit();
     if (!name) {
       problems.push({
         field: 'name',
@@ -346,18 +384,22 @@ export class EditListingPage implements OnInit {
           ? 'Enter a title that says what it is and where.'
           : platform
             ? 'Enter the name people know your platform by.'
-            : 'Enter your business name.',
+            : nonprofit
+              ? NONPROFIT_NAME_MESSAGE
+              : 'Enter your business name.',
         summary: space
           ? 'Enter a listing title'
           : platform
             ? 'Enter your platform’s name'
-            : 'Enter your business name',
+            : nonprofit
+              ? NONPROFIT_NAME_SUMMARY
+              : 'Enter your business name',
       });
     } else if (name.length > MAX_NAME) {
       problems.push({
         field: 'name',
         message: `Shorten this to ${MAX_NAME} characters. It has ${name.length}.`,
-        summary: `Shorten your ${space ? 'listing title' : platform ? 'platform’s name' : 'business name'} to ${MAX_NAME} characters`,
+        summary: `Shorten ${space ? 'your listing title' : platform ? 'your platform’s name' : nonprofit ? 'the non-profit’s name' : 'your business name'} to ${MAX_NAME} characters`,
       });
     }
     if (!tagline) {
@@ -365,12 +407,12 @@ export class EditListingPage implements OnInit {
         field: 'tagline',
         message: space
           ? 'Enter one line renters should know.'
-          : platform
-            ? 'Say in one line what it does.'
+          : platform || nonprofit
+            ? NONPROFIT_TAGLINE_MESSAGE
             : 'Say in one line what you do.',
         summary: space
           ? 'Enter one line renters should know'
-          : platform
+          : platform || nonprofit
             ? 'Say in one line what it does'
             : 'Say in one line what you do',
       });
@@ -387,6 +429,19 @@ export class EditListingPage implements OnInit {
       for (const field of Object.keys(codes) as SpaceField[]) {
         const message = spaceMessage(field, codes[field] ?? '');
         problems.push({ field, message, summary: message.replace(/\.$/, '') });
+      }
+      return problems;
+    }
+    if (nonprofit) {
+      // A non-profit is checked as when it was listed (L2-294 AC2), and has no hours.
+      const codes = checkNonprofit(draft);
+      for (const field of Object.keys(codes) as NonprofitField[]) {
+        const code = codes[field] ?? '';
+        problems.push({
+          field,
+          message: nonprofitMessage(field, code),
+          summary: nonprofitSummary(field, code),
+        });
       }
       return problems;
     }
@@ -455,6 +510,19 @@ export class EditListingPage implements OnInit {
             },
           }
         : {}),
+      ...(this.isNonprofit()
+        ? {
+            // The addresses travel with the non-profit's words; the business field stays empty.
+            website: '',
+            nonprofit: {
+              website: draft.website.trim(),
+              giveUrl: draft.giveUrl.trim(),
+              mission: draft.mission.trim(),
+              serves: draft.serves.trim(),
+              area: draft.area.trim(),
+            },
+          }
+        : {}),
     };
     this.saving.set('saving');
     this.api.save(changes).subscribe({
@@ -501,10 +569,19 @@ export class EditListingPage implements OnInit {
       category: 'category',
       ...SPACE_FIELDS,
       ...PLATFORM_FIELDS,
+      ...NONPROFIT_FIELDS,
     };
     const problems = Object.keys(errors).map((key) => {
       const field = (map[key] ?? key) as FieldName;
       const space = SPACE_FIELDS[key];
+      const nonprofit = NONPROFIT_FIELDS[key];
+      if (nonprofit) {
+        return {
+          field,
+          message: nonprofitMessage(nonprofit, errors[key]),
+          summary: nonprofitSummary(nonprofit, errors[key]),
+        };
+      }
       const platform = PLATFORM_FIELDS[key];
       if (platform) {
         return {
@@ -539,12 +616,14 @@ export class EditListingPage implements OnInit {
             : field === 'where'
               ? 'area'
               : field === 'website'
-                ? this.isPlatform()
+                ? this.isOwnCategory()
                   ? 'website'
                   : 'web'
                 : field === 'highlight'
                   ? 'perk'
-                  : field;
+                  : field === 'giveUrl'
+                    ? 'give'
+                    : field;
   }
 
   // --- photos (L2-088) -------------------------------------------------------------------
