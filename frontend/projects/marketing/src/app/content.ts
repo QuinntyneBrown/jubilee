@@ -45,7 +45,7 @@ export const FILM = {
 
 /** Jubilee's mission, the single level-0 requirement (L0-001, docs/specs/L0.md), word for word. */
 export const MISSION =
-  'Abiding in Jesus and for love of Him, Jubilee equips Christian business people in Toronto to prosper with purpose and resource His Kingdom.';
+  'Jubilee helps Christian business owners in Toronto do well in business and use what they earn to support God’s work. We do this because we love Jesus and stay close to Him.';
 
 const GLIMPSE_RESULTS: readonly MarketingBusiness[] = [
   {
