@@ -6,7 +6,7 @@ using Jubilee.Tests.Shared;
 
 namespace Jubilee.Api.Tests;
 
-// The schema-driven admin application (ADR 0074): the catalog of tables and what each role may read
+// The schema-driven admin application (ADR 0075): the catalog of tables and what each role may read
 // (L2-188, L2-272, L2-276, L2-284). Ada is an administrator; Miriam is on the Jubilee team.
 public sealed class AdminTablesTests : IClassFixture<JubileeApiFactory>, IAsyncLifetime
 {
@@ -111,7 +111,7 @@ public sealed class AdminTablesTests : IClassFixture<JubileeApiFactory>, IAsyncL
         var columns = members.GetProperty("defaultColumns").EnumerateArray().Select(c => c.GetString()).ToList();
         Assert.Equal(7, columns.Count);
         Assert.Equal("id", columns[0]);
-        // A member's home church is private (L1-020, ADR 0074): it is not a field.
+        // A member's home church is private (L1-020, ADR 0075): it is not a field.
         Assert.DoesNotContain(fields, f => f.GetProperty("key").GetString()!.Contains("church", StringComparison.OrdinalIgnoreCase));
     }
 

@@ -6,7 +6,7 @@ using Jubilee.Tests.Shared;
 
 namespace Jubilee.Api.Tests;
 
-// The overview of the admin application (L2-274, L2-275, ADR 0074): what is waiting on staff, read at the moment it
+// The overview of the admin application (L2-274, L2-275, ADR 0075): what is waiting on staff, read at the moment it
 // opens, with System and Recent changes beside it. The clock reads Tuesday 10 November 2026, 10:00 in Toronto.
 public sealed class AdminOverviewTests : IClassFixture<JubileeApiFactory>, IAsyncLifetime
 {

@@ -139,7 +139,7 @@ controls carry a darker edge (`--color-accent-border`) and gold is never used fo
   rewraps the dialogs `take-down-listing`, `report-action` and `publish-policy` over the record
   they open from. Staff sign-in (`admin-sign-in`) and the moved page (`admin-moved`) are still
   drawn by hand. The design's rows keep its own dates (2025) and staff, not today's cast.
-- **What the admin design adds that Jubilee had not decided, settled by [ADR 0074](../adr/0074-schema-driven-admin-application.md)** (the mocks still draw the design's fields and rows; the product shows Jubilee's own fields, binds edits to each feature's rules and deletes only the tables the ADR lists):
+- **What the admin design adds that Jubilee had not decided, settled by [ADR 0075](../adr/0075-schema-driven-admin-application.md)** (the mocks still draw the design's fields and rows; the product shows Jubilee's own fields, binds edits to each feature's rules and deletes only the tables the ADR lists):
   1. *Listing submissions* (approve or reject) and the listing status "in review" put back a review
      before publishing, which ADR 0057 removed. The tables are mocked; L2-276 AC1 shows them only
      once a requirement exists.

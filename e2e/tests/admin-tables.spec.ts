@@ -1,7 +1,7 @@
 // Acceptance Test
 // Traces to: L2-098, L2-099, L2-106, L2-188, L2-272, L2-276, L2-277, L2-278, L2-279, L2-280, L2-281, L2-282, L2-283,
 // L2-284
-// Description: the schema-driven admin application (ADR 0074): its shell with the sidebar of
+// Description: the schema-driven admin application (ADR 0075): its shell with the sidebar of
 // tables in their groups, what a role may read, and one table read from the catalog.
 import {
   FEEDBACK_ROW,
@@ -1059,7 +1059,7 @@ test.describe('edit and create a record (L2-283)', () => {
   });
 
   // L2-106 AC1: the featured week's rules hold on the table's creation, where the old Featured
-  // screen's chooser held them (ADR 0074).
+  // screen's chooser held them (ADR 0075).
   test('L2-106 AC1: a sixth slot in one week, or one too close to another week, is refused under "Week of"', async ({
     page,
     jb,
@@ -1088,7 +1088,7 @@ test.describe('edit and create a record (L2-283)', () => {
     await expect(page).toHaveURL(/\/featured-slots\/new$/);
   });
 
-  test('ADR 0074: the old Featured screen’s path opens Featured slots', async ({ page, jb }) => {
+  test('ADR 0075: the old Featured screen’s path opens Featured slots', async ({ page, jb }) => {
     const records = new AdminRecordsPage(page);
     await records.setWidth(1280);
     await stubAdminTables(page, miriam);

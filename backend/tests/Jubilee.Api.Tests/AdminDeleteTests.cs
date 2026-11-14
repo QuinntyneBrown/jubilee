@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Jubilee.Api.Tests;
 
-// Deleting records in the admin application (L2-281, ADR 0074): only a table that declares it, kept
+// Deleting records in the admin application (L2-281, ADR 0075): only a table that declares it, kept
 // apart for 30 days and out of every screen, audited, and brought back by "Undo". Ada is an
 // administrator; Miriam is on the Jubilee team.
 public sealed class AdminDeleteTests : IClassFixture<JubileeApiFactory>, IAsyncLifetime

@@ -21,11 +21,11 @@ public enum AdminFieldType
     Url,
 }
 
-/// <summary>A reference to another record, as the client draws it (ADR 0074).</summary>
+/// <summary>A reference to another record, as the client draws it (ADR 0075).</summary>
 public sealed record AdminRef(string Table, string Id);
 
 /// <summary>
-/// One field of a table (ADR 0074): its key, label, type, and how the database searches, filters and sorts it. The
+/// One field of a table (ADR 0075): its key, label, type, and how the database searches, filters and sorts it. The
 /// value is read from a loaded entity in its wire form: a string, a number, a bool, a date, a status word, an
 /// <see cref="AdminRef"/> or null.
 /// </summary>
@@ -60,7 +60,7 @@ public abstract class AdminField
 
     public abstract bool Sortable { get; }
 
-    /// <summary>True when a binding lets a staff member change it (L2-283 AC1, ADR 0074).</summary>
+    /// <summary>True when a binding lets a staff member change it (L2-283 AC1, ADR 0075).</summary>
     public abstract bool Editable { get; }
 }
 
@@ -96,7 +96,7 @@ public sealed class AdminField<T> : AdminField
     public object? ValueOf(T entity) => Read(entity);
 
     /// <summary>
-    /// Binds the field to the rule of the feature that owns it (L2-283 AC1, ADR 0074): the binding applies the new
+    /// Binds the field to the rule of the feature that owns it (L2-283 AC1, ADR 0075): the binding applies the new
     /// value, in its wire form, and returns an error code when the rule refuses it.
     /// </summary>
     public AdminField<T> EditWith(Func<T, string?, AdminChange, string?> edit)

@@ -46,7 +46,7 @@ pushed (ADR 0058). Only the lines of tables the staff member may read are shown 
 
   The lines "Listings to review" and "Access requests" of the design are not shown: nothing waits
   for review (ADR 0057), and an access request is a help request e-mailed to the team that carries
-  no decision to wait for (`L2-114`, ADR 0074). A security alert has no status, so it waits for the
+  no decision to wait for (`L2-114`, ADR 0075). A security alert has no status, so it waits for the
   24 hours after it is raised.
 
   "Next" describes the oldest record from its own fields: the listing's name for a listing report,

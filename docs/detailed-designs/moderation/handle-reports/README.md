@@ -2,7 +2,7 @@
 
 ## Overview
 
-> Since ADR 0074 the admin application is schema-driven: this feature happens in the tables Listing reports, Review reports and Conversation reports (`/listing-reports`, `/review-reports`, `/conversation-reports`) and their records, where "Act on report" is a record action, drawn by the screens of `admin/work-in-the-tables`. The behaviour, commands and audit records below are unchanged; the screen names are the new ones.
+> Since ADR 0075 the admin application is schema-driven: this feature happens in the tables Listing reports, Review reports and Conversation reports (`/listing-reports`, `/review-reports`, `/conversation-reports`) and their records, where "Act on report" is a record action, drawn by the screens of `admin/work-in-the-tables`. The behaviour, commands and audit records below are unchanged; the screen names are the new ones.
 
 Members can report a listing (`L2-039`) or a conversation (`L2-063`) privately
 to the Jubilee team. This feature is the moderation side: the admin

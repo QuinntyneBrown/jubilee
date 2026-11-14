@@ -6,7 +6,7 @@ using Jubilee.Tests.Shared;
 
 namespace Jubilee.Api.Tests;
 
-// One record of any table in the admin application (L2-282, ADR 0074): its name, status and fields,
+// One record of any table in the admin application (L2-282, ADR 0075): its name, status and fields,
 // the records that point at it, and its history. Ada is an administrator; Miriam is on the Jubilee team.
 public sealed class AdminRecordTests : IClassFixture<JubileeApiFactory>, IAsyncLifetime
 {

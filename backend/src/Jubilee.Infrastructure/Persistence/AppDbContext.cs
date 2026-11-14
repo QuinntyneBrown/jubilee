@@ -117,7 +117,7 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
 
         // A record deleted from the admin application is kept apart for 30 days: out of every query of the app until
-        // "Undo" brings it back or the worker erases it (L2-281 AC4, ADR 0074).
+        // "Undo" brings it back or the worker erases it (L2-281 AC4, ADR 0075).
         foreach (var entity in modelBuilder.Model.GetEntityTypes().Where(e => typeof(IAdminDeletable).IsAssignableFrom(e.ClrType)))
         {
             var row = Expression.Parameter(entity.ClrType, "row");

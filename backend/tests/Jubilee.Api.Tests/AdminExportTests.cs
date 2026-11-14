@@ -11,7 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Jubilee.Api.Tests;
 
-// Exporting a table of the admin application (L2-279, ADR 0074): the file is built on the server from
+// Exporting a table of the admin application (L2-279, ADR 0075): the file is built on the server from
 // what the role reads, audited, needs a reason for private data, and a weekly e-mail links to it.
 // Ada is an administrator; Miriam is on the Jubilee team.
 public sealed class AdminExportTests : IClassFixture<JubileeApiFactory>, IAsyncLifetime

@@ -15,7 +15,7 @@ public sealed record AdminChanged(IReadOnlyDictionary<string, string?> Before, I
 public sealed record AdminRowsRequest(string? Search, string? Status, string? Sort, bool Descending, int Page, int Size);
 
 /// <summary>
-/// The description of one of Jubilee's tables in the admin application (ADR 0074): its key, names, group, sentence,
+/// The description of one of Jubilee's tables in the admin application (ADR 0075): its key, names, group, sentence,
 /// fields and defaults, and how its records are read. The handlers work on any table through this base.
 /// </summary>
 public abstract class AdminTable
@@ -54,7 +54,7 @@ public abstract class AdminTable
     /// <summary>Opened only while a report makes it needed, and exported only with a reason (L2-279 AC4, L2-284 AC3).</summary>
     public bool Private { get; init; }
 
-    /// <summary>A table that declares deletion (ADR 0074, L2-281).</summary>
+    /// <summary>A table that declares deletion (ADR 0075, L2-281).</summary>
     public bool Deletable { get; init; }
 
     public virtual bool Creatable => false;

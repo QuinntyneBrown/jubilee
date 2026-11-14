@@ -1,6 +1,6 @@
 // Acceptance Test
 // Traces to: L2-273
-// Description: the jump palette of the admin application (ADR 0074): ⌘K, Ctrl K, the jump field or the
+// Description: the jump palette of the admin application (ADR 0075): ⌘K, Ctrl K, the jump field or the
 // search button open "Jump to"; it lists tables, then the records the staff member may read whose ID
 // or name contains the text; the arrow keys choose, Enter opens, Escape closes.
 import { stubAdminTables } from '../fixtures/admin-tables';

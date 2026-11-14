@@ -21,7 +21,7 @@ import { MenuItem } from '../menu/menu-item';
 import { Skeleton } from '../skeleton/skeleton';
 import { StatusPill } from '../status-pill/status-pill';
 
-/** How a column's values are drawn (ADR 0074). */
+/** How a column's values are drawn (ADR 0075). */
 export type RecordsColumnType =
   | 'id'
   | 'text'

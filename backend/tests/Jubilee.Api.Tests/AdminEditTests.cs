@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Jubilee.Api.Tests;
 
-// Editing and creating a record of the admin application (L2-283, ADR 0074): a field changes only
+// Editing and creating a record of the admin application (L2-283, ADR 0075): a field changes only
 // through the binding of the feature that owns it, a table is created only through its own, and
 // each change is audited (L2-284 AC5). Ada is an administrator; Miriam is on the Jubilee team.
 public sealed class AdminEditTests : IClassFixture<JubileeApiFactory>, IAsyncLifetime

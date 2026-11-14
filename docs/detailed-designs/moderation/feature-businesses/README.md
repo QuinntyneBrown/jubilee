@@ -2,7 +2,7 @@
 
 ## Overview
 
-> Since ADR 0074 the admin application is schema-driven: this feature happens in the Featured slots table (`/featured-slots`), whose records are created and removed by the featured week's rules, drawn by the screens of `admin/work-in-the-tables`. The behaviour, commands and audit records below are unchanged; the screen names are the new ones.
+> Since ADR 0075 the admin application is schema-driven: this feature happens in the Featured slots table (`/featured-slots`), whose records are created and removed by the featured week's rules, drawn by the screens of `admin/work-in-the-tables`. The behaviour, commands and audit records below are unchanged; the screen names are the new ones.
 
 Jubilee highlights a small set of businesses on its two entry pages. A moderator
 chooses up to five live listings as "Featured this week" and gives the selection
@@ -29,7 +29,7 @@ The slice has an admin write path and a public read path.
   (`NOT_LIVE`), a position from 1 to 5 (`OUT_OF_RANGE`), today or later (`START_IN_PAST`), at most
   five slots in a week (`WEEK_FULL`) and no week overlapping another (`WEEK_OVERLAPS`), each said
   under its field. The old path `/featured` opens `/featured-slots`; the Featured screen and its
-  page `admin-featured` are retired (ADR 0074). The mocks are `pages/admin-records/featured-slots`
+  page `admin-featured` are retired (ADR 0075). The mocks are `pages/admin-records/featured-slots`
   and `pages/admin-record/featured-slots`.
 - **`WelcomePage`** and **`BrowsePage`** — pages of the app that render
   "Featured this week" with one business card per business returned, in slot

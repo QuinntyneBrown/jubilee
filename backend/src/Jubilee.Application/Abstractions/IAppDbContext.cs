@@ -109,7 +109,7 @@ public interface IAppDbContext
 
     DbSet<AdminExportSubscription> AdminExportSubscriptions { get; }
 
-    /// <summary>The set of any entity, for the admin application's work on every table (ADR 0074).</summary>
+    /// <summary>The set of any entity, for the admin application's work on every table (ADR 0075).</summary>
     DbSet<TEntity> Set<TEntity>()
         where TEntity : class;
 

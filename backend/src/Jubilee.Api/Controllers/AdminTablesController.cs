@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Jubilee.Api.Controllers;
 
-/// <summary>Any staff session; each handler checks what the role may read and change per table (L2-284, ADR 0074).</summary>
+/// <summary>Any staff session; each handler checks what the role may read and change per table (L2-284, ADR 0075).</summary>
 public sealed class RequiresStaffAttribute() : AuthorizeAttribute(StaffPolicies.Staff);
 
 /// <summary>The staff member behind a staff session.</summary>
@@ -24,7 +24,7 @@ public static class StaffClaims
     };
 }
 
-/// <summary>The schema-driven tables of the admin application (L2-276 to L2-284, ADR 0074).</summary>
+/// <summary>The schema-driven tables of the admin application (L2-276 to L2-284, ADR 0075).</summary>
 [ApiController]
 [RequiresStaff]
 [Route("api/admin/tables")]

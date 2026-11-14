@@ -2,7 +2,7 @@
 
 ## Overview
 
-> Since ADR 0074 the admin application is schema-driven: this feature happens in the Listings table (`/listings`) and the Listings record (`/listings/:id`), drawn by the screens of `admin/work-in-the-tables`. The behaviour, commands and audit records below are unchanged; the screen names are the new ones.
+> Since ADR 0075 the admin application is schema-driven: this feature happens in the Listings table (`/listings`) and the Listings record (`/listings/:id`), drawn by the screens of `admin/work-in-the-tables`. The behaviour, commands and audit records below are unchanged; the screen names are the new ones.
 
 An owner publishes their own listing, and the listing is live at once: nobody
 verifies it first (ADR 0057). The *Jubilee team* looks through what has been

@@ -13,7 +13,7 @@ import {
   AdminJump,
 } from '../models/admin-tables';
 
-/** Contract of the schema-driven tables of the admin application (L2-276 to L2-284, ADR 0074). */
+/** Contract of the schema-driven tables of the admin application (L2-276 to L2-284, ADR 0075). */
 export interface AdminTablesApi {
   /** What is waiting on staff, System and Recent changes, read at that moment (L2-274, L2-275). */
   overview(): Observable<AdminOverview>;

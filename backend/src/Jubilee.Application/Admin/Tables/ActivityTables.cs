@@ -304,7 +304,7 @@ internal static class ActivityTables
     ];
 }
 
-/// <summary>The rules of the feedback feature a staff member's change goes through (L2-283 AC1, ADR 0074).</summary>
+/// <summary>The rules of the feedback feature a staff member's change goes through (L2-283 AC1, ADR 0075).</summary>
 internal static class FeedbackEdits
 {
     /// <summary>Feedback is read, worked on and fixed; it never becomes new again.</summary>

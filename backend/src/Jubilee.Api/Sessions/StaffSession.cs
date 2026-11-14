@@ -123,7 +123,7 @@ public static class StaffPolicies
     public const string Moderator = "staff-moderator";
     public const string Admin = "staff-admin";
 
-    /// <summary>Any staff session: the admin application's tables check the role per table (L2-284, ADR 0074).</summary>
+    /// <summary>Any staff session: the admin application's tables check the role per table (L2-284, ADR 0075).</summary>
     public const string Staff = "staff-any";
 
     public static AuthorizationBuilder AddStaffPolicies(this AuthorizationBuilder builder) => builder

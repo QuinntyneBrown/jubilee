@@ -2,7 +2,7 @@
 
 ## Overview
 
-> Since ADR 0074 the admin application is schema-driven: this feature happens in the Listings record (`/listings/:id`), where "Take down" is a record action, drawn by the screens of `admin/work-in-the-tables`. The behaviour, commands and audit records below are unchanged; the screen names are the new ones.
+> Since ADR 0075 the admin application is schema-driven: this feature happens in the Listings record (`/listings/:id`), where "Take down" is a record action, drawn by the screens of `admin/work-in-the-tables`. The behaviour, commands and audit records below are unchanged; the screen names are the new ones.
 
 A listing is live as soon as its owner publishes it; nobody verifies it first
 (ADR 0057). Every owner agrees to the statement of faith and to deal honestly

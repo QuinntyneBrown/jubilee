@@ -1,4 +1,4 @@
-/** How a field's value is drawn and edited (ADR 0074). */
+/** How a field's value is drawn and edited (ADR 0075). */
 export type AdminFieldType =
   | 'id'
   | 'text'

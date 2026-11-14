@@ -5,7 +5,7 @@
 Jubilee's staff work in their own application, the *admin application*, at
 `https://admin.jubilee.to` (`L2-188`). The *Jubilee team* is the staff who
 hold the `moderator` role; an *administrator* holds the `admin` role. The admin
-application is schema-driven (ADR 0074): its screens are the *overview* (`/`,
+application is schema-driven (ADR 0075): its screens are the *overview* (`/`,
 `admin/see-what-is-waiting`), a *table* (`/{table}`, the table's key in kebab
 case such as `/members` or `/listing-reports`), a *record* (`/{table}/{id}`)
 and a new record (`/{table}/new`), all drawn from one catalog of Jubilee's
@@ -63,7 +63,7 @@ proxy on its own host (ADR 0040).
   `/policies/{slug}` open `/content-versions`, `/reports` opens
   `/listing-reports`, and `/reports/{id}` (linked from the team's e-mails)
   opens the report's record through `OldReportLinkPage`, which asks
-  `GET /api/admin/jump?q={id}` which report table holds it (ADR 0074).
+  `GET /api/admin/jump?q={id}` which report table holds it (ADR 0075).
 - **`StaffSessionService`** — root service. `resolve()` reads
   `GET /api/staff/session` once at start-up and holds the staff member
   (display name, initials, e-mail, roles) as a signal, or

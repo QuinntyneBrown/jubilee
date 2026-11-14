@@ -1,7 +1,7 @@
 namespace Jubilee.Domain;
 
 /// <summary>
-/// "Email me this weekly" (L2-279 AC3, ADR 0074): a staff member's wish to be e-mailed, every Monday at 08:00 in
+/// "Email me this weekly" (L2-279 AC3, ADR 0075): a staff member's wish to be e-mailed, every Monday at 08:00 in
 /// Toronto, a link to a table's CSV in the admin application. One per staff member and table; it holds the Monday it
 /// was last sent for, so a week is sent once.
 /// </summary>

@@ -1,6 +1,6 @@
 // Acceptance Test
 // Traces to: L2-188, L2-274, L2-275
-// Description: the overview of the admin application (ADR 0074): the day and the greeting with what
+// Description: the overview of the admin application (ADR 0075): the day and the greeting with what
 // is waiting on staff, the work queue, and beside it System and Recent changes. The e2e clock reads
 // Tuesday 10 November 2026, 09:00 in Toronto.
 import { CLEAR_OVERVIEW, stubAdminTables } from '../fixtures/admin-tables';

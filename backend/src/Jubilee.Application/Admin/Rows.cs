@@ -4,7 +4,7 @@ using MediatR;
 
 namespace Jubilee.Application.Admin;
 
-/// <summary>A reference as the client draws it: the record's name, or "deleted" when it is gone (L2-281 AC1, ADR 0074).</summary>
+/// <summary>A reference as the client draws it: the record's name, or "deleted" when it is gone (L2-281 AC1, ADR 0075).</summary>
 public sealed record AdminRefValue(string Table, string Id, string? Name, bool Deleted);
 
 public sealed record AdminRowDto(string Id, string Name, IReadOnlyDictionary<string, object?> Values);

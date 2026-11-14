@@ -100,7 +100,7 @@ export const routes: Routes = [
         data: screen('admin-report', 'listing-reports'),
         title: 'Review a report · Jubilee admin',
       },
-      // The old Featured screen's path opens its table (ADR 0074).
+      // The old Featured screen's path opens its table (ADR 0075).
       { path: 'featured', pathMatch: 'full', redirectTo: 'featured-slots' },
       {
         path: 'policies',
@@ -118,7 +118,7 @@ export const routes: Routes = [
         title: 'Edit a policy · Jubilee admin',
       },
       {
-        // Any table of the catalog (L2-276, ADR 0074); the page says when it is not for the role
+        // Any table of the catalog (L2-276, ADR 0075); the page says when it is not for the role
         // or does not exist.
         path: ':table',
         loadComponent: () => import('./pages/records/records.page').then((m) => m.RecordsPage),

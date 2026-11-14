@@ -3,7 +3,7 @@ using Jubilee.Application.Admin.Tables;
 namespace Jubilee.Application.Admin;
 
 /// <summary>
-/// Every table of the admin application, in the order of the sidebar (L2-272 AC2, L2-276 AC1, ADR 0074). It is built
+/// Every table of the admin application, in the order of the sidebar (L2-272 AC2, L2-276 AC1, ADR 0075). It is built
 /// once; the handlers find a table by its key.
 /// </summary>
 public static class AdminCatalog

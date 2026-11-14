@@ -2,7 +2,7 @@
 
 ## Overview
 
-The admin application (`L2-188`) is *schema-driven* (ADR 0074): each of Jubilee's *tables* is
+The admin application (`L2-188`) is *schema-driven* (ADR 0075): each of Jubilee's *tables* is
 described once, and one screen draws any of them. A *table* is one kind of Jubilee record shown to
 staff (Members, Listings, Listing reports, Audit records…), held in a *group* of the sidebar
 (Accounts, Listings, Requests & messaging, Reviews, Moderation, Member activity, Feedback, Merch,
@@ -92,7 +92,7 @@ and those a new record is given (`creatable`).
 
 ### Backend — fields and bindings of this change
 
-- The fields of each table are the entity's own (ADR 0074), under the design's label where the
+- The fields of each table are the entity's own (ADR 0075), under the design's label where the
   meaning is the same. A member's home church and its address, a link token's hash, a password
   hash and a message's text in its row are never fields.
 - **Bound edits:** Feedback `status` (`MarkRead`, `StartWork`, `MarkFixed`) and `reply`
@@ -172,7 +172,7 @@ gap.
   The search is a `type="search"` field, which clears with Escape, and the empty state offers
   "Clear search and filters".
 - **"Set {status}" only where it is bound**: the mocks draw "Set status" for Members, but a status
-  changes only through the binding of the feature that owns it (ADR 0074). The bar offers it where
+  changes only through the binding of the feature that owns it (ADR 0075). The bar offers it where
   the table's status field is editable for the role (Feedback), and `POST /{table}/status` refuses
   it elsewhere with 403. Likewise a row's menu offers "Edit" where a field is bound and "Duplicate"
   where the table creates.
@@ -208,7 +208,7 @@ gap.
 - **"Type delete to confirm"**: the label is plain text, as its accessible name reads; the mock's
   `<code>` around "delete" is dropped because `jb-field` takes its label as text.
 
-- **Retiring the old screens (ADR 0074)** — done for Featured: `/featured` opens
+- **Retiring the old screens (ADR 0075)** — done for Featured: `/featured` opens
   `/featured-slots`, and the `admin-featured` page, its API calls and its e2e page object are gone.
   Not yet done, because the record screens do not carry their behaviour yet and retiring them now
   would take it from the Jubilee team:

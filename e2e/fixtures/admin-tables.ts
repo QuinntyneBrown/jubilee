@@ -3,7 +3,7 @@ import mockTables from './api/admin-mock-tables.json';
 import { type FakeStaff, type StaffMember, stubStaff } from './staff';
 
 // A stand-in for the schema-driven tables of the admin application (L2-272, L2-276 to L2-284,
-// ADR 0074): the catalog of `GET /api/admin/tables` and the rows of `GET /api/admin/tables/{table}`,
+// ADR 0075): the catalog of `GET /api/admin/tables` and the rows of `GET /api/admin/tables/{table}`,
 // answered at the network edge (ADR 0009). The answers have the shape the API gives
 // (AdminTablesController); every request for rows is kept so a test can prove what it asked for.
 
