@@ -222,6 +222,9 @@ test.describe('choose the view, the fit and the size (L2-264)', () => {
     await jb.goto('/purpose-tee');
 
     await tee.chooseFit('Youth');
+    // Wait for Youth's sizes before listing them: `all()` does not retry, and a list taken while
+    // Men's six sizes are still shown points one radio past Youth's five.
+    await expect.poll(() => tee.sizeLabels()).toEqual(['XS', 'S', 'M', 'L', 'XL']);
     for (const radio of await tee.sizes.getByRole('radio').all()) {
       await expect(radio).toBeDisabled();
     }
