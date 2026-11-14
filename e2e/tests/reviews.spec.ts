@@ -298,6 +298,7 @@ test.describe('filter and sort reviews (L2-230)', () => {
     await expect(reviews.filterText).toHaveText('Tap a star bar to filter');
 
     await reviews.bar(5).press('Enter');
+    await expect(reviews.bar(5)).toHaveAttribute('aria-pressed', 'true');
     await expect(reviews.reviews).toHaveCount(3);
     await reviews.bar(5).press('Space');
     await expect(reviews.bar(5)).toHaveAttribute('aria-pressed', 'false');
