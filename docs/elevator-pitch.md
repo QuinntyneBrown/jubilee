@@ -44,8 +44,8 @@ whose house became a church (Acts 16:14-15), His Kingdom has always been resourc
 people who knew whose business it really was.
 
 **Our mission**
-*Abiding in Jesus and for love of Him, Jubilee equips Christian business people in Toronto to
-prosper with purpose and resource His Kingdom.*
+*Jubilee helps Christian business owners in Toronto do well in business and use what they earn to
+support God's work. We do this because we love Jesus and stay close to Him.*
 
 **We can only do it together.**
 Jubilee is a directory of Christian-owned businesses in Toronto. Believers find you,

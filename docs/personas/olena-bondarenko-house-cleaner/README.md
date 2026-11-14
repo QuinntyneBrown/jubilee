@@ -41,7 +41,7 @@ her their keys.
 
 ## How she serves the mission
 
-The mission speaks of "Christian business people in Toronto" without asking how long they have
+The mission speaks of "Christian business owners in Toronto" without asking how long they have
 been here or what they did before. Olena runs a two-person business with an accountant's honesty,
 and the parish that helped her settle is the first place her giving goes.
 

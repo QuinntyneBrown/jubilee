@@ -43,9 +43,10 @@ service.
 
 ## How he serves the mission
 
-Devon is plainly one of the "Christian business people in Toronto" whom the mission says Jubilee
-equips, yet he owns no business, and the product as built lists businesses by their owners. He
-shows where the mission's words reach further than the directory does today.
+Devon is plainly a Christian business person in Toronto, yet he owns no business: the mission names
+"Christian business owners in Toronto", and the product as built lists businesses by their owners.
+He shows where the people Jubilee could help reach further than the mission's words and the
+directory do today.
 
 ## In his words
 

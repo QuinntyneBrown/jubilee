@@ -39,9 +39,9 @@ apartment, he wants more Saturdays filled, and one day a crew of his own.
 
 ## How he serves the mission
 
-Tomasz is one of the "Christian business people in Toronto" the mission names, at the very
-start. His business is two brothers and a truck, and it is run faithfully: the mission's "prosper
-with purpose" is for work of this size as much as for any other.
+Tomasz is one of the "Christian business owners in Toronto" the mission names, at the very
+start. His business is two brothers and a truck, and it is run faithfully: the mission's "do well
+in business" is for work of this size as much as for any other.
 
 ## In his words
 

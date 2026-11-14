@@ -40,7 +40,7 @@ know her, and she would like not to carry the table any more.
 
 ## How she serves the mission
 
-Eleanor's work is small and done with care, and the mission's "prosper with purpose" does not ask
+Eleanor's work is small and done with care, and the mission's "do well in business" does not ask
 for more than that: faithfulness with what was entrusted. Much of what she earns at the bazaar goes
 back to the parish that hosts it.
 

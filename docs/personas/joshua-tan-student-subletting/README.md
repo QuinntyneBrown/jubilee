@@ -40,9 +40,9 @@ take his room while he is away, so that he is not paying rent on an empty bed.
 
 ## How he serves the mission
 
-Joshua is not yet one of the "Christian business people in Toronto" the mission names, though an
-engineer of 21 may be one in ten years. What he shows today is the mission's first phrase,
-"Abiding in Jesus and for love of Him", in a small matter: telling the truth on a form when a
+Joshua is not yet one of the "Christian business owners in Toronto" the mission names, though an
+engineer of 21 may be one in ten years. What he shows today is the mission's last phrase,
+"we love Jesus and stay close to Him", in a small matter: telling the truth on a form when a
 quicker answer was one tap away.
 
 ## In his words

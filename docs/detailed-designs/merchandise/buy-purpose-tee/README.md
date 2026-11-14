@@ -5,7 +5,7 @@
 Jubilee takes no payment between members and businesses: members pay the business directly. The
 one thing Jubilee sells is its own merchandise, and the first of it is the Purpose Tee, a black
 shirt printed "Prosper with purpose." (`L1-034`, ADR 0073). Every shirt sold helps keep Jubilee
-free for the Christian business people of Toronto, which is the mission's "resource His Kingdom"
+free for the Christian business people of Toronto, which is the mission's "support God's work"
 in the plainest form: the shirt pays for the directory, and it gives the wearer an easy way to say
 what Jubilee is for.
 
