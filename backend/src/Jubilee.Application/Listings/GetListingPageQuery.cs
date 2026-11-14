@@ -144,6 +144,7 @@ public sealed class GetListingPageQueryHandler(IAppDbContext db, IDirectoryReadC
         {
             Photos = photos,
             Platform = PlatformPageDto.From(listing),
+            Nonprofit = NonprofitPageDto.From(listing),
         };
     }
 

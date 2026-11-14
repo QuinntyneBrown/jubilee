@@ -14,6 +14,9 @@ public static class ReviewWriting
     public const string NotEligible = "not-eligible";
     public const string Written = "written";
     public const string Owner = "owner";
+
+    /// <summary>A non-profit takes no reviews, for anyone (L2-293 AC2, ADR 0074).</summary>
+    public const string NotOffered = "not-offered";
 }
 
 /// <summary>The rules every review handler shares (ADR 0066).</summary>
@@ -23,6 +26,7 @@ public static class ReviewRules
     public const string NotEligibleCode = "NOT_ELIGIBLE";
     public const string OwnListingCode = "OWN_LISTING";
     public const string AlreadyReviewedCode = "ALREADY_REVIEWED";
+    public const string NotOfferedCode = "NOT_OFFERED";
 
     /// <summary>The listing whose reviews are asked for, as the caller may see it: public, or theirs or the team's to preview (L2-226 AC7).</summary>
     public static async Task<Listing> ListingAsync(IAppDbContext db, string slug, Viewer viewer, CancellationToken cancellationToken)
@@ -51,6 +55,11 @@ public static class ReviewRules
 
     public static async Task<string> WritingAsync(IAppDbContext db, Listing listing, Viewer viewer, CancellationToken cancellationToken)
     {
+        if (listing.Kind == ListingKind.Nonprofit)
+        {
+            return ReviewWriting.NotOffered;
+        }
+
         if (viewer.Subject is not { } subject)
         {
             return ReviewWriting.SignIn;
@@ -80,6 +89,8 @@ public static class ReviewRules
     {
         switch (await WritingAsync(db, listing, new Viewer(subject, false), cancellationToken))
         {
+            case ReviewWriting.NotOffered:
+                throw new ConflictException(NotOfferedCode, "A non-profit takes no reviews.");
             case ReviewWriting.Owner:
                 throw new ForbiddenException(OwnListingCode, "You can't review your own business.");
             case ReviewWriting.Written:
