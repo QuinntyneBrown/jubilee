@@ -1,0 +1,22 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Work in the tables
+Container(admin, "Jubilee Admin Web", "Angular", "RecordsPage, RecordPage, AdminTablesApi")
+Container_Boundary(api, "Jubilee API") {
+  Component(ctrl, "AdminTablesController", "ASP.NET Core controller", "Staff only; maps routes to handlers")
+  Component(handlers, "Admin handlers", "MediatR", "Rows, record, update, create, status, delete, restore, export, weekly export")
+  Component(catalog, "AdminCatalog", "Application", "Every table's description and bindings")
+  Component(rights, "AdminRights", "Application", "What each role reads and changes (L2-284)")
+  Component(query, "AdminQuery and AdminValues", "Application", "Search, filter, sort, paging; wire values")
+  Component(audit, "AdminAudit", "Application", "Audit record in the same transaction")
+}
+ContainerDb(db, "Database", "SQL Server")
+Rel(admin, ctrl, "Calls", "JSON/HTTPS")
+Rel(ctrl, handlers, "Sends")
+Rel(handlers, rights, "Checks")
+Rel(handlers, catalog, "Finds the table in")
+Rel(handlers, query, "Builds the query with")
+Rel(handlers, audit, "Writes")
+Rel(handlers, db, "Reads and saves", "IAppDbContext")
+@enduml

@@ -53,6 +53,38 @@ namespace Jubilee.Infrastructure.Migrations
                     b.ToTable("AccessRequests", (string)null);
                 });
 
+            modelBuilder.Entity("Jubilee.Domain.AdminExportSubscription", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateOnly?>("LastSentOn")
+                        .HasColumnType("date");
+
+                    b.Property<Guid?>("StaffMemberId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("StaffSubject")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("TableKey")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("StaffSubject", "TableKey")
+                        .IsUnique();
+
+                    b.ToTable("AdminExportSubscriptions", (string)null);
+                });
+
             modelBuilder.Entity("Jubilee.Domain.AuditRecord", b =>
                 {
                     b.Property<Guid>("Id")
@@ -113,6 +145,9 @@ namespace Jubilee.Infrastructure.Migrations
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("AdminDeletedAt")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<string>("Area")
                         .IsRequired()
@@ -484,6 +519,9 @@ namespace Jubilee.Infrastructure.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<DateTimeOffset?>("AdminDeletedAt")
+                        .HasColumnType("datetimeoffset");
+
                     b.Property<Guid>("ListingId")
                         .HasColumnType("uniqueidentifier");
 
@@ -506,6 +544,9 @@ namespace Jubilee.Infrastructure.Migrations
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("AdminDeletedAt")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<string>("AppVersion")
                         .HasMaxLength(40)
@@ -632,6 +673,9 @@ namespace Jubilee.Infrastructure.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<DateTimeOffset?>("AdminDeletedAt")
+                        .HasColumnType("datetimeoffset");
+
                     b.Property<byte[]>("Content")
                         .IsRequired()
                         .HasColumnType("varbinary(max)");
@@ -686,6 +730,9 @@ namespace Jubilee.Infrastructure.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<DateTimeOffset?>("AdminDeletedAt")
+                        .HasColumnType("datetimeoffset");
+
                     b.Property<int>("ConsentMethod")
                         .HasColumnType("int");
 
@@ -714,7 +761,8 @@ namespace Jubilee.Infrastructure.Migrations
                     b.HasIndex("CreatedAt");
 
                     b.HasIndex("EmailKey")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[AdminDeletedAt] IS NULL");
 
                     b.ToTable("LaunchSubscribers", (string)null);
                 });
@@ -1011,6 +1059,9 @@ namespace Jubilee.Infrastructure.Migrations
                     b.Property<DateTimeOffset>("AddedAt")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<DateTimeOffset?>("AdminDeletedAt")
+                        .HasColumnType("datetimeoffset");
+
                     b.Property<string>("Alt")
                         .HasMaxLength(125)
                         .HasColumnType("nvarchar(125)");
@@ -1213,6 +1264,9 @@ namespace Jubilee.Infrastructure.Migrations
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("AdminDeletedAt")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<DateTimeOffset?>("BackBy")
                         .HasColumnType("datetimeoffset");
@@ -1723,6 +1777,9 @@ namespace Jubilee.Infrastructure.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<DateTimeOffset?>("AdminDeletedAt")
+                        .HasColumnType("datetimeoffset");
+
                     b.Property<Guid?>("CorrelationId")
                         .HasColumnType("uniqueidentifier");
 
@@ -1955,6 +2012,9 @@ namespace Jubilee.Infrastructure.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<DateTimeOffset?>("AdminDeletedAt")
+                        .HasColumnType("datetimeoffset");
+
                     b.Property<int>("Height")
                         .HasColumnType("int");
 
@@ -1983,6 +2043,9 @@ namespace Jubilee.Infrastructure.Migrations
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("AdminDeletedAt")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<string>("MemberSubject")
                         .IsRequired()
@@ -2394,6 +2457,9 @@ namespace Jubilee.Infrastructure.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<DateTimeOffset?>("AdminDeletedAt")
+                        .HasColumnType("datetimeoffset");
+
                     b.Property<string>("Kind")
                         .IsRequired()
                         .HasMaxLength(16)
@@ -2415,7 +2481,8 @@ namespace Jubilee.Infrastructure.Migrations
                     b.HasIndex("TargetId");
 
                     b.HasIndex("MemberSubject", "Kind", "TargetId")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[AdminDeletedAt] IS NULL");
 
                     b.ToTable("SavedItems", (string)null);
                 });
@@ -2595,6 +2662,9 @@ namespace Jubilee.Infrastructure.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<DateTimeOffset?>("AdminDeletedAt")
+                        .HasColumnType("datetimeoffset");
+
                     b.Property<string>("MemberSubject")
                         .IsRequired()
                         .HasMaxLength(200)
@@ -2613,7 +2683,7 @@ namespace Jubilee.Infrastructure.Migrations
 
                     b.HasIndex("ProductId", "MemberSubject")
                         .IsUnique()
-                        .HasFilter("[NotifiedAt] IS NULL");
+                        .HasFilter("[NotifiedAt] IS NULL AND [AdminDeletedAt] IS NULL");
 
                     b.ToTable("StockAlerts", (string)null);
                 });

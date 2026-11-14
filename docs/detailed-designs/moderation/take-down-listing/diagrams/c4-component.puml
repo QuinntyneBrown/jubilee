@@ -3,7 +3,7 @@
 LAYOUT_WITH_LEGEND()
 title Components — Take down a listing
 Container_Boundary(web, "Jubilee Admin Web") {
-  Component(page, "AdminListingPage", "Angular page", "Shows the owner card and flags and preview")
+  Component(page, "RecordPage (a listing)", "Angular page", "Shows the owner card and flags and preview")
   Component(dialog, "TakeDownListingDialog", "Angular CDK dialog", "Confirms the takedown and collects the reason for the owner")
   Component(client, "AdminApi", "Typed HTTP client", "Calls the /api/admin/listings endpoints")
 }

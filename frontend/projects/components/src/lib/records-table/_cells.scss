@@ -1,0 +1,54 @@
+// The cells of a record's values, drawn by type (L2-276 AC3), shared by the records table and the
+// record's fields.
+@mixin cells {
+  .cell--muted {
+    color: var(--color-fg-muted);
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .cell--mono {
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-xs);
+    color: var(--color-fg-muted);
+  }
+
+  .cell--num {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .cell--empty,
+  .cell--deleted {
+    color: var(--color-fg-subtle);
+  }
+
+  .cell--deleted {
+    font-style: italic;
+  }
+
+  .cell--long {
+    white-space: pre-wrap;
+    line-height: var(--line-height-relaxed);
+  }
+
+  .cell--yes {
+    color: var(--color-success-icon);
+  }
+
+  .cell--no {
+    color: var(--color-fg-subtle);
+  }
+
+  .cell--ref {
+    color: var(--color-fg-default);
+    font-weight: var(--font-weight-medium);
+    text-decoration: underline;
+    text-decoration-color: var(--color-border-strong);
+    text-underline-offset: 0.2em;
+
+    &:hover {
+      color: var(--color-fg-link);
+      text-decoration-color: currentColor;
+    }
+  }
+}

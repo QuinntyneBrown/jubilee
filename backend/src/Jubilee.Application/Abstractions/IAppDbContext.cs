@@ -107,5 +107,11 @@ public interface IAppDbContext
 
     DbSet<MerchOrderLine> MerchOrderLines { get; }
 
+    DbSet<AdminExportSubscription> AdminExportSubscriptions { get; }
+
+    /// <summary>The set of any entity, for the admin application's work on every table (ADR 0075).</summary>
+    DbSet<TEntity> Set<TEntity>()
+        where TEntity : class;
+
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

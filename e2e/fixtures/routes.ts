@@ -185,9 +185,19 @@ export type StubName =
   | 'services-error'
   | 'services-hours-pending'
   | 'services-hours-failing'
-  | 'admin-listings'
-  | 'admin-listings-empty'
-  | 'admin-listings-error'
+  | 'admin-overview'
+  | 'admin-overview-loading'
+  | 'admin-overview-empty'
+  | 'admin-overview-error'
+  | 'admin-records'
+  | 'admin-records-loading'
+  | 'admin-records-error'
+  | 'admin-records-forbidden'
+  | 'admin-record-message'
+  | 'admin-record-private'
+  | 'admin-record-loading'
+  | 'admin-record-error'
+  | 'admin-record-saving'
   | 'admin-listing'
   | 'admin-listing-taken-down'
   | 'admin-listing-error'
@@ -200,15 +210,12 @@ export type StubName =
   | 'moderation-report-conversation'
   | 'moderation-report-review'
   | 'moderation-report-error'
-  | 'moderation-featured'
-  | 'moderation-featured-error'
   | 'account-data-requested'
   | 'account-data-build-failed'
   | 'data-download-done'
   | 'data-download-unavailable'
   | 'staff-signed-out'
   | 'staff-network-refused'
-  | 'staff-admin-only'
   | 'admin-policies'
   | 'admin-policies-loading'
   | 'admin-policies-error'
@@ -1876,26 +1883,265 @@ export const routes = {
     who: 'member',
     stub: 'services',
   },
-  'admin-listings': {
-    app: '/listings',
-    mock: 'pages/admin-listings/default.html',
+
+  'admin-overview': {
+    app: '/',
+    mock: 'pages/admin-overview/default.html',
     who: 'visitor',
     site: 'admin',
-    stub: 'admin-listings',
+    stub: 'admin-overview',
   },
-  'admin-listings.empty': {
-    app: '/listings',
-    mock: 'pages/admin-listings/empty.html',
+  'admin-overview.loading': {
+    app: '/',
+    mock: 'pages/admin-overview/loading.html',
     who: 'visitor',
     site: 'admin',
-    stub: 'admin-listings-empty',
+    stub: 'admin-overview-loading',
   },
-  'admin-listings.error': {
-    app: '/listings',
-    mock: 'pages/admin-listings/error.html',
+  'admin-overview.empty': {
+    app: '/',
+    mock: 'pages/admin-overview/empty.html',
     who: 'visitor',
     site: 'admin',
-    stub: 'admin-listings-error',
+    stub: 'admin-overview-empty',
+  },
+  'admin-overview.error': {
+    app: '/',
+    mock: 'pages/admin-overview/error.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'admin-overview-error',
+  },
+  'admin-overview.drawer': {
+    app: '/',
+    mock: 'pages/admin-overview/drawer.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'admin-overview',
+  },
+  'admin-overview.palette': {
+    app: '/',
+    mock: 'pages/admin-overview/palette.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'admin-overview',
+  },
+  'admin-overview.palette-results': {
+    app: '/',
+    mock: 'pages/admin-overview/palette-results.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'admin-overview',
+  },
+  'admin-overview.palette-none': {
+    app: '/',
+    mock: 'pages/admin-overview/palette-none.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'admin-overview',
+  },
+  'admin-records': {
+    app: '/members',
+    mock: 'pages/admin-records/default.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'admin-records',
+  },
+  'admin-records.loading': {
+    app: '/members',
+    mock: 'pages/admin-records/loading.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'admin-records-loading',
+  },
+  'admin-records.error': {
+    app: '/members',
+    mock: 'pages/admin-records/error.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'admin-records-error',
+  },
+  'admin-records.staff-menu': {
+    app: '/members',
+    mock: 'pages/admin-records/staff-menu.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'admin-records',
+  },
+  'admin-records.columns-menu': {
+    app: '/members',
+    mock: 'pages/admin-records/columns-menu.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'admin-records',
+  },
+  'admin-records.page-size-menu': {
+    app: '/members',
+    mock: 'pages/admin-records/page-size-menu.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'admin-records',
+  },
+  'admin-records.forbidden': {
+    app: '/staff',
+    mock: 'pages/admin-records/forbidden.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'admin-records-forbidden',
+  },
+  'admin-records.not-found': {
+    app: '/no-such-table',
+    mock: 'pages/admin-records/not-found.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'admin-records',
+  },
+  'admin-record': {
+    app: '/members/mem_8F2kQa',
+    mock: 'pages/admin-record/default.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'admin-records',
+  },
+  'admin-record.loading': {
+    app: '/members/mem_8F2kQa',
+    mock: 'pages/admin-record/loading.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'admin-record-loading',
+  },
+  'admin-record.error': {
+    app: '/members/mem_8F2kQa',
+    mock: 'pages/admin-record/error.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'admin-record-error',
+  },
+  'admin-records.row-menu': {
+    app: '/members',
+    mock: 'pages/admin-records/row-menu.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'admin-records',
+  },
+  'admin-records.selected': {
+    app: '/members',
+    mock: 'pages/admin-records/selected.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'admin-records',
+  },
+  'admin-records.bulk-status-menu': {
+    app: '/members',
+    mock: 'pages/admin-records/bulk-status-menu.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'admin-records',
+  },
+  'admin-records.export-menu': {
+    app: '/members',
+    mock: 'pages/admin-records/export-menu.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'admin-records',
+  },
+  'admin-records.export-weekly': {
+    app: '/members',
+    mock: 'pages/admin-records/export-weekly.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'admin-records',
+  },
+  'admin-records.export-reason': {
+    app: '/messages',
+    mock: 'pages/admin-records/export-reason.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'admin-records',
+  },
+  'admin-records.confirm-delete': {
+    app: '/members',
+    mock: 'pages/admin-records/confirm-delete.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'admin-records',
+  },
+  'admin-records.confirm-delete-one': {
+    app: '/members',
+    mock: 'pages/admin-records/confirm-delete-one.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'admin-records',
+  },
+  'admin-record.confirm-delete': {
+    app: '/members/mem_8F2kQa',
+    mock: 'pages/admin-record/confirm-delete.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'admin-records',
+  },
+  'admin-record.edit': {
+    app: '/members/mem_8F2kQa/edit',
+    mock: 'pages/admin-record/edit.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'admin-records',
+  },
+  'admin-record.saving': {
+    app: '/members/mem_8F2kQa/edit',
+    mock: 'pages/admin-record/saving.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'admin-record-saving',
+  },
+  'admin-record.saved': {
+    app: '/members/mem_8F2kQa/edit',
+    mock: 'pages/admin-record/saved.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'admin-records',
+  },
+  'admin-record.create': {
+    app: '/members/new',
+    mock: 'pages/admin-record/create.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'admin-records',
+  },
+  'admin-record.messages': {
+    app: '/messages/msg_14386',
+    mock: 'pages/admin-record/messages.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'admin-record-message',
+  },
+  'admin-record.private': {
+    app: '/messages/msg_14386',
+    mock: 'pages/admin-record/private.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'admin-record-private',
+  },
+  'admin-record.job-runs': {
+    app: '/job-runs/job_9874',
+    mock: 'pages/admin-record/job-runs.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'admin-records',
+  },
+  'admin-records.listings': {
+    app: '/listings',
+    mock: 'pages/admin-records/listings.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'admin-records',
+  },
+  'admin-records.job-runs': {
+    app: '/job-runs',
+    mock: 'pages/admin-records/job-runs.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'admin-records',
   },
   'admin-listing': {
     app: '/listings/3f1d2c4e-7a55-4c0e-9d3a-0a1b2c3d4e5f',
@@ -1989,20 +2235,6 @@ export const routes = {
     site: 'admin',
     stub: 'moderation-report-error',
   },
-  'admin-featured': {
-    app: '/featured',
-    mock: 'pages/admin-featured/default.html',
-    who: 'visitor',
-    site: 'admin',
-    stub: 'moderation-featured',
-  },
-  'admin-featured.error': {
-    app: '/featured',
-    mock: 'pages/admin-featured/error.html',
-    who: 'visitor',
-    site: 'admin',
-    stub: 'moderation-featured-error',
-  },
   'admin-sign-in': {
     app: '/sign-in',
     mock: 'pages/admin-sign-in/default.html',
@@ -2052,13 +2284,7 @@ export const routes = {
     site: 'admin',
     stub: 'staff-signed-out',
   },
-  'admin-shell.admin-only': {
-    app: '/listings',
-    mock: 'pages/admin-shell/admin-only.html',
-    who: 'visitor',
-    site: 'admin',
-    stub: 'staff-admin-only',
-  },
+
   'admin-policies': {
     app: '/policies',
     mock: 'pages/admin-policies/default.html',
@@ -2164,13 +2390,7 @@ export const routes = {
     site: 'admin',
     stub: 'admin-policy-conflict',
   },
-  'admin-shell.not-found': {
-    app: '/no-such-page',
-    mock: 'pages/admin-shell/not-found.html',
-    who: 'visitor',
-    site: 'admin',
-    stub: 'admin-listings',
-  },
+
   'admin-moved': {
     app: '/admin/verifications/3f1d2c4e-7a55-4c0e-9d3a-0a1b2c3d4e5f',
     mock: 'pages/admin-moved/default.html',

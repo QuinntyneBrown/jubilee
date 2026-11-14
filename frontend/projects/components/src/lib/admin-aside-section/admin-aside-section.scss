@@ -1,0 +1,33 @@
+// Block: admin-aside-section. A section of the overview's aside. Its head keeps the design's
+// admin-aside__head, __title and __link names, which the mocks and the e2e locators share.
+:host {
+  display: block;
+}
+
+.admin-aside__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding-bottom: var(--space-2);
+  border-bottom: var(--border-width-hairline) solid var(--color-border-default);
+}
+
+.admin-aside__title {
+  margin: 0;
+  font: var(--text-label);
+  font-size: var(--font-size-sm);
+}
+
+.admin-aside__link {
+  font: var(--text-caption);
+  color: var(--color-fg-muted);
+}
+
+.admin-aside__link:hover {
+  color: var(--color-fg-default);
+}
+
+.admin-aside__link:focus-visible {
+  outline: var(--focus-ring-width) solid var(--color-focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}

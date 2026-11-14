@@ -1,0 +1,8 @@
+<ng-template #body><ng-content /></ng-template>
+@if (tone() === 'plain') {
+  <ng-container [ngTemplateOutlet]="body" />
+} @else {
+  <div jb-alert [tone]="tone() === 'warning' ? 'warning' : 'info'" [icon]="icon()" [role]="null">
+    <ng-container [ngTemplateOutlet]="body" />
+  </div>
+}

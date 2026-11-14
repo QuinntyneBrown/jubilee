@@ -1,0 +1,36 @@
+@startuml
+title UML sequence behaviour — Delete and undo
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Staff member" as actor
+box "Frontend — Jubilee Admin Web" #E0F2FE
+  participant "RecordsPage" as page
+  participant "DeleteRecordsDialog" as dialog
+  participant "AdminTablesApi" as client
+end box
+box "Backend — Jubilee API and Worker" #D1FADF
+  participant "DeleteAdminRecordsCommand handler" as del
+  participant "RestoreAdminRecordsCommand handler" as restore
+  participant "AdminDeletionPurgeJob" as purge
+end box
+database "Database" as db
+actor -> page : Select 2 rows, Delete
+page -> dialog : Delete 2 notifications? Type delete (L2-281 AC2)
+actor -> dialog : Type delete, confirm
+dialog -> client : delete(notifications, ids)
+client -> del : POST /api/admin/tables/notifications/delete
+del -> db : Set AdminDeletedAt; notifications.delete audited (L2-281 AC5)
+del --> client : 2 deleted
+page --> actor : Rows leave; toast with Undo (L2-281 AC3)
+opt Undo while the toast shows
+  actor -> page : Undo
+  page -> client : restore(notifications, ids)
+  client -> restore : POST /api/admin/tables/notifications/restore
+  restore -> db : Clear AdminDeletedAt; notifications.restore audited
+  page --> actor : The rows return
+end
+purge -> db : Daily: erase rows deleted more than 30 days ago (L2-281 AC4)
+@enduml

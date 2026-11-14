@@ -1,0 +1,14 @@
+@if (eyebrow(); as eyebrow) {
+  <p class="admin-heading__eyebrow">{{ eyebrow }}</p>
+}
+<h1 class="admin-heading__title">{{ heading() }}<ng-content select="[slot=title]" /></h1>
+<p class="admin-heading__lead">
+  @if (facts().length) {
+    {{ factsLabel() }}
+    @for (fact of facts(); track fact.what; let last = $last) {
+      <strong>{{ fact.count }} {{ fact.what }}</strong
+      >{{ last ? '.' : ',' }}
+    }
+  }
+  <ng-content />
+</p>

@@ -1,0 +1,8 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System context — See what is waiting
+Person(staff, "Staff member", "Jubilee team or administrator")
+System(jubilee, "Jubilee", "The admin application and the API")
+Rel(staff, jubilee, "Opens the overview of", "HTTPS")
+@enduml

@@ -4,8 +4,17 @@ namespace Jubilee.Domain;
 /// A photo of a listing (L2-088). The image itself is a set of renditions in the media store under
 /// <see cref="Key"/>; the first photo by <see cref="Position"/> is the cover.
 /// </summary>
-public sealed class ListingPhoto
+public sealed class ListingPhoto : IAdminDeletable
 {
+    /// <inheritdoc />
+    public DateTimeOffset? AdminDeletedAt { get; private set; }
+
+    /// <inheritdoc />
+    public void AdminDelete(DateTimeOffset now) => AdminDeletedAt = now;
+
+    /// <inheritdoc />
+    public void AdminRestore() => AdminDeletedAt = null;
+
     public const int MaxPerListing = 6;
 
     public const int MaxAltLength = 125;

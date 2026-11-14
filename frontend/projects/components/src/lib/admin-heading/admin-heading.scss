@@ -1,0 +1,50 @@
+// Block: admin-heading. The eyebrow, title and lead of a screen of the admin application.
+:host {
+  display: block;
+  min-width: 0;
+  max-width: 42rem;
+}
+
+:host(.admin-heading--greeting) {
+  max-width: 48rem;
+}
+
+.admin-heading__eyebrow {
+  margin: 0;
+  font: var(--text-body-sm);
+  color: var(--color-fg-muted);
+}
+
+.admin-heading__title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  margin: var(--space-1) 0 0;
+  font-family: var(--font-family-display);
+  font-weight: var(--font-weight-bold);
+  font-stretch: var(--font-stretch-wide);
+  font-size: var(--font-size-4xl);
+  line-height: 1.05;
+  letter-spacing: var(--letter-spacing-tighter);
+}
+
+.admin-heading__lead {
+  margin: var(--space-2) 0 0;
+  color: var(--color-fg-muted);
+}
+
+.admin-heading__lead strong {
+  color: var(--color-fg-default);
+  font-weight: var(--font-weight-regular);
+}
+
+.admin-heading__lead:empty {
+  display: none;
+}
+
+@media (min-width: 40rem) {
+  :host(.admin-heading--greeting) .admin-heading__title {
+    font-size: var(--font-size-5xl);
+  }
+}

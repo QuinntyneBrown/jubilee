@@ -1,0 +1,124 @@
+// Block: palette. The jump palette: a panel near the top of the screen over a scrim.
+:host {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-modal);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 12vh var(--space-4) 0;
+  background: var(--color-bg-backdrop);
+}
+
+.palette__panel {
+  width: 100%;
+  max-width: 36rem;
+  overflow: hidden;
+  background: var(--color-bg-surface-raised);
+  border: var(--border-width-hairline) solid var(--color-border-default);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-4);
+  animation: scale-in var(--duration-fast) var(--ease-enter);
+}
+
+.palette__search {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding-inline: var(--space-5);
+  border-bottom: var(--border-width-hairline) solid var(--color-border-default);
+}
+
+.palette__search .icon {
+  flex: none;
+  width: var(--icon-size-sm);
+  height: var(--icon-size-sm);
+  color: var(--color-fg-subtle);
+}
+
+.palette__input {
+  flex: 1;
+  min-width: 0;
+  height: 3.5rem;
+  border: 0;
+  background: none;
+  color: var(--color-fg-default);
+  font: var(--text-body);
+  // The panel's own field: the open palette is its focus, and the chosen option is marked.
+  outline: none;
+}
+
+.palette__input::placeholder {
+  color: var(--color-fg-subtle);
+}
+
+.palette__list {
+  max-height: 22.5rem;
+  margin: 0;
+  padding: var(--space-2);
+  overflow-y: auto;
+  list-style: none;
+}
+
+.palette__item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: var(--target-comfortable);
+  padding-inline: var(--space-3);
+  border-radius: var(--radius-md);
+  color: inherit;
+  font: var(--text-body-sm);
+  text-decoration: none;
+}
+
+.palette__item[aria-selected='true'],
+.palette__item:hover {
+  background: var(--color-bg-canvas);
+}
+
+.palette__item .icon {
+  flex: none;
+  width: var(--icon-size-sm);
+  height: var(--icon-size-sm);
+  color: var(--color-fg-muted);
+}
+
+.palette__kind {
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  width: var(--icon-size-sm);
+  height: var(--icon-size-sm);
+  border-radius: var(--radius-xs);
+  background: var(--color-accent);
+  color: var(--color-fg-on-accent);
+  font-size: 0.5625rem;
+  font-weight: var(--font-weight-bold);
+}
+
+.palette__label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: var(--font-weight-medium);
+}
+
+.palette__meta {
+  flex: none;
+  max-width: 45%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font: var(--text-caption);
+  color: var(--color-fg-subtle);
+}
+
+.palette__none {
+  padding: var(--space-6) var(--space-3);
+  text-align: center;
+  font: var(--text-body-sm);
+  color: var(--color-fg-muted);
+}

@@ -1,0 +1,8 @@
+@for (line of changes(); track $index) {
+  <li>
+    <b class="change-list__who">{{ line.actor }}</b
+    >&ngsp;<span class="change-list__what">{{ line.what }}</span
+    >&ngsp;<code>{{ line.recordId }}</code>
+    <div class="change-list__when">{{ line.when }}</div>
+  </li>
+}

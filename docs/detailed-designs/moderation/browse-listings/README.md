@@ -2,6 +2,8 @@
 
 ## Overview
 
+> Since ADR 0075 the admin application is schema-driven: this feature happens in the Listings table (`/listings`) and the Listings record (`/listings/:id`), drawn by the screens of `admin/work-in-the-tables`. The behaviour, commands and audit records below are unchanged; the screen names are the new ones.
+
 An owner publishes their own listing, and the listing is live at once: nobody
 verifies it first (ADR 0057). The *Jubilee team* looks through what has been
 published, behind the scenes, and acts where a listing misrepresents a
@@ -39,9 +41,9 @@ The feature runs from the Angular admin shell to the Jubilee database.
 - **Moderator screens** — the listings route carries `moderator: true` in its
   route data. When the signed-in staff member lacks the `moderator` role, the
   admin shell shows the page "Nothing here for your role" (`admin-only`, with
-  "Sign out") in place of `AdminListingsPage`, so the listings are never asked
+  "Sign out") in place of `RecordsPage` (Listings), so the listings are never asked
   for (`L2-188` AC4). The server refuses the endpoint in any case.
-- **`AdminListingsPage`** — Angular page of the admin application at
+- **`RecordsPage` (Listings)** — Angular page of the admin application at
   `/listings`. Its header subtitle is the summary line "{n} listings · {n}
   published in the last 7 days". It shows a search by business name
   (`jb-search-field`, "Search listings by name") and a table captioned
@@ -50,14 +52,14 @@ The feature runs from the Angular admin shell to the Jubilee database.
   (`jb-badge`, warning tone) after the name; the status is a `jb-badge` that
   carries its label in words, never colour alone. Each business name links to
   `/listings/:id`.
-- **Listings states** — `AdminListingsPage` renders four states besides the
+- **Listings states** — `RecordsPage` (Listings) renders four states besides the
   table. While loading it shows `jb-row-list-skeleton` and the status "Loading
   the listings…". With no published listing (`Total` is 0) it shows "No
   listings yet" — "A listing appears here as soon as its owner publishes it." —
   with "Refresh". A search that matches nothing shows "No match" — "No listing
   matches “{text}”." — with "Clear search". A failed load shows "We couldn’t
   load the listings" with the reference `JB-ADM-503` and "Try again".
-- **`jb-admin-bar`** — the admin application's top bar. Its first link is
+- **jb-admin-shell** — the admin application's top bar. Its first link is
   "Listings", marked `aria-current="page"` on this screen. It shows no count:
   `GET /api/staff/session` counts no queue (ADR 0057).
 - **`AdminApi`** — typed Angular HTTP client for `/api/admin`, provided through
@@ -156,7 +158,7 @@ listings and staff sessions from the `Jubilee database`.
 
 ### Components
 
-`staffGuard` activates `AdminListingsPage`, which loads data through
+`staffGuard` activates `RecordsPage` (Listings), which loads data through
 `AdminApi`. In `Jubilee API`, the controller applies `RequiresModerator` before
 `GetAdminListingsQueryHandler` runs.
 

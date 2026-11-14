@@ -17,7 +17,7 @@ skinparam package {
 actor "Jubilee team member" as actor
 box "Frontend — Jubilee Admin Web" #E0F2FE
   participant "staffGuard" as guard
-  participant "AdminListingsPage" as page
+  participant "RecordsPage (Listings)" as page
   participant "AdminApi" as client
 end box
 box "Backend — Jubilee API" #D1FADF

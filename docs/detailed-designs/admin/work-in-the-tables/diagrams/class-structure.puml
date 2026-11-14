@@ -1,0 +1,80 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Work in the tables
+abstract class AdminTable {
+  +Key: string
+  +Label: string
+  +Singular: string
+  +Group: string
+  +Sentence: string
+  +DefaultColumns: string[]
+  +StatusField: string?
+  +Deletable: bool
+  +Private: bool
+}
+class "AdminTable<TEntity>" as Typed {
+  +Query(db): IQueryable<TEntity>
+  +Create: binding?
+}
+class "AdminField<TEntity>" as Field {
+  +Key: string
+  +Label: string
+  +Type: AdminFieldType
+  +System: bool
+  +Selector: Expression
+  +Options: string[]?
+  +RefTable: string?
+  +Edit: binding?
+}
+enum AdminFieldType {
+  Id
+  Text
+  Email
+  Mono
+  Json
+  Long
+  Status
+  Bool
+  Number
+  Money
+  Date
+  DateTime
+  Ref
+  Url
+}
+class AdminCatalog {
+  +Tables: AdminTable[]
+  +Find(key): AdminTable?
+}
+class AdminRights {
+  +CanRead(roles, table): bool
+  +CanChange(roles, table): bool
+  +CanDelete(roles, table): bool
+}
+interface IAdminDeletable {
+  +AdminDeletedAt: DateTimeOffset?
+}
+class AdminExportSubscription {
+  +Id: Guid
+  +StaffMemberId: Guid
+  +TableKey: string
+  +CreatedAt: DateTimeOffset
+  +LastSentOn: DateOnly?
+}
+AdminTable <|-- Typed
+Typed *-- "1..*" Field
+Field --> AdminFieldType
+AdminCatalog o-- "1..*" AdminTable
+AdminRights ..> AdminTable : reads Group
+Typed ..> IAdminDeletable : deletes when Deletable
+AdminExportSubscription ..> AdminTable : names by Key
+@enduml

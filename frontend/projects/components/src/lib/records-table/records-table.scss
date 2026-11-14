@@ -1,0 +1,239 @@
+// Block: records. The rows of a table of the admin application in their card (L2-276): a table
+// from 768 px, which scrolls sideways inside the card, and a list below it.
+@use './cells';
+
+:host {
+  position: relative;
+  display: block;
+  margin-top: var(--space-6);
+  background: var(--color-bg-surface);
+  border: var(--border-width-hairline) solid var(--color-border-default);
+  border-radius: var(--radius-lg);
+}
+
+.records__table {
+  display: none;
+}
+
+.records__table table {
+  width: 100%;
+  border-collapse: collapse;
+  font: var(--text-body-sm);
+  text-align: left;
+}
+
+.records__table th {
+  padding: var(--space-3);
+  border-bottom: var(--border-width-hairline) solid var(--color-border-default);
+  color: var(--color-fg-muted);
+  font: var(--text-label);
+  font-size: var(--font-size-sm);
+  white-space: nowrap;
+}
+
+.records__table td {
+  max-width: 17.5rem;
+  padding: var(--space-3);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  border-bottom: var(--border-width-hairline) solid var(--color-border-default);
+}
+
+.records__table th:first-child,
+.records__table td:first-child {
+  padding-left: var(--space-5);
+}
+
+.records__table tbody tr {
+  cursor: pointer;
+  transition: background-color var(--duration-fast) var(--ease-standard);
+
+  &:last-child td {
+    border-bottom: 0;
+  }
+
+  &:hover {
+    background: var(--color-bg-subtle);
+  }
+
+  &[aria-selected='true'] {
+    background: var(--color-accent-subtle);
+  }
+}
+
+.records__table tbody tr.records__skeleton {
+  cursor: default;
+
+  &:hover {
+    background: none;
+  }
+}
+
+.records__table .records__num {
+  text-align: right;
+}
+
+.records__check {
+  width: 3rem;
+}
+
+.records__box {
+  width: 1rem;
+  height: 1rem;
+  accent-color: var(--color-success-solid);
+}
+
+.records__name {
+  font-weight: var(--font-weight-semibold);
+}
+
+.records__table td.records__actions {
+  width: 3.5rem;
+  padding-right: var(--space-3);
+  overflow: visible;
+  text-align: right;
+}
+
+.records__more {
+  display: inline-grid;
+  place-items: center;
+  width: var(--control-height-sm);
+  height: var(--control-height-sm);
+  border: 0;
+  border-radius: var(--radius-full);
+  background: none;
+  color: var(--color-fg-muted);
+  cursor: pointer;
+}
+
+.records__more:hover,
+.records__more[aria-expanded='true'] {
+  background: var(--color-bg-subtle);
+  color: var(--color-fg-default);
+}
+
+.records__more:focus-visible {
+  outline: var(--focus-ring-width) solid var(--color-focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+@media (min-width: 48rem) {
+  .records__table {
+    display: block;
+    position: relative;
+    overflow-x: auto;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  }
+
+  .records__list {
+    display: none;
+  }
+}
+
+// The list below 768 px.
+.records__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding-inline: var(--space-4);
+    border-bottom: var(--border-width-hairline) solid var(--color-border-default);
+
+    &:last-child {
+      border-bottom: 0;
+    }
+  }
+}
+
+.records__row {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: var(--target-comfortable);
+  padding-block: var(--space-3);
+  color: inherit;
+  text-decoration: none;
+}
+
+.records__row-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.records__row-name {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: var(--font-weight-semibold);
+}
+
+.records__row-id {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-xs);
+  color: var(--color-fg-muted);
+}
+
+.records__chevron {
+  flex: none;
+  color: var(--color-fg-muted);
+}
+
+// The cells, each drawn by its type (L2-276 AC3).
+@include cells.cells;
+
+.records__sort {
+  all: unset;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  cursor: pointer;
+}
+
+.records__sort:hover,
+th[aria-sort='ascending'] .records__sort,
+th[aria-sort='descending'] .records__sort {
+  color: var(--color-fg-default);
+}
+
+.records__sort:focus-visible {
+  outline: var(--focus-ring-width) solid var(--color-focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+th[aria-sort='ascending'] .records__sort::after {
+  content: '↑' / '';
+}
+
+th[aria-sort='descending'] .records__sort::after {
+  content: '↓' / '';
+}
+
+.records__empty {
+  padding: var(--space-16) var(--space-6);
+  text-align: center;
+}
+
+.records__empty-title {
+  margin: 0;
+  font-family: var(--font-family-display);
+  font-weight: var(--font-weight-bold);
+  font-stretch: var(--font-stretch-wide);
+  font-size: var(--font-size-lg);
+}
+
+.records__empty-text {
+  margin: var(--space-1) 0 var(--space-5);
+  color: var(--color-fg-muted);
+}

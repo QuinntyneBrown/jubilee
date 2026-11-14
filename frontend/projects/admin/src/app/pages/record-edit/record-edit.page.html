@@ -1,0 +1,93 @@
+@switch (refused()) {
+  @case ('forbidden') {
+    <jb-admin-only-page (signOut)="signOut()" />
+  }
+  @case ('not-found') {
+    <jb-not-found-page />
+  }
+  @default {
+    <div
+      jb-admin-page
+      width="record"
+      [attr.aria-busy]="state().status === 'loading' ? 'true' : null"
+    >
+      <nav
+        jb-record-crumbs
+        [label]="table()?.label ?? ''"
+        [link]="['/', key()]"
+        [here]="creating ? 'New' : id()"
+      ></nav>
+      @switch (state().status) {
+        @case ('loading') {
+          <div jb-record-head loading [loadingLabel]="'Loading ' + singular() + '…'"></div>
+          <div jb-record-grid><dl jb-record-fields loading></dl></div>
+        }
+        @case ('error') {
+          <h1 class="visually-hidden">{{ table()?.singular }} {{ id() }}</h1>
+          <div
+            jb-empty-state
+            error
+            icon="alert"
+            [heading]="'We couldn’t load ' + singular() + ' ' + id()"
+          >
+            Nothing is lost. Check your connection and try again. If it keeps happening, tell us and
+            quote <code>{{ errorReference() }}</code
+            >.
+            <button slot="actions" jb-button variant="primary" type="button" (click)="load()">
+              <svg jb-icon name="refresh"></svg>Try again
+            </button>
+          </div>
+        }
+        @default {
+          <div
+            jb-record-head
+            [heading]="heading()"
+            [status]="creating ? null : (record()?.status ?? null)"
+            [id]="creating ? '' : id()"
+          >
+            <a slot="actions" jb-button [routerLink]="creating ? ['/', key()] : ['/', key(), id()]"
+              >Cancel</a
+            >
+            <button
+              slot="actions"
+              jb-button
+              variant="primary"
+              type="submit"
+              form="record-form"
+              [attr.aria-disabled]="saving() ? 'true' : null"
+            >
+              @if (saving()) {
+                <span jb-spinner size="sm"></span>{{ creating ? 'Creating…' : 'Saving…' }}
+              } @else if (creating) {
+                Create {{ singular() }}
+              } @else {
+                Save changes
+              }
+            </button>
+          </div>
+          <form
+            id="record-form"
+            jb-record-grid
+            novalidate
+            (submit)="$event.preventDefault(); save()"
+          >
+            <section aria-label="Fields">
+              <dl
+                jb-record-fields
+                editing
+                [fields]="fields()"
+                [values]="record()?.values ?? {}"
+                [editable]="editable()"
+                [draft]="draft()"
+                [choices]="choices()"
+                [errors]="errors()"
+                (edited)="edit($event)"
+              ></dl>
+              <p jb-record-system [values]="system()"></p>
+            </section>
+          </form>
+        }
+      }
+    </div>
+  }
+}

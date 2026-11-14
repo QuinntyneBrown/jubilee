@@ -810,7 +810,7 @@ a[data-state="hover"] { color: var(--color-fg-link-hover); text-decoration-thick
 
 /* ---------- Fixes found in the screenshot sweep ------------------------------------------------------ */
 .detail-head__actions { flex-wrap: wrap; }
-.dialog__panel :focus-visible { outline-offset: var(--focus-ring-offset); }
+.dialog__panel :focus-visible:not(.input, .select, .textarea) { outline-offset: var(--focus-ring-offset); }
 @media (max-width: 39.99rem) { .detail-head__actions .btn--primary { flex-basis: 100%; } }
 .empty__text, .alert__body, .toast__text { overflow-wrap: anywhere; }
 
@@ -1550,6 +1550,8 @@ a.rating-link:hover .rating-link__count, a.rating-link[data-state="hover"] .rati
 /* Records: the heading row, the search and columns, the status chips, the table. */
 .records-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: var(--space-5) var(--space-6); }
 .records-head__actions { display: flex; flex: none; align-items: center; gap: var(--space-2); }
+/* On a phone the actions wrap under the heading, at the start of their row: an end menu opens from the trigger's start instead of off the page. */
+@media (width < 40rem) { .records-head__actions .menu-anchor > .menu--end { left: 0; right: auto; transform-origin: top left; } }
 .records-tools { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); margin-top: var(--space-8); }
 .records-tools__search { flex: 1; min-width: 0; }
 .records-tools__search .input { border-radius: var(--radius-full); }
@@ -1651,7 +1653,8 @@ a.rating-link:hover .rating-link__count, a.rating-link[data-state="hover"] .rati
 .record-head__actions { display: flex; flex: none; align-items: center; gap: var(--space-2); }
 .record-head__saved { display: inline-flex; align-items: center; gap: var(--space-1); margin-right: var(--space-1); color: var(--color-success-fg); font: var(--text-label); font-size: var(--font-size-sm); }
 .record-head__saved .icon { width: var(--icon-size-sm); height: var(--icon-size-sm); }
-.record-note { margin: var(--space-5) 0 0; font: var(--text-body-sm); color: var(--color-fg-muted); }
+.record-note { margin: var(--space-5) 0 0; font: var(--text-body-sm); }
+.record-note:not(.alert) { color: var(--color-fg-muted); }
 .record-grid { display: grid; gap: var(--space-8); margin-top: var(--space-6); }
 @media (min-width: 64rem) { .record-grid { grid-template-columns: minmax(0, 1fr) 18.75rem; } }
 .record-fields { margin: 0; overflow: hidden; background: var(--color-bg-surface); border: var(--border-width-hairline) solid var(--color-border-default); border-radius: var(--radius-lg); }

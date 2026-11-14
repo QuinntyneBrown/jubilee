@@ -1,0 +1,27 @@
+<jb-dialog size="sm" [heading]="heading" [description]="description" (closed)="close()">
+  <form jb-dialog-body class="stack" id="export-reason-form" novalidate (ngSubmit)="send()">
+    <div jb-field label="Reason" controlId="export-reason">
+      <textarea
+        jb-textarea
+        name="reason"
+        rows="3"
+        maxlength="500"
+        cdkFocusInitial
+        [ngModel]="reason()"
+        (ngModelChange)="reason.set($event)"
+      ></textarea>
+    </div>
+  </form>
+  <div jb-dialog-footer>
+    <button jb-button type="button" (click)="close()">Cancel</button>
+    <button
+      jb-button
+      variant="primary"
+      type="submit"
+      form="export-reason-form"
+      [attr.aria-disabled]="ready() ? null : 'true'"
+    >
+      <svg jb-icon name="download"></svg>Export CSV
+    </button>
+  </div>
+</jb-dialog>

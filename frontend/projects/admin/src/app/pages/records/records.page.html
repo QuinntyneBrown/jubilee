@@ -1,0 +1,123 @@
+@switch (refused()) {
+  @case ('forbidden') {
+    <jb-admin-only-page (signOut)="signOut()" />
+  }
+  @case ('not-found') {
+    <jb-not-found-page />
+  }
+  @default {
+    @if (table(); as table) {
+      <div
+        jb-admin-page
+        width="wide"
+        [attr.aria-busy]="state().status === 'loading' ? 'true' : null"
+      >
+        <div jb-records-head>
+          <div jb-admin-heading [eyebrow]="table.group" [heading]="table.label">
+            @if (table.readOnly) {
+              <span slot="title" jb-lock-tag></span>
+            }
+            {{ table.sentence }}
+          </div>
+          <div
+            slot="actions"
+            jb-export-menu
+            [singular]="table.singular.toLowerCase()"
+            [total]="table.count"
+            [matching]="matching()"
+            [weekly]="table.weeklyExport"
+            (downloaded)="download(table, $event)"
+            (weeklyChanged)="weekly(table, $event)"
+          ></div>
+          @if (table.canCreate) {
+            <a slot="actions" jb-button variant="primary" routerLink="new"
+              ><svg jb-icon name="plus"></svg>New {{ table.singular.toLowerCase() }}</a
+            >
+          }
+        </div>
+        <div
+          jb-records-tools
+          [unit]="table.label.toLowerCase()"
+          [value]="q()"
+          [columns]="columnChoices()"
+          (typed)="search($event)"
+          (toggled)="toggleColumn($event)"
+          (resetColumns)="resetColumns()"
+        ></div>
+        @if (statusField(); as field) {
+          <div
+            jb-records-filter
+            [field]="field.label.toLowerCase()"
+            [options]="field.options ?? []"
+            [value]="status()"
+            (chosen)="filter($event)"
+          ></div>
+        }
+        <div
+          jb-records-table
+          [table]="table.key"
+          [caption]="table.label"
+          [columns]="columns()"
+          [rows]="rows()"
+          [statusKey]="table.statusField"
+          [selectable]="table.canChange"
+          [loading]="state().status === 'loading'"
+          [error]="state().status === 'error'"
+          [sort]="sort()"
+          [empty]="empty()"
+          [editable]="table.canEdit"
+          [duplicable]="table.canCreate"
+          [(selected)]="selected"
+          (sorted)="sortBy($event)"
+          (emptyAction)="clear()"
+          (copied)="copied()"
+          (duplicate)="duplicate($event)"
+          [deletable]="table.canDelete"
+          (remove)="remove(table, [$event])"
+        >
+          @if (rows().length > 0) {
+            <div
+              slot="foot"
+              jb-records-foot
+              [page]="page()"
+              [size]="size()"
+              [total]="total()"
+              (pageChange)="goTo($event)"
+              (sizeChange)="showRows($event)"
+            ></div>
+          }
+          @if (errorReference(); as reference) {
+            <div
+              slot="error"
+              jb-empty-state
+              error
+              icon="alert"
+              [heading]="'We couldn’t load ' + table.label.toLowerCase()"
+            >
+              Nothing is lost. Check your connection and try again. If it keeps happening, tell us
+              and quote <code>{{ reference }}</code
+              >.
+              <button slot="actions" jb-button variant="primary" type="button" (click)="load()">
+                <svg jb-icon name="refresh"></svg>Try again
+              </button>
+            </div>
+          }
+        </div>
+        @if (selected().length > 0) {
+          <div
+            jb-bulk-bar
+            [label]="table.label.toLowerCase()"
+            [count]="selected().length"
+            [statusLabel]="settable()?.label?.toLowerCase() ?? null"
+            [statuses]="settable()?.options ?? []"
+            (statusChosen)="setStatus($event)"
+            (cleared)="selected.set([])"
+            [deletable]="table.canDelete"
+            (deleteChosen)="removeSelected(table)"
+            (exportChosen)="downloadSelected(table)"
+          ></div>
+        }
+      </div>
+    }
+  }
+}

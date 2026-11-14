@@ -1,0 +1,214 @@
+@if (error()) {
+  <ng-content select="[slot=error]" />
+} @else {
+  <div class="records__table">
+    <table>
+      <caption class="visually-hidden">
+        {{
+          caption()
+        }}{{
+          loading() ? ', loading' : ''
+        }}
+      </caption>
+      <thead>
+        <tr>
+          @if (selectable()) {
+            <th class="records__check" scope="col">
+              <input
+                class="records__box"
+                type="checkbox"
+                aria-label="Select all on this page"
+                [checked]="allChosen()"
+                [indeterminate]="someChosen()"
+                (change)="checkAll($event)"
+              />
+            </th>
+          }
+          @for (column of columns(); track column.key) {
+            <th
+              scope="col"
+              [class.records__num]="column.type === 'number' || column.type === 'money'"
+              [attr.aria-sort]="ariaSort(column)"
+            >
+              @if (column.sortable === false) {
+                {{ column.label }}
+              } @else {
+                <button class="records__sort" type="button" (click)="sortBy(column)">
+                  {{ column.label }}
+                </button>
+              }
+            </th>
+          }
+          <th scope="col"><span class="visually-hidden">Actions</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        @if (loading()) {
+          @for (r of skeletons; track r) {
+            <tr class="records__skeleton">
+              @if (selectable()) {
+                <td class="records__check"></td>
+              }
+              @for (column of columns(); track column.key; let c = $index) {
+                <td><span jb-skeleton shape="text" [width]="width(r, c)"></span></td>
+              }
+              <td></td>
+            </tr>
+          }
+        } @else {
+          @for (item of drawn(); track item.row.id) {
+            <tr
+              [attr.aria-selected]="item.chosen ? 'true' : null"
+              (click)="choose($event, item.link)"
+            >
+              @if (selectable()) {
+                <td class="records__check">
+                  <input
+                    class="records__box"
+                    type="checkbox"
+                    [attr.aria-label]="'Select ' + item.row.name"
+                    [checked]="item.chosen"
+                    (change)="check(item.row.id, $event)"
+                  />
+                </td>
+              }
+              @for (c of item.cells; track c.column.key) {
+                <td [class.records__name]="c.isName" [class.records__num]="c.numeric">
+                  @if (c.isName) {
+                    <a class="cell--ref" [routerLink]="item.link">{{
+                      item.row.values[c.column.key]
+                    }}</a>
+                  } @else {
+                    <ng-container
+                      [ngTemplateOutlet]="cellTemplate"
+                      [ngTemplateOutletContext]="{ $implicit: c.cell }"
+                    />
+                  }
+                </td>
+              }
+              <td class="records__actions">
+                <button
+                  class="records__more"
+                  type="button"
+                  [attr.aria-label]="'Actions for ' + item.row.name"
+                  [cdkMenuTriggerFor]="rowMenu"
+                  [cdkMenuTriggerData]="{ $implicit: item }"
+                  [cdkMenuPosition]="endAligned"
+                >
+                  <svg jb-icon name="more-horizontal"></svg>
+                </button>
+              </td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+    @if (!loading() && rows().length === 0) {
+      <ng-container [ngTemplateOutlet]="emptyTemplate" />
+    }
+  </div>
+  @if (!loading()) {
+    <ul class="records__list">
+      @for (item of drawn(); track item.row.id) {
+        <li>
+          @if (selectable()) {
+            <input
+              class="records__box"
+              type="checkbox"
+              [attr.aria-label]="'Select ' + item.row.name"
+              [checked]="item.chosen"
+              (change)="check(item.row.id, $event)"
+            />
+          }
+          <a class="records__row" [routerLink]="item.link"
+            ><span class="records__row-text"
+              ><span class="records__row-name">{{ item.row.name }}</span
+              ><span class="records__row-id">{{ item.row.id }}</span></span
+            >
+            @if (asText(item.status); as status) {
+              <span jb-status-pill [value]="status"></span>
+            }
+            <svg jb-icon name="chevron-right" size="sm" class="records__chevron"></svg
+          ></a>
+        </li>
+      } @empty {
+        <li><ng-container [ngTemplateOutlet]="emptyTemplate" /></li>
+      }
+    </ul>
+    <ng-content select="[slot=foot]" />
+  }
+}
+
+<ng-template #cellTemplate let-cell>
+  @switch (cell.kind) {
+    @case ('empty') {
+      <span class="cell--empty" role="img" aria-label="None">—</span>
+    }
+    @case ('mono') {
+      <span class="cell--mono">{{ cell.text }}</span>
+    }
+    @case ('status') {
+      <span jb-status-pill [value]="cell.text"></span>
+    }
+    @case ('bool') {
+      @if (cell.yes) {
+        <span class="cell--yes" role="img" aria-label="Yes"
+          ><svg jb-icon name="check" size="sm"></svg
+        ></span>
+      } @else {
+        <span class="cell--no" role="img" aria-label="No"
+          ><svg jb-icon name="minus" size="sm"></svg
+        ></span>
+      }
+    }
+    @case ('num') {
+      <span class="cell--num">{{ cell.text }}</span>
+    }
+    @case ('muted') {
+      <span class="cell--muted">{{ cell.text }}</span>
+    }
+    @case ('long') {
+      <span class="cell--long">{{ cell.text }}</span>
+    }
+    @case ('ref') {
+      <a class="cell--ref" [routerLink]="cell.link">{{ cell.text }}</a>
+    }
+    @case ('deleted') {
+      <span class="cell--deleted">deleted</span>
+    }
+    @default {
+      {{ cell.text }}
+    }
+  }
+</ng-template>
+
+<ng-template #rowMenu let-item>
+  <jb-menu [label]="'Actions for ' + item.row.name">
+    <button jb-menu-item icon="external" (chosen)="open(item.link)">Open</button>
+    @if (editable()) {
+      <button jb-menu-item icon="pencil" (chosen)="open(item.link.concat('edit'))">Edit</button>
+    }
+    <button jb-menu-item icon="copy" [hint]="item.row.id.slice(0, 12)" (chosen)="copy(item.row.id)">
+      Copy ID
+    </button>
+    @if (duplicable()) {
+      <button jb-menu-item icon="copy-plus" (chosen)="duplicate.emit(item.row)">Duplicate</button>
+    }
+    @if (deletable()) {
+      <div jb-menu-divider></div>
+      <button jb-menu-item icon="trash-can" danger (chosen)="remove.emit(item.row)">Delete</button>
+    }
+  </jb-menu>
+</ng-template>
+
+<ng-template #emptyTemplate>
+  @if (empty(); as empty) {
+    <div class="records__empty">
+      <p class="records__empty-title">{{ empty.title }}</p>
+      <p class="records__empty-text">{{ empty.text }}</p>
+      @if (empty.action; as action) {
+        <button jb-button size="sm" type="button" (click)="emptyAction.emit()">{{ action }}</button>
+      }
+    </div>
+  }
+</ng-template>

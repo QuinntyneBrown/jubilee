@@ -1,0 +1,84 @@
+// Block: bulk-bar. The selection's actions, floating at the foot of the screen (L2-280 AC3).
+:host {
+  position: fixed;
+  inset-inline: 0;
+  bottom: var(--space-6);
+  z-index: var(--z-sticky);
+  display: flex;
+  justify-content: center;
+  padding-inline: var(--space-4);
+  pointer-events: none;
+}
+
+.bulk-bar__panel {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-2) var(--space-2) var(--space-2) var(--space-5);
+  border-radius: var(--radius-full);
+  background: var(--color-bg-inverse);
+  color: var(--color-fg-inverse);
+  box-shadow: var(--shadow-4);
+  pointer-events: auto;
+}
+
+.bulk-bar__count {
+  margin-right: var(--space-2);
+  font: var(--text-label);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.bulk-bar__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-height: var(--control-height-sm);
+  padding-inline: var(--space-3);
+  border: 0;
+  border-radius: var(--radius-full);
+  background: none;
+  color: inherit;
+  font: var(--text-label);
+  font-size: var(--font-size-sm);
+  white-space: nowrap;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.bulk-bar__btn:hover,
+.bulk-bar__btn[aria-expanded='true'] {
+  background: color-mix(in srgb, currentColor 12%, transparent);
+}
+
+.bulk-bar__btn:focus-visible {
+  outline: var(--focus-ring-width) solid var(--color-focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.bulk-bar__btn--export {
+  display: none;
+}
+
+@media (min-width: 40rem) {
+  .bulk-bar__btn--export {
+    display: inline-flex;
+  }
+}
+
+.bulk-bar__btn--danger {
+  color: var(--color-danger-icon-inverse);
+}
+
+.bulk-bar__btn--clear {
+  width: var(--control-height-sm);
+  justify-content: center;
+  margin-left: var(--space-1);
+  padding: 0;
+  background: color-mix(in srgb, currentColor 12%, transparent);
+}
+
+.bulk-bar__btn svg {
+  width: var(--icon-size-sm);
+  height: var(--icon-size-sm);
+}

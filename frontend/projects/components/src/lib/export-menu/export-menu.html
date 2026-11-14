@@ -1,0 +1,39 @@
+<button jb-button type="button" [cdkMenuTriggerFor]="exportMenu" [cdkMenuPosition]="endAligned">
+  <svg jb-icon name="download"></svg>Export<svg jb-icon name="chevron-down"></svg>
+</button>
+<ng-template #exportMenu>
+  <jb-menu label="Export">
+    <div jb-menu-label>Download</div>
+    @let shown = matching();
+    @if (shown !== null) {
+      <button
+        jb-menu-item
+        icon="download"
+        [hint]="count(shown)"
+        (chosen)="downloaded.emit({ format: 'csv', matching: true })"
+      >
+        CSV, matching rows
+      </button>
+    }
+    <button
+      jb-menu-item
+      icon="download"
+      [hint]="count(total())"
+      (chosen)="downloaded.emit({ format: 'csv', matching: false })"
+    >
+      CSV, every {{ singular() }}
+    </button>
+    <button
+      jb-menu-item
+      icon="file-json"
+      [hint]="count(total())"
+      (chosen)="downloaded.emit({ format: 'json', matching: false })"
+    >
+      JSON, every field
+    </button>
+    <div jb-menu-divider></div>
+    <button jb-menu-item icon="calendar-clock" (chosen)="weeklyChanged.emit(!weekly())">
+      {{ weekly() ? 'Stop the weekly email' : 'Email me this weekly' }}
+    </button>
+  </jb-menu>
+</ng-template>

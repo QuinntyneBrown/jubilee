@@ -1,8 +1,9 @@
 import { LISTING_ID, SPACE_LISTING, stubAdmin } from '../fixtures/admin';
-import { daniel } from '../fixtures/staff';
+import { LISTING_ROWS, stubAdminTables } from '../fixtures/admin-tables';
+import { miriam } from '../fixtures/staff';
 import { expect, test } from '../fixtures/jb-test';
 import { AdminListingPage } from '../pages/admin-listing.page';
-import { AdminListingsPage } from '../pages/admin-listings.page';
+import { AdminRecordsPage } from '../pages/admin-records.page';
 import { TakeDownListingDialog } from '../pages/take-down-listing.dialog';
 
 // Journey 12, keep listings honest (ADR 0057): nobody verifies a listing before it goes live; the
@@ -13,162 +14,62 @@ const LISTING = `/listings/${LISTING_ID}`;
 const REASON =
   'The web address in the listing’s name leads to a different company’s store, so members could not tell who they were buying from.';
 
-test.describe('keep listings honest: access and the listings (L2-098, L2-099)', () => {
-  test('L2-098 AC1, L2-188 AC4: a staff member without the moderator role is told so and the listings are never asked for', async ({
+test.describe('keep listings honest: the Listings table (L2-099)', () => {
+  test('AC1: the table says what it holds and shows its columns, newest first', async ({
     page,
     jb,
   }) => {
-    const listings = new AdminListingsPage(page);
-    await listings.setWidth(1280);
-    const fake = await stubAdmin(page, {}, daniel);
+    const records = new AdminRecordsPage(page);
+    await records.setWidth(1280);
+    const fake = await stubAdminTables(page, miriam);
     await jb.gotoAdmin('/listings');
 
-    await expect(listings.statusHeading).toHaveText('Nothing here for your role');
-    await expect(listings.statusText).toHaveText(
-      'These screens are for the Jubilee team. Ask a Jubilee administrator to add the moderator role to your staff account.',
+    await expect(records.heading).toHaveText('Listings');
+    await expect(records.lead).toHaveText(
+      'Every shop, service and space on Jubilee. Unpublishing hides it from Browse immediately.',
     );
-    await expect(listings.navLink('Listings')).toHaveCount(0);
-    await expect(listings.staffRole).toHaveText('Administrator');
-    expect(fake.listRequests).toEqual([]);
-  });
-
-  test('L2-098 AC3: the admin bar names Listings, Reports and Featured; only Reports carries a count', async ({
-    page,
-    jb,
-  }) => {
-    const listings = new AdminListingsPage(page);
-    await listings.setWidth(1280);
-    await stubAdmin(page);
-    await jb.gotoAdmin('/listings');
-
-    await expect(listings.staffNav.getByRole('link')).toHaveText([
-      'Listings',
-      'Reports 3',
-      'Featured',
-    ]);
-    await expect(listings.navLink('Listings')).toHaveAttribute('aria-current', 'page');
-    await expect(listings.badgeIn(listings.navLink('Listings'))).toHaveCount(0);
-    await expect(listings.staffRole).toHaveText('Moderator');
-  });
-
-  test('L2-188 AC6: on a phone the staff navigation stays, in a row under the lockup', async ({
-    page,
-    jb,
-  }) => {
-    const listings = new AdminListingsPage(page);
-    await listings.setWidth(360);
-    await stubAdmin(page);
-    await jb.gotoAdmin('/listings');
-
-    await expect(listings.navLink('Listings')).toHaveAttribute('aria-current', 'page');
-    await expect(listings.navLink('Reports')).toBeVisible();
-    await expect(listings.staffName).toBeHidden();
-    await expect(listings.signOut).toBeVisible();
-    expect(await listings.overflowsHorizontally()).toBe(false);
-  });
-
-  test('L2-099 AC1, AC2: the listings are counted and listed newest first with their status', async ({
-    page,
-    jb,
-  }) => {
-    const listings = new AdminListingsPage(page);
-    await listings.setWidth(1280);
-    await stubAdmin(page);
-    await jb.gotoAdmin('/listings');
-
-    await expect(listings.heading).toHaveText('Listings');
-    await expect(listings.subtitle).toHaveText('6 listings · 4 published in the last 7 days');
-    await expect(listings.columns).toHaveText([
-      'Business',
-      'Category',
-      'Owner',
-      'Published',
+    await expect(records.columnHeaders).toHaveText([
+      '',
+      'ID',
+      'Name',
+      'Kind',
       'Status',
+      'Owner',
+      'Category',
+      'Neighbourhood',
+      'Actions',
     ]);
-    await expect(listings.rows).toHaveCount(6);
-    await expect(listings.rows.first()).toContainText('Luzandre.com');
-    await expect(listings.row('Luzandre.com')).toContainText('Flagged');
-    await expect(listings.cells('Luzandre.com').nth(1)).toHaveText('Shops');
-    await expect(listings.cells('Luzandre.com').nth(2)).toHaveText('Naomi Laurent');
-    await expect(listings.cells('Luzandre.com').nth(4)).toHaveText('Live');
-    await expect(listings.cells('Flower Creations').nth(4)).toHaveText('Paused');
-    await expect(listings.cells('Moore’s Cleaning Service').nth(4)).toHaveText('On hold');
-    await expect(listings.row('Okafor & Sons Furniture')).not.toContainText('Flagged');
+    await expect(records.bodyRows.first()).toContainText('Luzandre.com');
+    // No sort is asked for, so the database's order applies: newest first.
+    expect(fake.rowRequests).toEqual(['/listings?page=1&size=25']);
   });
 
-  test('L2-099 AC3: a search by name asks for it and keeps the matching listings', async ({
+  test('AC5: listings that cannot load say so with JB-ADM-503, and Try again reads them again', async ({
     page,
     jb,
   }) => {
-    const listings = new AdminListingsPage(page);
-    await listings.setWidth(1280);
-    const fake = await stubAdmin(page);
+    const records = new AdminRecordsPage(page);
+    await records.setWidth(1280);
+    const fake = await stubAdminTables(page, miriam, { answer: 'fails' });
     await jb.gotoAdmin('/listings');
-    await expect(listings.rows).toHaveCount(6);
 
-    await listings.searchFor('okafor');
-
-    await expect(listings.rows).toHaveCount(1);
-    await expect(listings.businessLink('Okafor & Sons Furniture')).toBeVisible();
-    expect(fake.listRequests.at(-1)).toBe('?q=okafor');
+    await expect(records.error).toContainText('We couldn’t load listings');
+    await expect(records.error).toContainText('JB-ADM-503');
+    fake.answer = 'ok';
+    await records.retry().click();
+    await expect(records.bodyRows).toHaveCount(2);
   });
 
-  test('L2-099 AC3: a search that matches nothing says so and can be cleared', async ({
-    page,
-    jb,
-  }) => {
-    const listings = new AdminListingsPage(page);
-    await listings.setWidth(1280);
+  test('a listing’s name opens that listing', async ({ page, jb }) => {
+    const records = new AdminRecordsPage(page);
+    await records.setWidth(1280);
+    await stubAdminTables(page, miriam);
     await stubAdmin(page);
     await jb.gotoAdmin('/listings');
 
-    await listings.searchFor('Grace Bakery');
+    await records.row('Luzandre.com').getByRole('link', { name: 'Luzandre.com' }).click();
 
-    await expect(listings.empty).toContainText('No listing matches “Grace Bakery”.');
-    await listings.clearSearch.click();
-    await expect(listings.rows).toHaveCount(6);
-    await expect(listings.search).toHaveValue('');
-  });
-
-  test('L2-099 AC4: with no published listing the page says so', async ({ page, jb }) => {
-    const listings = new AdminListingsPage(page);
-    await listings.setWidth(1280);
-    await stubAdmin(page, { listings: 'empty' });
-    await jb.gotoAdmin('/listings');
-
-    await expect(listings.empty).toContainText('No listings yet');
-    await expect(listings.empty).toContainText(
-      'A listing appears here as soon as its owner publishes it.',
-    );
-    await expect(listings.refresh).toBeVisible();
-  });
-
-  test('L2-099 AC5: listings that cannot load quote JB-ADM-503 and can be retried', async ({
-    page,
-    jb,
-  }) => {
-    const listings = new AdminListingsPage(page);
-    await listings.setWidth(1280);
-    const fake = await stubAdmin(page, { listings: 'fails' });
-    await jb.gotoAdmin('/listings');
-
-    await expect(listings.empty).toContainText('We couldn’t load the listings');
-    await expect(listings.reference).toHaveText('JB-ADM-503');
-    fake.listings = 'ok';
-    await listings.tryAgain.click();
-    await expect(listings.rows).toHaveCount(6);
-  });
-
-  test('L2-099: a row opens that listing', async ({ page, jb }) => {
-    const listings = new AdminListingsPage(page);
-    await listings.setWidth(1280);
-    await stubAdmin(page);
-    await jb.gotoAdmin('/listings');
-
-    await listings.businessLink('Luzandre.com').click();
-
-    await expect(page).toHaveURL(new RegExp(`${LISTING}$`));
-    await expect(new AdminListingPage(page).heading).toHaveText('Luzandre.com');
+    await expect(page).toHaveURL(new RegExp(`/listings/${LISTING_ROWS[0].id}$`));
   });
 });
 

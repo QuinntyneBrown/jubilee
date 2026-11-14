@@ -1,0 +1,58 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — See what is waiting
+class AdminOverviewDto {
+  +SinceYesterday: SinceYesterdayDto
+  +Sections: QueueSectionDto[]
+  +System: SystemItemDto[]
+  +Changes: ChangeDto[]
+}
+class SinceYesterdayDto {
+  +Members: int
+  +Listings: int
+  +Orders: int
+  +Requests: int
+}
+class QueueSectionDto {
+  +Title: string
+  +Note: string
+  +Lines: QueueLineDto[]
+}
+class QueueLineDto {
+  +Table: string
+  +Label: string
+  +Status: string
+  +Count: int
+  +Urgent: bool
+  +NextId: string
+  +Next: string
+  +OldestAt: DateTimeOffset
+}
+class SystemItemDto {
+  +Kind: failed | retrying | gave-up | maintenance
+  +Table: string
+  +Title: string
+  +Detail: string
+}
+class ChangeDto {
+  +ActorName: string
+  +Action: string
+  +Table: string
+  +RecordId: string
+  +At: DateTimeOffset
+}
+AdminOverviewDto *-- SinceYesterdayDto
+AdminOverviewDto *-- "2" QueueSectionDto
+QueueSectionDto *-- "0..*" QueueLineDto
+AdminOverviewDto *-- "0..*" SystemItemDto
+AdminOverviewDto *-- "0..4" ChangeDto
+@enduml

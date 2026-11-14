@@ -4,8 +4,17 @@ namespace Jubilee.Domain;
 /// A member's standing request to be told once when a sold-out product is available again
 /// (L2-036 AC2). One open alert exists per member and product; a notified alert is closed.
 /// </summary>
-public sealed class StockAlert
+public sealed class StockAlert : IAdminDeletable
 {
+    /// <inheritdoc />
+    public DateTimeOffset? AdminDeletedAt { get; private set; }
+
+    /// <inheritdoc />
+    public void AdminDelete(DateTimeOffset now) => AdminDeletedAt = now;
+
+    /// <inheritdoc />
+    public void AdminRestore() => AdminDeletedAt = null;
+
     private StockAlert()
     {
     }

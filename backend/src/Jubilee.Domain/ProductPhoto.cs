@@ -4,8 +4,17 @@ namespace Jubilee.Domain;
 /// A photo an owner uploaded for a product of their listing (L2-091 AC9, ADR 0063). The image is a
 /// set of renditions in the media store under <see cref="Key"/>; a product takes it when it is saved.
 /// </summary>
-public sealed class ProductPhoto
+public sealed class ProductPhoto : IAdminDeletable
 {
+    /// <inheritdoc />
+    public DateTimeOffset? AdminDeletedAt { get; private set; }
+
+    /// <inheritdoc />
+    public void AdminDelete(DateTimeOffset now) => AdminDeletedAt = now;
+
+    /// <inheritdoc />
+    public void AdminRestore() => AdminDeletedAt = null;
+
     private ProductPhoto()
     {
     }

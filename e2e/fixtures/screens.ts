@@ -1,13 +1,41 @@
 import type { Page } from '@playwright/test';
-import { AdminFeaturedPage } from '../pages/admin-featured.page';
 import { AdminMovedPage } from '../pages/admin-moved.page';
+import {
+  AdminOverviewDrawerScreen,
+  AdminOverviewErrorScreen,
+  AdminOverviewLoadingScreen,
+  AdminOverviewPage,
+} from '../pages/admin-overview.page';
 import { AdminReportPage } from '../pages/admin-report.page';
+import {
+  JumpPaletteNoneScreen,
+  JumpPaletteResultsScreen,
+  JumpPaletteScreen,
+} from '../pages/jump-palette.dialog';
 import { AdminReportsPage } from '../pages/admin-reports.page';
 import { TakeDownScreen } from '../pages/report-action.dialog';
 import { AdminShellPage } from '../pages/admin-shell.page';
 import { AdminSignInPage } from '../pages/admin-sign-in.page';
 import { AdminListingPage } from '../pages/admin-listing.page';
-import { AdminListingsPage } from '../pages/admin-listings.page';
+import {
+  AdminBulkStatusMenuScreen,
+  AdminColumnsMenuScreen,
+  AdminConfirmDeleteOneScreen,
+  AdminConfirmDeleteScreen,
+  AdminExportMenuScreen,
+  AdminExportReasonScreen,
+  AdminExportWeeklyScreen,
+  AdminRecordsPage,
+  AdminRowMenuScreen,
+  AdminRowsMenuScreen,
+  AdminSelectedScreen,
+  AdminStaffMenuScreen,
+} from '../pages/admin-records.page';
+import {
+  AdminRecordConfirmDeleteScreen,
+  AdminRecordPage,
+  AdminRecordPrivateScreen,
+} from '../pages/admin-record.page';
 import { AdminPoliciesPage } from '../pages/admin-policies.page';
 import { AdminPolicyPage } from '../pages/admin-policy.page';
 import {
@@ -269,12 +297,50 @@ export const screens: {
   { key: 'admin-sign-in.network-refused', screen: (page) => new AdminSignInPage(page) },
   { key: 'admin-sign-in.signed-out', screen: (page) => new AdminSignInPage(page) },
   { key: 'admin-sign-in.session-expired', screen: (page) => new AdminSignInPage(page) },
-  { key: 'admin-shell.admin-only', screen: (page) => new AdminShellPage(page) },
-  { key: 'admin-shell.not-found', screen: (page) => new AdminShellPage(page) },
+  { key: 'admin-overview', screen: (page) => new AdminOverviewPage(page) },
+  { key: 'admin-overview.loading', screen: (page) => new AdminOverviewLoadingScreen(page) },
+  { key: 'admin-overview.empty', screen: (page) => new AdminOverviewPage(page) },
+  { key: 'admin-overview.error', screen: (page) => new AdminOverviewErrorScreen(page) },
+  { key: 'admin-overview.drawer', screen: (page) => new AdminOverviewDrawerScreen(page) },
+  { key: 'admin-overview.palette', screen: (page) => new JumpPaletteScreen(page) },
+  { key: 'admin-overview.palette-results', screen: (page) => new JumpPaletteResultsScreen(page) },
+  { key: 'admin-overview.palette-none', screen: (page) => new JumpPaletteNoneScreen(page) },
+  { key: 'admin-records', screen: (page) => new AdminRecordsPage(page) },
+  { key: 'admin-records.row-menu', screen: (page) => new AdminRowMenuScreen(page) },
+  { key: 'admin-records.selected', screen: (page) => new AdminSelectedScreen(page) },
+  { key: 'admin-records.bulk-status-menu', screen: (page) => new AdminBulkStatusMenuScreen(page) },
+  { key: 'admin-records.export-menu', screen: (page) => new AdminExportMenuScreen(page) },
+  { key: 'admin-records.export-weekly', screen: (page) => new AdminExportWeeklyScreen(page) },
+  { key: 'admin-records.export-reason', screen: (page) => new AdminExportReasonScreen(page) },
+  { key: 'admin-records.confirm-delete', screen: (page) => new AdminConfirmDeleteScreen(page) },
+  {
+    key: 'admin-records.confirm-delete-one',
+    screen: (page) => new AdminConfirmDeleteOneScreen(page),
+  },
+  {
+    key: 'admin-record.confirm-delete',
+    screen: (page) => new AdminRecordConfirmDeleteScreen(page),
+  },
+  { key: 'admin-record.edit', screen: (page) => new AdminRecordPage(page) },
+  { key: 'admin-record.saving', screen: (page) => new AdminRecordPage(page) },
+  { key: 'admin-record.saved', screen: (page) => new AdminRecordPage(page) },
+  { key: 'admin-record.create', screen: (page) => new AdminRecordPage(page) },
+  { key: 'admin-record.messages', screen: (page) => new AdminRecordPage(page) },
+  { key: 'admin-record.private', screen: (page) => new AdminRecordPrivateScreen(page) },
+  { key: 'admin-records.loading', screen: (page) => new AdminRecordsPage(page) },
+  { key: 'admin-records.error', screen: (page) => new AdminRecordsPage(page) },
+  { key: 'admin-records.staff-menu', screen: (page) => new AdminStaffMenuScreen(page) },
+  { key: 'admin-records.columns-menu', screen: (page) => new AdminColumnsMenuScreen(page) },
+  { key: 'admin-records.page-size-menu', screen: (page) => new AdminRowsMenuScreen(page) },
+  { key: 'admin-records.forbidden', screen: (page) => new AdminShellPage(page) },
+  { key: 'admin-records.not-found', screen: (page) => new AdminShellPage(page) },
+  { key: 'admin-record', screen: (page) => new AdminRecordPage(page) },
+  { key: 'admin-record.loading', screen: (page) => new AdminRecordPage(page) },
+  { key: 'admin-record.error', screen: (page) => new AdminRecordPage(page) },
+  { key: 'admin-record.job-runs', screen: (page) => new AdminRecordPage(page) },
+  { key: 'admin-records.listings', screen: (page) => new AdminRecordsPage(page) },
+  { key: 'admin-records.job-runs', screen: (page) => new AdminRecordsPage(page) },
   { key: 'admin-moved', screen: (page) => new AdminMovedPage(page) },
-  { key: 'admin-listings', screen: (page) => new AdminListingsPage(page) },
-  { key: 'admin-listings.empty', screen: (page) => new AdminListingsPage(page) },
-  { key: 'admin-listings.error', screen: (page) => new AdminListingsPage(page) },
   { key: 'admin-listing', screen: (page) => new AdminListingPage(page) },
   { key: 'admin-listing.taken-down', screen: (page) => new AdminListingPage(page) },
   { key: 'admin-listing.space', screen: (page) => new AdminListingPage(page) },
@@ -287,8 +353,6 @@ export const screens: {
   { key: 'admin-report.error', screen: (page) => new AdminReportPage(page) },
   { key: 'admin-report.review', screen: (page) => new AdminReportPage(page) },
   { key: 'report-action.take-down', screen: (page) => new TakeDownScreen(page) },
-  { key: 'admin-featured', screen: (page) => new AdminFeaturedPage(page) },
-  { key: 'admin-featured.error', screen: (page) => new AdminFeaturedPage(page) },
   { key: 'admin-policies', screen: (page) => new AdminPoliciesPage(page) },
   { key: 'admin-policies.loading', screen: (page) => new AdminPoliciesPage(page) },
   { key: 'admin-policies.error', screen: (page) => new AdminPoliciesPage(page) },

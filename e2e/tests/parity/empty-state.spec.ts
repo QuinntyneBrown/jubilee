@@ -1,4 +1,6 @@
 import { parity } from '../../fixtures/parity';
+import { AdminOverviewErrorScreen } from '../../pages/admin-overview.page';
+import { AdminRecordPrivateScreen } from '../../pages/admin-record.page';
 import { BusinessPage } from '../../pages/business.page';
 import { CategoryPage } from '../../pages/category.page';
 import { SearchPage } from '../../pages/search.page';
@@ -23,6 +25,20 @@ parity('empty-state', {
       route: 'category.empty',
       screen: (page) => new CategoryPage(page),
       region: (screen: CategoryPage) => screen.emptyState,
+    },
+    {
+      // A message whose conversation has no open report (L2-284 AC3).
+      name: 'private-message',
+      route: 'admin-record.private',
+      screen: (page) => new AdminRecordPrivateScreen(page),
+      region: (screen: AdminRecordPrivateScreen) => screen.closed,
+    },
+    {
+      // The overview that could not load what is waiting on staff (L2-274 AC6).
+      name: 'overview-error',
+      route: 'admin-overview.error',
+      screen: (page) => new AdminOverviewErrorScreen(page),
+      region: (screen: AdminOverviewErrorScreen) => screen.error,
     },
   ],
   reference: {

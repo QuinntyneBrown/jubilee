@@ -1,0 +1,37 @@
+@startuml
+title UML sequence behaviour — Read a table
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Staff member" as actor
+box "Frontend — Jubilee Admin Web" #E0F2FE
+  participant "RecordsPage" as page
+  participant "jb-records-table" as table
+  participant "AdminTablesApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "GetAdminRowsQuery handler" as handler
+  participant "AdminRights" as rights
+  participant "AdminQuery" as query
+end box
+database "Database" as db
+actor -> page : Open /members?q=ruth&status=active
+page -> table : Skeleton rows, aria-busy (L2-276 AC7)
+page -> client : rows(members, q, status, sort, page, size)
+client -> handler : GET /api/admin/tables/members?q=ruth&status=active
+handler -> rights : CanRead(roles, members)
+alt role may not read it
+  handler --> client : 403 FORBIDDEN (L2-284 AC1)
+  page --> actor : Nothing here for your role (L2-188 AC4)
+else allowed
+  handler -> query : Search every field, filter status, sort, page (L2-277 AC6)
+  query -> db : SELECT with WHERE, ORDER BY, OFFSET and COUNT
+  db --> query : Rows and total
+  query --> handler : Values in wire form
+  handler --> client : Rows, total, page, size
+  page -> table : Rows by type, pagination foot (L2-276, L2-278)
+  table --> actor : The table
+end
+@enduml

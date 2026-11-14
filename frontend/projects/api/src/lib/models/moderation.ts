@@ -76,19 +76,3 @@ export interface ReportDetail {
   actions: ReportAction[];
   resolutionNote: string | null;
 }
-
-export interface FeaturedListing {
-  id: string;
-  name: string;
-  slug: string;
-  tagline: string;
-  categorySlug: string;
-  state: ListingState;
-}
-
-export interface FeaturedWeek {
-  startDate: string;
-  endDate: string;
-  active: boolean;
-  listings: FeaturedListing[];
-}

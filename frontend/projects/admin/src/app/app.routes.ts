@@ -1,17 +1,19 @@
 import { Routes } from '@angular/router';
-import { StaffSection } from 'components';
 import { signedOutGuard, staffGuard } from './guards/staff.guard';
+import { BarePage } from './pages/bare/bare.page';
+import { ShellPage } from './pages/shell/shell.page';
 
 /**
- * The data every route of the admin application carries: `shell` picks the chrome (the admin
- * bar, or the sign-in frame), `page` is stamped on `<body data-page>`, `section` marks the current
- * entry of the staff navigation, and `role` is the staff role the screen needs: `moderator` for
- * the Jubilee team's screens (L2-188 AC4), `admin` for the policies (L2-247 AC10).
+ * The data every route of the admin application carries: `shell` picks the chrome (the shell of
+ * L2-272, or the sign-in frame), `page` is stamped on `<body data-page>`, `current` is the table
+ * the sidebar marks when the path does not name one (`/:table` does), and `role` is the staff role
+ * the screen needs: `moderator` for the Jubilee team's screens (L2-188 AC4), `admin` for the
+ * policies (L2-247 AC10).
  */
 export interface AdminRouteData {
   shell: 'admin' | 'bare';
   page: string;
-  section?: StaffSection;
+  current?: string;
   role?: StaffRole;
 }
 
@@ -21,44 +23,61 @@ const data = (value: AdminRouteData & { state?: SignInState }) => value;
 
 export type StaffRole = 'moderator' | 'admin';
 
-const screen = (page: string, section: StaffSection, role: StaffRole = 'moderator') =>
-  data({ shell: 'admin', page, section, role });
+const screen = (page: string, current: string, role: StaffRole = 'moderator') =>
+  data({ shell: 'admin', page, current, role });
 
 export const routes: Routes = [
-  { path: '', pathMatch: 'full', redirectTo: 'listings' },
   {
-    path: 'sign-in',
-    canActivate: [signedOutGuard],
-    loadComponent: () => import('./pages/sign-in/sign-in.page').then((m) => m.SignInPage),
-    data: data({ shell: 'bare', page: 'admin-sign-in', state: 'sign-in' }),
-    title: 'Sign in · Jubilee admin',
-  },
-  {
-    path: 'signed-out',
-    canActivate: [signedOutGuard],
-    loadComponent: () => import('./pages/sign-in/sign-in.page').then((m) => m.SignInPage),
-    data: data({ shell: 'bare', page: 'admin-sign-in', state: 'signed-out' }),
-    title: 'Signed out · Jubilee admin',
-  },
-  {
-    path: 'session-expired',
-    canActivate: [signedOutGuard],
-    loadComponent: () => import('./pages/sign-in/sign-in.page').then((m) => m.SignInPage),
-    data: data({ shell: 'bare', page: 'admin-sign-in', state: 'session-expired' }),
-    title: 'Session ended · Jubilee admin',
-  },
-  {
+    // The overview, in the shell, ahead of the sign-in frame: an empty path would match that
+    // frame's parent with no screen in it.
     path: '',
+    pathMatch: 'full',
+    component: ShellPage,
     canActivateChild: [staffGuard],
     children: [
       {
-        path: 'listings',
-        pathMatch: 'full',
-        loadComponent: () =>
-          import('./pages/admin-listings/admin-listings.page').then((m) => m.AdminListingsPage),
-        data: screen('admin-listings', 'listings'),
-        title: 'Listings · Jubilee admin',
+        // What is waiting on staff, System and Recent changes (L2-274, L2-275).
+        path: '',
+        loadComponent: () => import('./pages/overview/overview.page').then((m) => m.OverviewPage),
+        data: data({ shell: 'admin', page: 'admin-overview', current: 'overview' }),
+        title: 'Overview · Jubilee admin',
       },
+    ],
+  },
+  {
+    // The sign-in frame (L2-189): no shell, only the screen in `main`.
+    path: '',
+    component: BarePage,
+    children: [
+      {
+        path: 'sign-in',
+        canActivate: [signedOutGuard],
+        loadComponent: () => import('./pages/sign-in/sign-in.page').then((m) => m.SignInPage),
+        data: data({ shell: 'bare', page: 'admin-sign-in', state: 'sign-in' }),
+        title: 'Sign in · Jubilee admin',
+      },
+      {
+        path: 'signed-out',
+        canActivate: [signedOutGuard],
+        loadComponent: () => import('./pages/sign-in/sign-in.page').then((m) => m.SignInPage),
+        data: data({ shell: 'bare', page: 'admin-sign-in', state: 'signed-out' }),
+        title: 'Signed out · Jubilee admin',
+      },
+      {
+        path: 'session-expired',
+        canActivate: [signedOutGuard],
+        loadComponent: () => import('./pages/sign-in/sign-in.page').then((m) => m.SignInPage),
+        data: data({ shell: 'bare', page: 'admin-sign-in', state: 'session-expired' }),
+        title: 'Session ended · Jubilee admin',
+      },
+    ],
+  },
+  {
+    // Every other screen sits in the shell of L2-272.
+    path: '',
+    component: ShellPage,
+    canActivateChild: [staffGuard],
+    children: [
       {
         path: 'listings/:id',
         loadComponent: () =>
@@ -71,37 +90,63 @@ export const routes: Routes = [
         pathMatch: 'full',
         loadComponent: () =>
           import('./pages/admin-reports/admin-reports.page').then((m) => m.AdminReportsPage),
-        data: screen('admin-reports', 'reports'),
+        data: screen('admin-reports', 'listing-reports'),
         title: 'Reports · Jubilee admin',
       },
       {
         path: 'reports/:id',
         loadComponent: () =>
           import('./pages/admin-report/admin-report.page').then((m) => m.AdminReportPage),
-        data: screen('admin-report', 'reports'),
+        data: screen('admin-report', 'listing-reports'),
         title: 'Review a report · Jubilee admin',
       },
-      {
-        path: 'featured',
-        loadComponent: () =>
-          import('./pages/admin-featured/admin-featured.page').then((m) => m.AdminFeaturedPage),
-        data: screen('admin-featured', 'featured'),
-        title: 'Featured this week · Jubilee admin',
-      },
+      // The old Featured screen's path opens its table (ADR 0075).
+      { path: 'featured', pathMatch: 'full', redirectTo: 'featured-slots' },
       {
         path: 'policies',
         pathMatch: 'full',
         loadComponent: () =>
           import('./pages/admin-policies/admin-policies.page').then((m) => m.AdminPoliciesPage),
-        data: screen('admin-policies', 'policies', 'admin'),
+        data: screen('admin-policies', 'content-versions', 'admin'),
         title: 'Policies · Jubilee admin',
       },
       {
         path: 'policies/:slug',
         loadComponent: () =>
           import('./pages/admin-policy/admin-policy.page').then((m) => m.AdminPolicyPage),
-        data: screen('admin-policy', 'policies', 'admin'),
+        data: screen('admin-policy', 'content-versions', 'admin'),
         title: 'Edit a policy · Jubilee admin',
+      },
+      {
+        // Any table of the catalog (L2-276, ADR 0075); the page says when it is not for the role
+        // or does not exist.
+        path: ':table',
+        loadComponent: () => import('./pages/records/records.page').then((m) => m.RecordsPage),
+        data: data({ shell: 'admin', page: 'admin-records' }),
+        title: 'Tables · Jubilee admin',
+      },
+      {
+        // A new record of a table that creates (L2-283 AC4).
+        path: ':table/new',
+        loadComponent: () =>
+          import('./pages/record-edit/record-edit.page').then((m) => m.RecordEditPage),
+        data: { ...data({ shell: 'admin', page: 'admin-record-new' }), mode: 'new' },
+        title: 'New record · Jubilee admin',
+      },
+      {
+        // One record of any table (L2-282).
+        path: ':table/:id',
+        loadComponent: () => import('./pages/record/record.page').then((m) => m.RecordPage),
+        data: data({ shell: 'admin', page: 'admin-record' }),
+        title: 'Record · Jubilee admin',
+      },
+      {
+        // A record's fields, changed (L2-283 AC1).
+        path: ':table/:id/edit',
+        loadComponent: () =>
+          import('./pages/record-edit/record-edit.page').then((m) => m.RecordEditPage),
+        data: { ...data({ shell: 'admin', page: 'admin-record-edit' }), mode: 'edit' },
+        title: 'Edit record · Jubilee admin',
       },
       {
         path: '**',

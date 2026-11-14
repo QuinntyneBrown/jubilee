@@ -1,0 +1,22 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — See what is waiting
+Container_Boundary(web, "Jubilee Admin Web") {
+  Component(page, "OverviewPage", "Angular page", "Greeting, work queue, System, Recent changes")
+  Component(parts, "jb-work-queue, jb-system-list, jb-change-list", "components library", "Presentation")
+  Component(client, "AdminTablesApi", "api library", "overview()")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(ctrl, "AdminOverviewController", "ASP.NET Core controller", "GET /api/admin/overview")
+  Component(handler, "GetAdminOverviewQuery handler", "MediatR", "Counts queues for the readable tables")
+  Component(rights, "AdminRights", "Application", "Which lines the role may see")
+}
+ContainerDb(db, "Database", "SQL Server")
+Rel(page, parts, "Composes")
+Rel(page, client, "Reads through")
+Rel(client, ctrl, "Calls", "JSON/HTTPS")
+Rel(ctrl, handler, "Sends")
+Rel(handler, rights, "Checks")
+Rel(handler, db, "Counts and reads", "IAppDbContext")
+@enduml

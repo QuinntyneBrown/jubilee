@@ -1,0 +1,28 @@
+// Block: status. A status word as a pill, in the tone of what it says (L2-277 AC4).
+:host {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--target-min);
+  padding-inline: var(--space-3);
+  border-radius: var(--radius-full);
+  background: var(--color-bg-subtle);
+  color: var(--color-fg-muted);
+  font: var(--text-caption);
+  font-weight: var(--font-weight-semibold);
+  white-space: nowrap;
+}
+
+:host(.status--good) {
+  background: var(--color-success-bg);
+  color: var(--color-success-fg);
+}
+
+:host(.status--wait) {
+  background: var(--color-warning-bg);
+  color: var(--color-warning-fg);
+}
+
+:host(.status--bad) {
+  background: var(--color-danger-bg);
+  color: var(--color-danger-fg);
+}

@@ -64,6 +64,12 @@ public sealed class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<Ex
                 context, StatusCodes.Status403Forbidden, "You don't have access to this.", forbidden.Message, forbidden.Code);
         }
 
+        if (exception is Application.Errors.BadRequestException bad)
+        {
+            return ProblemWriter.WriteAsync(
+                context, StatusCodes.Status400BadRequest, "Something is missing.", bad.Message, bad.Code);
+        }
+
         if (exception is Application.Errors.GoneException gone)
         {
             return ProblemWriter.WriteAsync(

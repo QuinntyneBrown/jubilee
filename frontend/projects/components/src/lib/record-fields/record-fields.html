@@ -1,0 +1,121 @@
+@if (loading()) {
+  @for (r of skeletons; track r) {
+    <div class="record-fields__row">
+      <span jb-skeleton shape="text" [width]="30"></span>
+      <span jb-skeleton shape="text" [width]="70"></span>
+    </div>
+  }
+} @else {
+  @for (row of rows(); track row.field.key) {
+    <div class="record-fields__row">
+      @if (row.editor; as editor) {
+        <dt class="record-fields__label">
+          <label [for]="row.id">{{ row.field.label }}</label>
+        </dt>
+        <dd class="record-fields__value">
+          @switch (editor) {
+            @case ('select') {
+              <select
+                jb-select
+                [id]="row.id"
+                [class]="row.width"
+                [attr.aria-invalid]="errors()[row.field.key] ? 'true' : null"
+                [attr.aria-describedby]="errors()[row.field.key] ? row.id + '-error' : null"
+                (change)="edit(row.field.key, typed($event) || null)"
+              >
+                @for (choice of choices()[row.field.key] ?? []; track choice.value) {
+                  <option
+                    [value]="choice.value"
+                    [selected]="choice.value === valueOf(row.field.key)"
+                  >
+                    {{ choice.label }}
+                  </option>
+                }
+              </select>
+            }
+            @case ('switch') {
+              <jb-switch
+                [controlId]="row.id"
+                [checked]="valueOf(row.field.key) === 'true'"
+                (checkedChange)="edit(row.field.key, $event ? 'true' : 'false')"
+                ><span class="visually-hidden">{{ row.field.label }}</span></jb-switch
+              >
+            }
+            @case ('textarea') {
+              <textarea
+                jb-textarea
+                rows="3"
+                [id]="row.id"
+                [class.record-fields__mono]="row.mono"
+                [value]="valueOf(row.field.key)"
+                [attr.aria-invalid]="errors()[row.field.key] ? 'true' : null"
+                [attr.aria-describedby]="errors()[row.field.key] ? row.id + '-error' : null"
+                (input)="edit(row.field.key, typed($event))"
+              ></textarea>
+            }
+            @default {
+              <input
+                jb-input
+                [id]="row.id"
+                [type]="editor"
+                [class]="row.width"
+                [class.record-fields__mono]="row.mono"
+                [value]="valueOf(row.field.key)"
+                [attr.aria-invalid]="errors()[row.field.key] ? 'true' : null"
+                [attr.aria-describedby]="errors()[row.field.key] ? row.id + '-error' : null"
+                (input)="edit(row.field.key, typed($event))"
+              />
+            }
+          }
+          @if (errors()[row.field.key]; as error) {
+            <span jb-field-error [id]="row.id + '-error'">{{ error }}</span>
+          }
+        </dd>
+      } @else {
+        <dt class="record-fields__label">{{ row.field.label }}</dt>
+        <dd class="record-fields__value">
+          @switch (row.cell.kind) {
+            @case ('empty') {
+              <span class="cell--empty" role="img" aria-label="None">—</span>
+            }
+            @case ('mono') {
+              <span class="cell--mono">{{ row.cell.text }}</span>
+            }
+            @case ('status') {
+              <span jb-status-pill [value]="row.cell.text"></span>
+            }
+            @case ('bool') {
+              @if (row.cell.yes) {
+                <span class="cell--yes" role="img" aria-label="Yes"
+                  ><svg jb-icon name="check" size="sm"></svg
+                ></span>
+              } @else {
+                <span class="cell--no" role="img" aria-label="No"
+                  ><svg jb-icon name="minus" size="sm"></svg
+                ></span>
+              }
+            }
+            @case ('num') {
+              <span class="cell--num">{{ row.cell.text }}</span>
+            }
+            @case ('muted') {
+              <span class="cell--muted">{{ row.cell.text }}</span>
+            }
+            @case ('long') {
+              <span class="cell--long">{{ row.cell.text }}</span>
+            }
+            @case ('ref') {
+              <a class="cell--ref" [routerLink]="row.cell.link">{{ row.cell.text }}</a>
+            }
+            @case ('deleted') {
+              <span class="cell--deleted">deleted</span>
+            }
+            @default {
+              {{ row.cell.text }}
+            }
+          }
+        </dd>
+      }
+    </div>
+  }
+}

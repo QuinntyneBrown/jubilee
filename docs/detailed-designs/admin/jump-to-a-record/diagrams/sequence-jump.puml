@@ -1,0 +1,31 @@
+@startuml
+title UML sequence behaviour — Jump to a record
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Staff member" as actor
+box "Frontend — Jubilee Admin Web" #E0F2FE
+  participant "JumpService" as service
+  participant "jb-command-palette" as palette
+  participant "AdminTablesApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "JumpQuery handler" as handler
+end box
+database "Database" as db
+actor -> service : Ctrl K
+service -> palette : Open Jump to with the first ten tables (L2-273 AC1, AC2)
+actor -> palette : Type ruth
+palette -> service : Text changed
+service -> palette : Up to eight tables by name or group
+service -> client : jump(ruth)
+client -> handler : GET /api/admin/jump?q=ruth
+handler -> db : ID or name contains ruth, readable tables only (L2-273 AC6)
+handler --> client : Up to six records
+service -> palette : Tables then records (L2-273 AC3)
+actor -> palette : Arrow down, Enter
+palette -> service : Chosen record
+service --> actor : Opens /members/{id} (L2-273 AC4)
+@enduml

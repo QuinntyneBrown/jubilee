@@ -78,6 +78,26 @@
   --btn-bg-active: var(--color-danger-solid-hover);
 }
 
+:host(.btn--danger-outline) {
+  --btn-bg: transparent;
+  --btn-fg: var(--color-danger-fg);
+  --btn-border: var(--color-danger-border);
+  --btn-bg-hover: var(--color-danger-bg);
+  --btn-bg-active: var(--color-danger-bg);
+
+  font-weight: var(--font-weight-semibold);
+}
+
+:host(.btn--ink) {
+  --btn-bg: var(--color-bg-inverse);
+  --btn-fg: var(--color-fg-inverse);
+  --btn-border: var(--color-bg-inverse);
+  --btn-bg-hover: color-mix(in srgb, var(--color-bg-inverse) 88%, var(--color-fg-inverse));
+  --btn-bg-active: var(--btn-bg-hover);
+
+  font-weight: var(--font-weight-semibold);
+}
+
 :host(.btn--ghost) {
   --btn-bg: transparent;
   --btn-border: var(--jb-btn-ghost-border, transparent);

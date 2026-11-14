@@ -1,0 +1,6 @@
+// Element: menu__divider, a line between groups of the menu block.
+:host {
+  display: block;
+  margin: var(--space-1) 0;
+  border-top: var(--border-width-hairline) solid var(--color-border-default);
+}

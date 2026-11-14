@@ -4,8 +4,17 @@ namespace Jubilee.Domain;
 /// One event told to one member in the notification centre (L2-064). It is kept for 90 days in the list;
 /// the member's other devices learn of it through the event stream (L2-070).
 /// </summary>
-public sealed class Notification
+public sealed class Notification : IAdminDeletable
 {
+    /// <inheritdoc />
+    public DateTimeOffset? AdminDeletedAt { get; private set; }
+
+    /// <inheritdoc />
+    public void AdminDelete(DateTimeOffset now) => AdminDeletedAt = now;
+
+    /// <inheritdoc />
+    public void AdminRestore() => AdminDeletedAt = null;
+
     public const int MaxTitleLength = 200;
 
     public const int MaxDetailLength = 300;

@@ -1,0 +1,28 @@
+// Element: menu__item, a choice of the menu block that is checked or not. The host is the button.
+@use './menu-item-base' as item;
+
+:host {
+  @include item.item;
+}
+
+:host(:hover),
+:host([data-state='hover']) {
+  @include item.hover;
+}
+
+:host(:focus-visible),
+:host([data-state='focus']) {
+  @include item.focus;
+}
+
+:host([aria-disabled='true']),
+:host([data-state='disabled']) {
+  @include item.disabled;
+}
+
+:host([aria-checked='true'])::after,
+:host([data-state='checked'])::after {
+  content: '✓' / '';
+  margin-left: auto;
+  color: var(--color-fg-default);
+}

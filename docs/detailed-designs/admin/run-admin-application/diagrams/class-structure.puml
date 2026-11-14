@@ -39,10 +39,17 @@ class App <<jb-root>> {
   #notForRole: Signal<boolean>
   #signOut(): void
 }
-class AdminBar <<jb-admin-bar>> {
-  +staff: StaffChromeMember | null
-  +current: StaffSection
+class AdminShell <<jb-admin-shell>> {
+  +staff: AdminShellStaff | null
+  +environment: string
+  +groups: AdminNavGroup[]
+  +current: string
+  +jump: OutputEmitter<void>
   +signOut: OutputEmitter<void>
+}
+class AdminCatalogService {
+  +catalog: Signal<AdminCatalog | null>
+  +refresh(): void
 }
 class AdminOnlyPage {
   +signOut: OutputEmitter<void>
@@ -54,7 +61,8 @@ StaffSessionService --> StaffSessionApi : uses
 StaffSessionService o-- StaffSessionDto : holds
 StaffSessionDto --> StaffRole
 App --> StaffSessionService : reads
-App ..> AdminBar : composes
-App ..> AdminOnlyPage : shows without the moderator role
+App ..> AdminShell : composes
+App --> AdminCatalogService : reads the tables
+App ..> AdminOnlyPage : shows on 403 FORBIDDEN
 AdminMovedPage ..> "ADMIN_URL" : reads token
 @enduml

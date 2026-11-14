@@ -31,6 +31,14 @@
   @include item.danger;
 }
 
+.menu__hint {
+  margin-left: auto;
+  padding-left: var(--space-3);
+  font: var(--text-caption);
+  color: var(--color-fg-muted);
+  font-variant-numeric: tabular-nums;
+}
+
 .menu__icon {
   @include item.icon;
 }

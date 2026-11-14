@@ -1,0 +1,143 @@
+<header class="admin-top">
+  <button
+    class="admin-top__round admin-top__round--menu"
+    type="button"
+    aria-label="Open tables"
+    (click)="openDrawer()"
+  >
+    <svg jb-icon name="menu" class="admin-top__icon"></svg>
+  </button>
+  <a class="admin-top__home" routerLink="/" aria-label="Jubilee Admin home"
+    ><span class="admin-top__word"><svg jb-brand-mark class="admin-top__mark"></svg>jubilee</span
+    ><span class="admin-top__app">Admin</span></a
+  >
+  <button class="admin-top__jump" type="button" (click)="jump.emit()">
+    <svg jb-icon name="search" class="admin-top__icon"></svg
+    ><span class="admin-top__jump-text">Jump to a table or record</span
+    ><kbd class="admin-top__kbd">⌘K</kbd>
+  </button>
+  <div class="admin-top__end">
+    <span class="admin-top__env"
+      >{{ address() }}
+      <span class="admin-top__badge" [class.admin-top__badge--plain]="!production()">{{
+        environment()
+      }}</span></span
+    >
+    <button
+      class="admin-top__round admin-top__round--search"
+      type="button"
+      aria-label="Search"
+      (click)="jump.emit()"
+    >
+      <svg jb-icon name="search" class="admin-top__icon"></svg>
+    </button>
+    @if (staff(); as staff) {
+      <button
+        class="admin-top__avatar"
+        type="button"
+        [attr.aria-label]="staffName()"
+        [title]="staffName()"
+        [cdkMenuTriggerFor]="staffMenu"
+      >
+        {{ staff.initials }}
+      </button>
+      <ng-template #staffMenu>
+        <jb-menu label="Staff">
+          <div jb-menu-label>{{ staff.name }} · {{ staff.role }}</div>
+          <button jb-menu-item icon="sign-out" (chosen)="signOut.emit()">Sign out</button>
+        </jb-menu>
+      </ng-template>
+    }
+  </div>
+</header>
+<div class="admin-app__body">
+  <div class="admin-app__side">
+    <ng-container [ngTemplateOutlet]="nav" [ngTemplateOutletContext]="{ $implicit: 'side' }" />
+  </div>
+  <main id="main" class="admin-app__main" tabindex="-1"><ng-content /></main>
+</div>
+
+<ng-template #nav let-id>
+  <nav class="admin-nav" aria-label="Tables">
+    <div class="admin-nav__scroll">
+      <a
+        class="admin-nav__item"
+        routerLink="/"
+        [attr.aria-current]="current() === 'overview' ? 'page' : null"
+        (click)="closeDrawer()"
+        ><span class="admin-nav__label">Overview</span></a
+      >
+      <ul class="admin-nav__groups">
+        @for (group of groups(); track group.name; let gi = $index) {
+          <li>
+            <button
+              class="admin-nav__group"
+              type="button"
+              [attr.aria-expanded]="isOpen(group.name)"
+              [attr.aria-controls]="id + '-g' + gi"
+              (click)="toggle(group.name)"
+            >
+              <svg jb-icon name="chevron-right" size="sm" class="admin-nav__chevron"></svg
+              ><span class="admin-nav__name">{{ group.name }}</span>
+              @if (group.readOnly) {
+                <span class="admin-nav__lock" role="img" aria-label="Read-only"
+                  ><svg jb-icon name="lock" size="sm"></svg
+                ></span>
+              }
+            </button>
+            <ul class="admin-nav__list" [id]="id + '-g' + gi" [hidden]="!isOpen(group.name)">
+              @for (table of group.tables; track table.key) {
+                <li>
+                  <a
+                    class="admin-nav__item"
+                    [routerLink]="['/', table.key]"
+                    [attr.aria-current]="table.key === current() ? 'page' : null"
+                    (click)="closeDrawer()"
+                    ><span class="admin-nav__label">{{ table.label }}</span
+                    ><span
+                      class="admin-nav__count"
+                      role="img"
+                      [attr.aria-label]="countLabel(table.count)"
+                      >{{ compact(table.count) }}</span
+                    ></a
+                  >
+                </li>
+              }
+            </ul>
+          </li>
+        }
+      </ul>
+    </div>
+    @if (id === 'drawer') {
+      <p class="admin-nav__foot">{{ address() }} · {{ environment() }}</p>
+    }
+  </nav>
+</ng-template>
+
+<ng-template #drawer>
+  <div class="admin-drawer">
+    <div class="admin-drawer__panel">
+      <div class="admin-drawer__head">
+        <span class="admin-top__word"
+          ><svg jb-brand-mark class="admin-top__mark"></svg>jubilee</span
+        >
+        <button
+          class="admin-top__round"
+          type="button"
+          aria-label="Close tables"
+          (click)="closeDrawer()"
+        >
+          <svg jb-icon name="close" class="admin-top__icon"></svg>
+        </button>
+      </div>
+      <ng-container [ngTemplateOutlet]="nav" [ngTemplateOutletContext]="{ $implicit: 'drawer' }" />
+    </div>
+    <button
+      class="admin-drawer__scrim"
+      type="button"
+      tabindex="-1"
+      aria-label="Close tables"
+      (click)="closeDrawer()"
+    ></button>
+  </div>
+</ng-template>

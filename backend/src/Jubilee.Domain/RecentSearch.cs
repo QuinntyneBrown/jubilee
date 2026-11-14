@@ -1,8 +1,17 @@
 namespace Jubilee.Domain;
 
 /// <summary>A query a signed-in member submitted, shown on the empty search page (L2-031).</summary>
-public sealed class RecentSearch
+public sealed class RecentSearch : IAdminDeletable
 {
+    /// <inheritdoc />
+    public DateTimeOffset? AdminDeletedAt { get; private set; }
+
+    /// <inheritdoc />
+    public void AdminDelete(DateTimeOffset now) => AdminDeletedAt = now;
+
+    /// <inheritdoc />
+    public void AdminRestore() => AdminDeletedAt = null;
+
     private RecentSearch()
     {
     }

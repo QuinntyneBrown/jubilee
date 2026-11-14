@@ -5,7 +5,8 @@ import { fulfil, recordedAnswer } from './mock-api';
 import { legacyMessages, ownerRows, photoMessages, requestCards, stubMessaging } from './messaging';
 import { stubAccountData } from './account-data';
 import { PLATFORM_LISTING, SPACE_LISTING, stubAdmin } from './admin';
-import { daniel, miriam, stubStaff } from './staff';
+import { CLEAR_OVERVIEW, stubAdminTables } from './admin-tables';
+import { ada, miriam, stubStaff } from './staff';
 import { stubModeration } from './moderation';
 import { defaultVersions, stubPolicies } from './policies';
 import { confirmedRows, stubIncoming } from './incoming-requests';
@@ -859,12 +860,41 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
       return stubCatalogue(page, { hours: 'hangs' });
     case 'services-hours-failing':
       return stubCatalogue(page, { hours: 'fails' });
-    case 'admin-listings':
-      return stubAdmin(page);
-    case 'admin-listings-empty':
-      return stubAdmin(page, { listings: 'empty' });
-    case 'admin-listings-error':
-      return stubAdmin(page, { listings: 'fails' });
+    case 'admin-overview':
+    case 'admin-records':
+      return void (await stubAdminTables(page, ada, { data: 'mock' }));
+    case 'admin-overview-loading':
+      return void (await stubAdminTables(page, ada, { data: 'mock', overviewAnswer: 'slow' }));
+    case 'admin-overview-error':
+      return void (await stubAdminTables(page, ada, { data: 'mock', overviewAnswer: 'fails' }));
+    case 'admin-overview-empty':
+      return void (await stubAdminTables(page, ada, {
+        data: 'mock',
+        overview: structuredClone(CLEAR_OVERVIEW),
+      }));
+    case 'admin-records-loading':
+      return void (await stubAdminTables(page, ada, { data: 'mock', answer: 'slow' }));
+    case 'admin-record-loading':
+      return void (await stubAdminTables(page, ada, { data: 'mock', recordAnswer: 'slow' }));
+    case 'admin-record-error':
+      return void (await stubAdminTables(page, ada, { data: 'mock', recordAnswer: 'fails' }));
+    case 'admin-record-saving':
+      return void (await stubAdminTables(page, ada, { data: 'mock', saveAnswer: 'slow' }));
+    case 'admin-records-error':
+      return void (await stubAdminTables(page, ada, { data: 'mock', answer: 'fails' }));
+    case 'admin-record-message':
+    case 'admin-record-private': {
+      // The message the mocks show, opened with its conversation reported, or without (L2-284 AC3).
+      const fake = await stubAdminTables(page, ada, { data: 'mock' });
+      const key = 'messages/msg_14386';
+      fake.records[key] = {
+        ...fake.records[key],
+        ...(name === 'admin-record-message' ? { readAudited: true } : { closed: true }),
+      };
+      return;
+    }
+    case 'admin-records-forbidden':
+      return void (await stubAdminTables(page, miriam, { data: 'mock', answer: 'forbidden' }));
     case 'admin-listing':
       return stubAdmin(page);
     case 'admin-listing-taken-down':
@@ -884,8 +914,6 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
       return stubAdmin(page, { listing: 'fails' });
     case 'moderation-reports':
     case 'moderation-report':
-    case 'moderation-featured':
-      return stubModeration(page);
     case 'moderation-reports-empty':
       return stubModeration(page, { reports: 'empty' });
     case 'moderation-reports-error':
@@ -896,8 +924,6 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
       return stubModeration(page, { reviewReport: true });
     case 'moderation-report-error':
       return stubModeration(page, { reports: 'fails' });
-    case 'moderation-featured-error':
-      return stubModeration(page, { featured: 'fails' });
     case 'account-data-requested':
       await stubProfile(page);
       return stubAccountData(page, { exportState: 'requested' });
@@ -912,8 +938,6 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
       return stubStaff(page, 'signed-out');
     case 'staff-network-refused':
       return stubStaff(page, 'network-refused');
-    case 'staff-admin-only':
-      return stubAdmin(page, {}, daniel);
     case 'admin-policies':
     case 'admin-policy':
       return stubPolicies(page);

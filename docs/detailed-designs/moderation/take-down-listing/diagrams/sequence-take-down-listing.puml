@@ -18,7 +18,7 @@ actor "Jubilee team member" as actor
 box "Frontend — Jubilee Admin Web" #E0F2FE
   participant "TakeDownListingDialog" as dialog
   participant "AdminApi" as client
-  participant "AdminListingPage" as page
+  participant "RecordPage (a listing)" as page
 end box
 box "Backend — Jubilee API" #D1FADF
   participant "AdminListingsController" as controller

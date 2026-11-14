@@ -254,7 +254,8 @@ public sealed class SavedItemConfiguration : IEntityTypeConfiguration<SavedItem>
         builder.Property(i => i.Id).ValueGeneratedNever();
         builder.Property(i => i.MemberSubject).HasMaxLength(200).IsRequired();
         builder.Property(i => i.Kind).HasConversion<string>().HasMaxLength(16);
-        builder.HasIndex(i => new { i.MemberSubject, i.Kind, i.TargetId }).IsUnique();
+        // A deleted record is kept apart for 30 days and must not stop the member saving it again (L2-281 AC4).
+        builder.HasIndex(i => new { i.MemberSubject, i.Kind, i.TargetId }).IsUnique().HasFilter("[AdminDeletedAt] IS NULL");
         builder.HasIndex(i => i.TargetId);
     }
 }
@@ -270,7 +271,7 @@ public sealed class StockAlertConfiguration : IEntityTypeConfiguration<StockAler
         // One open alert per member and product (L2-036 AC2).
         builder.HasIndex(a => new { a.ProductId, a.MemberSubject })
             .IsUnique()
-            .HasFilter("[NotifiedAt] IS NULL");
+            .HasFilter("[NotifiedAt] IS NULL AND [AdminDeletedAt] IS NULL");
         builder.HasOne<Product>().WithMany().HasForeignKey(a => a.ProductId).OnDelete(DeleteBehavior.Cascade);
     }
 }
@@ -302,6 +303,20 @@ public sealed class FeaturedSlotConfiguration : IEntityTypeConfiguration<Feature
         builder.Property(s => s.Id).ValueGeneratedNever();
         builder.HasIndex(s => s.StartsOn);
         builder.HasOne<Listing>().WithMany().HasForeignKey(s => s.ListingId).OnDelete(DeleteBehavior.Cascade);
+    }
+}
+
+/// <summary>"Email me this weekly" (L2-279 AC3): one per staff session subject and table.</summary>
+public sealed class AdminExportSubscriptionConfiguration : IEntityTypeConfiguration<AdminExportSubscription>
+{
+    public void Configure(EntityTypeBuilder<AdminExportSubscription> builder)
+    {
+        builder.ToTable("AdminExportSubscriptions");
+        builder.HasKey(s => s.Id);
+        builder.Property(s => s.Id).ValueGeneratedNever();
+        builder.Property(s => s.StaffSubject).HasMaxLength(200).IsRequired();
+        builder.Property(s => s.TableKey).HasMaxLength(64).IsRequired();
+        builder.HasIndex(s => new { s.StaffSubject, s.TableKey }).IsUnique();
     }
 }
 
@@ -784,7 +799,7 @@ public sealed class LaunchSubscriberConfiguration : IEntityTypeConfiguration<Lau
         builder.Property(s => s.Id).ValueGeneratedNever();
         builder.Property(s => s.Email).HasMaxLength(EmailAddress.MaxLength).IsRequired();
         builder.Property(s => s.EmailKey).HasMaxLength(EmailAddress.MaxLength).IsRequired();
-        builder.HasIndex(s => s.EmailKey).IsUnique();
+        builder.HasIndex(s => s.EmailKey).IsUnique().HasFilter("[AdminDeletedAt] IS NULL");
         builder.Property(s => s.FirstName).HasMaxLength(LaunchSubscriber.MaxFirstNameLength);
         builder.HasIndex(s => s.CreatedAt);
     }

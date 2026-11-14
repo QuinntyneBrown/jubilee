@@ -12,7 +12,7 @@ import { PublishPolicyDialog } from '../pages/publish-policy.dialog';
 import { Toasts } from '../pages/toasts';
 
 test.describe('the policies list (L2-247)', () => {
-  test('AC1: an administrator sees the four pages with their published version, and Policies in the admin bar', async ({
+  test('AC1: an administrator sees the four pages with their published version, and the sidebar marks Content versions', async ({
     page,
     jb,
   }) => {
@@ -32,8 +32,7 @@ test.describe('the policies list (L2-247)', () => {
       'Version 2 · published 9 Nov 2026 by Daniel Osei',
     );
     await expect(policies.meta('Terms of use')).toHaveText('Version 1 · built in · 2 Nov 2026');
-    await expect(policies.navLink('Policies')).toHaveAttribute('aria-current', 'page');
-    await expect(policies.navLink('Listings')).toHaveCount(0);
+    await expect(policies.tableLink('Content versions')).toHaveAttribute('aria-current', 'page');
   });
 
   test('AC1: Edit opens the page in the editor', async ({ page, jb }) => {
@@ -62,7 +61,7 @@ test.describe('the policies list (L2-247)', () => {
     await expect(policies.rows).toHaveCount(4);
   });
 
-  test('AC10: a moderator without the admin role is told the screen is not for their role, and has no Policies link', async ({
+  test('AC10: a moderator without the admin role is told the screen is not for their role', async ({
     page,
     jb,
   }) => {
@@ -75,35 +74,6 @@ test.describe('the policies list (L2-247)', () => {
     await expect(policies.statusText).toHaveText(
       'Policies are for Jubilee administrators. Ask a Jubilee administrator to add the admin role to your staff account.',
     );
-    await expect(policies.navLink('Policies')).toHaveCount(0);
-    await expect(policies.navLink('Listings')).toBeVisible();
-  });
-
-  test('L2-188 AC4: an administrator without the moderator role has only Policies in the navigation', async ({
-    page,
-    jb,
-  }) => {
-    const policies = new AdminPoliciesPage(page);
-    await policies.setWidth(1280);
-    await stubPolicies(page);
-    await jb.gotoAdmin('/listings');
-
-    await expect(policies.statusHeading).toHaveText('Nothing here for your role');
-    await expect(policies.staffNav.getByRole('link')).toHaveText(['Policies']);
-  });
-
-  test('L2-188 AC3: a staff member with both roles has the four screens', async ({ page, jb }) => {
-    const policies = new AdminPoliciesPage(page);
-    await policies.setWidth(1280);
-    await stubPolicies(page, {}, { ...daniel, roles: ['moderator', 'admin'] });
-    await jb.gotoAdmin('/policies');
-
-    await expect(policies.staffNav.getByRole('link')).toHaveText([
-      'Listings',
-      'Reports',
-      'Featured',
-      'Policies',
-    ]);
   });
 });
 

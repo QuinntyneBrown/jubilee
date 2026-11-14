@@ -1,0 +1,24 @@
+@if (loading()) {
+  @for (n of skeletons; track n) {
+    <li class="system-list__item"><span jb-skeleton shape="text" width="70"></span></li>
+  }
+} @else {
+  @for (item of items(); track $index) {
+    <li>
+      <a
+        class="system-list__item"
+        [class.system-list__item--bad]="item.tone === 'bad'"
+        [class.system-list__item--wait]="item.tone === 'wait'"
+        [routerLink]="item.link"
+        ><svg jb-icon [name]="item.icon" [label]="item.state"></svg
+        ><span class="system-list__text">
+          @if (item.subject; as subject) {
+            <code>{{ subject }}</code
+            >&ngsp;
+          }
+          {{ item.text }}<span class="system-list__detail">{{ item.detail }}</span></span
+        ></a
+      >
+    </li>
+  }
+}

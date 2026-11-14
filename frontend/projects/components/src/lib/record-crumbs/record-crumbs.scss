@@ -1,0 +1,45 @@
+// Block: record-crumbs. The way back from a record to its table.
+:host {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: var(--space-1);
+  font: var(--text-body-sm);
+  color: var(--color-fg-muted);
+}
+
+.record-crumbs__back {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-height: var(--control-height-sm);
+  margin-left: calc(-1 * var(--space-3));
+  padding-inline: var(--space-3);
+  border-radius: var(--radius-full);
+  color: inherit;
+  font-weight: var(--font-weight-semibold);
+  text-decoration: none;
+}
+
+.record-crumbs__back:hover {
+  background: var(--color-bg-subtle);
+  color: var(--color-fg-default);
+}
+
+.record-crumbs__back:focus-visible {
+  outline: var(--focus-ring-width) solid var(--color-focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.record-crumbs__icon {
+  flex: none;
+  width: var(--icon-size-sm);
+  height: var(--icon-size-sm);
+}
+
+.record-crumbs__here {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--color-fg-default);
+}

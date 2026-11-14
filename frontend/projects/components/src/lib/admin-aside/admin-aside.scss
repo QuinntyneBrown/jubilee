@@ -1,0 +1,8 @@
+// Block: admin-aside. The column beside the overview's work queue; its sections are
+// admin-aside-section.
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-10);
+  min-width: 0;
+}

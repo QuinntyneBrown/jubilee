@@ -5,8 +5,17 @@ namespace Jubilee.Domain;
 /// (L2-217). One per address. The consent is kept with it: these people have no account, so there
 /// is no member to tie a <see cref="ConsentRecord"/> to (L2-218 AC1, ADR 0044).
 /// </summary>
-public sealed class LaunchSubscriber
+public sealed class LaunchSubscriber : IAdminDeletable
 {
+    /// <inheritdoc />
+    public DateTimeOffset? AdminDeletedAt { get; private set; }
+
+    /// <inheritdoc />
+    public void AdminDelete(DateTimeOffset now) => AdminDeletedAt = now;
+
+    /// <inheritdoc />
+    public void AdminRestore() => AdminDeletedAt = null;
+
     public const int MaxFirstNameLength = 50;
 
     /// <summary>How long a sign-up or a pre-registration is kept (L2-148 AC6).</summary>
@@ -49,8 +58,17 @@ public sealed class LaunchSubscriber
 /// lists nothing: the owner publishes the listing once Jubilee opens. Every one sent is kept, because one owner
 /// may have two businesses.
 /// </summary>
-public sealed class BusinessPreRegistration
+public sealed class BusinessPreRegistration : IAdminDeletable
 {
+    /// <inheritdoc />
+    public DateTimeOffset? AdminDeletedAt { get; private set; }
+
+    /// <inheritdoc />
+    public void AdminDelete(DateTimeOffset now) => AdminDeletedAt = now;
+
+    /// <inheritdoc />
+    public void AdminRestore() => AdminDeletedAt = null;
+
     public const int MaxBusinessNameLength = 80;
 
     public const int MaxContactNameLength = 100;

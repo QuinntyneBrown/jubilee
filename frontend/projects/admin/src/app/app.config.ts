@@ -9,8 +9,10 @@ import { provideRouter } from '@angular/router';
 import {
   ADMIN_API,
   ADMIN_CONTENT_API,
+  ADMIN_TABLES_API,
   HttpAdminApi,
   HttpAdminContentApi,
+  HttpAdminTablesApi,
   HttpStaffSessionApi,
   STAFF_SESSION_API,
 } from 'api';
@@ -27,6 +29,7 @@ export const appConfig: ApplicationConfig = {
     { provide: STAFF_SESSION_API, useClass: HttpStaffSessionApi },
     { provide: ADMIN_API, useClass: HttpAdminApi },
     { provide: ADMIN_CONTENT_API, useClass: HttpAdminContentApi },
+    { provide: ADMIN_TABLES_API, useClass: HttpAdminTablesApi },
     provideAppInitializer(() => inject(StaffSessionService).resolve()),
   ],
 };

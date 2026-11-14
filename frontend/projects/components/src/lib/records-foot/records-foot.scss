@@ -1,0 +1,132 @@
+// Element: records__foot, the foot of the records block: the range, the rows per page and the
+// pages. The host is the foot.
+:host {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3) var(--space-6);
+  padding: var(--space-3) var(--space-4);
+  border-top: var(--border-width-hairline) solid var(--color-border-default);
+}
+
+.records__range {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  font: var(--text-body-sm);
+  color: var(--color-fg-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.records__range b {
+  color: var(--color-fg-default);
+}
+
+.records__size {
+  display: none;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.records__pages {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.records__list-of-pages {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.records__page {
+  display: inline-grid;
+  place-items: center;
+  min-width: var(--control-height-sm);
+  height: var(--control-height-sm);
+  padding-inline: var(--space-2);
+  border-radius: var(--radius-full);
+  border: var(--border-width-hairline) solid transparent;
+  background: none;
+  color: var(--color-fg-muted);
+  font: var(--text-label);
+  cursor: pointer;
+}
+
+.records__page:hover {
+  background: var(--color-bg-subtle);
+  color: var(--color-fg-default);
+}
+
+.records__page:focus-visible {
+  outline: var(--focus-ring-width) solid var(--color-focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.records__page[aria-current='page'] {
+  background: var(--color-accent);
+  color: var(--color-fg-on-accent);
+  border-color: var(--color-accent-border);
+}
+
+.records__page[aria-disabled='true'] {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.records__page-of {
+  padding-inline: var(--space-2);
+  font: var(--text-body-sm);
+  color: var(--color-fg-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.records__page-of b {
+  color: var(--color-fg-default);
+}
+
+.records__numbers {
+  display: none;
+}
+
+.records__goto {
+  display: none;
+  align-items: center;
+  gap: var(--space-2);
+  margin-left: var(--space-3);
+  font: var(--text-body-sm);
+  color: var(--color-fg-muted);
+}
+
+.records__goto-box {
+  --jb-input-radius: var(--radius-full);
+
+  width: 4rem;
+  text-align: center;
+}
+
+@media (min-width: 40rem) {
+  :host {
+    padding-inline: var(--space-5);
+  }
+
+  .records__size,
+  .records__numbers {
+    display: flex;
+  }
+
+  .records__page-of {
+    display: none;
+  }
+}
+
+@media (min-width: 64rem) {
+  .records__goto {
+    display: flex;
+  }
+}

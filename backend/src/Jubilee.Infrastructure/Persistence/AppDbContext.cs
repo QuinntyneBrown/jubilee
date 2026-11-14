@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using Jubilee.Application.Abstractions;
 using Jubilee.Domain;
 using Microsoft.EntityFrameworkCore;
@@ -79,6 +80,8 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
 
     public DbSet<FeaturedSlot> FeaturedSlots => Set<FeaturedSlot>();
 
+    public DbSet<AdminExportSubscription> AdminExportSubscriptions => Set<AdminExportSubscription>();
+
     public DbSet<Conversation> Conversations => Set<Conversation>();
 
     public DbSet<Message> Messages => Set<Message>();
@@ -109,8 +112,21 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
 
     public DbSet<JobRun> JobRuns => Set<JobRun>();
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder) =>
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
+
+        // A record deleted from the admin application is kept apart for 30 days: out of every query of the app until
+        // "Undo" brings it back or the worker erases it (L2-281 AC4, ADR 0075).
+        foreach (var entity in modelBuilder.Model.GetEntityTypes().Where(e => typeof(IAdminDeletable).IsAssignableFrom(e.ClrType)))
+        {
+            var row = Expression.Parameter(entity.ClrType, "row");
+            var kept = Expression.Equal(
+                Expression.Property(row, nameof(IAdminDeletable.AdminDeletedAt)),
+                Expression.Constant(null, typeof(DateTimeOffset?)));
+            modelBuilder.Entity(entity.ClrType).HasQueryFilter(Expression.Lambda(kept, row));
+        }
+    }
 
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
     {

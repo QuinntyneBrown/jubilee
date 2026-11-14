@@ -1,0 +1,42 @@
+@startuml
+title UML sequence behaviour — Edit a record
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Staff member" as actor
+box "Frontend — Jubilee Admin Web" #E0F2FE
+  participant "RecordPage" as page
+  participant "jb-record-fields" as fields
+  participant "AdminTablesApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "UpdateAdminRecordCommand handler" as handler
+  participant "AdminRights" as rights
+  participant "Field binding" as binding
+  participant "AdminAudit" as audit
+end box
+database "Database" as db
+actor -> page : Edit
+page -> fields : Editors for the bound fields (L2-283 AC1)
+actor -> fields : Change status, Save changes
+page -> client : update(feedback, id, values); Saving (L2-283 AC2)
+client -> handler : PATCH /api/admin/tables/feedback/{id}
+handler -> rights : CanChange(roles, feedback)
+alt refused
+  handler --> client : 403 FORBIDDEN or 409 READ_ONLY
+else allowed
+  handler -> binding : Apply each value with the feature rule
+  alt a value is refused
+    binding --> handler : Field code and message
+    handler --> client : 400 VALIDATION, nothing saved
+    page --> actor : Each field says what is wrong
+  else applied
+    handler -> audit : feedback.update, before and after (L2-284 AC5)
+    handler -> db : SaveChanges, change and audit together
+    handler --> client : The record
+    page --> actor : Reading mode, Saved, the change heads History
+  end
+end
+@enduml

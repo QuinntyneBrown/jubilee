@@ -1,0 +1,16 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Work in the tables
+Person(staff, "Staff member")
+System_Boundary(j, "Jubilee") {
+  Container(admin, "Jubilee Admin Web", "Angular", "Records and record screens drawn from the catalog")
+  Container(api, "Jubilee API", "ASP.NET Core", "/api/admin/tables/*")
+  Container(worker, "Jubilee Worker", ".NET", "AdminDeletionPurgeJob, WeeklyExportJob, outbox dispatch")
+  ContainerDb(db, "Database", "SQL Server", "Jubilee's records, audit log, export subscriptions")
+}
+Rel(staff, admin, "Uses", "HTTPS")
+Rel(admin, api, "Calls", "JSON/HTTPS")
+Rel(api, db, "Reads and writes", "EF Core")
+Rel(worker, db, "Purges and reads subscriptions", "EF Core")
+@enduml
