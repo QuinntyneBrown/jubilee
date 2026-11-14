@@ -30,10 +30,11 @@ export class SearchStore {
     if (chosen) return chosen;
     const state = this.current();
     if (state.status !== 'results') return 'business';
-    const { businessCount, serviceCount, productCount } = state.value;
+    const { businessCount, serviceCount, productCount, nonprofitCount } = state.value;
     if (businessCount > 0) return 'business';
     if (serviceCount > 0) return 'service';
-    return productCount > 0 ? 'product' : 'business';
+    if (productCount > 0) return 'product';
+    return nonprofitCount > 0 ? 'nonprofit' : 'business';
   });
 
   choose(kind: SearchResultKind): void {

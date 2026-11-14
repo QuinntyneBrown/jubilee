@@ -2612,7 +2612,7 @@
     "body": {
       "title": "Sign in to continue.",
       "status": 401,
-      "correlationId": "48f7a56115fa4ce49d6bcdac0d7fc7ac",
+      "correlationId": "470db6e291e14c76a5c26b6dde33f53f",
       "code": "sign_in_required"
     }
   },
@@ -4525,7 +4525,7 @@
     "body": {
       "title": "Sign in to continue.",
       "status": 401,
-      "correlationId": "37c44dfded594992b78294b64bbca6f7",
+      "correlationId": "b1088d7e33f848b4957ed85666baa88a",
       "code": "sign_in_required"
     }
   },
@@ -4701,7 +4701,58 @@
           "space": null
         }
       ],
-      "suggestion": null
+      "suggestion": null,
+      "nonprofitCount": 0
+    }
+  },
+  "GET /api/search?q=youth": {
+    "status": 200,
+    "body": {
+      "query": "youth",
+      "businessCount": 0,
+      "serviceCount": 0,
+      "productCount": 0,
+      "hasMatchExplanations": true,
+      "hits": [
+        {
+          "kind": "nonprofit",
+          "name": "Bread & Bridges",
+          "slug": "bread-and-bridges",
+          "productSlug": null,
+          "businessName": "Bread & Bridges",
+          "categorySlug": "non-profits",
+          "explanation": {
+            "text": "Matches youth in who it serves",
+            "highlights": [
+              {
+                "start": 8,
+                "length": 5
+              }
+            ]
+          },
+          "space": null
+        },
+        {
+          "kind": "nonprofit",
+          "name": "Lakeshore Youth Collective",
+          "slug": "lakeshore-youth-collective",
+          "productSlug": null,
+          "businessName": "Lakeshore Youth Collective",
+          "categorySlug": "non-profits",
+          "explanation": {
+            "text": "Matches youth in name, tagline and its mission",
+            "highlights": [
+              {
+                "start": 8,
+                "length": 5
+              }
+            ]
+          },
+          "space": null
+        }
+      ],
+      "suggestion": null,
+      "nonprofitCount": 2
     }
   },
   "GET /api/session": {

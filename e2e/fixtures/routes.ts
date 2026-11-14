@@ -1247,6 +1247,12 @@ export const routes = {
     mock: 'pages/search/platforms.html',
     who: 'member',
   },
+  // Non-profits found by their own words, in a tab of their own (L2-290 AC2).
+  'search.non-profits': {
+    app: '/search?q=youth',
+    mock: 'pages/search/non-profits.html',
+    who: 'member',
+  },
   'search.no-results': {
     app: '/search?q=plumbre',
     mock: 'pages/search/no-results.html',

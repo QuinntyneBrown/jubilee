@@ -35,6 +35,8 @@ const TABS: readonly SearchTab[] = [
   { kind: 'business', label: 'Businesses' },
   { kind: 'service', label: 'Services' },
   { kind: 'product', label: 'Products' },
+  // Shown only when a non-profit matched (L2-290 AC2).
+  { kind: 'nonprofit', label: 'Non-profits' },
 ];
 
 function plural(count: number, one: string, many: string): string {
@@ -82,17 +84,22 @@ export class SearchPage {
   private readonly router = inject(Router);
   protected readonly store = inject(SearchStore);
   protected readonly tabs = computed<TabListItem<SearchResultKind>[]>(() =>
-    TABS.map((tab) => ({ key: tab.kind, label: tab.label, count: this.count(tab.kind) })),
+    TABS.filter((tab) => tab.kind !== 'nonprofit' || this.count('nonprofit') > 0).map((tab) => ({
+      key: tab.kind,
+      label: tab.label,
+      count: this.count(tab.kind),
+    })),
   );
 
   protected readonly summary = computed(() => {
     const state = this.store.state();
     if (state.status !== 'results') return '';
-    const { businessCount, serviceCount, productCount } = state.value;
+    const { businessCount, serviceCount, productCount, nonprofitCount } = state.value;
     return [
       plural(businessCount, 'business', 'businesses'),
       plural(serviceCount, 'service', 'services'),
       plural(productCount, 'product', 'products'),
+      ...(nonprofitCount > 0 ? [plural(nonprofitCount, 'non-profit', 'non-profits')] : []),
     ].join(' · ');
   });
 
@@ -115,11 +122,16 @@ export class SearchPage {
     const state = this.store.state();
     if (state.status !== 'results') return 0;
     const value = state.value;
-    return kind === 'business'
-      ? value.businessCount
-      : kind === 'service'
-        ? value.serviceCount
-        : value.productCount;
+    switch (kind) {
+      case 'business':
+        return value.businessCount;
+      case 'service':
+        return value.serviceCount;
+      case 'product':
+        return value.productCount;
+      case 'nonprofit':
+        return value.nonprofitCount ?? 0;
+    }
   }
 
   protected categoryName(slug: string): string {
@@ -130,8 +142,19 @@ export class SearchPage {
     return hit.productSlug ? ['/b', hit.slug, 'p', hit.productSlug] : ['/b', hit.slug];
   }
 
-  protected icon(hit: SearchHit): 'wrench' | 'bag' | 'store' {
+  protected icon(hit: SearchHit): 'wrench' | 'bag' | 'store' | 'hands' {
+    if (hit.kind === 'nonprofit') return 'hands';
     return hit.kind === 'product' ? 'bag' : hit.kind === 'service' ? 'wrench' : 'store';
+  }
+
+  /** A non-profit keeps the green of its category tile (L2-290 AC2); the rest are ink. */
+  protected tint(hit: SearchHit): 'ink' | 'green' {
+    return hit.kind === 'nonprofit' ? 'green' : 'ink';
+  }
+
+  /** "Nothing in {group} matches": the group in the words of its tab. */
+  protected groupWords(kind: SearchResultKind): string {
+    return kind === 'business' ? 'businesses' : kind === 'nonprofit' ? 'non-profits' : kind + 's';
   }
 
   protected submit(query: string): void {
