@@ -428,8 +428,9 @@ starting.", and a page opened then shows no Google button until the app's next r
 session is answered (L2-003 AC9; it asks again by itself, no reload is needed). Check the settings
 and `GET /api/session` (step 6) before setting anything again.
 `deploy.sh` stops before building when either setting is missing on `jubilee-to-app`, and after
-deploying fails unless `GET /api/session` reports `"googleSignIn": true`, so the button cannot
-disappear unnoticed. `SKIP_GOOGLE_CHECK=1 bash eng/azure/deploy.sh` deploys without Google sign-in
+deploying fails unless `GET /api/session` reports `"googleSignIn": true` within two minutes of
+the app answering its health check (it is asked again while the restart settles), so the button
+cannot disappear unnoticed. `SKIP_GOOGLE_CHECK=1 bash eng/azure/deploy.sh` deploys without Google sign-in
 on purpose.
 
 ## The app offline: service worker and status page

@@ -198,7 +198,16 @@ fi
 if [[ "${SKIP_GOOGLE_CHECK:-}" != "1" ]]; then
   echo "== Checking the Google button is offered"
   session=${SESSION_URL:-https://app.jubilee.to/api/session}
-  if ! curl -fsS --max-time 10 "$session" | grep -Eq '"googleSignIn": ?true'; then
+  # The first answers after a restart can be slow, though health has answered, so it is asked again.
+  google=
+  for attempt in $(seq 1 8); do
+    if curl -fsS --max-time 20 "$session" 2>/dev/null | grep -Eq '"googleSignIn": ?true'; then
+      google=1
+      break
+    fi
+    sleep 15
+  done
+  if [[ -z "$google" ]]; then
     echo "$session does not report \"googleSignIn\": true; the sign-in page shows no Google button." >&2
     exit 1
   fi
