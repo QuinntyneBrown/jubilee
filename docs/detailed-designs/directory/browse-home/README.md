@@ -132,6 +132,22 @@ rentals" second, and the search placeholder reads "Plumber, lawyer, room to
 rent…". The shelf, the space card and the term filter are the feature
 [Browse spaces](../browse-spaces/README.md) (ADR 0042).
 
+### Non-profits
+
+A non-profit is not a business (ADR 0074). `WhereBusiness` leaves out
+`Category.NonprofitsSlug` as it leaves out `RoomsSlug`, so non-profits are
+not in "All {n} businesses", have no group in `DirectoryGrouping`, are not in
+the welcome page's count and are never in the fallback of "Featured this
+week"; a featured slot the Jubilee team sets may still name one. The chips
+end with "Non-profits", the thirteenth category. After "All {n} businesses"
+the page shows the shelf "Non-profits in Toronto" with "Ministries and
+charities at work across the city.", "All {n}" to `/c/non-profits` and up to
+four non-profits in Recommended order as business cards. `BrowseHomeDto`
+gains `Nonprofits` (`NonprofitShelfDto`: the count and up to four `BusinessCardDto`), built from
+`WherePublic().WhereNonprofit()` and cached with the rest of the home; with no
+live non-profit its `Count` is 0 and the shelf is not shown. The shelf is
+part of the feature [Browse non-profits](../browse-nonprofits/README.md).
+
 ## Requirements
 
 The feature realizes the following level-2 (L2) requirements. Each L2
@@ -148,6 +164,9 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 | `L2-118` | `L1-016` | Each load-error state shall show a reference that the user can quote to support. |
 | `L2-156` | `L1-021` | Responses for the public directory and category pages shall be cached for up to 60 seconds and invalidated when a listing changes state. |
 | `L2-201` | `L1-028` | The browse home shall show "Rooms & places to stay" with "All {n}", a term filter and up to four space cards when a space is live, filter it by term without reloading, leave spaces out of "All {n} businesses", and use the placeholder "Plumber, lawyer, room to rent…". |
+| `L2-285` | `L1-035` | Non-profits shall not be counted among the businesses: not in "All {n} businesses" on the browse home nor in "Browse all {n}" on the welcome page. |
+| `L2-289` | `L1-035` | The browse home shall end its category chips with "Non-profits" and, when a non-profit is live, show after "All {n} businesses" the shelf "Non-profits in Toronto" with "All {n}" and up to four non-profits in Recommended order, with no "Non-profits" group among the businesses. |
+| `L2-290` | `L1-035` | The most recently published listings shown in "Featured this week" when no slot is set shall never include a non-profit; the Jubilee team may choose a non-profit for a slot. |
 
 ## Diagrams
 

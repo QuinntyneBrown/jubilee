@@ -1,0 +1,17 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context: View a non-profit
+
+Person(visitor, "Visitor", "Opens a non-profit page without signing in")
+Person(member, "Member", "Opens a non-profit page, messages the leader, saves, shares, reports")
+Person(owner, "Owner (leader)", "Opens their own non-profit page")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace of Christian-owned businesses")
+System_Ext(site, "Non-profit's website and page for giving", "The non-profit's own site; people give there")
+
+Rel(visitor, jubilee, "Opens /b/{slug}")
+Rel(member, jubilee, "Opens /b/{slug} and uses the member actions")
+Rel(owner, jubilee, "Sees the owner view or the preview")
+Rel(visitor, site, "Follows Give on {host} or Visit {host} in a new tab")
+Rel(member, site, "Follows Give on {host} or Visit {host} in a new tab")
+@enduml

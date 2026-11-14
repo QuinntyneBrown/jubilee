@@ -7,6 +7,9 @@ public static class SearchResultKind
     public const string Business = "business";
     public const string Service = "service";
     public const string Product = "product";
+
+    /// <summary>A non-profit, in a group of its own and never counted among the businesses (L2-290 AC2).</summary>
+    public const string Nonprofit = "nonprofit";
 }
 
 /// <summary>A span of <see cref="MatchExplanation.Text"/> to highlight. The client builds the markup.</summary>
@@ -39,7 +42,8 @@ public sealed record SearchResults(
     int ProductCount,
     bool HasMatchExplanations,
     IReadOnlyList<SearchHit> Hits,
-    SearchSuggestion? Suggestion);
+    SearchSuggestion? Suggestion,
+    int NonprofitCount = 0);
 
 /// <summary>The full-text search over the directory's public listings, services and products.</summary>
 public interface ISearchIndex

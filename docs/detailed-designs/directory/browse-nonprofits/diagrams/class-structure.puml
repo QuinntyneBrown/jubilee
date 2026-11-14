@@ -1,0 +1,127 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure: Browse non-profits
+
+class Category <<record>> {
+  +string Slug
+  +string Name
+  +{static} NonprofitsSlug: string = "non-profits"
+  +{static} All: IReadOnlyList<Category>
+  +{static} KindOf(slug: string): ListingKind
+}
+
+enum ListingKind {
+  Services
+  Shop
+  Space
+  Platform
+  Nonprofit = 4
+}
+
+class Listing {
+  +string Slug
+  +string Name
+  +string Tagline
+  +string? Highlight
+  +string CategorySlug
+  +ListingKind Kind
+  +string? Website
+  +NonprofitDetails? Nonprofit
+}
+
+class NonprofitDetails <<owned type, JSON column Nonprofit>> {
+  +string Mission
+  +string Serves
+  +string Area
+  +string? GiveUrl
+}
+
+class ListingSpecifications <<static>> {
+  +{static} WhereBusiness(listings): IQueryable<Listing>
+  +{static} WhereNonprofit(listings): IQueryable<Listing>
+}
+
+class BrowseHomeDto <<record>> {
+  +int LiveBusinessCount
+  +IReadOnlyList<CategoryLinkDto> Categories
+  +IReadOnlyList<BusinessCardDto> Featured
+  +IReadOnlyList<ProductCardDto> Products
+  +IReadOnlyList<CategoryGroupDto> Groups
+  +RoomsShelfDto Rooms
+  +NonprofitShelfDto Nonprofits
+}
+
+class NonprofitShelfDto <<record>> {
+  +int Count
+  +IReadOnlyList<BusinessCardDto> Listings
+}
+
+class CategoryGroupDto <<record>> {
+  +string Slug
+  +string Name
+  +int Count
+  +bool HasMore
+  +IReadOnlyList<DirectoryRowDto> Businesses
+}
+
+class CategoryPageResult <<record>> {
+  +CategoryLinkDto Category
+  +int TotalCount
+  +CategoryFactDto? Fact
+  +AppliedFiltersDto Filters
+  +string Sort
+  +int Page
+  +IReadOnlyList<BusinessCardDto> Businesses
+}
+
+class SearchResults <<record>> {
+  +string Query
+  +int BusinessCount
+  +int ServiceCount
+  +int ProductCount
+  +int NonprofitCount
+  +IReadOnlyList<SearchHit> Hits
+}
+
+class SearchHit <<record>> {
+  +string Kind
+  +string Name
+  +string Slug
+  +string CategorySlug
+  +MatchExplanation? Explanation
+}
+
+class SearchResultKind <<static>> {
+  +{static} Business = "business"
+  +{static} Service = "service"
+  +{static} Product = "product"
+  +{static} Nonprofit = "nonprofit"
+}
+
+class DatabaseSearchIndex {
+  +SearchAsync(query: string): SearchResults
+}
+
+Category ..> ListingKind : KindOf derives Nonprofit
+Listing --> ListingKind
+Listing *-- "0..1" NonprofitDetails
+ListingSpecifications ..> Category : RoomsSlug and NonprofitsSlug left out of businesses
+BrowseHomeDto *-- "1" NonprofitShelfDto : Nonprofits, up to 4
+BrowseHomeDto *-- "0..*" CategoryGroupDto : Groups, businesses only
+CategoryPageResult ..> Category : filters dropped for NonprofitsSlug
+SearchResults *-- "0..*" SearchHit
+SearchHit ..> SearchResultKind
+DatabaseSearchIndex ..> NonprofitDetails : matches Mission, Serves, Area; never GiveUrl
+DatabaseSearchIndex ..> SearchResults : builds, NonprofitCount apart
+@enduml

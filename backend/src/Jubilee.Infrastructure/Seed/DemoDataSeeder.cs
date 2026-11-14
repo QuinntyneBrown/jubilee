@@ -56,6 +56,24 @@ public sealed class DemoDataSeeder(AppDbContext db, TimeProvider clock)
             }
         }
 
+        // Non-profits are older still, in catalogue order; they are never among the businesses (L2-285 AC6).
+        for (var i = 0; i < Nonprofits.Length; i++)
+        {
+            var demo = Nonprofits[i];
+            if (!listings.ContainsKey(demo.Slug))
+            {
+                var publishedAt = now.AddDays(-(PublicListings.Length + Platforms.Length + i + 1));
+                var listing = Listing.Create(demo.Slug, demo.Name, demo.Tagline, Category.NonprofitsSlug, publishedAt.AddDays(-14));
+                listing.SetHighlight(demo.Highlight);
+                listing.Describe(new ListingProfile(demo.Leader, [], null, null, null, null, null, null));
+                listing.DescribeNonprofit(NonprofitDetails.Create(demo.Mission, demo.Serves, demo.Area, demo.GiveUrl), demo.Website);
+                listing.Publish(publishedAt);
+                listing.RefreshRecommendedScore(now);
+                listings[demo.Slug] = listing;
+                db.Listings.Add(listing);
+            }
+        }
+
         // Platforms are older than every business, in catalogue order, so the lists of businesses keep their order.
         for (var i = 0; i < Platforms.Length; i++)
         {

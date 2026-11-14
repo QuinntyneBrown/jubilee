@@ -26,7 +26,7 @@ public sealed class CliTests
         (await db.Listings.CountAsync(), await db.Products.CountAsync(), await db.FeaturedSlots.CountAsync()));
 
     [Fact]
-    public async Task Seed_creates_the_demo_directory_of_47_public_businesses_5_spaces_and_3_platforms()
+    public async Task Seed_creates_the_demo_directory_of_47_public_businesses_5_spaces_3_platforms_and_3_non_profits()
     {
         Assert.Equal(0, await Run("seed"));
 
@@ -34,7 +34,7 @@ public sealed class CliTests
             .GroupBy(l => l.CategorySlug)
             .Select(g => new { g.Key, Count = g.Count() })
             .ToDictionaryAsync(g => g.Key, g => g.Count));
-        Assert.Equal(55, publicByCategory.Values.Sum());
+        Assert.Equal(58, publicByCategory.Values.Sum());
         Assert.Equal(
             new Dictionary<string, int>
             {
@@ -50,6 +50,7 @@ public sealed class CliTests
                 ["media"] = 7,
                 ["community"] = 3,
                 ["software-platforms"] = 3,
+                ["non-profits"] = 3,
             }.OrderBy(p => p.Key),
             publicByCategory.OrderBy(p => p.Key));
     }
@@ -78,7 +79,7 @@ public sealed class CliTests
         var second = await RowCounts();
 
         Assert.Equal(first, second);
-        Assert.Equal((58, 6, 5), second);
+        Assert.Equal((61, 6, 5), second);
         Assert.Equal(50, await Query(db => db.Listings.WherePublic().WhereBusiness().CountAsync()));
     }
 
@@ -95,7 +96,7 @@ public sealed class CliTests
         Assert.Equal(0, await Run("reset"));
         Assert.Equal(0, await Run("seed"));
 
-        Assert.Equal((58, 6, 5), await RowCounts());
+        Assert.Equal((61, 6, 5), await RowCounts());
         Assert.False(await Query(db => db.Listings.AnyAsync(l => l.Slug == "leftover")));
     }
 

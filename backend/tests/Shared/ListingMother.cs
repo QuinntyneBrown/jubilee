@@ -81,6 +81,29 @@ public static class ListingMother
         return listing;
     }
 
+    public const string NonprofitMission = "We share meals, beds and friendship with men leaving the shelter system.";
+    public const string NonprofitServes = "Men aged 18 and over leaving shelters downtown.";
+    public const string NonprofitArea = "Moss Park and Regent Park";
+
+    /// <summary>A live non-profit in "Non-profits" (L2-285), with its own words, its website and its page for giving.</summary>
+    public static Listing Nonprofit(
+        string slug,
+        string? name = null,
+        string website = "https://hopehouse.example",
+        string? giveUrl = "https://hopehouse.example/give",
+        DateTimeOffset? approvedAt = null,
+        string? mission = null,
+        string? serves = null,
+        string? area = null,
+        string? tagline = null)
+    {
+        var listing = Public(slug, Category.NonprofitsSlug, name, approvedAt, default, default, highlight: null, tagline: tagline);
+        listing.DescribeNonprofit(
+            NonprofitDetails.Create(mission ?? NonprofitMission, serves ?? NonprofitServes, area ?? NonprofitArea, giveUrl),
+            website);
+        return listing;
+    }
+
     public static Listing NonPublic(NonPublicState state, string? slug = null, string category = "home-property")
     {
         slug ??= $"hidden-{state}".ToLowerInvariant();

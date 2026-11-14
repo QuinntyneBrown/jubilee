@@ -83,6 +83,19 @@ public class DemoDirectoryTests(SeededApiFactory factory) : IClassFixture<Seeded
     }
 
     [Fact]
+    public async Task L2_289_AC1_the_demo_home_shelves_the_three_invented_non_profits_apart_from_the_businesses()
+    {
+        var home = await factory.GetJson("/api/directory/home");
+
+        var shelf = home.GetProperty("nonprofits");
+        Assert.Equal(3, shelf.GetProperty("count").GetInt32());
+        Assert.Equal(
+            ["bread-and-bridges", "hope-house-toronto", "lakeshore-youth-collective"],
+            shelf.GetProperty("listings").EnumerateArray().Select(l => l.GetProperty("slug").GetString()).Order());
+        Assert.DoesNotContain(home.GetProperty("groups").EnumerateArray(), g => g.GetProperty("slug").GetString() == "non-profits");
+    }
+
+    [Fact]
     public async Task The_demo_home_groups_match_the_mock_counts_and_row_order()
     {
         var groups = (await factory.GetJson("/api/directory/home")).GetProperty("groups");

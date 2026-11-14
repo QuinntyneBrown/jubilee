@@ -93,6 +93,16 @@ public partial class LaunchTests
     }
 
     [Fact]
+    public async Task L2_296_AC2_a_leader_pre_registers_a_non_profit()
+    {
+        var response = await factory.CreateClient().PostAsJsonAsync(
+            Businesses, Details(("businessName", "Hope House Toronto"), ("category", "non-profits"), ("website", "https://hopehouse.example")));
+
+        Assert.Equal(HttpStatusCode.Accepted, response.StatusCode);
+        Assert.Equal("non-profits", Assert.Single(await PreRegistrations()).CategorySlug);
+    }
+
+    [Fact]
     public async Task L2_216_AC1_phone_and_website_are_optional_and_every_pre_registration_is_kept()
     {
         var client = factory.CreateClient();

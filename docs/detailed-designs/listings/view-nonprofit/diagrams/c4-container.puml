@@ -1,0 +1,22 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers: View a non-profit
+
+Person(member, "Visitor or member", "Opens a non-profit page")
+System_Boundary(jubilee, "Jubilee") {
+  Container(web, "Jubilee Web", "Angular single-page application", "BusinessPage with the non-profit layout and the links out")
+  Container(api, "Jubilee API", "ASP.NET Core", "GET /api/listings/{slug}; refuses quotes and reviews of a non-profit")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Listings with Website and the Nonprofit JSON column")
+  ContainerDb(cache, "Cache", "Redis or in memory", "Directory read cache for 60 seconds")
+  Container(media, "Media storage", "Object storage and CDN", "Cover photos")
+}
+System_Ext(site, "Non-profit's website and page for giving", "Opened by the browser only")
+
+Rel(member, web, "Opens /b/{slug}", "HTTPS")
+Rel(web, api, "Loads the listing page", "JSON/HTTPS")
+Rel(web, media, "Loads the cover", "HTTPS")
+Rel(api, cache, "Reads and fills the listing page")
+Rel(api, db, "Reads the non-profit", "EF Core")
+Rel(member, site, "Follows a link out in a new tab, no referrer", "HTTPS")
+@enduml

@@ -1,0 +1,14 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context: Browse non-profits
+
+Person(visitor, "Visitor", "Finds non-profits without signing in")
+Person(member, "Member", "Finds the work of God they want to support")
+Person(owner, "Owner (leader)", "Has a live non-profit listed")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace of Christian-owned businesses")
+
+Rel(visitor, jubilee, "Browses Non-profits, the shelf and searches")
+Rel(member, jubilee, "Browses, sorts and searches non-profits")
+Rel(owner, jubilee, "Has a public non-profit listed")
+@enduml

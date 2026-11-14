@@ -36,8 +36,8 @@ test.describe('browse home for a member (L2-021)', () => {
     await expect(browse.heading).toHaveText('Do business with Toronto’s Christian community.');
     await expect(browse.subline).toHaveText('50 businesses — shops, advisors, trades and more.');
 
-    // Category chips: "All" plus the twelve categories, "Rooms & rentals" second (L2-197),
-    // "Software platforms" last (L2-252 AC1)
+    // Category chips: "All" plus the thirteen categories, "Rooms & rentals" second (L2-197),
+    // "Non-profits" last (L2-289 AC2)
     await expect(browse.categoryChips).toHaveText(['All', ...chipCategories.map((c) => c.name)]);
     await expect(browse.categoryChips.first()).toHaveAttribute('aria-current', 'page');
     await expect(browse.categoryChips.nth(5)).toHaveAttribute('href', '/c/home-property');
@@ -159,7 +159,7 @@ test.describe('browse home for a member (L2-021)', () => {
     await expect(browse.subline).toHaveText('Loading the directory…');
     await expect(browse.loadingStatus).toHaveText('Loading the directory…');
     await expect(browse.skeletons.first()).toBeVisible();
-    await expect(browse.categoryChips).toHaveCount(13);
+    await expect(browse.categoryChips).toHaveCount(14);
   });
 });
 

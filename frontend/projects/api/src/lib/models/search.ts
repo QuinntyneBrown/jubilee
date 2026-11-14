@@ -2,7 +2,7 @@
 
 import type { SpaceCard } from './directory';
 
-export type SearchResultKind = 'business' | 'service' | 'product';
+export type SearchResultKind = 'business' | 'service' | 'product' | 'nonprofit';
 
 /** A span of the explanation to highlight; the page builds the `<mark>` itself. */
 export interface HighlightRange {
@@ -42,6 +42,8 @@ export interface SearchResults {
   hasMatchExplanations: boolean;
   hits: SearchHit[];
   suggestion: SearchSuggestion | null;
+  /** Non-profits that matched, never counted among the businesses (L2-290 AC2). */
+  nonprofitCount: number;
 }
 
 export interface RecentSearch {

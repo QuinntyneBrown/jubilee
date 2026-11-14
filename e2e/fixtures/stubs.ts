@@ -43,6 +43,7 @@ const legacyFinancial = '**/api/listings/legacy-financial';
 const luzandre = '**/api/listings/luzandre';
 const roncesvalles = '**/api/listings/roncesvalles-guest-suite';
 const lanternread = '**/api/listings/lanternread';
+const hopeHouse = '**/api/listings/hope-house-toronto';
 const tee = '**/api/listings/luzandre/products/faith-heavyweight-tee-charcoal';
 
 /** The ProblemDetails the API sends when a directory read cannot be served (L2-118). */
@@ -360,6 +361,7 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
             products: [],
             groups: [],
             rooms: { count: 0, spaces: [] },
+            nonprofits: { count: 0, listings: [] },
           },
         }),
       );
@@ -401,6 +403,27 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
         route.fulfill({
           json: {
             category: { slug: 'software-platforms', name: 'Software platforms' },
+            totalCount: 0,
+            matchCount: 0,
+            fact: null,
+            filters: { offers: [], areas: [] },
+            sort: 'recommended',
+            page: 1,
+            pageSize: 16,
+            pageCount: 1,
+            businesses: [],
+            spaces: [],
+            suggestions: [],
+            term: null,
+          },
+        }),
+      );
+    case 'nonprofits-empty':
+      // No non-profit is live yet (L2-289 AC6).
+      return page.route(categoryListings, (route) =>
+        route.fulfill({
+          json: {
+            category: { slug: 'non-profits', name: 'Non-profits' },
             totalCount: 0,
             matchCount: 0,
             fact: null,
@@ -473,6 +496,26 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
       return patchListing(page, lanternread, (listing) => ({
         ...listing,
         platform: { ...(listing['platform'] as object), website: null, host: null },
+      }));
+    case 'nonprofit-owner':
+      // The demo member does not lead Hope House; the server decides the relation.
+      return patchListing(page, hopeHouse, (listing) => ({ ...listing, viewerRelation: 'owner' }));
+    case 'nonprofit-preview':
+      // The leader's preview of a paused non-profit (L2-291 AC8).
+      return patchListing(page, hopeHouse, (listing) => ({
+        ...listing,
+        viewerRelation: 'owner',
+        status: 'paused',
+      }));
+    case 'nonprofit-loading':
+      return page.route(hopeHouse, pending);
+    case 'nonprofit-error':
+      return page.route(hopeHouse, (route) => route.fulfill(unavailable('JB-BIZ-503')));
+    case 'nonprofit-no-giving':
+      // The stored page for giving no longer passes the rule, so the answer carries none (L2-292 AC5).
+      return patchListing(page, hopeHouse, (listing) => ({
+        ...listing,
+        nonprofit: { ...(listing['nonprofit'] as object), giveUrl: null, giveHost: null },
       }));
     case 'business-loading':
       return page.route(legacyFinancial, pending);

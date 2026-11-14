@@ -52,6 +52,22 @@ export interface AdminListingPlatform {
   pricing: string;
 }
 
+/**
+ * What the team reads of a non-profit (L2-295 AC2): each address as its leader typed it, the same
+ * address as a link only when it passes the rule, and the non-profit's own words.
+ */
+export interface AdminListingNonprofit {
+  address: string;
+  /** The website to link to; null when the stored address fails the rule, and nothing links. */
+  website: string | null;
+  giveAddress: string;
+  /** The page for giving to link to; null when none is given or it fails the rule. */
+  giveUrl: string | null;
+  mission: string;
+  serves: string;
+  area: string;
+}
+
 /** What the team reads of a space: every field but its exact address (L2-200 AC3). */
 export interface AdminListingSpace {
   term: 'short-stay' | 'long-term' | 'room' | 'roommate';
@@ -88,6 +104,8 @@ export interface AdminListing {
   space?: AdminListingSpace | null;
   /** A platform's address and words; null for every other listing (L2-257 AC2). */
   platform?: AdminListingPlatform | null;
+  /** A non-profit's addresses and words; null for every other listing (L2-295 AC2). */
+  nonprofit?: AdminListingNonprofit | null;
   /** The green line of the listing's card, when it has one. */
   highlight?: string | null;
 }

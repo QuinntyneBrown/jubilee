@@ -68,6 +68,7 @@ something else: a new record supersedes it and both say so.
 | [0071](0071-a-listing-has-its-own-address.md) | A listing has its own address: the app's host answers `{slug}.jubilee.to` with a 301 the API decides (`GET /api/addresses/{label}`), never a session or a file; slugs are one DNS label of 3 to 40 characters with reserved words as a setting; `jubilee migrate` realigns older slugs; the address is off until `Addresses:Domain` is set, and the app shares `{origin}/b/{slug}` meanwhile | Accepted |
 | [0072](0072-software-platforms.md) | Software platforms: a platform is a listing kind with its own category and owned details, its page links out to its website, and a review of one rests on the member's statement of use (amends 0066 for this kind) | Accepted |
 | [0073](0073-jubilee-sells-its-own-merchandise.md) | Jubilee sells its own merchandise: "Jubilee takes no payment" is about members and businesses; the Purpose Tee is paid on Stripe Checkout (hosted, no SDK, no card data, CAD, prices and stock from the server, Stripe Tax when registered); a signed webhook is the only source of "paid"; the page is `/purpose-tee` in the app, open to visitors, with no account and a bag per browser | Accepted |
+| [0074](0074-non-profits.md) | Non-profits: a non-profit is a listing kind with its own category and owned details, its page links out to its own page for giving or website (the web-address rule shared with platforms), no charity number, no requests, no reviews, and it is never counted among the businesses | Accepted |
 
 ## Format
 

@@ -62,6 +62,7 @@
     @let preview = listing.status !== 'live';
     @let isMember = !isOwner && !preview;
     @let platform = listing.platform ?? null;
+    @let nonprofit = listing.nonprofit ?? null;
     @if (preview) {
       <div
         jb-alert
@@ -293,7 +294,11 @@
           @if (listing.ownerName) {
             <p>
               <strong>{{
-                platform ? 'Founded by ' + listing.ownerName : listing.ownerName
+                platform
+                  ? 'Founded by ' + listing.ownerName
+                  : nonprofit
+                    ? 'Led by ' + listing.ownerName
+                    : listing.ownerName
               }}</strong>
             </p>
           }
@@ -322,7 +327,33 @@
                 }}<span class="visually-hidden"> (opens in a new tab)</span></a
               >
             }
-            @if (isOwner && platform) {
+            <!-- The links out of a non-profit are the page's main actions, for everyone (L2-292):
+                 "Give on" first when it has a page for giving, then "Visit". -->
+            @if (nonprofit?.giveUrl) {
+              <a
+                jb-button
+                variant="primary"
+                size="lg"
+                [href]="nonprofit!.giveUrl"
+                target="_blank"
+                rel="noopener noreferrer nofollow"
+                ><svg jb-icon name="arrow-up-right"></svg>Give on {{ nonprofit!.giveHost
+                }}<span class="visually-hidden"> (opens in a new tab)</span></a
+              >
+            }
+            @if (nonprofit?.website) {
+              <a
+                jb-button
+                [variant]="nonprofit!.giveUrl ? 'default' : 'primary'"
+                size="lg"
+                [href]="nonprofit!.website"
+                target="_blank"
+                rel="noopener noreferrer nofollow"
+                ><svg jb-icon name="arrow-up-right"></svg>Visit {{ nonprofit!.host
+                }}<span class="visually-hidden"> (opens in a new tab)</span></a
+              >
+            }
+            @if (isOwner && (platform || nonprofit)) {
               <a jb-button size="lg" routerLink="/my-business/edit"
                 ><svg jb-icon name="edit"></svg>Edit listing</a
               >
@@ -343,8 +374,8 @@
                 ><svg jb-icon name="share"></svg
               ></a>
             } @else if (isMember) {
-              @if (platform) {
-                <!-- A platform takes no requests: the link out above is its one action (L2-254 AC3). -->
+              @if (platform || nonprofit) {
+                <!-- A platform or a non-profit takes no requests: its links out are its actions (L2-254 AC3, L2-293). -->
               } @else if (isShop && hasProducts) {
                 <a jb-button variant="primary" size="lg" [routerLink]="[]" fragment="products"
                   ><svg jb-icon name="bag"></svg>Shop products</a
@@ -374,7 +405,9 @@
                 iconOnly
                 size="lg"
                 [routerLink]="link('message')"
-                [attr.aria-label]="platform ? 'Message founder' : 'Message'"
+                [attr.aria-label]="
+                  platform ? 'Message founder' : nonprofit ? 'Message leader' : 'Message'
+                "
                 style="width: var(--control-height-lg)"
                 ><svg jb-icon name="message"></svg
               ></a>
@@ -410,6 +443,12 @@
               payment and has not checked this platform.
             </p>
           }
+          @if (nonprofit?.website || nonprofit?.giveUrl) {
+            <p class="text-caption">
+              Opens in a new tab. Gifts go straight to {{ listing.name }}. Jubilee takes no gift or
+              payment and has not checked this non-profit.
+            </p>
+          }
           @if (listing.highlight) {
             <p jb-perk>{{ listing.highlight }}</p>
           }
@@ -417,7 +456,16 @@
       </div>
       <div class="split">
         <div>
-          @if (platform) {
+          @if (nonprofit) {
+            <section jb-section labelledBy="mission">
+              <h2 id="mission">Its mission</h2>
+              <p style="margin-top: var(--space-3)">{{ nonprofit.mission }}</p>
+            </section>
+            <section jb-section labelledBy="serves">
+              <h2 id="serves">Who it serves</h2>
+              <p style="margin-top: var(--space-3)">{{ nonprofit.serves }}</p>
+            </section>
+          } @else if (platform) {
             <section jb-section labelledBy="does">
               <h2 id="does">What it does</h2>
               <p style="margin-top: var(--space-3)">{{ platform.does }}</p>
@@ -524,8 +572,11 @@
                 @if (detail.href) {
                   <div jb-description-item [term]="detail.term">
                     <a [href]="detail.href" target="_blank" rel="noopener noreferrer nofollow"
-                      >{{ detail.value
-                      }}<span class="visually-hidden"> (opens in a new tab)</span></a
+                      >{{ detail.value }}
+                      @if (detail.leaves) {
+                        <svg jb-icon name="arrow-up-right"></svg>
+                      }
+                      <span class="visually-hidden"> (opens in a new tab)</span></a
                     >
                   </div>
                 } @else {
@@ -536,7 +587,8 @@
           </aside>
         </div>
       </div>
-      @if (!preview) {
+      <!-- A non-profit takes no reviews (L2-293). -->
+      @if (!preview && !nonprofit) {
         <jb-listing-reviews
           [slug]="listing.slug"
           [name]="listing.name"

@@ -142,6 +142,19 @@ Until a file is here the case is compared with its mock only, and its test says 
   link out ("Visit {host}", a primary button that is a link, with the `arrow-up-right` icon) and
   the line under "Reviews" have no frame; their parity specs name the nearest frame and compare
   with the mock only.
+- **No non-profit (ADR 0074).** The design draws no non-profit, no "Non-profits" category, no
+  shelf of non-profits on the browse home and no link to give. The non-profit screens are drawn in
+  the mocks only, from the frames of what they are built with, as the platform's were: the
+  non-profit page (`pages/nonprofit/`) from the business frames (`business-services-*.png`: the
+  tile, the head, the sections, "Details") with the platform page's link out, and no Reviews
+  section; its category page and the "Non-profits in Toronto" shelf from the category frames and
+  the browse home's "Rooms & places to stay" shelf; the non-profit form and the fifth card of
+  "What do you offer?" from "List your business" and "List a space"
+  (`list-your-business-1280.png`, `list-a-space-1280.png`); the "Non-profits" search group from
+  the search frame's tabs; and the admin record from the admin redesign's record screen. The
+  thirteenth media tile (green, the `hands` icon), the second link out ("Give on {host}" beside
+  "Visit {host}") and the line under the links have no frame; their parity specs name the nearest
+  frame and compare with the mock only.
 - **The "Marketing Site" frame "Home".** It exists in the Magic Patterns editor only, which needs
   the owner's account; it is not on the published site. The repository owner exports it here as
   `marketing-home-360.png` and `marketing-home-1280.png` and adds its rows to the table. Until

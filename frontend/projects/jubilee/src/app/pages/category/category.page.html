@@ -64,7 +64,13 @@
   @switch (state.status) {
     @case ('loading') {
       <p class="visually-hidden" role="status">
-        {{ platforms() ? 'Loading platforms…' : 'Loading businesses…' }}
+        {{
+          platforms()
+            ? 'Loading platforms…'
+            : nonprofits()
+              ? 'Loading non-profits…'
+              : 'Loading businesses…'
+        }}
       </p>
       <ul jb-card-grid-skeleton [count]="8"></ul>
     }
@@ -96,6 +102,21 @@
           >
           <a slot="actions" jb-button routerLink="/">Browse other categories</a>
         </div>
+      } @else if (page.totalCount === 0 && nonprofits()) {
+        <!-- No non-profit is live yet (L2-289 AC6). -->
+        <div jb-empty-state icon="hands" heading="No non-profit is listed here yet">
+          Know a Christian ministry or charity in Toronto? Invite them to list free, or list the one
+          you lead.
+          <a
+            slot="actions"
+            jb-button
+            variant="primary"
+            routerLink="/list"
+            [queryParams]="{ kind: 'nonprofit' }"
+            ><svg jb-icon name="plus"></svg>List a non-profit</a
+          >
+          <a slot="actions" jb-button routerLink="/">Browse other categories</a>
+        </div>
       } @else if (page.totalCount === 0) {
         <div jb-empty-state icon="wrench" heading="No one has listed here yet">
           Know a Christian {{ category()?.trades ?? 'business owner' }} in Toronto? Invite them to
@@ -107,8 +128,8 @@
         </div>
       } @else {
         <div class="cluster cluster--between" style="margin-bottom: var(--space-6)">
-          <!-- A platform has no offers and serves no area: the sort alone (L2-252 AC2). -->
-          @if (!platforms()) {
+          <!-- A platform or a non-profit has no offers and serves no area: the sort alone (L2-252 AC2, L2-289 AC3). -->
+          @if (!unfiltered()) {
             <div class="cluster only-desktop" role="group" aria-label="Filters">
               @for (chip of chips; track chip.filter.value) {
                 <button
@@ -199,6 +220,25 @@
               </div>
               <a jb-button variant="primary" routerLink="/list" [queryParams]="{ kind: 'platform' }"
                 >List a platform</a
+              >
+            </div>
+          </section>
+        }
+        @if (nonprofits()) {
+          <section jb-section divided labelledBy="lead">
+            <div class="cluster cluster--between">
+              <div>
+                <h2 jb-card-title id="lead">Lead a Christian non-profit in Toronto?</h2>
+                <p class="text-muted">
+                  List it for free. Supporters go to its own website to give.
+                </p>
+              </div>
+              <a
+                jb-button
+                variant="primary"
+                routerLink="/list"
+                [queryParams]="{ kind: 'nonprofit' }"
+                >List a non-profit</a
               >
             </div>
           </section>

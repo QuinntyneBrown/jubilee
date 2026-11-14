@@ -2,7 +2,8 @@ import { parity } from '../../fixtures/parity';
 import { BrowsePage } from '../../pages/browse.page';
 import { BusinessPage } from '../../pages/business.page';
 
-// jb-section: its head with a heading alone, with a link beside it and with a projected count.
+// jb-section: its head with a heading alone, with a link beside it, with a muted line under the
+// heading and with a projected count.
 parity('section', {
   cases: [
     {
@@ -16,6 +17,13 @@ parity('section', {
       route: 'browse',
       screen: (page) => new BrowsePage(page),
       region: (screen: BrowsePage) => screen.sectionHeads.filter({ hasText: 'From the shops' }),
+    },
+    {
+      name: 'head-with-subtitle',
+      route: 'browse',
+      screen: (page) => new BrowsePage(page),
+      region: (screen: BrowsePage) =>
+        screen.sectionHeads.filter({ hasText: 'Non-profits in Toronto' }),
     },
     {
       name: 'head-with-count',

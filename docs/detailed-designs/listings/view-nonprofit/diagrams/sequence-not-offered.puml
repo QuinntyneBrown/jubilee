@@ -1,0 +1,44 @@
+@startuml
+title UML sequence behaviour: Refuse a request or a review of a non-profit
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Backend: Jubilee API" #D1FADF
+  participant "RequestsController and ListingReviewsController" as controller
+end box
+box "Backend: Jubilee Application and Domain" #ECFDF3
+  participant "RequestQuoteCommandHandler" as quote
+  participant "ReviewRules" as rules
+end box
+box "Backend: Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+note over actor : No screen offers a quote or a review on a non-profit (L2-293 AC4); each call is sent by hand
+actor -> controller : POST a quote request naming the slug of a non-profit
+controller -> quote : Send RequestQuoteCommand with the member of the session
+quote -> db : Public listing by slug
+db --> quote : Listing, Kind Nonprofit
+quote --> controller : ConflictException NOT_OFFERED
+controller --> actor : 409 ProblemDetails with code NOT_OFFERED (L2-293 AC1)
+actor -> controller : GET /api/listings/{slug}/reviews
+controller -> rules : WritingAsync(listing, viewer)
+rules --> controller : not-offered, for everyone, signed in or not
+controller --> actor : 200, no reviews, no summary, writing not-offered (L2-293 AC2)
+actor -> controller : GET /api/listings/{slug}/reviews/new, or POST /api/listings/{slug}/reviews
+controller -> rules : WritingAsync is not-offered
+rules --> controller : ConflictException NOT_OFFERED
+controller --> actor : 409 ProblemDetails with code NOT_OFFERED (L2-293 AC3)
+note over quote, db : No Request, no Review, no notification and no e-mail is created
+@enduml

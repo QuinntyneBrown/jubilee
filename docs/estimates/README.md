@@ -1,24 +1,24 @@
 # Estimates
 
-- Overall effort: 449 days
-- Complete: 78%
+- Overall effort: 461 days
+- Complete: 79%
 
 | Subsystem | Effort | Complete |
 |---|---|---|
 | [merchandise](merchandise.md) | 8 days | 90% |
-| [directory](directory.md) | 25 days | 100% |
+| [directory](directory.md) | 29 days | 100% |
 | [trust-content](trust-content.md) | 10 days | 91% |
 | [responsive-design](responsive-design.md) | 6 days | 40% |
 | [design-system](design-system.md) | 6 days | 30% |
 | [interaction-states](interaction-states.md) | 17 days | 5% |
 | [system-pages](system-pages.md) | 10 days | 100% |
-| [listings](listings.md) | 32 days | 100% |
+| [listings](listings.md) | 36 days | 100% |
 | [accounts](accounts.md) | 50 days | 99% |
 | [security](security.md) | 36 days | 37% |
 | [messaging](messaging.md) | 17 days | 98% |
 | [requests](requests.md) | 39 days | 100% |
 | [notifications](notifications.md) | 16 days | 100% |
-| [onboarding](onboarding.md) | 21 days | 100% |
+| [onboarding](onboarding.md) | 25 days | 100% |
 | [admin](admin.md) | 7 days | 95% |
 | [verification](verification.md) | 15 days | 100% |
 | [owner-workspace](owner-workspace.md) | 20 days | 100% |

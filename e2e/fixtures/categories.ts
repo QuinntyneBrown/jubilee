@@ -16,9 +16,13 @@ export const categories = [
   { slug: 'software-platforms', name: 'Software platforms' },
 ] as const;
 
-/** The twelve categories of the chips, "Rooms & rentals" second (L2-020, L2-197). */
+/**
+ * The thirteen categories of the chips, "Rooms & rentals" second (L2-020, L2-197) and
+ * "Non-profits" last (L2-289 AC2); non-profits are never among the groups (L2-285 AC6).
+ */
 export const chipCategories = [
   categories[0],
   { slug: 'rooms-rentals', name: 'Rooms & rentals' },
   ...categories.slice(1),
+  { slug: 'non-profits', name: 'Non-profits' },
 ] as const;

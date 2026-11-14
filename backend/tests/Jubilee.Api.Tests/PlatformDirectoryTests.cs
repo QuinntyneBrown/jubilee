@@ -22,11 +22,11 @@ public class PlatformDirectoryTests : IClassFixture<JubileeApiFactory>, IAsyncLi
     public Task DisposeAsync() => Task.CompletedTask;
 
     [Fact]
-    public async Task L2_248_AC2_software_platforms_is_the_twelfth_of_twelve_categories()
+    public async Task L2_248_AC2_software_platforms_is_the_twelfth_of_thirteen_categories()
     {
         var categories = (await _factory.GetJson("/api/directory/welcome")).GetProperty("categories");
 
-        Assert.Equal(12, categories.GetArrayLength());
+        Assert.Equal(13, categories.GetArrayLength());
         Assert.Equal("community", categories[10].GetProperty("slug").GetString());
         Assert.Equal("software-platforms", categories[11].GetProperty("slug").GetString());
         Assert.Equal("Software platforms", categories[11].GetProperty("name").GetString());
@@ -90,7 +90,7 @@ public class PlatformDirectoryTests : IClassFixture<JubileeApiFactory>, IAsyncLi
         var json = await _factory.GetJson("/api/directory/home");
         var groups = json.GetProperty("groups");
 
-        Assert.Equal(12, json.GetProperty("categories").GetArrayLength());
+        Assert.Equal(13, json.GetProperty("categories").GetArrayLength());
         Assert.Equal(2, json.GetProperty("liveBusinessCount").GetInt32());
         Assert.Equal(["community", "software-platforms"], groups.EnumerateArray().Select(g => g.GetProperty("slug").GetString()));
         Assert.Equal("Software platforms", groups[1].GetProperty("name").GetString());

@@ -140,6 +140,13 @@ export function browseHomeFromMock(state: 'default' | 'edge') {
     groups,
     // The edge mock draws no rooms shelf: it has no live space.
     rooms: { count: 0, spaces: [] },
+    // "Non-profits in Toronto" (L2-289 AC1), when the mock draws it.
+    nonprofits: html.includes('id="nonprofits"')
+      ? {
+          count: count(first(between(html, 'id="nonprofits"', '</section>'), /All ([\d,]+)/)),
+          listings: businessCards(between(html, 'id="nonprofits"', '</section>')),
+        }
+      : { count: 0, listings: [] },
   };
 }
 

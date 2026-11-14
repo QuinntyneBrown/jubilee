@@ -126,6 +126,12 @@ public sealed partial class RequestQuoteCommandHandler(IAppDbContext db, TimePro
             throw new ConflictException("NOT_OFFERED", "A software platform takes no quote requests.");
         }
 
+        // A non-profit takes no requests: members message it to volunteer or partner (L2-293 AC1, ADR 0074).
+        if (listing.Kind == ListingKind.Nonprofit)
+        {
+            throw new ConflictException("NOT_OFFERED", "A non-profit takes no quote requests.");
+        }
+
         Service? service = null;
         if (command.ServiceId is { } serviceId)
         {

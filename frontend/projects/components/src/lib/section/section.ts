@@ -1,4 +1,5 @@
 import { booleanAttribute, ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { NgTemplateOutlet } from '@angular/common';
 import { RouterLink } from '@angular/router';
 
 /**
@@ -8,13 +9,13 @@ import { RouterLink } from '@angular/router';
  *              actionLabel="All shops" [actionLink]="['/c', 'shops']">…</section>
  *
  * `heading` draws the section head; with `headingId` the section is also named by it
- * (`aria-labelledby`). The action beside the heading is a link (`actionLabel`, `actionLink`) or
+ * (`aria-labelledby`). `subtitle` is a muted line under the heading. The action beside the heading is a link (`actionLabel`, `actionLink`) or
  * whatever is projected with `slot="action"`. A section that writes its own heading names
  * itself with `labelledBy`. `divided` rules it off from what is above.
  */
 @Component({
   selector: 'section[jb-section], aside[jb-section], div[jb-section]',
-  imports: [RouterLink],
+  imports: [RouterLink, NgTemplateOutlet],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'section',
@@ -27,6 +28,8 @@ import { RouterLink } from '@angular/router';
 export class Section {
   readonly heading = input<string | null>(null);
   readonly headingId = input<string | null>(null);
+  /** A muted line under the heading ("Ministries and charities at work across the city."). */
+  readonly subtitle = input<string | null>(null);
   /** The level of the heading: 2 under the page's `h1`, 3 inside another section. */
   readonly level = input<2 | 3>(2);
   readonly actionLabel = input<string | null>(null);

@@ -39,6 +39,9 @@ export class CategoryPage extends ShellPage implements Screen {
   /** Software platforms (L2-252 AC4): the closing call to list a platform. */
   readonly built: Locator;
   readonly listAPlatform: Locator;
+  /** Non-profits (L2-289 AC5): the closing call to list a non-profit. */
+  readonly lead: Locator;
+  readonly listANonprofit: Locator;
 
   constructor(page: Page) {
     super(page);
@@ -72,6 +75,8 @@ export class CategoryPage extends ShellPage implements Screen {
     this.listASpace = this.spare.getByRole('link', { name: 'List a space' });
     this.built = this.main.getByRole('region', { name: 'Built something people use online?' });
     this.listAPlatform = this.built.getByRole('link', { name: 'List a platform' });
+    this.lead = this.main.getByRole('region', { name: 'Lead a Christian non-profit in Toronto?' });
+    this.listANonprofit = this.lead.getByRole('link', { name: 'List a non-profit' });
   }
 
   chip(name: string): Locator {

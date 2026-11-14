@@ -1,6 +1,6 @@
 import type { Locator, Page } from '@playwright/test';
 import type { Region, Screen } from '../fixtures/visual';
-import { PlatformFields, SpaceFields } from './list-business.page';
+import { NonprofitFields, PlatformFields, SpaceFields } from './list-business.page';
 import { AddressField } from './address-field';
 import { ShellPage } from './shell.page';
 
@@ -41,6 +41,8 @@ export class EditListingPage extends ShellPage implements Screen {
   readonly spacePreview: Locator;
   /** A platform's own fields (L2-256). */
   readonly platform: PlatformFields;
+  /** A non-profit's own fields (L2-294). */
+  readonly nonprofit: NonprofitFields;
   readonly previewTag: Locator;
   readonly previewHeading: Locator;
   readonly platformName: Locator;
@@ -84,6 +86,7 @@ export class EditListingPage extends ShellPage implements Screen {
     this.space = new SpaceFields(page, this.main);
     this.spacePreview = this.main.locator('aside[aria-labelledby="pv"] .space-card');
     this.platform = new PlatformFields(this.main);
+    this.nonprofit = new NonprofitFields(this.main);
     this.previewTag = this.preview.locator('.media__tag');
     this.previewHeading = this.main.locator('#pv');
     this.platformName = this.main.locator('#name');

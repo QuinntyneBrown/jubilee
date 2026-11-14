@@ -121,9 +121,15 @@ export class CategoryPage {
     () => this.slug().get('category') === 'software-platforms',
   );
 
-  /** The filters applied; none for platforms, whatever the address says (L2-252 AC3). */
+  /** Non-profits has the sort and no filters (L2-289). */
+  protected readonly nonprofits = computed(() => this.slug().get('category') === 'non-profits');
+
+  /** A category with the sort alone: platforms and non-profits have no offers and serve no area. */
+  protected readonly unfiltered = computed(() => this.platforms() || this.nonprofits());
+
+  /** The filters applied; none for platforms or non-profits, whatever the address says (L2-252 AC3, L2-289 AC4). */
   protected readonly filterCount = computed(() =>
-    this.platforms() ? 0 : this.store.query().offers.length + this.store.query().areas.length,
+    this.unfiltered() ? 0 : this.store.query().offers.length + this.store.query().areas.length,
   );
 
   protected readonly subtitle = computed(() => {
@@ -133,6 +139,12 @@ export class CategoryPage {
       if (state.status !== 'loaded') return this.category()?.blurb ?? '';
       const n = state.value.matchCount;
       return `${formatCount(n)} ${n === 1 ? 'space' : 'spaces'}`;
+    }
+    if (this.nonprofits()) {
+      if (state.status === 'loading') return 'Loading non-profits…';
+      if (state.status !== 'loaded') return this.category()?.blurb ?? '';
+      const n = state.value.totalCount;
+      return `${formatCount(n)} ${n === 1 ? 'non-profit' : 'non-profits'}`;
     }
     if (this.platforms()) {
       if (state.status === 'loading') return 'Loading platforms…';

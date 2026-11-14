@@ -20,8 +20,10 @@ public sealed class DatabaseNameSearch(IAppDbContext db)
             .OrderByDescending(l => l.RecommendedScore)
             .ThenBy(l => l.SortName)
             .Select(l => new SearchHit(
-                SearchResultKind.Business, l.Name, l.Slug, null, l.Name, l.CategorySlug, null, l.Space is null ? null : SpaceCardDto.From(l)))
+                l.Kind == ListingKind.Nonprofit ? SearchResultKind.Nonprofit : SearchResultKind.Business, l.Name, l.Slug, null, l.Name, l.CategorySlug, null, l.Space is null ? null : SpaceCardDto.From(l)))
             .ToList();
-        return new SearchResults(query, hits.Count, 0, 0, false, hits, null);
+        // A non-profit is not a business: it is counted in its own group (L2-290 AC2).
+        var nonprofits = hits.Count(h => h.Kind == SearchResultKind.Nonprofit);
+        return new SearchResults(query, hits.Count - nonprofits, 0, 0, false, hits, null, nonprofits);
     }
 }

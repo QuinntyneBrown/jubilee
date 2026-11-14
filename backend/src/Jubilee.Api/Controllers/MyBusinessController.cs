@@ -12,7 +12,8 @@ namespace Jubilee.Api.Controllers;
 [JsonUnmappedMemberHandling(JsonUnmappedMemberHandling.Disallow)]
 public sealed record SaveListingBody(
     int Version, string? Name, string? Tagline, string? Category, string? About, string? Where, string? Hours, string? Website, string? Highlight,
-    SpaceDraftRequest? Space = null, Guid? ListingId = null, PlatformDraftRequest? Platform = null);
+    SpaceDraftRequest? Space = null, Guid? ListingId = null, PlatformDraftRequest? Platform = null,
+    NonprofitDraftRequest? Nonprofit = null);
 
 /// <summary>The business the owner chooses in the switcher (L2-079 AC5).</summary>
 [JsonUnmappedMemberHandling(JsonUnmappedMemberHandling.Disallow)]
@@ -50,7 +51,7 @@ public sealed class MyBusinessController(ISender sender) : ControllerBase
     public Task<ListingEditorDto> Save([FromBody] SaveListingBody body, CancellationToken cancellationToken) =>
         sender.Send(new SaveListingCommand(
             Subject, body.Version, body.Name, body.Tagline, body.Category, body.About, body.Where, body.Hours, body.Website, body.Highlight,
-            body.Space?.ToInput(), body.ListingId, body.Platform?.ToInput()),
+            body.Space?.ToInput(), body.ListingId, body.Platform?.ToInput(), body.Nonprofit?.ToInput()),
             cancellationToken);
 
     [HttpPut("current")]

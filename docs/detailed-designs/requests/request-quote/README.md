@@ -80,6 +80,19 @@ e-mail sent by `Jubilee Worker`. Its decisions are in ADR 0016.
   owner's e-mail through `IEmailSender`. The in-app notification needs no job: the handler writes it, and an
   open page receives it from the event stream `GET /api/events` (`L2-070`).
 
+### Non-profits
+
+A non-profit (kind `Nonprofit`, ADR 0074) takes no requests. After the fields
+are checked and the public listing is read, `RequestQuoteCommandHandler`
+refuses a listing whose kind is `Nonprofit` with `ConflictException`, HTTP
+409 and code `NOT_OFFERED`, as it refuses a platform, and creates no
+`Request`, no notification and no e-mail (`L2-293` AC1).
+`GetQuoteOptionsQueryHandler` refuses it with the same code, so the dialog
+cannot open on a non-profit from a typed address. No screen offers "Ask for
+a quote" on a non-profit (`listings/view-nonprofit`). A booking, an order
+request and a space request name a service, a product or a space, which a
+non-profit has none of, so they answer HTTP 404 as today.
+
 ## Requirements
 
 The feature realizes the following level-2 (L2) requirements. Each L2 requirement refines a level-1 (L1)
@@ -92,6 +105,7 @@ requirement, cited by identifier.
 | `L2-005` | `L1-001` | Until the e-mail is confirmed, a member may browse, search and save but shall not message, book, request or list a business. |
 | `L2-126` | `L1-018` | A dialog form with errors shall show each message under its field, shall move focus to the first invalid field and shall keep the typed values. The server shall enforce each rule that the browser enforces and return the same message code. |
 | `L2-132` | `L1-018` | Each create request shall carry a client-generated idempotency key, and the server shall return the original result for a repeated key within 24 hours without creating a duplicate. |
+| `L2-293` | `L1-035` | A quote request sent to a non-profit shall be refused with HTTP 409 and code `NOT_OFFERED` and nothing shall be created; a booking, an order request and a space request shall answer HTTP 404. |
 
 ## Diagrams
 

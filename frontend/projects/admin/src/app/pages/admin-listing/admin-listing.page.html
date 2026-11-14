@@ -115,6 +115,48 @@
             </p>
           </section>
         }
+        @if (l.nonprofit; as nonprofit) {
+          <!-- Each address is text, and a link only when it passes the rule (L2-295 AC2). -->
+          <section jb-card heading="The non-profit" headingId="np">
+            <dl jb-description-list>
+              @if (nonprofit.website) {
+                <div jb-description-item term="Website">
+                  <a [href]="nonprofit.website" target="_blank" rel="noopener noreferrer nofollow"
+                    >{{ nonprofit.address
+                    }}<span class="visually-hidden"> (opens in a new tab)</span></a
+                  >
+                </div>
+              } @else {
+                <div jb-description-item term="Website" [value]="nonprofit.address"></div>
+              }
+              @if (nonprofit.giveUrl) {
+                <div jb-description-item term="Page for giving">
+                  <a [href]="nonprofit.giveUrl" target="_blank" rel="noopener noreferrer nofollow"
+                    >{{ nonprofit.giveAddress
+                    }}<span class="visually-hidden"> (opens in a new tab)</span></a
+                  >
+                </div>
+              } @else if (nonprofit.giveAddress) {
+                <div
+                  jb-description-item
+                  term="Page for giving"
+                  [value]="nonprofit.giveAddress"
+                ></div>
+              }
+              <div jb-description-item term="Its mission" [value]="nonprofit.mission"></div>
+              <div jb-description-item term="Who it serves" [value]="nonprofit.serves"></div>
+              <div
+                jb-description-item
+                term="Where in Toronto it works"
+                [value]="nonprofit.area"
+              ></div>
+            </dl>
+            <p class="text-caption">
+              Jubilee never opens or checks these addresses. Follow them yourself to see what the
+              listing describes.
+            </p>
+          </section>
+        }
       </div>
       <aside class="split__sticky" aria-labelledby="pv">
         @for (flag of flags(); track flag) {
@@ -134,7 +176,13 @@
             [tagline]="l.tagline"
             [tint]="t.tint"
             [icon]="t.icon"
-            [tag]="l.kind === 'platform' ? t.label : l.kind === 'products' ? 'Shop' : 'Business'"
+            [tag]="
+              l.kind === 'platform' || l.kind === 'nonprofit'
+                ? t.label
+                : l.kind === 'products'
+                  ? 'Shop'
+                  : 'Business'
+            "
             [highlight]="l.highlight ?? ''"
             published
           ></div>

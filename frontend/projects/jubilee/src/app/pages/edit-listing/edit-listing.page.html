@@ -197,8 +197,16 @@
 
           <div
             jb-field
-            [label]="isSpace() ? 'Listing title' : isPlatform() ? 'Platform name' : 'Business name'"
-            [hint]="isPlatform() ? 'The name people know it by.' : null"
+            [label]="
+              isSpace()
+                ? 'Listing title'
+                : isPlatform()
+                  ? 'Platform name'
+                  : isNonprofit()
+                    ? 'Non-profit name'
+                    : 'Business name'
+            "
+            [hint]="isOwnCategory() ? 'The name people know it by.' : null"
             controlId="name"
             required
             [error]="errors().name"
@@ -226,7 +234,7 @@
             [label]="
               isSpace()
                 ? 'One line renters should know'
-                : isPlatform()
+                : isOwnCategory()
                   ? 'One line on what it does'
                   : 'One line on what you do'
             "
@@ -245,7 +253,7 @@
               [readOnly]="busy()"
             />
           </div>
-          @if (!isPlatform()) {
+          @if (!isOwnCategory()) {
             <div
               jb-field
               label="About"
@@ -267,7 +275,109 @@
               ></textarea>
             </div>
           }
-          @if (isPlatform()) {
+          @if (isNonprofit()) {
+            <div
+              jb-field
+              label="Website"
+              hint="Its own website. It starts with https://."
+              controlId="website"
+              required
+              [error]="errors().website"
+            >
+              <input
+                jb-input
+                name="nonprofitWebsite"
+                type="url"
+                inputmode="url"
+                autocomplete="url"
+                [attr.maxlength]="maxWebsite"
+                required
+                [ngModel]="draft().website"
+                (ngModelChange)="setPlatform('website', $event)"
+                [readOnly]="busy()"
+              />
+            </div>
+            <div
+              jb-field
+              label="Its mission"
+              hint="In its own words. What work does it do, and why?"
+              controlId="mission"
+              required
+              [counter]="draft().mission.length + ' / ' + maxMission"
+              [error]="errors().mission"
+            >
+              <textarea
+                jb-textarea
+                name="mission"
+                rows="4"
+                [attr.maxlength]="maxMission"
+                required
+                [ngModel]="draft().mission"
+                (ngModelChange)="setPlatform('mission', $event)"
+                [readOnly]="busy()"
+              ></textarea>
+            </div>
+            <div
+              jb-field
+              label="Who it serves"
+              hint="Like “Young people aged 12 to 18 in Scarborough”."
+              controlId="serves"
+              required
+              [counter]="draft().serves.length + ' / ' + maxServes"
+              [error]="errors().serves"
+            >
+              <input
+                jb-input
+                name="serves"
+                type="text"
+                [attr.maxlength]="maxServes"
+                required
+                [ngModel]="draft().serves"
+                (ngModelChange)="setPlatform('serves', $event)"
+                [readOnly]="busy()"
+              />
+            </div>
+            <div
+              jb-field
+              label="Where in Toronto it works"
+              hint="Like “Regent Park and Moss Park” or “Across Toronto”."
+              controlId="area"
+              required
+              [counter]="draft().area.length + ' / ' + maxArea"
+              [error]="errors().area"
+            >
+              <input
+                jb-input
+                name="nonprofitArea"
+                type="text"
+                [attr.maxlength]="maxArea"
+                required
+                [ngModel]="draft().area"
+                (ngModelChange)="setPlatform('area', $event)"
+                [readOnly]="busy()"
+              />
+            </div>
+            <div
+              jb-field
+              label="Page for giving"
+              optional
+              hint="Its own page where people give, if it has one. It starts with https://."
+              controlId="give"
+              [error]="errors().giveUrl"
+            >
+              <input
+                jb-input
+                name="give"
+                type="url"
+                inputmode="url"
+                [attr.maxlength]="maxGive"
+                [ngModel]="draft().giveUrl"
+                (ngModelChange)="setPlatform('giveUrl', $event)"
+                [readOnly]="busy()"
+              />
+            </div>
+            <ng-container [ngTemplateOutlet]="highlightField" />
+          } @else if (isPlatform()) {
             <div
               jb-field
               label="Web address"
@@ -603,7 +713,7 @@
             {{
               isSpace()
                 ? 'How renters see it'
-                : isPlatform()
+                : isOwnCategory()
                   ? 'How members see it'
                   : 'How members see you'
             }}

@@ -21,9 +21,13 @@ public static class PublicListingFilter
 
     public static IQueryable<Listing> WherePublic(this IQueryable<Listing> listings) => listings.Where(Criteria);
 
-    /// <summary>Businesses only: services and shops, never a space (L2-201 AC6).</summary>
+    /// <summary>Businesses only: services, shops and platforms, never a space (L2-201 AC6) nor a non-profit (L2-285 AC6).</summary>
     public static IQueryable<Listing> WhereBusiness(this IQueryable<Listing> listings) =>
-        listings.Where(l => l.CategorySlug != Category.RoomsSlug);
+        listings.Where(l => l.CategorySlug != Category.RoomsSlug && l.CategorySlug != Category.NonprofitsSlug);
+
+    /// <summary>Non-profits only: the listings in "Non-profits" (L2-285 AC1).</summary>
+    public static IQueryable<Listing> WhereNonprofit(this IQueryable<Listing> listings) =>
+        listings.Where(l => l.CategorySlug == Category.NonprofitsSlug);
 
     /// <summary>Spaces only: the listings in "Rooms & rentals" (L2-197 AC3).</summary>
     public static IQueryable<Listing> WhereSpace(this IQueryable<Listing> listings) =>

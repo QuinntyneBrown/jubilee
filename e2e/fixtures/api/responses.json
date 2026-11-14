@@ -1343,13 +1343,123 @@
       "spaces": []
     }
   },
+  "GET /api/categories/non-profits/listings?sort=name&page=1": {
+    "status": 200,
+    "body": {
+      "category": {
+        "slug": "non-profits",
+        "name": "Non-profits"
+      },
+      "totalCount": 3,
+      "matchCount": 3,
+      "fact": null,
+      "filters": {
+        "offers": [],
+        "areas": []
+      },
+      "sort": "name",
+      "page": 1,
+      "pageSize": 16,
+      "pageCount": 1,
+      "businesses": [
+        {
+          "slug": "bread-and-bridges",
+          "name": "Bread & Bridges",
+          "tagline": "A church-run food bank open to every neighbour in Weston.",
+          "highlight": "Open Saturdays",
+          "categorySlug": "non-profits",
+          "coverPhoto": null,
+          "repliesFast": false,
+          "rating": null
+        },
+        {
+          "slug": "hope-house-toronto",
+          "name": "Hope House Toronto",
+          "tagline": "Meals, beds and friendship for men leaving the shelter system.",
+          "highlight": "Volunteers welcome",
+          "categorySlug": "non-profits",
+          "coverPhoto": null,
+          "repliesFast": false,
+          "rating": null
+        },
+        {
+          "slug": "lakeshore-youth-collective",
+          "name": "Lakeshore Youth Collective",
+          "tagline": "Youth nights, mentoring and summer camp for teens in south Etobicoke.",
+          "highlight": null,
+          "categorySlug": "non-profits",
+          "coverPhoto": null,
+          "repliesFast": false,
+          "rating": null
+        }
+      ],
+      "suggestions": [],
+      "term": null,
+      "spaces": []
+    }
+  },
+  "GET /api/categories/non-profits/listings?sort=recommended&page=1": {
+    "status": 200,
+    "body": {
+      "category": {
+        "slug": "non-profits",
+        "name": "Non-profits"
+      },
+      "totalCount": 3,
+      "matchCount": 3,
+      "fact": null,
+      "filters": {
+        "offers": [],
+        "areas": []
+      },
+      "sort": "recommended",
+      "page": 1,
+      "pageSize": 16,
+      "pageCount": 1,
+      "businesses": [
+        {
+          "slug": "hope-house-toronto",
+          "name": "Hope House Toronto",
+          "tagline": "Meals, beds and friendship for men leaving the shelter system.",
+          "highlight": "Volunteers welcome",
+          "categorySlug": "non-profits",
+          "coverPhoto": null,
+          "repliesFast": false,
+          "rating": null
+        },
+        {
+          "slug": "bread-and-bridges",
+          "name": "Bread & Bridges",
+          "tagline": "A church-run food bank open to every neighbour in Weston.",
+          "highlight": "Open Saturdays",
+          "categorySlug": "non-profits",
+          "coverPhoto": null,
+          "repliesFast": false,
+          "rating": null
+        },
+        {
+          "slug": "lakeshore-youth-collective",
+          "name": "Lakeshore Youth Collective",
+          "tagline": "Youth nights, mentoring and summer camp for teens in south Etobicoke.",
+          "highlight": null,
+          "categorySlug": "non-profits",
+          "coverPhoto": null,
+          "repliesFast": false,
+          "rating": null
+        }
+      ],
+      "suggestions": [],
+      "term": null,
+      "spaces": []
+    }
+  },
   "GET /api/categories/plumbers/listings?sort=recommended&page=1": {
     "status": 404,
     "body": {
       "title": "We can't find that.",
       "status": 404,
       "detail": "There is no such category.",
-      "correlationId": "f1bdcfb23beb4df48af8b1951b78c2bd",
+      "correlationId": "6aa43fd11e124700b055d6a8cee21e85",
       "code": "category_not_found"
     }
   },
@@ -1857,6 +1967,10 @@
         {
           "slug": "software-platforms",
           "name": "Software platforms"
+        },
+        {
+          "slug": "non-profits",
+          "name": "Non-profits"
         }
       ],
       "featured": [
@@ -2351,6 +2465,41 @@
             "rating": null
           }
         ]
+      },
+      "nonprofits": {
+        "count": 3,
+        "listings": [
+          {
+            "slug": "hope-house-toronto",
+            "name": "Hope House Toronto",
+            "tagline": "Meals, beds and friendship for men leaving the shelter system.",
+            "highlight": "Volunteers welcome",
+            "categorySlug": "non-profits",
+            "coverPhoto": null,
+            "repliesFast": false,
+            "rating": null
+          },
+          {
+            "slug": "bread-and-bridges",
+            "name": "Bread & Bridges",
+            "tagline": "A church-run food bank open to every neighbour in Weston.",
+            "highlight": "Open Saturdays",
+            "categorySlug": "non-profits",
+            "coverPhoto": null,
+            "repliesFast": false,
+            "rating": null
+          },
+          {
+            "slug": "lakeshore-youth-collective",
+            "name": "Lakeshore Youth Collective",
+            "tagline": "Youth nights, mentoring and summer camp for teens in south Etobicoke.",
+            "highlight": null,
+            "categorySlug": "non-profits",
+            "coverPhoto": null,
+            "repliesFast": false,
+            "rating": null
+          }
+        ]
       }
     }
   },
@@ -2406,6 +2555,10 @@
         {
           "slug": "software-platforms",
           "name": "Software platforms"
+        },
+        {
+          "slug": "non-profits",
+          "name": "Non-profits"
         }
       ],
       "featured": [
@@ -2463,7 +2616,7 @@
     "body": {
       "title": "Sign in to continue.",
       "status": 401,
-      "correlationId": "eb553e04c3df4debbbe12bdb9c3644e4",
+      "correlationId": "6923d674b28c414ab709a664368a1535",
       "code": "sign_in_required"
     }
   },
@@ -2500,7 +2653,7 @@
         "languages": null,
         "delivery": null,
         "madeToOrder": null,
-        "onJubileeSince": "2026-10-30T17:10:34.659047+00:00",
+        "onJubileeSince": "2026-10-31T12:04:54.582918+00:00",
         "replies": null
       },
       "services": [],
@@ -2602,7 +2755,8 @@
       "repliesFast": false,
       "address": null,
       "photos": [],
-      "platform": null
+      "platform": null,
+      "nonprofit": null
     }
   },
   "GET /api/listings/annex-basement-apartment/reviews": {
@@ -2630,8 +2784,98 @@
       "title": "We can't find that.",
       "status": 404,
       "detail": "There is no such business.",
-      "correlationId": "a7ab721a3b4c4bfb941d54e97420a5ee",
+      "correlationId": "10a24f33621f45a1872a567cb2340601",
       "code": "listing_not_found"
+    }
+  },
+  "GET /api/listings/bread-and-bridges": {
+    "status": 200,
+    "body": {
+      "slug": "bread-and-bridges",
+      "kind": "nonprofit",
+      "name": "Bread & Bridges",
+      "category": {
+        "slug": "non-profits",
+        "name": "Non-profits"
+      },
+      "stage": "live",
+      "status": "live",
+      "viewerRelation": "visitor",
+      "ownerName": "Daniel Fraser",
+      "tagline": "A church-run food bank open to every neighbour in Weston.",
+      "credentials": [],
+      "highlight": "Open Saturdays",
+      "about": null,
+      "coverPhoto": null,
+      "details": {
+        "where": null,
+        "hours": null,
+        "languages": null,
+        "delivery": null,
+        "madeToOrder": null,
+        "onJubileeSince": "2026-09-09T15:04:54.582918+00:00",
+        "replies": null
+      },
+      "services": [],
+      "productCount": 0,
+      "products": [],
+      "related": [
+        {
+          "slug": "hope-house-toronto",
+          "name": "Hope House Toronto",
+          "tagline": "Meals, beds and friendship for men leaving the shelter system.",
+          "highlight": "Volunteers welcome",
+          "categorySlug": "non-profits",
+          "coverPhoto": null,
+          "repliesFast": false,
+          "rating": null
+        },
+        {
+          "slug": "lakeshore-youth-collective",
+          "name": "Lakeshore Youth Collective",
+          "tagline": "Youth nights, mentoring and summer camp for teens in south Etobicoke.",
+          "highlight": null,
+          "categorySlug": "non-profits",
+          "coverPhoto": null,
+          "repliesFast": false,
+          "rating": null
+        }
+      ],
+      "space": null,
+      "relatedSpaces": [],
+      "openRequestId": null,
+      "repliesFast": false,
+      "address": null,
+      "photos": [],
+      "platform": null,
+      "nonprofit": {
+        "website": "https://breadandbridges.example",
+        "host": "breadandbridges.example",
+        "giveUrl": null,
+        "giveHost": null,
+        "mission": "Every Saturday morning our church opens its hall as a food bank. Anyone may come and no one is asked why. We pack groceries, pour coffee, sit with whoever wants to talk and pray with anyone who asks.",
+        "serves": "Families, seniors, youth and newcomers in Weston and Mount Dennis.",
+        "area": "Weston and Mount Dennis"
+      }
+    }
+  },
+  "GET /api/listings/bread-and-bridges/reviews": {
+    "status": 200,
+    "body": {
+      "summary": {
+        "average": 0,
+        "count": 0,
+        "breakdown": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "viewer": "visitor",
+      "writing": "not-offered",
+      "items": []
     }
   },
   "GET /api/listings/deeks-insurance": {
@@ -2659,7 +2903,7 @@
         "languages": null,
         "delivery": null,
         "madeToOrder": null,
-        "onJubileeSince": "2026-10-25T20:10:34.659047+00:00",
+        "onJubileeSince": "2026-10-26T15:04:54.582918+00:00",
         "replies": null
       },
       "services": [],
@@ -2696,7 +2940,8 @@
       "repliesFast": false,
       "address": null,
       "photos": [],
-      "platform": null
+      "platform": null,
+      "nonprofit": null
     }
   },
   "GET /api/listings/deeks-insurance/reviews": {
@@ -2743,7 +2988,7 @@
         "languages": null,
         "delivery": null,
         "madeToOrder": null,
-        "onJubileeSince": "2026-10-30T16:10:34.659047+00:00",
+        "onJubileeSince": "2026-10-31T11:04:54.582918+00:00",
         "replies": null
       },
       "services": [],
@@ -2845,7 +3090,8 @@
       "repliesFast": false,
       "address": null,
       "photos": [],
-      "platform": null
+      "platform": null,
+      "nonprofit": null
     }
   },
   "GET /api/listings/east-york-roommate/reviews": {
@@ -2864,6 +3110,96 @@
       },
       "viewer": "visitor",
       "writing": "sign-in",
+      "items": []
+    }
+  },
+  "GET /api/listings/hope-house-toronto": {
+    "status": 200,
+    "body": {
+      "slug": "hope-house-toronto",
+      "kind": "nonprofit",
+      "name": "Hope House Toronto",
+      "category": {
+        "slug": "non-profits",
+        "name": "Non-profits"
+      },
+      "stage": "live",
+      "status": "live",
+      "viewerRelation": "visitor",
+      "ownerName": "Grace Adeyemi",
+      "tagline": "Meals, beds and friendship for men leaving the shelter system.",
+      "credentials": [],
+      "highlight": "Volunteers welcome",
+      "about": null,
+      "coverPhoto": null,
+      "details": {
+        "where": null,
+        "hours": null,
+        "languages": null,
+        "delivery": null,
+        "madeToOrder": null,
+        "onJubileeSince": "2026-09-10T15:04:54.582918+00:00",
+        "replies": null
+      },
+      "services": [],
+      "productCount": 0,
+      "products": [],
+      "related": [
+        {
+          "slug": "bread-and-bridges",
+          "name": "Bread & Bridges",
+          "tagline": "A church-run food bank open to every neighbour in Weston.",
+          "highlight": "Open Saturdays",
+          "categorySlug": "non-profits",
+          "coverPhoto": null,
+          "repliesFast": false,
+          "rating": null
+        },
+        {
+          "slug": "lakeshore-youth-collective",
+          "name": "Lakeshore Youth Collective",
+          "tagline": "Youth nights, mentoring and summer camp for teens in south Etobicoke.",
+          "highlight": null,
+          "categorySlug": "non-profits",
+          "coverPhoto": null,
+          "repliesFast": false,
+          "rating": null
+        }
+      ],
+      "space": null,
+      "relatedSpaces": [],
+      "openRequestId": null,
+      "repliesFast": false,
+      "address": null,
+      "photos": [],
+      "platform": null,
+      "nonprofit": {
+        "website": "https://hopehouse.example",
+        "host": "hopehouse.example",
+        "giveUrl": "https://hopehouse.example/give",
+        "giveHost": "hopehouse.example",
+        "mission": "Hope House is a home in Moss Park for up to eight men at a time as they leave the shelter system. We cook and eat together every night, help each man find work and a place of his own, and stay his friends after he moves on. We do it because Jesus welcomed us first.",
+        "serves": "Men aged 18 and over moving out of Toronto’s shelters.",
+        "area": "Moss Park and Regent Park"
+      }
+    }
+  },
+  "GET /api/listings/hope-house-toronto/reviews": {
+    "status": 200,
+    "body": {
+      "summary": {
+        "average": 0,
+        "count": 0,
+        "breakdown": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "viewer": "visitor",
+      "writing": "not-offered",
       "items": []
     }
   },
@@ -2892,7 +3228,7 @@
         "languages": null,
         "delivery": null,
         "madeToOrder": null,
-        "onJubileeSince": "2026-09-12T20:10:34.659047+00:00",
+        "onJubileeSince": "2026-09-13T15:04:54.582918+00:00",
         "replies": null
       },
       "services": [],
@@ -2932,7 +3268,8 @@
         "does": "Families log the books their children read, set a weekly reading goal together and see the streak grow. Grandparents and teachers can cheer from their own accounts.",
         "for": "Families with children aged 4 to 12, and the teachers who cheer them on.",
         "pricing": "Free for families. Schools pay per classroom."
-      }
+      },
+      "nonprofit": null
     }
   },
   "GET /api/listings/lanternread/reviews": {
@@ -2953,7 +3290,7 @@
       "writing": "sign-in",
       "items": [
         {
-          "id": "4803760d-aa46-4ba8-89b6-13249cd7d09d",
+          "id": "95f62660-aa95-4771-ad92-894f1da5ebbc",
           "author": "Grace A.",
           "initials": "GA",
           "rating": 5,
@@ -2966,7 +3303,7 @@
           "reply": null
         },
         {
-          "id": "aebf22d6-5df1-434e-9fb5-569b2d8184f0",
+          "id": "4daeabc4-cd2c-4f5e-b01f-03f75815f155",
           "author": "Samuel P.",
           "initials": "SP",
           "rating": 5,
@@ -2979,7 +3316,7 @@
           "reply": null
         },
         {
-          "id": "0c3c791d-a739-45cd-9519-9912d5c67933",
+          "id": "2d2a0cb8-6563-40d0-b893-8139757fb697",
           "author": "Ruth M.",
           "initials": "RM",
           "rating": 4,
@@ -2997,7 +3334,7 @@
           }
         },
         {
-          "id": "4b86f34c-b25b-4938-99d3-f00cbd5dc017",
+          "id": "e04e17e9-9dde-45a8-866e-99aacc4ef5f8",
           "author": "David C.",
           "initials": "DC",
           "rating": 3,
@@ -3044,7 +3381,7 @@
       },
       "services": [
         {
-          "id": "82033d02-4672-47fc-ba5d-372e684853f2",
+          "id": "cb80ae5b-e8df-426e-a016-1a886492a362",
           "name": "Discovery meeting",
           "detail": "30 min · In person or video",
           "priceKind": "free",
@@ -3052,7 +3389,7 @@
           "action": "book"
         },
         {
-          "id": "6d467cd9-8359-49c1-9475-fbe0bb361191",
+          "id": "60ef7a04-d55d-4cea-b341-294f476e1dee",
           "name": "Retirement & RRSP review",
           "detail": "60 min · Bring your statements",
           "priceKind": "ask",
@@ -3060,7 +3397,7 @@
           "action": "book"
         },
         {
-          "id": "73a15eae-ec12-44ac-a45f-81671e64d41a",
+          "id": "9f085654-664c-4cef-89be-1d6baba01873",
           "name": "Life & disability insurance review",
           "detail": "45 min",
           "priceKind": "free",
@@ -3068,7 +3405,7 @@
           "action": "book"
         },
         {
-          "id": "ed45ab2d-0a24-46c3-bb0d-be53d718cc08",
+          "id": "a8f49732-d278-4ae0-8cc4-bba6380a7207",
           "name": "Estate & legacy plan",
           "detail": "Two sessions, written plan",
           "priceKind": "ask",
@@ -3106,7 +3443,8 @@
       "repliesFast": false,
       "address": null,
       "photos": [],
-      "platform": null
+      "platform": null,
+      "nonprofit": null
     }
   },
   "GET /api/listings/legacy-financial/reviews": {
@@ -3127,11 +3465,11 @@
       "writing": "sign-in",
       "items": [
         {
-          "id": "36f15fa4-d11f-4f96-ac91-ee98cd041aa0",
+          "id": "9f7ccc94-d82f-4c5a-ad6f-4c4e74e1920a",
           "author": "Grace A.",
           "initials": "GA",
           "rating": 5,
-          "itemId": "ed45ab2d-0a24-46c3-bb0d-be53d718cc08",
+          "itemId": "a8f49732-d278-4ae0-8cc4-bba6380a7207",
           "itemName": "Estate & legacy plan",
           "text": "Trevor helped my husband and me write wills and a giving plan after our second child. He never pushed a product, prayed with us at the end of the first meeting, and the written plan was clear enough that our parents understood it too.",
           "createdAt": "2026-11-03T17:00:00+00:00",
@@ -3145,11 +3483,11 @@
           }
         },
         {
-          "id": "4d503c6b-7c17-4ed7-a2bc-12c6690e9ac2",
+          "id": "8704f00e-cb42-4f0a-badc-f307b54df71a",
           "author": "Marcus T.",
           "initials": "MT",
           "rating": 5,
-          "itemId": "82033d02-4672-47fc-ba5d-372e684853f2",
+          "itemId": "cb80ae5b-e8df-426e-a016-1a886492a362",
           "itemName": "Discovery meeting",
           "text": "Booked the free meeting expecting a sales pitch. Got an honest look at our debt and a plan to be clear of it in three years. We went back for the RRSP review.",
           "createdAt": "2026-10-20T17:00:00+00:00",
@@ -3158,11 +3496,11 @@
           "reply": null
         },
         {
-          "id": "3dacb559-8428-473c-b387-7147c17eb7ad",
+          "id": "0f8c8ca2-5724-4557-944b-f3a4f3a84021",
           "author": "Esther L.",
           "initials": "EL",
           "rating": 4,
-          "itemId": "6d467cd9-8359-49c1-9475-fbe0bb361191",
+          "itemId": "60ef7a04-d55d-4cea-b341-294f476e1dee",
           "itemName": "Retirement & RRSP review",
           "text": "Very knowledgeable and patient with my questions. Scheduling took longer than I hoped in tax season, so book early.",
           "createdAt": "2026-09-08T17:00:00+00:00",
@@ -3176,11 +3514,11 @@
           }
         },
         {
-          "id": "69360bda-6714-42ac-9406-e79fcd972d76",
+          "id": "7e65aa3e-4e36-4310-8857-23108b6eb012",
           "author": "Priya S.",
           "initials": "PS",
           "rating": 4,
-          "itemId": "82033d02-4672-47fc-ba5d-372e684853f2",
+          "itemId": "cb80ae5b-e8df-426e-a016-1a886492a362",
           "itemName": "Discovery meeting",
           "text": "Helpful first meeting and no pressure, but the follow-up notes took two weeks to arrive and I had to ask for them twice.",
           "createdAt": "2026-08-02T17:00:00+00:00",
@@ -3189,11 +3527,11 @@
           "reply": null
         },
         {
-          "id": "2639f1c3-777f-4f6a-a462-ed9f83318f49",
+          "id": "a25ac672-53f2-4e24-9651-bffde5118ce6",
           "author": "Paul K.",
           "initials": "PK",
           "rating": 5,
-          "itemId": "73a15eae-ec12-44ac-a45f-81671e64d41a",
+          "itemId": "9f085654-664c-4cef-89be-1d6baba01873",
           "itemName": "Life & disability insurance review",
           "text": "Found we were paying for two overlapping policies. Saved us $64 a month.",
           "createdAt": "2026-06-15T17:00:00+00:00",
@@ -3229,7 +3567,7 @@
         "languages": null,
         "delivery": null,
         "madeToOrder": null,
-        "onJubileeSince": "2026-10-30T18:10:34.659047+00:00",
+        "onJubileeSince": "2026-10-31T13:04:54.582918+00:00",
         "replies": null
       },
       "services": [],
@@ -3332,7 +3670,8 @@
       "repliesFast": false,
       "address": null,
       "photos": [],
-      "platform": null
+      "platform": null,
+      "nonprofit": null
     }
   },
   "GET /api/listings/leslieville-family-room/reviews": {
@@ -3384,7 +3723,7 @@
       },
       "services": [
         {
-          "id": "21421e6d-c8af-416a-9a2e-f2619f7eb70c",
+          "id": "2af67aae-86f5-47ab-b931-96638026cf43",
           "name": "Custom design consultation",
           "detail": "30 min · Video",
           "priceKind": "free",
@@ -3392,7 +3731,7 @@
           "action": "ask"
         },
         {
-          "id": "b83cda20-36e3-4629-99c6-252730014308",
+          "id": "64e8d2bd-ca16-4535-bc8b-699ca4826616",
           "name": "Church merch package",
           "detail": "Tees, mugs and totes for your congregation",
           "priceKind": "ask",
@@ -3490,13 +3829,14 @@
       "repliesFast": false,
       "address": null,
       "photos": [],
-      "platform": null
+      "platform": null,
+      "nonprofit": null
     }
   },
   "GET /api/listings/luzandre/products/custom-church-team-tee": {
     "status": 200,
     "body": {
-      "id": "85866949-6540-4d0a-aa5c-8f3135b9d75b",
+      "id": "fa49f82c-c24a-4feb-a123-f8f11fcfa21d",
       "slug": "custom-church-team-tee",
       "name": "Custom church team tee (min. 12)",
       "priceCents": 2200,
@@ -3577,7 +3917,7 @@
   "GET /api/listings/luzandre/products/faith-heavyweight-tee-charcoal": {
     "status": 200,
     "body": {
-      "id": "732d09b9-7aa3-461d-993a-d5875b848c69",
+      "id": "cdda4dc0-0e5c-48b0-a67f-c106eedeac15",
       "slug": "faith-heavyweight-tee-charcoal",
       "name": "Faith heavyweight tee, charcoal",
       "priceCents": 3400,
@@ -3691,7 +4031,7 @@
   "GET /api/listings/luzandre/products/gold-cross-stoneware-mug": {
     "status": 200,
     "body": {
-      "id": "01e08338-4823-4d4a-acb4-5ed1026079b2",
+      "id": "90133578-8408-48d6-88c1-d4ec0d496be7",
       "slug": "gold-cross-stoneware-mug",
       "name": "Gold cross stoneware mug",
       "priceCents": 2400,
@@ -3776,7 +4116,7 @@
       "title": "We can't find that.",
       "status": 404,
       "detail": "There is no such product.",
-      "correlationId": "d31ea07a7c194c20992f000ee9755d67",
+      "correlationId": "b0995f9e2cfc43a3808b64f04f193681",
       "code": "product_not_found"
     }
   },
@@ -3798,11 +4138,11 @@
       "writing": "sign-in",
       "items": [
         {
-          "id": "079f760d-d9aa-42c0-8191-f39b95a08bf2",
+          "id": "1c37e8a1-b22b-4e14-8d61-25ad224678a9",
           "author": "Tamara J.",
           "initials": "TJ",
           "rating": 5,
-          "itemId": "85866949-6540-4d0a-aa5c-8f3135b9d75b",
+          "itemId": "fa49f82c-c24a-4feb-a123-f8f11fcfa21d",
           "itemName": "Custom church team tee (min. 12)",
           "text": "Ordered 40 tees for our youth retreat. The proof came back the same day, the print is thick and hasn’t cracked after a dozen washes. The kids actually wear them outside church.",
           "createdAt": "2026-11-05T17:00:00+00:00",
@@ -3816,11 +4156,11 @@
           }
         },
         {
-          "id": "a126ade1-ed0a-4c09-88f9-0414c6223400",
+          "id": "2754cee7-9b62-4b6e-9f9d-6b70d61b75cc",
           "author": "Ruth M.",
           "initials": "RM",
           "rating": 5,
-          "itemId": "01e08338-4823-4d4a-acb4-5ed1026079b2",
+          "itemId": "90133578-8408-48d6-88c1-d4ec0d496be7",
           "itemName": "Gold cross stoneware mug",
           "text": "Heavier than I expected in a good way. The gold has stayed bright in the dishwasher.",
           "createdAt": "2026-10-12T17:00:00+00:00",
@@ -3829,11 +4169,11 @@
           "reply": null
         },
         {
-          "id": "68ca4775-0c45-4ee8-82a9-c83b59150d8b",
+          "id": "088ab4c1-e9f6-49b4-bbca-b58e40fcba70",
           "author": "Samuel P.",
           "initials": "SP",
           "rating": 4,
-          "itemId": "01e08338-4823-4d4a-acb4-5ed1026079b2",
+          "itemId": "90133578-8408-48d6-88c1-d4ec0d496be7",
           "itemName": "Gold cross stoneware mug",
           "text": "Good mug, solid glaze. It took nine days to ship to Scarborough, longer than the five I was told.",
           "createdAt": "2026-09-30T17:00:00+00:00",
@@ -3842,11 +4182,11 @@
           "reply": null
         },
         {
-          "id": "461f6093-a0ab-465b-ab72-33caf741882f",
+          "id": "1ffc4013-49a1-4204-9128-132a01640a07",
           "author": "Kofi B.",
           "initials": "KB",
           "rating": 3,
-          "itemId": "732d09b9-7aa3-461d-993a-d5875b848c69",
+          "itemId": "cdda4dc0-0e5c-48b0-a67f-c106eedeac15",
           "itemName": "Faith heavyweight tee, charcoal",
           "text": "Love the design. Runs a full size small, so order up. Exchange was easy but took about two weeks by mail.",
           "createdAt": "2026-08-14T17:00:00+00:00",
@@ -3860,11 +4200,11 @@
           }
         },
         {
-          "id": "8dcac0e7-3557-4f0d-9b3e-81c36b96d120",
+          "id": "62eb92e1-1717-451a-aece-7c7a0926a05e",
           "author": "David C.",
           "initials": "DC",
           "rating": 5,
-          "itemId": "01e08338-4823-4d4a-acb4-5ed1026079b2",
+          "itemId": "90133578-8408-48d6-88c1-d4ec0d496be7",
           "itemName": "Gold cross stoneware mug",
           "text": "Bought two as gifts for our small group leaders. Both arrived well packed and they use them every Sunday.",
           "createdAt": "2026-07-22T17:00:00+00:00",
@@ -3893,11 +4233,11 @@
       "writing": "sign-in",
       "items": [
         {
-          "id": "079f760d-d9aa-42c0-8191-f39b95a08bf2",
+          "id": "1c37e8a1-b22b-4e14-8d61-25ad224678a9",
           "author": "Tamara J.",
           "initials": "TJ",
           "rating": 5,
-          "itemId": "85866949-6540-4d0a-aa5c-8f3135b9d75b",
+          "itemId": "fa49f82c-c24a-4feb-a123-f8f11fcfa21d",
           "itemName": "Custom church team tee (min. 12)",
           "text": "Ordered 40 tees for our youth retreat. The proof came back the same day, the print is thick and hasn’t cracked after a dozen washes. The kids actually wear them outside church.",
           "createdAt": "2026-11-05T17:00:00+00:00",
@@ -3931,11 +4271,11 @@
       "writing": "sign-in",
       "items": [
         {
-          "id": "461f6093-a0ab-465b-ab72-33caf741882f",
+          "id": "1ffc4013-49a1-4204-9128-132a01640a07",
           "author": "Kofi B.",
           "initials": "KB",
           "rating": 3,
-          "itemId": "732d09b9-7aa3-461d-993a-d5875b848c69",
+          "itemId": "cdda4dc0-0e5c-48b0-a67f-c106eedeac15",
           "itemName": "Faith heavyweight tee, charcoal",
           "text": "Love the design. Runs a full size small, so order up. Exchange was easy but took about two weeks by mail.",
           "createdAt": "2026-08-14T17:00:00+00:00",
@@ -3969,11 +4309,11 @@
       "writing": "sign-in",
       "items": [
         {
-          "id": "a126ade1-ed0a-4c09-88f9-0414c6223400",
+          "id": "2754cee7-9b62-4b6e-9f9d-6b70d61b75cc",
           "author": "Ruth M.",
           "initials": "RM",
           "rating": 5,
-          "itemId": "01e08338-4823-4d4a-acb4-5ed1026079b2",
+          "itemId": "90133578-8408-48d6-88c1-d4ec0d496be7",
           "itemName": "Gold cross stoneware mug",
           "text": "Heavier than I expected in a good way. The gold has stayed bright in the dishwasher.",
           "createdAt": "2026-10-12T17:00:00+00:00",
@@ -3982,11 +4322,11 @@
           "reply": null
         },
         {
-          "id": "68ca4775-0c45-4ee8-82a9-c83b59150d8b",
+          "id": "088ab4c1-e9f6-49b4-bbca-b58e40fcba70",
           "author": "Samuel P.",
           "initials": "SP",
           "rating": 4,
-          "itemId": "01e08338-4823-4d4a-acb4-5ed1026079b2",
+          "itemId": "90133578-8408-48d6-88c1-d4ec0d496be7",
           "itemName": "Gold cross stoneware mug",
           "text": "Good mug, solid glaze. It took nine days to ship to Scarborough, longer than the five I was told.",
           "createdAt": "2026-09-30T17:00:00+00:00",
@@ -3995,11 +4335,11 @@
           "reply": null
         },
         {
-          "id": "8dcac0e7-3557-4f0d-9b3e-81c36b96d120",
+          "id": "62eb92e1-1717-451a-aece-7c7a0926a05e",
           "author": "David C.",
           "initials": "DC",
           "rating": 5,
-          "itemId": "01e08338-4823-4d4a-acb4-5ed1026079b2",
+          "itemId": "90133578-8408-48d6-88c1-d4ec0d496be7",
           "itemName": "Gold cross stoneware mug",
           "text": "Bought two as gifts for our small group leaders. Both arrived well packed and they use them every Sunday.",
           "createdAt": "2026-07-22T17:00:00+00:00",
@@ -4035,7 +4375,7 @@
         "languages": null,
         "delivery": null,
         "madeToOrder": null,
-        "onJubileeSince": "2026-10-30T19:10:34.659047+00:00",
+        "onJubileeSince": "2026-10-31T14:04:54.582918+00:00",
         "replies": null
       },
       "services": [],
@@ -4137,7 +4477,8 @@
       "repliesFast": false,
       "address": null,
       "photos": [],
-      "platform": null
+      "platform": null,
+      "nonprofit": null
     }
   },
   "GET /api/listings/roncesvalles-guest-suite/reviews": {
@@ -4158,7 +4499,7 @@
       "writing": "sign-in",
       "items": [
         {
-          "id": "4451b92d-12d1-4cc0-b0aa-51d44a475a3b",
+          "id": "ad8eb004-5a09-4d71-a39f-b34493b185da",
           "author": "Lydia M.",
           "initials": "LM",
           "rating": 5,
@@ -4176,7 +4517,7 @@
           }
         },
         {
-          "id": "936779c5-df2f-4cd4-9fe5-82d3d28df3c4",
+          "id": "6eeff499-3473-4cb8-a41b-41f7a9257a14",
           "author": "Chris D.",
           "initials": "CD",
           "rating": 4,
@@ -4196,7 +4537,7 @@
     "body": {
       "title": "Sign in to continue.",
       "status": 401,
-      "correlationId": "fba25da0086448de87acb90a15d8192d",
+      "correlationId": "c061e8e583e84f38819967c6869addab",
       "code": "sign_in_required"
     }
   },
@@ -4242,7 +4583,8 @@
       "productCount": 0,
       "hasMatchExplanations": true,
       "hits": [],
-      "suggestion": null
+      "suggestion": null,
+      "nonprofitCount": 0
     }
   },
   "GET /api/search?q=bibles": {
@@ -4291,7 +4633,8 @@
           "space": null
         }
       ],
-      "suggestion": null
+      "suggestion": null,
+      "nonprofitCount": 0
     }
   },
   "GET /api/search?q=plumber": {
@@ -4340,7 +4683,8 @@
           "space": null
         }
       ],
-      "suggestion": null
+      "suggestion": null,
+      "nonprofitCount": 0
     }
   },
   "GET /api/search?q=reading": {
@@ -4371,7 +4715,58 @@
           "space": null
         }
       ],
-      "suggestion": null
+      "suggestion": null,
+      "nonprofitCount": 0
+    }
+  },
+  "GET /api/search?q=youth": {
+    "status": 200,
+    "body": {
+      "query": "youth",
+      "businessCount": 0,
+      "serviceCount": 0,
+      "productCount": 0,
+      "hasMatchExplanations": true,
+      "hits": [
+        {
+          "kind": "nonprofit",
+          "name": "Bread & Bridges",
+          "slug": "bread-and-bridges",
+          "productSlug": null,
+          "businessName": "Bread & Bridges",
+          "categorySlug": "non-profits",
+          "explanation": {
+            "text": "Matches youth in who it serves",
+            "highlights": [
+              {
+                "start": 8,
+                "length": 5
+              }
+            ]
+          },
+          "space": null
+        },
+        {
+          "kind": "nonprofit",
+          "name": "Lakeshore Youth Collective",
+          "slug": "lakeshore-youth-collective",
+          "productSlug": null,
+          "businessName": "Lakeshore Youth Collective",
+          "categorySlug": "non-profits",
+          "explanation": {
+            "text": "Matches youth in name, tagline and its mission",
+            "highlights": [
+              {
+                "start": 8,
+                "length": 5
+              }
+            ]
+          },
+          "space": null
+        }
+      ],
+      "suggestion": null,
+      "nonprofitCount": 2
     }
   },
   "GET /api/session": {
@@ -4393,11 +4788,19 @@
     "status": 204,
     "body": null
   },
+  "POST /api/listings/bread-and-bridges/views": {
+    "status": 204,
+    "body": null
+  },
   "POST /api/listings/deeks-insurance/views": {
     "status": 204,
     "body": null
   },
   "POST /api/listings/east-york-roommate/views": {
+    "status": 204,
+    "body": null
+  },
+  "POST /api/listings/hope-house-toronto/views": {
     "status": 204,
     "body": null
   },

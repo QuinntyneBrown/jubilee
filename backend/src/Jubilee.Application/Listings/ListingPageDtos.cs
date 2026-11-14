@@ -111,6 +111,36 @@ public sealed record PlatformPageDto(string? Website, string? Host, string Does,
 }
 
 /// <summary>
+/// What the page of a non-profit shows (L2-291): its own words, its website and its page for giving, the two
+/// addresses the links out go to. Each address is given only while it passes <see cref="WebAddressRules.IsWebAddress"/>;
+/// otherwise it and its host are null and the page links nowhere for it (L2-292 AC5). Nothing here requests either.
+/// </summary>
+public sealed record NonprofitPageDto(
+    string? Website, string? Host, string? GiveUrl, string? GiveHost, string Mission, string Serves, string Area)
+{
+    public static NonprofitPageDto? From(Listing listing)
+    {
+        if (listing.Kind != ListingKind.Nonprofit || listing.Nonprofit is not { } nonprofit)
+        {
+            return null;
+        }
+
+        var website = Linkable(listing.Website);
+        var give = Linkable(nonprofit.GiveUrl);
+        return new NonprofitPageDto(
+            website,
+            website is null ? null : WebAddressRules.Host(website),
+            give,
+            give is null ? null : WebAddressRules.Host(give),
+            nonprofit.Mission,
+            nonprofit.Serves,
+            nonprofit.Area);
+
+        static string? Linkable(string? address) => WebAddressRules.IsWebAddress(address) ? address!.Trim() : null;
+    }
+}
+
+/// <summary>
 /// One photo of a listing as its public page shows it (L2-221): the key of its renditions under <c>/media</c>, its
 /// alt text, and the size of the original, which says how wide each rendition really is.
 /// </summary>
@@ -149,4 +179,7 @@ public sealed record ListingPageDto(
 
     /// <summary>The founder's words and the link out of a software platform; null for every other kind (L2-254 AC9).</summary>
     public PlatformPageDto? Platform { get; init; }
+
+    /// <summary>The non-profit's words and links out; null for every other kind (L2-291 AC10).</summary>
+    public NonprofitPageDto? Nonprofit { get; init; }
 }

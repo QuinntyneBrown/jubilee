@@ -140,8 +140,7 @@
       >
         @if (shown().length === 0) {
           <p class="text-caption" style="margin-top: var(--space-4)">
-            Nothing in {{ store.tab() === 'business' ? 'businesses' : store.tab() + 's' }} matches
-            “{{ results.query }}”.
+            Nothing in {{ groupWords(store.tab()) }} matches “{{ results.query }}”.
           </p>
         } @else {
           @if (spaces().length > 0) {
@@ -173,13 +172,13 @@
                     tabindex="-1"
                     aria-hidden="true"
                   >
-                    <div jb-media-tile tint="ink" [icon]="icon(hit)"></div>
+                    <div jb-media-tile [tint]="tint(hit)" [icon]="icon(hit)"></div>
                   </a>
 
                   <a jb-row-title [routerLink]="link(hit)">{{ hit.name }}</a>
                   <div jb-row-meta>
                     {{ categoryName(hit.categorySlug) }}
-                    @if (hit.kind !== 'business') {
+                    @if (hit.kind !== 'business' && hit.kind !== 'nonprofit') {
                       · {{ hit.businessName }}
                     }
                     @if (hit.explanation; as explanation) {

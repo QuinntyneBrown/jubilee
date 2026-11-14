@@ -28,6 +28,12 @@ export type StubName =
   | 'platform-no-website'
   | 'rooms-empty'
   | 'platforms-empty'
+  | 'nonprofits-empty'
+  | 'nonprofit-owner'
+  | 'nonprofit-preview'
+  | 'nonprofit-loading'
+  | 'nonprofit-error'
+  | 'nonprofit-no-giving'
   | 'business-loading'
   | 'business-retrying'
   | 'business-empty'
@@ -834,6 +840,30 @@ export const routes = {
     who: 'member',
     stub: 'category-error',
   },
+  // Non-profits (L2-289): business cards, a sort and no filters.
+  'category.non-profits': {
+    app: '/c/non-profits',
+    mock: 'pages/category/non-profits.html',
+    who: 'member',
+  },
+  'category.non-profits-empty': {
+    app: '/c/non-profits',
+    mock: 'pages/category/non-profits-empty.html',
+    who: 'member',
+    stub: 'nonprofits-empty',
+  },
+  'category.non-profits-loading': {
+    app: '/c/non-profits',
+    mock: 'pages/category/non-profits-loading.html',
+    who: 'member',
+    stub: 'category-loading',
+  },
+  'category.non-profits-error': {
+    app: '/c/non-profits',
+    mock: 'pages/category/non-profits-error.html',
+    who: 'member',
+    stub: 'category-error',
+  },
   'category.loading': {
     app: '/c/home-property',
     mock: 'pages/category/loading.html',
@@ -1030,6 +1060,53 @@ export const routes = {
     who: 'member',
     stub: 'platform-no-website',
   },
+  // The page of a non-profit (L2-291): Hope House Toronto, from the seeded non-profits.
+  nonprofit: { app: '/b/hope-house-toronto', mock: 'pages/nonprofit/default.html', who: 'member' },
+  // Bread & Bridges gives no page for giving: "Visit {host}" is the main action (L2-291 AC2).
+  'nonprofit.website-only': {
+    app: '/b/bread-and-bridges',
+    mock: 'pages/nonprofit/website-only.html',
+    who: 'member',
+  },
+  'nonprofit.signed-out': {
+    app: '/b/hope-house-toronto',
+    mock: 'pages/nonprofit/signed-out.html',
+    who: 'visitor',
+  },
+  'nonprofit.owner': {
+    app: '/b/hope-house-toronto',
+    mock: 'pages/nonprofit/owner.html',
+    who: 'member',
+    stub: 'nonprofit-owner',
+  },
+  'nonprofit.preview': {
+    app: '/b/hope-house-toronto',
+    mock: 'pages/nonprofit/preview.html',
+    who: 'member',
+    stub: 'nonprofit-preview',
+  },
+  // Opened from Non-profits, so the page knows it is loading or failed to load a non-profit.
+  'nonprofit.loading': {
+    app: '/b/hope-house-toronto',
+    mock: 'pages/nonprofit/loading.html',
+    who: 'member',
+    stub: 'nonprofit-loading',
+    via: '/c/non-profits',
+  },
+  'nonprofit.error': {
+    app: '/b/hope-house-toronto',
+    mock: 'pages/nonprofit/error.html',
+    who: 'member',
+    stub: 'nonprofit-error',
+    via: '/c/non-profits',
+  },
+  // A stored page for giving the rules refuse: no "Give on" and no row (L2-292 AC5). No mock draws it.
+  'nonprofit.no-giving': {
+    app: '/b/hope-house-toronto',
+    mock: 'pages/nonprofit/website-only.html',
+    who: 'member',
+    stub: 'nonprofit-no-giving',
+  },
   'space.short-stay': {
     app: '/b/roncesvalles-guest-suite',
     mock: 'pages/space/short-stay.html',
@@ -1168,6 +1245,12 @@ export const routes = {
   'search.platforms': {
     app: '/search?q=reading',
     mock: 'pages/search/platforms.html',
+    who: 'member',
+  },
+  // Non-profits found by their own words, in a tab of their own (L2-290 AC2).
+  'search.non-profits': {
+    app: '/search?q=youth',
+    mock: 'pages/search/non-profits.html',
     who: 'member',
   },
   'search.no-results': {

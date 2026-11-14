@@ -1,0 +1,58 @@
+@startuml
+title UML sequence behaviour: Open the Non-profits category page
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Visitor or member" as actor
+box "Frontend: Jubilee Web" #E0F2FE
+  participant "CategoryPage" as page
+  participant "DirectoryApi" as client
+end box
+box "Backend: Jubilee API" #D1FADF
+  participant "CategoriesController" as controller
+end box
+box "Backend: Jubilee Application and Domain" #ECFDF3
+  participant "GetCategoryListingsQueryHandler" as handler
+  participant "IDirectoryReadCache" as cache
+end box
+box "Backend: Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+actor -> page : Open /c/non-profits?offers=free-quote&sort=newest
+page --> actor : Card skeletons (L2-289 AC7)
+page -> client : getCategory(non-profits, sort newest, page 1)
+client -> controller : GET /api/categories/non-profits/listings?offers=free-quote&sort=newest
+controller -> handler : Send GetCategoryListingsQuery
+handler -> handler : Category is NonprofitsSlug: drop offers and areas (L2-289 AC4)
+handler -> cache : Get the page keyed by slug, sort and page
+alt Cached
+  cache --> handler : CategoryPageResult
+else Not cached
+  handler -> db : Public listings of non-profits (L2-028)
+  db --> handler : Non-profits
+  handler -> handler : Sort (L2-025), 16 a page (L2-026), BusinessCardDto.From each
+  handler -> cache : Store for 60 s (L2-156)
+end
+handler --> controller : CategoryPageResult with Businesses, Fact null, no filters
+controller --> client : 200 OK
+alt Load fails
+  client --> page : Error
+  page --> actor : "We couldn't load this category" with JB-CAT-503 (L2-118, L2-289 AC7)
+else No live non-profit
+  page --> actor : "No non-profit is listed here yet", "List a non-profit", "Browse other categories" (L2-289 AC6)
+else Non-profits
+  page --> actor : "Browse / Non-profits", "{n} non-profits", Sort, business cards, no chips and no "Filters" (L2-289 AC3)
+  page --> actor : "Lead a Christian non-profit in Toronto?" with "List a non-profit" to /list?kind=nonprofit (L2-289 AC5)
+end
+@enduml

@@ -267,6 +267,52 @@ internal static class DemoCatalogue
             "$12 a month after a 30-day trial."),
     ];
 
+    /// <summary>
+    /// A non-profit in "Non-profits" (L2-285): its leader, its website, its page for giving when it has one and what
+    /// it says of itself. Every one is invented, on an <c>.example</c> address; no real organisation is seeded (ADR 0074).
+    /// </summary>
+    internal sealed record DemoNonprofit(
+        string Slug, string Name, string Tagline, string? Highlight, string Leader, string Website, string? GiveUrl,
+        string Mission, string Serves, string Area);
+
+    /// <summary>The live non-profits of the design's sample data.</summary>
+    internal static readonly DemoNonprofit[] Nonprofits =
+    [
+        new(
+            "hope-house-toronto",
+            "Hope House Toronto",
+            "Meals, beds and friendship for men leaving the shelter system.",
+            "Volunteers welcome",
+            "Grace Adeyemi",
+            "https://hopehouse.example",
+            "https://hopehouse.example/give",
+            "Hope House is a home in Moss Park for up to eight men at a time as they leave the shelter system. We cook and eat together every night, help each man find work and a place of his own, and stay his friends after he moves on. We do it because Jesus welcomed us first.",
+            "Men aged 18 and over moving out of Toronto’s shelters.",
+            "Moss Park and Regent Park"),
+        new(
+            "bread-and-bridges",
+            "Bread & Bridges",
+            "A church-run food bank open to every neighbour in Weston.",
+            "Open Saturdays",
+            "Daniel Fraser",
+            "https://breadandbridges.example",
+            null,
+            "Every Saturday morning our church opens its hall as a food bank. Anyone may come and no one is asked why. We pack groceries, pour coffee, sit with whoever wants to talk and pray with anyone who asks.",
+            "Families, seniors, youth and newcomers in Weston and Mount Dennis.",
+            "Weston and Mount Dennis"),
+        new(
+            "lakeshore-youth-collective",
+            "Lakeshore Youth Collective",
+            "Youth nights, mentoring and summer camp for teens in south Etobicoke.",
+            null,
+            "Marcus Bell",
+            "https://lakeshoreyouth.example",
+            "https://lakeshoreyouth.example/give",
+            "Every Friday we open a youth night with games, food and a short talk about Jesus. Mentors meet teens one to one through the school year, and each summer we take them to camp.",
+            "Teens aged 13 to 18 in south Etobicoke and their families.",
+            "Mimico, New Toronto and Long Branch"),
+    ];
+
     /// <summary>"Featured this week", positions 1 to 5.</summary>
     internal static readonly string[] FeaturedSlugs =
     [

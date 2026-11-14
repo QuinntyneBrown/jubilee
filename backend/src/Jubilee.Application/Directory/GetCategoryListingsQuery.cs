@@ -48,8 +48,9 @@ public sealed class GetCategoryListingsQueryHandler(IAppDbContext db, IDirectory
             return await BuildSpacesAsync(category, request, cancellationToken);
         }
 
-        // A software platform has no offers and serves no area: its category has no filters and no fact (L2-252 AC3).
-        var platforms = category.Slug == Category.PlatformsSlug;
+        // A software platform or a non-profit has no offers and serves no area: its category has no filters
+        // and no fact (L2-252 AC3, L2-289 AC4).
+        var platforms = category.Slug is Category.PlatformsSlug or Category.NonprofitsSlug;
         var filters = platforms ? CategoryFilterSet.Empty : request.Filters;
 
         var inCategory = CategoryQueries.PublicListingsIn(db, category);

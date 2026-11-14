@@ -4,7 +4,7 @@
       <div jb-empty-state icon="check" [heading]="done.name + ' is live'" [level]="1">
         @if (done.kind === 'space') {
           Renters can find it in {{ publishedIn() }} now.
-        } @else if (done.kind === 'platform') {
+        } @else if (done.kind === 'platform' || done.kind === 'nonprofit') {
           Members can find it in {{ publishedIn() }} now.
         } @else {
           Members can find you in {{ publishedIn() }} now.
@@ -13,7 +13,7 @@
           >View public listing</a
         >
         <a slot="actions" jb-button routerLink="/my-business">Go to My business</a>
-        @if (done.kind !== 'space' && done.kind !== 'platform') {
+        @if (done.kind !== 'space' && done.kind !== 'platform' && done.kind !== 'nonprofit') {
           <a slot="actions" jb-button routerLink="/my-business">
             {{ done.kind === 'services' ? 'Add more services' : 'Add more products' }}
           </a>
@@ -63,10 +63,7 @@
     <div class="split" style="margin-top: var(--space-6)">
       <div>
         <h1>{{ heading() }}</h1>
-        <p class="subtitle" style="margin-bottom: var(--space-6)">
-          Free for Christian-owned businesses in Toronto. Your listing goes live as soon as you
-          publish it.
-        </p>
+        <p class="subtitle" style="margin-bottom: var(--space-6)">{{ subtitle() }}</p>
         @if (loading()) {
           <p class="visually-hidden" role="status">Loading your draft…</p>
           <div class="form" aria-hidden="true">
@@ -147,6 +144,15 @@
                   (selected)="setKind('platform')"
                   >An app or tool people use online.</jb-choice-card
                 >
+                <jb-choice-card
+                  name="offer"
+                  controlId="offer-n"
+                  icon="hands"
+                  heading="A non-profit"
+                  [checked]="kind() === 'nonprofit'"
+                  (selected)="setKind('nonprofit')"
+                  >A ministry or charity at work in Toronto.</jb-choice-card
+                >
               </jb-choice-cards>
               <p jb-field-help style="margin-top: var(--space-2)">
                 Offer both? Pick the main one now and add the other once you’re live.
@@ -155,12 +161,18 @@
             <div
               jb-field
               [label]="
-                isSpace() ? 'Listing title' : isPlatform() ? 'Platform name' : 'Business name'
+                isSpace()
+                  ? 'Listing title'
+                  : isPlatform()
+                    ? 'Platform name'
+                    : isNonprofit()
+                      ? 'Non-profit name'
+                      : 'Business name'
               "
               [hint]="
                 isSpace()
                   ? 'Say what it is and where: “Furnished room in Leslieville”.'
-                  : isPlatform()
+                  : isOwnCategory()
                     ? 'The name people know it by.'
                     : null
               "
@@ -184,7 +196,7 @@
               [label]="
                 isSpace()
                   ? 'One line renters should know'
-                  : isPlatform()
+                  : isOwnCategory()
                     ? 'One line on what it does'
                     : 'One line on what you do'
               "
@@ -208,7 +220,119 @@
                 (ngModelChange)="tagline.set($event); clear('tagline'); touched()"
               />
             </div>
-            @if (isPlatform()) {
+            @if (isNonprofit()) {
+              <div
+                jb-field
+                label="Website"
+                hint="Its own website. It starts with https://."
+                controlId="website"
+                required
+                [error]="errors().website"
+              >
+                <input
+                  jb-input
+                  name="website"
+                  type="url"
+                  inputmode="url"
+                  autocomplete="url"
+                  [attr.maxlength]="websiteMax"
+                  required
+                  [readOnly]="busy()"
+                  [ngModel]="website()"
+                  (ngModelChange)="website.set($event); clear('website'); touched()"
+                />
+              </div>
+              <div
+                jb-field
+                label="Its mission"
+                hint="In its own words. What work does it do, and why?"
+                controlId="mission"
+                required
+                [counter]="mission().length + ' / ' + missionMax"
+                [error]="errors().mission"
+              >
+                <textarea
+                  jb-textarea
+                  name="mission"
+                  rows="4"
+                  [attr.maxlength]="missionMax"
+                  required
+                  [readOnly]="busy()"
+                  [ngModel]="mission()"
+                  (ngModelChange)="mission.set($event); clear('mission'); touched()"
+                ></textarea>
+              </div>
+              <div
+                jb-field
+                label="Who it serves"
+                hint="Like “Young people aged 12 to 18 in Scarborough”."
+                controlId="serves"
+                required
+                [counter]="serves().length + ' / ' + servesMax"
+                [error]="errors().serves"
+              >
+                <input
+                  jb-input
+                  name="serves"
+                  type="text"
+                  [attr.maxlength]="servesMax"
+                  required
+                  [readOnly]="busy()"
+                  [ngModel]="serves()"
+                  (ngModelChange)="serves.set($event); clear('serves'); touched()"
+                />
+              </div>
+              <div
+                jb-field
+                label="Where in Toronto it works"
+                hint="Like “Regent Park and Moss Park” or “Across Toronto”."
+                controlId="area"
+                required
+                [counter]="area().length + ' / ' + areaMax"
+                [error]="errors().area"
+              >
+                <input
+                  jb-input
+                  name="area"
+                  type="text"
+                  [attr.maxlength]="areaMax"
+                  required
+                  [readOnly]="busy()"
+                  [ngModel]="area()"
+                  (ngModelChange)="area.set($event); clear('area'); touched()"
+                />
+              </div>
+              <div
+                jb-field
+                label="Page for giving"
+                optional
+                hint="Its own page where people give, if it has one. It starts with https://."
+                controlId="give"
+                [error]="errors().giveUrl"
+              >
+                <input
+                  jb-input
+                  name="give"
+                  type="url"
+                  inputmode="url"
+                  [attr.maxlength]="giveMax"
+                  [readOnly]="busy()"
+                  [ngModel]="giveUrl()"
+                  (ngModelChange)="giveUrl.set($event); clear('giveUrl'); touched()"
+                />
+              </div>
+              <ng-container [ngTemplateOutlet]="highlightField" />
+              <p jb-field-help id="nonprofit-note">
+                Gifts go straight to the non-profit, on its own website. Jubilee takes no gift and
+                no payment.
+              </p>
+              <fieldset>
+                <legend>Photos</legend>
+                <p jb-field-help>
+                  Add photos from My business once you publish. The first photo is your cover.
+                </p>
+              </fieldset>
+            } @else if (isPlatform()) {
               <div
                 jb-field
                 label="Web address"
@@ -631,7 +755,7 @@
           {{
             isSpace()
               ? 'How renters see it'
-              : isPlatform()
+              : isOwnCategory()
                 ? 'How members see it'
                 : 'How members see you'
           }}
@@ -641,13 +765,21 @@
         } @else {
           <div
             jb-business-card-preview
-            [name]="name() || (isPlatform() ? 'Your platform’s name' : 'Your business name')"
+            [name]="
+              name() ||
+              (isPlatform()
+                ? 'Your platform’s name'
+                : isNonprofit()
+                  ? 'Its name'
+                  : 'Your business name')
+            "
             [tagline]="
-              tagline() || (isPlatform() ? 'One line on what it does' : 'One line on what you do')
+              tagline() ||
+              (isOwnCategory() ? 'One line on what it does' : 'One line on what you do')
             "
             [tint]="tile().tint"
             [icon]="tile().icon"
-            [tag]="isPlatform() ? tile().label : isServices() ? 'Business' : 'Shop'"
+            [tag]="isOwnCategory() ? tile().label : isServices() ? 'Business' : 'Shop'"
             [highlight]="highlight().trim()"
           ></div>
         }

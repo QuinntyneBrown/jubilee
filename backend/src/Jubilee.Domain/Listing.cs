@@ -121,7 +121,7 @@ public sealed class Listing
     {
         if (Category.Find(categorySlug) is null)
         {
-            throw new ArgumentException($"'{categorySlug}' is not one of the twelve categories.", nameof(categorySlug));
+            throw new ArgumentException($"'{categorySlug}' is not one of the thirteen categories.", nameof(categorySlug));
         }
 
         return new Listing
@@ -268,6 +268,21 @@ public sealed class Listing
         }
 
         Platform = details;
+        Website = Clean(website);
+    }
+
+    /// <summary>What a non-profit says of itself; null for every other kind (L2-287).</summary>
+    public NonprofitDetails? Nonprofit { get; private set; }
+
+    /// <summary>Replaces the details and the website of a non-profit (L2-287, L2-294).</summary>
+    public void DescribeNonprofit(NonprofitDetails details, string? website)
+    {
+        if (Kind != ListingKind.Nonprofit)
+        {
+            throw new InvalidOperationException("Only a non-profit has non-profit details.");
+        }
+
+        Nonprofit = details;
         Website = Clean(website);
     }
 

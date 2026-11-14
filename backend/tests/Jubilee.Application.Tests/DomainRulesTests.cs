@@ -275,7 +275,7 @@ public class ListingLifecycleTests
 public class CategoryCatalogueTests
 {
     [Fact]
-    public void L2_023_AC5_L2_197_AC4_L2_248_AC2_the_twelve_categories_are_fixed_and_ordered()
+    public void L2_023_AC5_L2_197_AC4_L2_248_AC2_L2_285_AC2_the_thirteen_categories_are_fixed_and_ordered()
     {
         Assert.Equal(
             [
@@ -291,6 +291,7 @@ public class CategoryCatalogueTests
                 ("media", "Media"),
                 ("community", "Community"),
                 ("software-platforms", "Software platforms"),
+                ("non-profits", "Non-profits"),
             ],
             Category.All.Select(c => (c.Slug, c.Name)));
     }

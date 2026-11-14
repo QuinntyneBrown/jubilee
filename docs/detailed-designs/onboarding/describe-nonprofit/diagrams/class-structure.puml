@@ -1,0 +1,134 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure: Describe a non-profit
+
+enum ListingKind {
+  Services
+  Shop
+  Space
+  Platform
+  Nonprofit = 4
+}
+
+class Category <<record>> {
+  +{static} NonprofitsSlug: string = "non-profits"
+  +{static} KindOf(slug: string): ListingKind
+}
+
+class NonprofitDetails <<owned record, JSON column Nonprofit>> {
+  +{static} MaxMissionLength: int = 600
+  +{static} MaxServesLength: int = 300
+  +{static} MaxAreaLength: int = 120
+  +{static} MaxGiveUrlLength: int = 200
+  +string Mission
+  +string Serves
+  +string Area
+  +string? GiveUrl
+  +{static} Create(mission, serves, area, giveUrl): NonprofitDetails
+}
+
+class WebAddressRules <<static>> {
+  +{static} MaxWebsiteLength: int = 200
+  +{static} IsWebAddress(value: string?): bool
+  +{static} Host(value: string): string
+}
+
+class PlatformRules <<static>> {
+  +{static} IsWebAddress(value: string?): bool
+  +{static} Host(value: string): string
+}
+
+class ListingDraft {
+  +Guid Id
+  +string OwnerSubject
+  +ListingKind Kind
+  +string Name
+  +string Tagline
+  +string? Highlight
+  +string? Website
+  +NonprofitDetails? Nonprofit
+  +bool Agreed
+  +Save(...)
+}
+
+class Listing {
+  +string Slug
+  +string Name
+  +string Tagline
+  +string CategorySlug
+  +ListingKind Kind
+  +string? Website
+  +NonprofitDetails? Nonprofit
+  +DescribeNonprofit(details: NonprofitDetails, website: string?)
+  +Publish(now: DateTimeOffset)
+}
+
+class NonprofitInput <<record>> {
+  +string? Website
+  +string? Mission
+  +string? Serves
+  +string? Area
+  +string? GiveUrl
+}
+
+class DraftInput <<record>> {
+  +string? Kind
+  +string? Name
+  +string? Tagline
+  +string? Highlight
+  +bool Agreed
+  +SpaceInput? Space
+  +PlatformInput? Platform
+  +NonprofitInput? Nonprofit
+}
+
+class NonprofitDraftDto <<record>> {
+  +string? Website
+  +string? Mission
+  +string? Serves
+  +string? Area
+  +string? GiveUrl
+}
+
+class ListingDraftDto <<record>> {
+  +Guid Id
+  +string Kind
+  +SpaceDraftDto? Space
+  +PlatformDraftDto? Platform
+  +NonprofitDraftDto? Nonprofit
+}
+
+class Drafts <<static>> {
+  +{static} KindOf(kind: string?): ListingKind
+  +{static} ValidateNonprofit(nonprofit: NonprofitInput?, errors)
+}
+
+class PublishListingCommandHandler {
+  +Handle(command: PublishListingCommand): PublishedListingDto
+}
+
+ListingDraft *-- "0..1" NonprofitDetails
+Listing *-- "0..1" NonprofitDetails
+ListingDraft --> ListingKind
+Listing --> ListingKind
+Category ..> ListingKind : KindOf derives Nonprofit
+DraftInput *-- "0..1" NonprofitInput
+ListingDraftDto *-- "0..1" NonprofitDraftDto
+Drafts ..> NonprofitInput : validates
+Drafts ..> WebAddressRules : IsWebAddress for website and giveUrl
+PlatformRules ..> WebAddressRules : forwards to
+PublishListingCommandHandler ..> Drafts : ValidateNonprofit
+PublishListingCommandHandler ..> Listing : creates in NonprofitsSlug, DescribeNonprofit, Publish
+PublishListingCommandHandler ..> ListingDraft : keeps on 422, removes on success
+@enduml

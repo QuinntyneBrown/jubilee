@@ -28,6 +28,7 @@ public sealed class DatabaseSearchIndex(IAppDbContext db) : ISearchIndex
         var businessHits = new List<SearchHit>();
         var serviceHits = new List<SearchHit>();
         var productHits = new List<SearchHit>();
+        var nonprofitHits = new List<SearchHit>();
         foreach (var listing in listings.OrderByDescending(l => l.RecommendedScore).ThenBy(l => l.SortName))
         {
             var matchedServices = services[listing.Id].Where(s => Matches(stems, s.Name, s.Detail)).OrderBy(s => s.Position).ToList();
@@ -83,6 +84,25 @@ public sealed class DatabaseSearchIndex(IAppDbContext db) : ISearchIndex
                 }
             }
 
+            // A non-profit is found by its own words; never by its website or its page for giving (L2-290 AC2).
+            if (listing.Nonprofit is { } nonprofit)
+            {
+                if (Matches(stems, nonprofit.Mission))
+                {
+                    fields.Add(("its mission", nonprofit.Mission));
+                }
+
+                if (Matches(stems, nonprofit.Serves))
+                {
+                    fields.Add(("who it serves", nonprofit.Serves));
+                }
+
+                if (Matches(stems, nonprofit.Area))
+                {
+                    fields.Add(("where it works", nonprofit.Area));
+                }
+            }
+
             if (matchedServices.Count > 0)
             {
                 fields.Add((Count(matchedServices.Count, "service"), matchedServices[0].Name));
@@ -93,7 +113,13 @@ public sealed class DatabaseSearchIndex(IAppDbContext db) : ISearchIndex
                 fields.Add((Count(matchedProducts.Count, "product"), matchedProducts[0].Name));
             }
 
-            if (fields.Count > 0)
+            if (fields.Count > 0 && listing.Kind == ListingKind.Nonprofit)
+            {
+                nonprofitHits.Add(new SearchHit(
+                    SearchResultKind.Nonprofit, listing.Name, listing.Slug, null, listing.Name, listing.CategorySlug,
+                    Explain(stems, fields.Select(f => f.Source), fields.Select(f => f.Label))));
+            }
+            else if (fields.Count > 0)
             {
                 businessHits.Add(new SearchHit(
                     SearchResultKind.Business, listing.Name, listing.Slug, null, listing.Name, listing.CategorySlug,
@@ -114,9 +140,10 @@ public sealed class DatabaseSearchIndex(IAppDbContext db) : ISearchIndex
             .. businessHits.Take(HitsPerKind),
             .. serviceHits.Take(HitsPerKind),
             .. productHits.Take(HitsPerKind),
+            .. nonprofitHits.Take(HitsPerKind),
         ];
         var suggestion = hits.Count == 0 ? Suggest(query, listings, services, products) : null;
-        return new SearchResults(query, businessHits.Count, serviceHits.Count, productHits.Count, true, hits, suggestion);
+        return new SearchResults(query, businessHits.Count, serviceHits.Count, productHits.Count, true, hits, suggestion, nonprofitHits.Count);
     }
 
     private static bool Matches(IReadOnlyList<string> stems, params string?[] texts) =>

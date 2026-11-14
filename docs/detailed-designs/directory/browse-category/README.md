@@ -111,6 +111,19 @@ gains `Spaces` (`SpaceCardDto`) and `Term`. Spaces are newest first and paged
 16 at a time. The page is part of the feature
 [Browse spaces](../browse-spaces/README.md) (ADR 0042).
 
+### Non-profits
+
+`/c/non-profits` reuses the branch of "Software platforms": business cards
+with "Sort" and paging, and no offers, no areas, no "Filters" and no category
+fact. The count reads "{n} non-profits" ("1 non-profit").
+`GetCategoryListingsQueryHandler` replaces the filters with the empty
+`CategoryFilterSet` for `Category.NonprofitsSlug` as for `PlatformsSlug`, so
+`offers=` and `areas=` are ignored and `sort=` and `page=` apply. The page
+ends with "Lead a Christian non-profit in Toronto?" and "List a non-profit"
+(to `/list?kind=nonprofit`), and with no live non-profit it shows "No
+non-profit is listed here yet". The page is part of the feature
+[Browse non-profits](../browse-nonprofits/README.md) (ADR 0074).
+
 ## Requirements
 
 The feature realizes the following level-2 (L2) requirements. Each L2
@@ -126,6 +139,7 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 | `L2-113` | `L1-016` | An unknown URL, a removed listing or a resource the user may not know exists shall produce a 404 response and the not-found page. |
 | `L2-118` | `L1-016` | Every load-error state shall show a reference that the user can quote to support. |
 | `L2-202` | `L1-028` | `/c/rooms-rentals` shall list the space cards newest first, 16 to a page, filtered by the term carried in the URL, without the business filters or "Sort", and shall end with "List a space". |
+| `L2-289` | `L1-035` | `/c/non-profits` shall list the non-profits as business cards, 16 to a page, with "Sort" and without the offers, the areas, "Filters" or the category fact, ignore `offers=` and `areas=`, end with "List a non-profit", and show its empty, loading and failed states. |
 
 ## Diagrams
 

@@ -9,8 +9,9 @@ export interface Category extends CategoryLink {
 }
 
 /**
- * The twelve categories, in their fixed order (L2-023). "Rooms & rentals" lists spaces, not
- * businesses (L2-197), and "Software platforms" lists platforms (L2-248). They never change at run time, so pages
+ * The thirteen categories, in their fixed order (L2-023). "Rooms & rentals" lists spaces, not
+ * businesses (L2-197), "Software platforms" lists platforms (L2-248) and "Non-profits" lists
+ * non-profits (L2-285). They never change at run time, so pages
  * can render the category links before any request has answered.
  */
 export const CATEGORIES: readonly Category[] = [
@@ -85,5 +86,11 @@ export const CATEGORIES: readonly Category[] = [
     name: 'Software platforms',
     blurb: 'Apps and online tools built by Christian founders in Toronto.',
     trades: 'founder',
+  },
+  {
+    slug: 'non-profits',
+    name: 'Non-profits',
+    blurb: 'Ministries and charities at work across Toronto.',
+    trades: 'ministry or charity',
   },
 ];

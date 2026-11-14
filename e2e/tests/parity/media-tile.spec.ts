@@ -2,7 +2,8 @@ import { parity } from '../../fixtures/parity';
 import { BrowsePage } from '../../pages/browse.page';
 import { BusinessPage } from '../../pages/business.page';
 
-// jb-media-tile: the tinted tile of a business with its tag and the square tile of a product.
+// jb-media-tile: the tinted tile of a business with its tag, the green tile of a non-profit and the
+// square tile of a product.
 // The thumb beside a product's name is not compared: the mock gives each product its own icon
 // and the recorded answers give them all the same one.
 parity('media-tile', {
@@ -12,6 +13,13 @@ parity('media-tile', {
       route: 'browse',
       screen: (page) => new BrowsePage(page),
       region: (screen: BrowsePage) => screen.featuredCard(1).mediaTile,
+    },
+    {
+      // The green tile of a non-profit, with the hands icon (L2-289 AC1).
+      name: 'nonprofit',
+      route: 'browse',
+      screen: (page) => new BrowsePage(page),
+      region: (screen: BrowsePage) => screen.nonprofitCard(0).mediaTile,
     },
     {
       name: 'square',

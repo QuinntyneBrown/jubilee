@@ -77,7 +77,8 @@ public sealed record AdminListingDto(
     AdminTakedownDto? TakenDown,
     AdminListingSpace? Space = null,
     AdminListingPlatform? Platform = null,
-    string? Highlight = null);
+    string? Highlight = null,
+    AdminListingNonprofit? Nonprofit = null);
 
 /// <summary>
 /// What the Jubilee team reads of a software platform (L2-257 AC2): the address as its founder typed it, the same
@@ -94,6 +95,26 @@ public sealed record AdminListingPlatform(string Address, string? Website, strin
                 platform.Does,
                 platform.For,
                 platform.Pricing);
+}
+
+/// <summary>
+/// What the Jubilee team reads of a non-profit (L2-295 AC2): each address as its leader typed it, the same address as
+/// a link only when it passes the rule of L2-287 AC4, and the non-profit's own words. Nothing here requests either.
+/// </summary>
+public sealed record AdminListingNonprofit(
+    string Address, string? Website, string GiveAddress, string? GiveUrl, string Mission, string Serves, string Area)
+{
+    public static AdminListingNonprofit? From(Listing listing) =>
+        listing.Kind != ListingKind.Nonprofit || listing.Nonprofit is not { } nonprofit
+            ? null
+            : new AdminListingNonprofit(
+                listing.Website ?? string.Empty,
+                WebAddressRules.IsWebAddress(listing.Website) ? listing.Website!.Trim() : null,
+                nonprofit.GiveUrl ?? string.Empty,
+                WebAddressRules.IsWebAddress(nonprofit.GiveUrl) ? nonprofit.GiveUrl!.Trim() : null,
+                nonprofit.Mission,
+                nonprofit.Serves,
+                nonprofit.Area);
 }
 
 /// <summary>What the Jubilee team reads of a space: every field but its exact address (L2-200 AC3).</summary>
@@ -201,7 +222,8 @@ internal static class AdminListings
             listing.TakenDownAt is { } at ? new AdminTakedownDto(at, listing.TakenDownByName ?? "The Jubilee team", listing.TakedownReason ?? string.Empty) : null,
             listing.Space is null ? null : AdminListingSpace.From(listing.Space),
             AdminListingPlatform.From(listing),
-            listing.Highlight);
+            listing.Highlight,
+            AdminListingNonprofit.From(listing));
     }
 }
 

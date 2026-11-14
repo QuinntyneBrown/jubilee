@@ -22,6 +22,19 @@ import {
   platformSummary,
 } from '../../services/platform-form';
 import {
+  AREA_MAX,
+  GIVE_MAX,
+  MISSION_MAX,
+  NONPROFIT_FIELDS,
+  NONPROFIT_NAME_MESSAGE,
+  NONPROFIT_NAME_SUMMARY,
+  NONPROFIT_TAGLINE_MESSAGE,
+  SERVES_MAX,
+  checkNonprofit,
+  nonprofitMessage,
+  nonprofitSummary,
+} from '../../services/nonprofit-form';
+import {
   CATEGORIES,
   DraftItem,
   LISTING_DRAFTS_API,
@@ -94,6 +107,10 @@ type FieldName =
   | 'does'
   | 'for'
   | 'pricing'
+  | 'mission'
+  | 'serves'
+  | 'area'
+  | 'giveUrl'
   | 'agreed';
 
 /** The element each field's summary link and first-invalid focus go to. */
@@ -110,6 +127,11 @@ const FIELD_ID: Record<FieldName, string> = {
   does: 'does',
   for: 'for',
   pricing: 'pricing',
+  mission: 'mission',
+  serves: 'serves',
+  // A space's neighbourhood and a non-profit's area are never on one form together.
+  area: 'area',
+  giveUrl: 'give',
   agreed: 'agree',
 };
 
@@ -126,6 +148,10 @@ const FIELD_ORDER: FieldName[] = [
   'does',
   'for',
   'pricing',
+  'mission',
+  'serves',
+  'area',
+  'giveUrl',
   'agreed',
 ];
 const AUTOSAVE_MS = 10_000;
@@ -135,12 +161,10 @@ const TAGLINE_MAX = 90;
 /** The green line of the card, as in the listing editor (L2-072 AC7, L2-087). */
 const HIGHLIGHT_MAX = 30;
 /** FieldName-level wording (L2-071 to L2-079). Codes come from the server or from the same checks here. */
-export function messageFor(
-  field: FieldName,
-  code: string,
-  space = false,
-  platform = false,
-): string {
+export function messageFor(field: FieldName, code: string, kind: OfferKind): string {
+  const space = kind === 'space';
+  const platform = kind === 'platform';
+  const nonprofit = kind === 'nonprofit';
   if (code.startsWith('TOO_LONG')) {
     const n = code.split(':')[1] ?? '';
     return `Shorten this to ${TAGLINE_MAX} characters. It has ${n}.`;
@@ -148,13 +172,21 @@ export function messageFor(
   switch (field) {
     case 'name':
       if (platform) return 'Enter the name people know your platform by.';
+      if (nonprofit) return NONPROFIT_NAME_MESSAGE;
       return space
         ? 'Enter a title that says what it is and where.'
         : 'Enter your business name as customers know it.';
     case 'tagline':
       if (platform) return 'Say in one line what it does.';
+      if (nonprofit) return NONPROFIT_TAGLINE_MESSAGE;
       return space ? 'Enter one line renters should know.' : 'Enter one line on what you do.';
     case 'website':
+      return nonprofit ? nonprofitMessage(field, code) : platformMessage(field, code);
+    case 'giveUrl':
+    case 'mission':
+    case 'serves':
+    case 'area':
+      return nonprofitMessage(field, code);
     case 'does':
     case 'for':
     case 'pricing':
@@ -175,14 +207,22 @@ export function messageFor(
 }
 
 /** The summary's shorter wording ("Enter your business name"). */
-function summaryFor(field: FieldName, code: string, space: boolean, platform: boolean): string {
-  if (code.startsWith('TOO_LONG')) return messageFor(field, code, space, platform);
-  const text = messageFor(field, code, space, platform);
+function summaryFor(field: FieldName, code: string, kind: OfferKind): string {
+  const space = kind === 'space';
+  if (code.startsWith('TOO_LONG')) return messageFor(field, code, kind);
+  const text = messageFor(field, code, kind);
   switch (field) {
     case 'name':
-      if (platform) return 'Enter your platform’s name';
+      if (kind === 'platform') return 'Enter your platform’s name';
+      if (kind === 'nonprofit') return NONPROFIT_NAME_SUMMARY;
       return space ? 'Enter a listing title' : 'Enter your business name';
     case 'website':
+      return kind === 'nonprofit' ? nonprofitSummary(field, code) : platformSummary(field, code);
+    case 'giveUrl':
+    case 'mission':
+    case 'serves':
+    case 'area':
+      return nonprofitSummary(field, code);
     case 'does':
     case 'for':
     case 'pricing':
@@ -248,8 +288,11 @@ export class ListBusinessPage {
   private readonly route = inject(ActivatedRoute);
   protected readonly session = inject(SessionService);
 
-  /** A business chooses its category; a platform is always in "Software platforms" (L2-248 AC1). */
-  protected readonly categories = CATEGORIES.filter((c) => c.slug !== 'software-platforms');
+  /** A business chooses its category; a platform is always in "Software platforms" (L2-248 AC1)
+   * and a non-profit always in "Non-profits" (L2-286 AC2). */
+  protected readonly categories = CATEGORIES.filter(
+    (c) => c.slug !== 'software-platforms' && c.slug !== 'non-profits',
+  );
   protected readonly format = formatPrice;
   protected readonly taglineMax = TAGLINE_MAX;
   protected readonly highlightMax = HIGHLIGHT_MAX;
@@ -257,6 +300,10 @@ export class ListBusinessPage {
   protected readonly doesMax = DOES_MAX;
   protected readonly forMax = FOR_MAX;
   protected readonly pricingMax = PRICING_MAX;
+  protected readonly giveMax = GIVE_MAX;
+  protected readonly missionMax = MISSION_MAX;
+  protected readonly servesMax = SERVES_MAX;
+  protected readonly areaMax = AREA_MAX;
 
   protected readonly loading = signal(true);
   protected readonly loadFailed = signal(false);
@@ -275,6 +322,12 @@ export class ListBusinessPage {
   protected readonly does = signal('');
   protected readonly forWhom = signal('');
   protected readonly pricing = signal('');
+
+  // A non-profit (L2-286, L2-287): its website shares `website`, then its page for giving and its own words.
+  protected readonly giveUrl = signal('');
+  protected readonly mission = signal('');
+  protected readonly serves = signal('');
+  protected readonly area = signal('');
 
   // A space (L2-198, L2-199), its fields held by the form the editor shares (L2-209).
   private readonly space = new SpaceForm();
@@ -298,7 +351,7 @@ export class ListBusinessPage {
     FIELD_ORDER.filter((f) => this.errors()[f]).map((f) => ({
       field: f,
       id: FIELD_ID[f],
-      text: summaryFor(f, this.codes[f] ?? '', this.isSpace(), this.isPlatform()),
+      text: summaryFor(f, this.codes[f] ?? '', this.kind()),
     })),
   );
   protected readonly failed = signal('');
@@ -318,23 +371,42 @@ export class ListBusinessPage {
       ? 'Rooms & rentals'
       : this.isPlatform()
         ? 'Software platforms'
-        : (CATEGORIES.find((c) => c.slug === this.categorySlug())?.name ?? ''),
+        : this.isNonprofit()
+          ? 'Non-profits'
+          : (CATEGORIES.find((c) => c.slug === this.categorySlug())?.name ?? ''),
   );
 
-  /** The tile of the card: the category chosen, or "Software platforms" for a platform. */
+  /** The tile of the card: the category chosen, or the one category of a platform or a non-profit. */
   protected readonly tile = computed(() =>
-    categoryTile(this.isPlatform() ? 'software-platforms' : this.categorySlug()),
+    categoryTile(
+      this.isPlatform()
+        ? 'software-platforms'
+        : this.isNonprofit()
+          ? 'non-profits'
+          : this.categorySlug(),
+    ),
   );
   protected readonly isServices = computed(() => this.kind() === 'services');
   protected readonly isSpace = computed(() => this.kind() === 'space');
   protected readonly isPlatform = computed(() => this.kind() === 'platform');
+  protected readonly isNonprofit = computed(() => this.kind() === 'nonprofit');
+  /** A platform or a non-profit: its one category, no place and no products or services. */
+  protected readonly isOwnCategory = computed(() => this.isPlatform() || this.isNonprofit());
   /** The heading of the form, by what is listed (L2-198 AC1, L2-249 AC2). */
   protected readonly heading = computed(() =>
     this.isSpace()
       ? 'List a space'
       : this.isPlatform()
         ? 'List a software platform'
-        : 'List your business',
+        : this.isNonprofit()
+          ? 'List a non-profit'
+          : 'List your business',
+  );
+  /** The line under the heading (L2-286 AC2). */
+  protected readonly subtitle = computed(() =>
+    this.isNonprofit()
+      ? 'For someone who leads or represents it.'
+      : 'Free for Christian-owned businesses in Toronto. Your listing goes live as soon as you publish it.',
   );
   protected readonly nightly = this.space.nightly;
   protected readonly minimumChoices = this.space.minimumChoices;
@@ -365,6 +437,8 @@ export class ListBusinessPage {
     if (asked === 'space') this.kind.set('space');
     // /list?kind=platform opens the platform form (L2-249 AC2).
     if (asked === 'platform') this.kind.set('platform');
+    // /list?kind=nonprofit opens the non-profit form (L2-286 AC2).
+    if (asked === 'nonprofit') this.kind.set('nonprofit');
     const source: Observable<ListingDraft | null> =
       wanted === 'new' ? of(null) : wanted ? this.api.get(wanted) : this.api.current();
     source.subscribe({
@@ -395,6 +469,13 @@ export class ListBusinessPage {
       this.does.set(draft.platform.does);
       this.forWhom.set(draft.platform.for);
       this.pricing.set(draft.platform.pricing);
+    }
+    if (draft.nonprofit) {
+      this.website.set(draft.nonprofit.website);
+      this.giveUrl.set(draft.nonprofit.giveUrl);
+      this.mission.set(draft.nonprofit.mission);
+      this.serves.set(draft.nonprofit.serves);
+      this.area.set(draft.nonprofit.area);
     }
   }
 
@@ -434,11 +515,11 @@ export class ListBusinessPage {
       kind: this.kind(),
       name: this.name().trim(),
       tagline: this.tagline().trim(),
-      categorySlug: this.isSpace() || this.isPlatform() ? null : this.categorySlug() || null,
+      categorySlug: this.isSpace() || this.isOwnCategory() ? null : this.categorySlug() || null,
       highlight: this.isSpace() ? null : this.highlight().trim() || null,
-      place: this.isSpace() || this.isPlatform() ? null : this.place().trim() || null,
+      place: this.isSpace() || this.isOwnCategory() ? null : this.place().trim() || null,
       agreed: this.agreed(),
-      items: this.isSpace() || this.isPlatform() ? [] : this.items(),
+      items: this.isSpace() || this.isOwnCategory() ? [] : this.items(),
       space: this.isSpace() ? this.space.body() : null,
       platform: this.isPlatform()
         ? {
@@ -446,6 +527,15 @@ export class ListBusinessPage {
             does: this.does().trim(),
             for: this.forWhom().trim(),
             pricing: this.pricing().trim(),
+          }
+        : null,
+      nonprofit: this.isNonprofit()
+        ? {
+            website: this.website().trim(),
+            giveUrl: this.giveUrl().trim(),
+            mission: this.mission().trim(),
+            serves: this.serves().trim(),
+            area: this.area().trim(),
           }
         : null,
       idempotencyKey: null,
@@ -517,6 +607,17 @@ export class ListBusinessPage {
           pricing: this.pricing(),
         }),
       );
+    } else if (this.isNonprofit()) {
+      Object.assign(
+        codes,
+        checkNonprofit({
+          website: this.website(),
+          giveUrl: this.giveUrl(),
+          mission: this.mission(),
+          serves: this.serves(),
+          area: this.area(),
+        }),
+      );
     } else if (!this.categorySlug()) codes.categorySlug = 'REQUIRED';
     if (!this.agreed()) codes.agreed = 'REQUIRED';
     return codes;
@@ -527,7 +628,7 @@ export class ListBusinessPage {
     const errors: Partial<Record<FieldName, string>> = {};
     for (const field of FIELD_ORDER) {
       const code = codes[field];
-      if (code) errors[field] = messageFor(field, code, this.isSpace(), this.isPlatform());
+      if (code) errors[field] = messageFor(field, code, this.kind());
     }
     this.errors.set(errors);
     if (Object.keys(errors).length) {
@@ -587,7 +688,10 @@ export class ListBusinessPage {
 function fieldCodes(errors: Record<string, string>): Partial<Record<FieldName, string>> {
   const codes: Partial<Record<FieldName, string>> = {};
   for (const [key, code] of Object.entries(errors)) {
-    const field = (PLATFORM_FIELDS[key] ?? SPACE_FIELDS[key] ?? key) as FieldName;
+    const field = (NONPROFIT_FIELDS[key] ??
+      PLATFORM_FIELDS[key] ??
+      SPACE_FIELDS[key] ??
+      key) as FieldName;
     if (field in FIELD_ID) codes[field] = code;
   }
   return codes;

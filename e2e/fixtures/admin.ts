@@ -92,6 +92,36 @@ export const PLATFORM_LISTING = {
   },
 };
 
+/** Hope House Toronto, an invented non-profit, as the team reads it (L2-295 AC2). */
+export const NONPROFIT_LISTING = {
+  name: 'Hope House Toronto',
+  tagline: 'Meals, beds and friendship for men leaving the shelter system.',
+  kind: 'nonprofit',
+  categorySlug: 'non-profits',
+  categoryName: 'Non-profits',
+  publishedAt: '2026-11-03T19:42:00-05:00',
+  highlight: 'Volunteers welcome',
+  flags: [],
+  owner: {
+    name: 'Grace Adeyemi',
+    email: 'grace@hopehouse.example',
+    emailConfirmed: true,
+    memberSince: '2026-10-20T00:00:00Z',
+    otherListings: [],
+    pronouns: null,
+  },
+  nonprofit: {
+    address: 'https://hopehouse.example',
+    website: 'https://hopehouse.example',
+    giveAddress: 'https://hopehouse.example/give',
+    giveUrl: 'https://hopehouse.example/give',
+    mission:
+      'Hope House is a home in Moss Park for up to eight men at a time as they leave the shelter system.',
+    serves: 'Men aged 18 and over moving out of Toronto’s shelters.',
+    area: 'Moss Park and Regent Park',
+  },
+};
+
 const problem = (status: number, body: object) => ({
   status,
   contentType: 'application/problem+json',

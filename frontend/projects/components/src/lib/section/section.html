@@ -1,9 +1,19 @@
-@if (heading(); as heading) {
+<ng-template #title>
+  @if (level() === 3) {
+    <h3 [attr.id]="headingId()">{{ heading() }}</h3>
+  } @else {
+    <h2 [attr.id]="headingId()">{{ heading() }}</h2>
+  }
+</ng-template>
+@if (heading()) {
   <div class="section-head">
-    @if (level() === 3) {
-      <h3 [attr.id]="headingId()">{{ heading }}</h3>
+    @if (subtitle(); as subtitle) {
+      <div>
+        <ng-container [ngTemplateOutlet]="title" />
+        <p class="text-muted">{{ subtitle }}</p>
+      </div>
     } @else {
-      <h2 [attr.id]="headingId()">{{ heading }}</h2>
+      <ng-container [ngTemplateOutlet]="title" />
     }
     @if (actionLabel(); as label) {
       <a [routerLink]="actionLink()"

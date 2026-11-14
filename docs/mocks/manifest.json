@@ -285,7 +285,8 @@
       ],
       "requirements": [
         "L2-231",
-        "L2-252"
+        "L2-252",
+        "L2-289"
       ]
     },
     {
@@ -307,12 +308,18 @@
         "software-platforms",
         "software-platforms-empty",
         "software-platforms-loading",
-        "software-platforms-error"
+        "software-platforms-error",
+        "non-profits",
+        "non-profits-empty",
+        "non-profits-loading",
+        "non-profits-error"
       ],
       "requirements": [
         "L2-231",
         "L2-252",
-        "L2-253"
+        "L2-253",
+        "L2-289",
+        "L2-290"
       ]
     },
     {
@@ -327,11 +334,13 @@
         "error",
         "no-results",
         "spaces",
-        "platforms"
+        "platforms",
+        "non-profits"
       ],
       "requirements": [
         "L2-231",
-        "L2-253"
+        "L2-253",
+        "L2-290"
       ]
     },
     {
@@ -427,6 +436,30 @@
       "not_applicable": {
         "loading": "/b/:slug does not know the listing is a platform until it has loaded; the skeleton is the business page’s (pages/business/loading.html, L2-123).",
         "empty": "A platform page shows one platform, and every field of L2-248 AC3 but the highlight is required; with no reviews the section is the reviews-empty state."
+      }
+    },
+    {
+      "id": "nonprofit",
+      "kind": "page",
+      "title": "Non-profit",
+      "route": "/b/:slug",
+      "requirements": [
+        "L2-291",
+        "L2-292",
+        "L2-293",
+        "L2-298"
+      ],
+      "states": [
+        "default",
+        "website-only",
+        "signed-out",
+        "owner",
+        "preview",
+        "loading",
+        "error"
+      ],
+      "not_applicable": {
+        "empty": "A non-profit page shows one non-profit, and every field of L2-285 AC3 but the page for giving, the highlight and the photos is required; with no page for giving the page is the website-only state."
       }
     },
     {
@@ -711,11 +744,20 @@
         "platform",
         "platform-invalid",
         "platform-busy",
-        "platform-success"
+        "platform-success",
+        "nonprofit",
+        "nonprofit-invalid",
+        "nonprofit-busy",
+        "nonprofit-success"
       ],
       "not_applicable": {
         "empty": "A form page has no collection that could be empty."
-      }
+      },
+      "requirements": [
+        "L2-286",
+        "L2-287",
+        "L2-288"
+      ]
     },
     {
       "id": "my-business",
@@ -747,11 +789,15 @@
         "success",
         "space",
         "photos",
-        "platform"
+        "platform",
+        "nonprofit"
       ],
       "not_applicable": {
         "empty": "A form page has no collection that could be empty."
-      }
+      },
+      "requirements": [
+        "L2-294"
+      ]
     },
     {
       "id": "my-products",
@@ -947,7 +993,8 @@
         "L2-106",
         "L2-237",
         "L2-247",
-        "L2-257"
+        "L2-257",
+        "L2-295"
       ]
     },
     {
@@ -1014,7 +1061,8 @@
         "maintenance-windows",
         "audit-records",
         "outbox-messages",
-        "job-runs"
+        "job-runs",
+        "nonprofit"
       ],
       "requirements": [
         "L2-188",
@@ -1028,7 +1076,8 @@
         "L2-106",
         "L2-237",
         "L2-247",
-        "L2-257"
+        "L2-257",
+        "L2-295"
       ],
       "not_applicable": {
         "empty": "A record screen shows one record; a table with no records is the table’s empty state."
@@ -1059,7 +1108,10 @@
         "loading": "The marketing page's text and listings are part of the page, so there is nothing to wait for, nothing that can be empty and no load that can fail. A photo that does not load leaves its tinted tile. A form that cannot be sent has its own states, business-retrying and notify-retrying.",
         "empty": "The marketing page's text and listings are part of the page, so there is nothing to wait for, nothing that can be empty and no load that can fail. A photo that does not load leaves its tinted tile. A form that cannot be sent has its own states, business-retrying and notify-retrying.",
         "error": "The marketing page's text and listings are part of the page, so there is nothing to wait for, nothing that can be empty and no load that can fail. A photo that does not load leaves its tinted tile. A form that cannot be sent has its own states, business-retrying and notify-retrying."
-      }
+      },
+      "requirements": [
+        "L2-296"
+      ]
     },
     {
       "id": "book-meeting",

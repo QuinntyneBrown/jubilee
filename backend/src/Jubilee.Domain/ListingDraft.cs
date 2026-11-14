@@ -114,7 +114,10 @@ public sealed class ListingDraft
     /// <summary>What the founder says of a platform draft (L2-250); null for every other kind.</summary>
     public PlatformDetails? Platform { get; private set; }
 
-    /// <summary>The web address of a platform draft, as typed (L2-250 AC4); null for every other kind.</summary>
+    /// <summary>What the leader says of a non-profit draft (L2-287); null for every other kind.</summary>
+    public NonprofitDetails? Nonprofit { get; private set; }
+
+    /// <summary>The web address of a platform or the website of a non-profit draft, as typed (L2-250 AC4, L2-287 AC4); null for every other kind.</summary>
     public string? Website { get; private set; }
 
     public DateTimeOffset CreatedAt { get; private set; }
@@ -147,14 +150,16 @@ public sealed class ListingDraft
         DateTimeOffset now,
         SpaceDetails? space = null,
         PlatformDetails? platform = null,
-        string? website = null)
+        string? website = null,
+        NonprofitDetails? nonprofit = null)
     {
         Kind = kind;
         Space = kind == ListingKind.Space ? space : null;
 
         // A platform keeps the founder's words and its address as typed; no other kind has them (L2-250 AC8).
         Platform = kind == ListingKind.Platform ? platform : null;
-        Website = kind == ListingKind.Platform ? Cut(website, PlatformRules.MaxWebsiteLength) : null;
+        Nonprofit = kind == ListingKind.Nonprofit ? nonprofit : null;
+        Website = kind is ListingKind.Platform or ListingKind.Nonprofit ? Cut(website, WebAddressRules.MaxLength) : null;
         Name = Cut(name, MaxNameLength) ?? string.Empty;
         Tagline = Cut(tagline, MaxTaglineLength) ?? string.Empty;
         CategorySlug = Cut(categorySlug, 60);
@@ -162,8 +167,8 @@ public sealed class ListingDraft
         Place = Cut(place, 200);
         Agreed = agreed;
         _items.Clear();
-        // A platform has no services and no products (L2-248 AC3).
-        foreach (var item in kind == ListingKind.Platform ? [] : items.Take(MaxItems))
+        // A platform and a non-profit have no services and no products (L2-248 AC3, L2-285 AC3).
+        foreach (var item in kind is ListingKind.Platform or ListingKind.Nonprofit ? [] : items.Take(MaxItems))
         {
             _items.Add(new DraftItem
             {

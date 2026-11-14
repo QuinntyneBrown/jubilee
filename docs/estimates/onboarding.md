@@ -3,6 +3,7 @@
 | Design | Effort | Complete |
 |---|---|---|
 | describe-listing | 3 days | 100% |
+| describe-nonprofit | 4 days | 100% |
 | describe-platform | 4 days | 100% |
 | describe-space | 5 days | 100% |
 | save-draft | 5 days | 100% |
@@ -17,3 +18,5 @@ Left for the owner, by hand: the visual parity of the new screen states against 
 describe-space (ADR 0042): List a space with its terms, fields, checks and live preview, its draft and publishing it straight away are done with tests. Excludes deferred work (see ADR 0042): hourly rent and the sign-up intents.
 
 describe-platform (ADR 0072): listing a software platform with its fields, checks, preview, draft and publishing, the `AddSoftwarePlatforms` migration, and editing a platform on Edit listing (L2-256) are done with tests (`PlatformOnboardingTests`, `PlatformEditTests`, `list-a-platform.spec.ts`, `edit-platform.spec.ts`). Nothing is left.
+
+describe-nonprofit (ADR 0074): the fifth card "A non-profit" and `/list?kind=nonprofit`, the non-profit's fields with their limits, counters and messages, the two addresses checked by the shared `WebAddressRules`, drafts, publishing to "Non-profits" and editing from My business (category locked) are done with tests (`NonprofitOnboardingTests`, `NonprofitEditTests`, `LaunchTests`, `list-a-nonprofit.spec.ts`, `edit-nonprofit.spec.ts`). Three invented non-profits on `.example` addresses are seeded. Nothing is left.

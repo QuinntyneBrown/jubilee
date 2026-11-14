@@ -54,7 +54,8 @@ public sealed record ListingDraftDto(
     DateTimeOffset UpdatedAt,
     IReadOnlyList<DraftItemDto> Items,
     SpaceDraftDto? Space = null,
-    PlatformDraftDto? Platform = null)
+    PlatformDraftDto? Platform = null,
+    NonprofitDraftDto? Nonprofit = null)
 {
     public static ListingDraftDto From(ListingDraft draft) => new(
         draft.Id,
@@ -68,16 +69,32 @@ public sealed record ListingDraftDto(
         draft.UpdatedAt,
         [.. draft.Items.OrderBy(i => i.Position).Select(DraftItemDto.From)],
         draft.Space is null ? null : SpaceDraftDto.From(draft.Space),
-        draft.Kind == ListingKind.Platform ? PlatformDraftDto.From(draft) : null);
+        draft.Kind == ListingKind.Platform ? PlatformDraftDto.From(draft) : null,
+        draft.Kind == ListingKind.Nonprofit ? NonprofitDraftDto.From(draft.Website, draft.Nonprofit) : null);
 
     public static string Wire(ListingKind kind) => kind switch
     {
         ListingKind.Shop => "products",
         ListingKind.Space => "space",
         ListingKind.Platform => "platform",
+        ListingKind.Nonprofit => "nonprofit",
         _ => "services",
     };
 }
+
+/// <summary>A non-profit's fields as its leader typed them (L2-287 AC9), for a draft or the editor of a live one.</summary>
+public sealed record NonprofitDraftDto(string Website, string GiveUrl, string Mission, string Serves, string Area)
+{
+    public static NonprofitDraftDto From(string? website, NonprofitDetails? nonprofit) => new(
+        website ?? string.Empty,
+        nonprofit?.GiveUrl ?? string.Empty,
+        nonprofit?.Mission ?? string.Empty,
+        nonprofit?.Serves ?? string.Empty,
+        nonprofit?.Area ?? string.Empty);
+}
+
+/// <summary>The non-profit fields of the form (L2-287): its website, its page for giving and its own words.</summary>
+public sealed record NonprofitInput(string? Website, string? GiveUrl, string? Mission, string? Serves, string? Area);
 
 /// <summary>A platform draft's fields as its founder typed them (L2-250 AC8).</summary>
 public sealed record PlatformDraftDto(string Website, string Does, string For, string Pricing)
@@ -145,7 +162,8 @@ public sealed record DraftInput(
     bool Agreed,
     IReadOnlyList<DraftItemInput>? Items,
     SpaceInput? Space = null,
-    PlatformInput? Platform = null);
+    PlatformInput? Platform = null,
+    NonprofitInput? Nonprofit = null);
 
 public sealed record DraftItemInput(
     string? Name,
@@ -176,8 +194,53 @@ public static class Drafts
         "services" => ListingKind.Services,
         "space" => ListingKind.Space,
         "platform" => ListingKind.Platform,
+        "nonprofit" => ListingKind.Nonprofit,
         _ => ListingKind.Shop,
     };
+
+    /// <summary>A non-profit's own words and page for giving, cut to their limits; null for every other kind.</summary>
+    public static NonprofitDetails? NonprofitOf(DraftInput input) => KindOf(input.Kind) == ListingKind.Nonprofit
+        ? NonprofitFrom(input.Nonprofit)
+        : null;
+
+    public static NonprofitDetails NonprofitFrom(NonprofitInput? nonprofit) =>
+        NonprofitDetails.Create(nonprofit?.Mission, nonprofit?.Serves, nonprofit?.Area, nonprofit?.GiveUrl);
+
+    /// <summary>
+    /// The website, the optional page for giving and the words a non-profit needs (L2-287 AC3 to AC7). Both addresses
+    /// are judged as text only: nothing requests them (L2-292 AC4).
+    /// </summary>
+    public static void ValidateNonprofit(NonprofitInput? nonprofit, Dictionary<string, string> errors)
+    {
+        if (string.IsNullOrWhiteSpace(nonprofit?.Website))
+        {
+            errors["nonprofit.website"] = "REQUIRED";
+        }
+        else if (!WebAddressRules.IsWebAddress(nonprofit.Website))
+        {
+            errors["nonprofit.website"] = "INVALID";
+        }
+
+        if (!string.IsNullOrWhiteSpace(nonprofit?.GiveUrl) && !WebAddressRules.IsWebAddress(nonprofit.GiveUrl))
+        {
+            errors["nonprofit.giveUrl"] = "INVALID";
+        }
+
+        if (string.IsNullOrWhiteSpace(nonprofit?.Mission))
+        {
+            errors["nonprofit.mission"] = "REQUIRED";
+        }
+
+        if (string.IsNullOrWhiteSpace(nonprofit?.Serves))
+        {
+            errors["nonprofit.serves"] = "REQUIRED";
+        }
+
+        if (string.IsNullOrWhiteSpace(nonprofit?.Area))
+        {
+            errors["nonprofit.area"] = "REQUIRED";
+        }
+    }
 
     /// <summary>The founder's words of a platform, cut to their limits; null for every other kind.</summary>
     public static PlatformDetails? PlatformOf(DraftInput input) => KindOf(input.Kind) == ListingKind.Platform
@@ -294,7 +357,9 @@ public static class Drafts
     public static void Apply(ListingDraft draft, DraftInput input, DateTimeOffset now) =>
         draft.Save(
             KindOf(input.Kind), input.Name, input.Tagline, input.CategorySlug, input.Highlight, input.Place,
-            input.Agreed, ItemsOf(input), now, SpaceOf(input), PlatformOf(input), input.Platform?.Website);
+            input.Agreed, ItemsOf(input), now, SpaceOf(input), PlatformOf(input),
+            KindOf(input.Kind) == ListingKind.Nonprofit ? input.Nonprofit?.Website : input.Platform?.Website,
+            NonprofitOf(input));
 
     public static async Task<ListingDraft> Owned(IAppDbContext db, string subject, Guid id, CancellationToken cancellationToken) =>
         await db.ListingDrafts.Include(d => d.Items).SingleOrDefaultAsync(d => d.Id == id && d.OwnerSubject == subject, cancellationToken)
@@ -420,9 +485,16 @@ public sealed partial class PublishListingCommandHandler(IAppDbContext db, TimeP
             // A platform always sits in Software platforms, so it has no category to choose (L2-249 AC2).
             Drafts.ValidatePlatform(input.Platform, errors);
         }
-        else if (input.CategorySlug is null || Category.Find(input.CategorySlug) is null || input.CategorySlug == Category.PlatformsSlug)
+        else if (Drafts.KindOf(input.Kind) == ListingKind.Nonprofit)
         {
-            // Only a platform sits in Software platforms (L2-248 AC1), so a business has still to choose.
+            // A non-profit always sits in Non-profits, so it has no category to choose (L2-286 AC2).
+            Drafts.ValidateNonprofit(input.Nonprofit, errors);
+        }
+        else if (input.CategorySlug is null || Category.Find(input.CategorySlug) is null
+            || input.CategorySlug is Category.PlatformsSlug or Category.NonprofitsSlug)
+        {
+            // Only a platform sits in Software platforms and only a non-profit in Non-profits (L2-248 AC1,
+            // L2-285 AC1), so a business has still to choose.
             errors["categorySlug"] = "REQUIRED";
         }
 
@@ -448,7 +520,11 @@ public sealed partial class PublishListingCommandHandler(IAppDbContext db, TimeP
 
         var space = Drafts.SpaceOf(input);
         var platform = Drafts.PlatformOf(input);
-        var categorySlug = space is not null ? Category.RoomsSlug : platform is not null ? Category.PlatformsSlug : input.CategorySlug!;
+        var nonprofit = Drafts.NonprofitOf(input);
+        var categorySlug = space is not null ? Category.RoomsSlug
+            : platform is not null ? Category.PlatformsSlug
+            : nonprofit is not null ? Category.NonprofitsSlug
+            : input.CategorySlug!;
         var listing = Listing.Create(
             await Listings.ListingSlugs.UniqueAsync(db, addresses, name, Drafts.KindOf(input.Kind), null, cancellationToken), name, tagline, categorySlug, now);
         listing.SetKind(Drafts.KindOf(input.Kind));
@@ -456,7 +532,8 @@ public sealed partial class PublishListingCommandHandler(IAppDbContext db, TimeP
 
         // The public place of a space is its neighbourhood; the exact address stays in its details (L2-208).
         // A platform is used online: it has no place (L2-248 AC3).
-        var where = platform is not null ? null : space?.Neighbourhood ?? input.Place?.Trim();
+        // A non-profit says where it works in its own field (L2-287 AC1), so it has no place either.
+        var where = platform is not null || nonprofit is not null ? null : space?.Neighbourhood ?? input.Place?.Trim();
         listing.Describe(new ListingProfile(command.Name, [], null, where, null, null, null, null));
         listing.SetHighlight(space is null ? ListingDraft.Cut(input.Highlight, ListingDraft.MaxHighlightLength) : null);
         listing.Publish(now);
@@ -464,6 +541,10 @@ public sealed partial class PublishListingCommandHandler(IAppDbContext db, TimeP
         if (platform is not null)
         {
             listing.DescribePlatform(platform, input.Platform!.Website);
+        }
+        else if (nonprofit is not null)
+        {
+            listing.DescribeNonprofit(nonprofit, input.Nonprofit!.Website);
         }
         else if (space is null)
         {

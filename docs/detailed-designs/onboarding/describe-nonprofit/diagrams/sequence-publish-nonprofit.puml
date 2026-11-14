@@ -1,0 +1,72 @@
+@startuml
+title UML sequence behaviour: Publish a non-profit
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member (leader)" as actor
+box "Frontend: Jubilee Web" #E0F2FE
+  participant "ListBusinessPage" as page
+  participant "NonprofitForm" as form
+  participant "ListingDraftsApi" as client
+end box
+box "Backend: Jubilee API" #D1FADF
+  participant "ListingDraftsController" as controller
+end box
+box "Backend: Jubilee Application and Domain" #ECFDF3
+  participant "PublishListingCommandHandler" as handler
+  participant "Drafts" as drafts
+  participant "WebAddressRules" as rules
+  participant "Listing" as listing
+end box
+box "Backend: Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+actor -> page : Tick the agreement and press "Publish listing"
+page -> form : check()
+alt A required field is empty, or an address is not https
+  form --> page : Messages per field
+  page --> actor : Summary and a message under each field; nothing is sent (L2-287 AC3 to AC6, L2-126)
+else Valid in the browser
+  page --> actor : Fields read-only, button busy (L2-288 AC2, L2-127)
+  page -> client : publish(draft id, body, idempotency key)
+  client -> controller : POST /api/listing-drafts/{id}/publish
+  controller -> handler : Send PublishListingCommand with the member of the session
+  handler -> db : The member's own draft (L2-297 AC2)
+  handler -> handler : Name and line as for any listing (L2-072)
+  handler -> drafts : ValidateNonprofit(input.Nonprofit, errors)
+  drafts -> rules : IsWebAddress(website), IsWebAddress(giveUrl) when given
+  rules --> drafts : https, dotted host, no user info, 200 at most; no request is made (L2-292 AC4)
+  drafts --> handler : nonprofit.website REQUIRED or INVALID; nonprofit.giveUrl INVALID; nonprofit.mission, serves, area REQUIRED
+  handler -> handler : agreed REQUIRED when unticked (L2-288 AC1)
+  alt Errors
+    handler -> db : Keep what was typed in the draft (L2-077)
+    handler --> controller : ValidationFailedException
+    controller --> client : 422 with errors (L2-287 AC7)
+    client --> page : Field codes
+    page --> actor : The same messages under the fields; nothing is published
+  else No errors
+    handler -> listing : Create in Category.NonprofitsSlug, Kind Nonprofit (L2-285 AC1)
+    handler -> listing : AssignOwner, Describe(owner name), SetHighlight
+    handler -> listing : DescribeNonprofit(NonprofitDetails, website)
+    handler -> listing : Publish(now), live at once (L2-078)
+    handler -> db : Add Listing and ListingSubmission with flags from the name and line only (L2-287 AC8)
+    handler -> db : Remove the draft; tell members who follow Non-profits (L2-290 AC4)
+    handler -> db : SaveChanges, one transaction
+    handler --> controller : PublishedListingDto, kind nonprofit, stage live
+    controller --> client : 200 OK
+    client --> page : Published listing
+    page --> actor : "{Non-profit name} is live. Members can find it in Non-profits now." (L2-288 AC2)
+  end
+end
+@enduml

@@ -211,6 +211,39 @@
             }
           </div>
         </section>
+        @if (directory.nonprofits.count > 0) {
+          <!-- Non-profits have a shelf of their own and are never counted as businesses (L2-289 AC1). -->
+          <section
+            jb-section
+            heading="Non-profits in Toronto"
+            headingId="nonprofits"
+            subtitle="Ministries and charities at work across the city."
+            [actionLabel]="'All ' + (directory.nonprofits.count | jbCount)"
+            actionHint=" non-profits"
+            [actionLink]="['/c', 'non-profits']"
+          >
+            <ul jb-card-grid>
+              @for (nonprofit of directory.nonprofits.listings; track nonprofit.slug) {
+                <li>
+                  @let target = hearts.business(nonprofit);
+                  <div
+                    jb-saveable
+                    [name]="nonprofit.name"
+                    [saved]="hearts.isSaved(target)"
+                    [busy]="hearts.isBusy(target)"
+                    (pressed)="hearts.press(target, $event)"
+                  >
+                    <a
+                      jb-business-card
+                      [business]="nonprofit"
+                      [routerLink]="['/b', nonprofit.slug]"
+                    ></a>
+                  </div>
+                </li>
+              }
+            </ul>
+          </section>
+        }
       }
     }
   }
