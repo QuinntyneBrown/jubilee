@@ -104,15 +104,16 @@ test.describe('software platforms: the category (L2-252)', () => {
 });
 
 test.describe('software platforms: the browse home (L2-252 AC1)', () => {
-  test('the chips end with "Software platforms" and the directory has its group', async ({
+  test('"Software platforms" is the chip before "Non-profits" and the directory has its group', async ({
     page,
     jb,
   }) => {
     const browse = new BrowsePage(page);
     await jb.open('browse');
 
-    await expect(browse.categoryChips.last()).toHaveText('Software platforms');
-    await expect(browse.categoryChips.last()).toHaveAttribute('href', '/c/software-platforms');
+    // "Non-profits" is the last chip (L2-289 AC2); "Software platforms" comes just before it.
+    await expect(browse.categoryChips.nth(-2)).toHaveText('Software platforms');
+    await expect(browse.categoryChips.nth(-2)).toHaveAttribute('href', '/c/software-platforms');
 
     const group = browse.group('Software platforms');
     await expect(browse.groupHeadings.last()).toHaveText('Software platforms');
