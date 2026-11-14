@@ -135,7 +135,7 @@ enforces.
 1. *Listing submissions*: the table exists (journey 3's history); it is read-only and its queue
    line "Listings to review" is not shown, because no review is waiting since ADR 0057.
 2. *Access requests*: Jubilee has `AccessRequest` (a member asking for a screen they may not open, "Ask for access" of `L2-114`);
-   the table shows those, not an invite-only beta. "Waiting on us" lists pending ones.
+   the table shows those, not an invite-only beta. They carry no decision, so "Waiting on us" has no line for them (`L2-274` AC2 amended).
 3. *Staff*: read-only, roles `admin` and `moderator` (above).
 4. *Consent records*: read-only, never deleted.
 5. *Messages*: only with an open report (above).

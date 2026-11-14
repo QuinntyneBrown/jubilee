@@ -2,6 +2,8 @@
 
 ## Overview
 
+> Since ADR 0074 the admin application is schema-driven: this feature happens in the Featured slots table (`/featured-slots`), whose records are created and removed by the featured week's rules, drawn by the screens of `admin/work-in-the-tables`. The behaviour, commands and audit records below are unchanged; the screen names are the new ones.
+
 Jubilee highlights a small set of businesses on its two entry pages. A moderator
 chooses up to five live listings as "Featured this week" and gives the selection
 a start date. From that date the chosen listings show on the welcome page and
@@ -21,7 +23,7 @@ actions and are written to the audit log (`L2-180`).
 
 The slice has an admin write path and a public read path.
 
-- **`AdminFeaturedPage`** — page of the admin application
+- **`RecordsPage` (Featured slots)** — page of the admin application
   (`admin/run-admin-application`) at `/featured`. It shows the current and coming
   weeks, lets a moderator search live listings, order up to five of them and pick
   the start date, and stops the selection at five. The mock is
@@ -90,7 +92,7 @@ welcome and browse reads in the `Cache`.
 
 ### Components
 
-`AdminFeaturedPage` saves through `AdminFeaturedController`; `WelcomePage` and
+`RecordsPage` (Featured slots) saves through `AdminFeaturedController`; `WelcomePage` and
 `BrowsePage` read through `DirectoryController`. The interceptor drops the cache
 that the read handlers fill when the slots are saved.
 

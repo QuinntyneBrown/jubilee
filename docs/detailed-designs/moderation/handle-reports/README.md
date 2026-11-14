@@ -2,6 +2,8 @@
 
 ## Overview
 
+> Since ADR 0074 the admin application is schema-driven: this feature happens in the tables Listing reports, Review reports and Conversation reports (`/listing-reports`, `/review-reports`, `/conversation-reports`) and their records, where "Act on report" is a record action, drawn by the screens of `admin/work-in-the-tables`. The behaviour, commands and audit records below are unchanged; the screen names are the new ones.
+
 Members can report a listing (`L2-039`) or a conversation (`L2-063`) privately
 to the Jubilee team. This feature is the moderation side: the admin
 reports list, the page for one report, and the actions a moderator can take. The
@@ -46,14 +48,14 @@ ADR 0058).
 - **`GetStaffSessionQueryHandler`** — answers `GET /api/staff/session` with
   `ReportCount`, the listing and conversation reports that are not resolved;
   it is 0 without the `moderator` role.
-- **`AdminBar`** — the `jb-admin-bar` component shows the count on "Reports" as a
+- **`AdminBar`** — the jb-admin-shell component shows the count on "Reports" as a
   count badge named "{n} unresolved", hidden at 0. **`StaffSessionService.refresh()`**
   reads the staff session again after each navigation between screens and after
   each action on a report, so the count is current without polling (ADR 0058).
-- **`AdminReportsPage`** — lists reports with listing, reason, description,
+- **`RecordsPage` (the report tables)** — lists reports with listing, reason, description,
   reporter, time and status, oldest first, and marks overdue reports. A filter
   shows unresolved, open, in review, resolved or all reports.
-- **`AdminReportPage`** — one report: the report and its entries, the attached
+- **`RecordPage` (a report)** — one report: the report and its entries, the attached
   conversation for a conversation report, the history of actions, and the
   actions dismiss, message the reporter, message the owner, place the listing on
   hold, remove the listing and lift the hold.
@@ -102,9 +104,9 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 
 | L2 ID | Refines (L1) | Requirement |
 |-------|--------------|-------------|
-| `L2-105` | `L1-014` | The Jubilee team shall review reports from `L2-039` and `L2-063` within one business day. The system shall list each new report for moderators, e-mail the team of it and count the unresolved reports in the admin bar, shall let a moderator dismiss it, message the reporter, message the owner, place the listing on hold or remove the listing with a resolution note, shall remove a held or removed listing from public lists within 60 seconds and tell the owner of a hold, shall mark a report overdue after more than one business day open, and shall never show the owner who reported the listing. |
+| `L2-105` | `L1-014` | The Jubilee team shall review reports from `L2-039` and `L2-063` within one business day. The system shall list each new report for moderators, e-mail the team of it and count the unresolved reports in the admin shell, shall let a moderator dismiss it, message the reporter, message the owner, place the listing on hold or remove the listing with a resolution note, shall remove a held or removed listing from public lists within 60 seconds and tell the owner of a hold, shall mark a report overdue after more than one business day open, and shall never show the owner who reported the listing. |
 | `L2-063` | `L1-009` | The system shall send a reported conversation to the Jubilee team with the conversation attached, and staff shall not read a conversation's content without an open report on it. |
-| `L2-188` | `L1-027` | The admin bar shall show "Reports" with the number of unresolved reports, named "{n} unresolved" to assistive technology. |
+| `L2-188` | `L1-027` | The admin shell shall show "Reports" with the number of unresolved reports, named "{n} unresolved" to assistive technology. |
 | `L2-133` | `L1-019` | The system shall check the caller's role and ownership of the specific object on every API endpoint before doing anything. |
 | `L2-150` | `L1-020` | The system shall record in the audit log each staff view of a member's personal data or a reported conversation, with the reason (report ID or listing ID). |
 | `L2-180` | `L1-025` | The system shall store an append-only audit record with actor, action, target, time, before and after values, and reason for report resolutions, holds and removals. |
@@ -129,7 +131,7 @@ of a hold or removal in the notification centre.
 
 ### Components
 
-`AdminReportsPage` and `AdminReportPage` call `AdminReportsController` through
+`RecordsPage` (the report tables) and `RecordPage` (a report) call `AdminReportsController` through
 `AdminApi`; `AdminBar` shows the count `GET /api/staff/session` answers.
 `ApplyReportActionCommandHandler` records the action and calls the hold or
 remove transition on `Listing`.

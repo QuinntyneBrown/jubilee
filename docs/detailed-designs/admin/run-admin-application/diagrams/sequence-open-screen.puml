@@ -9,31 +9,34 @@ actor "Staff member" as actor
 box "Frontend — Jubilee Admin Web" #E0F2FE
   participant "staffGuard" as guard
   participant "StaffSessionService" as session
-  participant "App and jb-admin-bar" as shell
-  participant "AdminListingsPage" as page
+  participant "App and jb-admin-shell" as shell
+  participant "RecordsPage" as page
 end box
 box "Backend — Jubilee API" #D1FADF
   participant "StaffSessionController" as ctrl
-  participant "AdminListingsController" as admin
+  participant "AdminTablesController" as admin
 end box
-actor -> session : Open /listings: resolve() at start-up
+actor -> session : Open /listing-reports: resolve() at start-up
 session -> ctrl : GET /api/staff/session
 alt no staff session
   ctrl --> session : 401 sign_in_required
   session -> guard : staff() is null
-  guard --> actor : Redirect to /sign-in?returnUrl=/listings (L2-188)
+  guard --> actor : Redirect to /sign-in?returnUrl=/listing-reports (L2-188)
 else staff session
   ctrl --> session : Name - initials - e-mail - roles (L2-190)
   session -> guard : staff() is set
   guard --> shell : Activate the route
-  alt staff member holds moderator
-    shell --> actor : Admin bar with "Listings" - "Reports" - "Featured" (L2-098, L2-188)
-    shell -> page : Load the screen
-    page -> admin : GET /api/admin/listings
-    admin --> page : Listings
-    page --> actor : Listings table (L2-099)
-  else only admin
-    shell --> actor : Admin bar without navigation - "Nothing here for your role"; the screen is never loaded (L2-188)
+  shell -> admin : GET /api/admin/tables
+  admin --> shell : Tables the roles may read, with counts
+  shell --> actor : Top bar and sidebar, Listing reports marked current (L2-272)
+  shell -> page : Load the screen
+  page -> admin : GET /api/admin/tables/listing-reports
+  alt role may read it
+    admin --> page : Rows
+    page --> actor : The table (L2-276)
+  else role may not
+    admin --> page : 403 FORBIDDEN
+    page --> actor : Nothing here for your role (L2-188)
   end
 end
 @enduml

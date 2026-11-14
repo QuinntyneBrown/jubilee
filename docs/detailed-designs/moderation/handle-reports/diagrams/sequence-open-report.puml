@@ -18,8 +18,8 @@ actor "Member" as member
 actor "Jubilee team member" as actor
 box "Frontend — Admin application" #E0F2FE
   participant "AdminBar" as bar
-  participant "AdminReportsPage" as list
-  participant "AdminReportPage" as page
+  participant "RecordsPage (the report tables)" as list
+  participant "RecordPage (a report)" as page
   participant "AdminApi" as client
 end box
 box "Backend — Jubilee API" #D1FADF

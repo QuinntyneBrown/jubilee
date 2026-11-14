@@ -17,7 +17,7 @@ skinparam package {
 actor "Jubilee team member" as actor
 actor "Visitor" as visitor
 box "Frontend — Admin application" #E0F2FE
-  participant "AdminReportPage" as page
+  participant "RecordPage (a report)" as page
   participant "ReportActionDialog" as dialog
   participant "AdminApi" as client
   participant "StaffSessionService" as session

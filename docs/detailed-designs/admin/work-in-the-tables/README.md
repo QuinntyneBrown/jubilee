@@ -1,0 +1,191 @@
+# Work in the tables
+
+## Overview
+
+The admin application (`L2-188`) is *schema-driven* (ADR 0074): each of Jubilee's *tables* is
+described once, and one screen draws any of them. A *table* is one kind of Jubilee record shown to
+staff (Members, Listings, Listing reports, Audit records…), held in a *group* of the sidebar
+(Accounts, Listings, Requests & messaging, Reviews, Moderation, Member activity, Feedback, Merch,
+Launch, Site & content, System). A *record* is one row of a table. The *catalog* is the list of
+table descriptions in the Application layer; the API serves it, and the admin application reads it
+instead of knowing any table itself.
+
+A *staff member* opens a table at `/{table}`, where the key is the table's name in kebab case
+(`/members`, `/listing-reports`). The server searches, filters, sorts and pages it; the staff
+member chooses the columns and the rows per page, exports it, selects rows to set their status or
+delete them, and opens a record at `/{table}/{id}`. The record lists its fields by type, the tables
+whose records point at it ("Points here") and its audited history; the staff member edits the
+fields the catalog lets them change, creates a record at `/{table}/new`, or deletes one with an
+"Undo" while the toast shows.
+
+What a staff member may read and change depends on their *role* (`L2-193`): `admin` or
+`moderator` (`L2-284`). System and Staff are read-only to everyone. A *message* opens only while
+its conversation has an open report, and opening it is audited. Every change is written to the
+audit log (`L2-180`) in the same transaction as the change.
+
+Taking a listing down (`L2-101`), acting on a report (`L2-105`, `L2-237`) and publishing a policy
+(`L2-247`) are not field changes: each keeps its own command and dialog and is offered on the
+record as an action. The featured slots follow the rules of the featured week (`L2-106`).
+
+## Description
+
+### Backend — catalog and rights (`Jubilee.Application/Admin`)
+
+- **`AdminTable` and `AdminTable<TEntity>`** — the description of one table: `Key`, `Label`,
+  `Singular`, `Group`, `Sentence`, `Fields`, `DefaultColumns`, `StatusField`, `NameFields`,
+  `Query(IAppDbContext)` (the `IQueryable<TEntity>` it reads, `AsNoTracking`), `Deletable`,
+  `Private` (a reason is needed to export it) and the optional `Create` binding. The non-generic
+  base lets handlers work on any table; the generic one holds the expressions.
+- **`AdminField<TEntity>`** — one field: `Key`, `Label`, `Type` (`AdminFieldType`: `Id`, `Text`,
+  `Email`, `Mono`, `Json`, `Long`, `Status`, `Bool`, `Number`, `Money`, `Date`, `DateTime`, `Ref`,
+  `Url`), `System` (ID and timestamps, shown in the system line), the selector expression the
+  database evaluates, `Options` (a status's wire words), `RefTable` (a reference's table), whether
+  search looks at it, and the optional `Edit` binding: the entity method that applies a new value
+  with the owning feature's validation.
+- **`AdminCatalog`** — the registry of every table, in sidebar order, built once at start-up
+  (`Tables/*.cs`, one file per group). `Find(key)` returns a table or null.
+- **`AdminRights`** — `CanRead(role, table)`, `CanChange(role, table)`, `CanDelete(role, table)`
+  from the matrix of `L2-284` AC1: `admin` reads every table and changes every table but System
+  and Staff; `moderator` reads every table but Staff and changes Listings, Reviews, Moderation and
+  Feedback. `StaffViewer` carries the staff subject, name and roles from the session.
+- **`AdminQuery`** — builds the database query of a table from `q` (every searchable field
+  `Contains` the text, ignoring case, IDs included), `status` (the status field equals the wire
+  word) and `sort`/`dir` (the field's selector, ascending or descending, else the newest first),
+  then counts and pages it (25, 50, 100 or 250 rows). Rows are read as entities and mapped to
+  values by the fields' compiled selectors.
+- **`AdminValues`** — writes a value in its wire form: an enum as its wire word, a date as ISO
+  8601, a reference as `{ id, name }` (its record's name by `L2-282` AC2) or `{ id, deleted: true }`
+  when the record is gone.
+- **`AdminAudit`** — adds the audit record of a change (`{table}.update`, `.create`, `.delete`,
+  `.restore`, `.export`, `messages.read`) to the same `SaveChanges`.
+
+### Backend — handlers and endpoints
+
+| Handler | Endpoint | Does |
+|---|---|---|
+| `GetAdminCatalogQuery` | `GET /api/admin/tables` | Groups, readable tables, fields, rights, counts |
+| `GetAdminRowsQuery` | `GET /api/admin/tables/{table}` | A page of rows, `total`, `page`, `size` |
+| `GetAdminRecordQuery` | `GET /api/admin/tables/{table}/{id}` | The record, `pointsHere`, `history`, rights; audits a message read |
+| `UpdateAdminRecordCommand` | `PATCH /api/admin/tables/{table}/{id}` | Applies bound fields; `VALIDATION` with field codes |
+| `CreateAdminRecordCommand` | `POST /api/admin/tables/{table}` | Creates through the table's `Create` binding |
+| `SetAdminStatusCommand` | `POST /api/admin/tables/{table}/status` | Sets the status of the selected IDs through the bound status field |
+| `DeleteAdminRecordsCommand` | `POST /api/admin/tables/{table}/delete` | Sets `AdminDeletedAt` on the selected IDs |
+| `RestoreAdminRecordsCommand` | `POST /api/admin/tables/{table}/restore` | Clears it ("Undo") |
+| `ExportAdminTableQuery` | `GET /api/admin/tables/{table}/export` | `format` `csv` or `json`; `q`, `status` or `ids`; `reason` for a private table |
+| `SetWeeklyExportCommand` | `PUT` / `DELETE /api/admin/tables/{table}/weekly-export` | Turns the weekly e-mail on or off |
+
+`AdminTablesController` (`[RequiresStaff]`, any staff role) maps them; the handlers check
+`AdminRights` and answer 403 `FORBIDDEN`, 404 `NOT_FOUND`, 409 `READ_ONLY`, 400 `VALIDATION` or
+`REASON_REQUIRED`; a failed read answers `JB-ADM-503` (a table) or `JB-ADM-504` (a record).
+
+### Backend — fields and bindings of this change
+
+- The fields of each table are the entity's own (ADR 0074), under the design's label where the
+  meaning is the same. A member's home church and its address, a link token's hash, a password
+  hash and a message's text in its row are never fields.
+- **Bound edits:** Feedback `status` (`MarkRead`, `StartWork`, `MarkFixed`) and `reply`
+  (`ReplyWith`). **Create:** Featured slots (the listing must be live and the week not full,
+  `L2-106`). **Record actions** with their own dialogs: Listings "Take down" (`L2-101`), Listing,
+  Review and Conversation reports "Act on report" (`L2-105`, `L2-237`), Content versions "Publish a
+  new version" (`L2-247`).
+- **Deletable** (`IAdminDeletable`, `AdminDeletedAt` and a query filter): Saved items, Recent
+  searches, Notifications, Feedback, Feedback screenshots, Stock alerts, Featured slots, Listing
+  photos, Product photos, Launch subscribers, Business pre-registrations, Maintenance windows.
+- **Private:** Messages, Message attachments (open only with an open report, `L2-284` AC3) and
+  Consent records.
+
+### Backend — worker and data
+
+- **`AdminExportSubscription`** — entity: `Id`, `StaffMemberId`, `TableKey`, `CreatedAt`,
+  `LastSentOn`. One per staff member and table.
+- **`WeeklyExportJob`** — on Mondays from 08:00 Toronto time, for every subscription not yet sent
+  that week whose staff member still reads the table, puts an e-mail in the outbox with the link
+  `{AdminBaseUrl}/{table}?export=csv` and marks it sent.
+- **`AdminDeletionPurgeJob`** — once a day, erases the rows of the deletable tables whose
+  `AdminDeletedAt` is more than 30 days old (`L2-281` AC4).
+
+### Frontend (`frontend/projects`)
+
+- **`AdminTablesApi`** (`api`, token `ADMIN_TABLES_API`, `HttpAdminTablesApi`) — the calls above,
+  with the view models `AdminCatalog`, `AdminTableInfo`, `AdminFieldInfo`, `AdminRowsPage`,
+  `AdminRecord`, `AdminValue`.
+- **`AdminCatalogService`** (admin application) — reads the catalog once per screen change and
+  holds it as a signal for the shell and the screens.
+- **`RecordsPage`** (`/:table`) — container: heading, search, status chips, columns and export
+  menus, `jb-records-table`, `jb-bulk-bar`, the delete dialog, toasts. Reads the query from the URL
+  (`q`, `status`, `sort`, `dir`, `page`) so a table can be linked and the back button works;
+  columns and rows per page from `localStorage` (`AdminTablePreferences`, `L2-278` AC5).
+- **`RecordPage`** (`/:table/:id`, `/:table/new`) — container: `jb-record-head`,
+  `jb-record-fields` in reading or editing mode, `jb-backlinks`, `jb-history`, the delete dialog
+  and the record actions' dialogs (`take-down-listing`, `report-action`, `publish-policy`).
+- **`DeleteRecordsDialog`** (`dialogs/delete-records`) — CDK alert dialog of `L2-281` AC1 and AC2.
+- **Components** (`components`): `jb-records-table` (`records`, the `cell--*` values, the phone
+  list, skeleton rows, the empty state), `jb-status-pill` (`status status--{tone}`), `jb-lock-tag`,
+  `jb-record-head`, `jb-record-fields`, `jb-backlinks`, `jb-history`, `jb-bulk-bar`, `jb-doomed`,
+  reusing `jb-menu`, `jb-chip`, `jb-checkbox`, `jb-switch`, `jb-select`, `jb-input`,
+  `jb-textarea`, `jb-skeleton`, `jb-empty-state` and `jb-toast-region`.
+
+## Requirements
+
+| L2 ID | Refines (L1) | Requirement |
+|-------|--------------|-------------|
+| `L2-276` | `L1-027` | Each table shall be described once and one screen, `/{table}`, shall draw any of them: its group, name, sentence, default columns drawn by type, row actions, a phone list under 768 px, skeletons while loading and `JB-ADM-503` on failure. |
+| `L2-277` | `L1-027` | A table shall be searched by any field, filtered by its status chips and sorted by a column heading, by the server, with an empty state that clears both. |
+| `L2-278` | `L1-027` | A table shall offer "Columns" and "Rows per page" (25, 50, 100, 250) kept per table in the browser, and a pagination foot. |
+| `L2-279` | `L1-027` | A table shall export CSV or JSON built on the server and audited, need a reason for private tables, and e-mail a weekly link while the role reads it. |
+| `L2-280` | `L1-027` | A row shall offer Open, Edit, Copy ID, Duplicate and Delete as the table allows; checked rows shall show the bulk bar with "Set {status}", Export, Delete and Clear. |
+| `L2-281` | `L1-027` | Deleting shall ask first (typing "delete" for many), audit it, offer "Undo", keep the records apart for 30 days and refuse the tables the law keeps. |
+| `L2-282` | `L1-027` | A record shall show its breadcrumb, name, status, ID, fields by type, system line, "Points here" and "History", with loading, error and not-found states. |
+| `L2-283` | `L1-027` | "Edit" and "New" shall turn the fields the catalog binds into editors validated by the owning feature, audited, with "Saving…", "Saved" and field errors. |
+| `L2-284` | `L1-027` | The API shall allow each role only its reads and changes, keep System and Staff read-only, open a message only with an open report and audit its read, and audit every change in the same transaction. |
+
+## Diagrams
+
+### System context
+
+Staff work in the tables of the admin application; the API reads and changes Jubilee's records
+and the worker sends the weekly links.
+
+![C4 system context for working in the tables](diagrams/c4-context.png)
+
+### Containers
+
+`Jubilee Admin Web` reads the catalog, rows and records from `Jubilee API`; `Jubilee Worker`
+purges deleted records and sends the weekly exports through the outbox.
+
+![C4 container view for working in the tables](diagrams/c4-container.png)
+
+### Components
+
+The controller sends every call to a handler that checks `AdminRights` and reads the table's
+description in `AdminCatalog`.
+
+![C4 component view for working in the tables](diagrams/c4-component.png)
+
+### Class structure
+
+A table is a set of typed fields over one entity; bindings tie a field to the entity method that
+changes it.
+
+![Class diagram for working in the tables](diagrams/class-structure.png)
+
+### Behaviour — read a table
+
+The page sends its query from the URL; the server applies search, filter, sort and paging to every
+record before it answers (`L2-277` AC6).
+
+![Sequence diagram for reading a table](diagrams/sequence-read-table.png)
+
+### Behaviour — edit a record
+
+A change goes through the field's binding and is audited in the same transaction; a refusal comes
+back field by field (`L2-283`, `L2-284` AC5).
+
+![Sequence diagram for editing a record](diagrams/sequence-edit-record.png)
+
+### Behaviour — delete and undo
+
+Deleting sets `AdminDeletedAt` and audits it; "Undo" clears it; the worker erases it after 30 days
+(`L2-281`).
+
+![Sequence diagram for deleting and restoring records](diagrams/sequence-delete-undo.png)

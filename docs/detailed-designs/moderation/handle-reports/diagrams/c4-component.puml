@@ -5,8 +5,8 @@ title Components — Handle reports
 Container_Boundary(web, "Admin application") {
   Component(bar, "AdminBar", "Angular component", "Shows Reports with the unresolved count")
   Component(session, "StaffSessionService", "Angular service", "Reads the staff session after each navigation and action")
-  Component(list, "AdminReportsPage", "Angular page", "Lists reports with status and overdue mark")
-  Component(detail, "AdminReportPage", "Angular page", "Shows one report and its actions")
+  Component(list, "RecordsPage (the report tables)", "Angular page", "Lists reports with status and overdue mark")
+  Component(detail, "RecordPage (a report)", "Angular page", "Shows one report and its actions")
   Component(dialog, "ReportActionDialog", "CDK dialog", "Collects the resolution note and any message text")
   Component(client, "AdminApi", "Typed HTTP client", "Calls the /api/admin/reports endpoints")
 }

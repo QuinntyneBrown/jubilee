@@ -4,12 +4,13 @@ LAYOUT_WITH_LEGEND()
 title Components — Run the admin application
 
 Container_Boundary(admin, "Jubilee Admin Web") {
-  Component(root, "App", "Angular root container", "Skip link - admin bar - routed page - toasts")
-  Component(bar, "jb-admin-bar", "components library", "Lockup and tag - staff navigation - name and role - Sign out")
+  Component(root, "App", "Angular root container", "Skip link - admin shell - routed page - toasts")
+  Component(bar, "jb-admin-shell", "components library", "Top bar - sidebar of tables - drawer - Sign out")
+  Component(catalog, "AdminCatalogService", "Angular service", "The tables the role may read, with counts")
   Component(guard, "staffGuard", "Route guard", "Sends a caller without a staff session to /sign-in")
   Component(session, "StaffSessionService", "Angular service", "Holds the staff member and roles")
-  Component(pages, "Listings - listing - reports - report - featured pages", "Angular pages", "The five staff screens")
-  Component(adminapi, "AdminApi and StaffSessionApi", "api library", "Typed HTTP clients")
+  Component(pages, "Overview - records - record pages", "Angular pages", "The screens drawn from the catalog")
+  Component(adminapi, "AdminTablesApi and StaffSessionApi", "api library", "Typed HTTP clients")
   Component(expiry, "sessionExpiredInterceptor", "HTTP interceptor", "Sends a 401 to /session-expired or /sign-in")
 }
 Container_Boundary(web, "Jubilee Web") {
@@ -18,6 +19,8 @@ Container_Boundary(web, "Jubilee Web") {
 Container(api, "Jubilee API", "ASP.NET Core", "/api/staff/* and /api/admin/*")
 Rel(root, bar, "Composes")
 Rel(root, session, "Reads")
+Rel(root, catalog, "Reads the sidebar from")
+Rel(catalog, adminapi, "GET /api/admin/tables through")
 Rel(guard, session, "Loads and reads")
 Rel(pages, adminapi, "Reads and decides through")
 Rel(session, adminapi, "GET /api/staff/session through")

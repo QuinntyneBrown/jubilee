@@ -1,0 +1,36 @@
+@startuml
+title UML sequence behaviour — Open the overview
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Staff member" as actor
+box "Frontend — Jubilee Admin Web" #E0F2FE
+  participant "OverviewPage" as page
+  participant "AdminTablesApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "GetAdminOverviewQuery handler" as handler
+  participant "AdminRights" as rights
+end box
+database "Database" as db
+actor -> page : Open /
+page --> actor : Greeting and skeleton lines, aria-busy (L2-274 AC6)
+page -> client : overview()
+client -> handler : GET /api/admin/overview
+handler -> rights : Readable tables for the roles (L2-274 AC7)
+handler -> db : Count each queue, oldest waiting, since yesterday, jobs, outbox, maintenance, audit
+alt read fails
+  handler --> client : 503 JB-ADM-503
+  page --> actor : We could not load what is waiting on staff, Try again
+else read
+  handler --> client : AdminOverviewDto
+  alt nothing waiting
+    page --> actor : Nothing is waiting on staff, All clear (L2-274 AC5)
+  else
+    page --> actor : n things are waiting, Safety and Waiting on us lines (L2-274 AC1-AC3)
+  end
+  page --> actor : System and Recent changes (L2-275)
+end
+@enduml

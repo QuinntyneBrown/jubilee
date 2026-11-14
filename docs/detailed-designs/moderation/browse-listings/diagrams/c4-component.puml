@@ -4,8 +4,8 @@ LAYOUT_WITH_LEGEND()
 title Components — Browse listings
 Container_Boundary(web, "Jubilee Admin Web") {
   Component(guard, "staffGuard", "Angular route guard", "Admits a staff session - sends others to staff sign-in")
-  Component(page, "AdminListingsPage", "Angular page", "Shows summary line and search and listings table")
-  Component(bar, "jb-admin-bar", "components library", "Shows Listings - Reports - Featured")
+  Component(page, "RecordsPage (Listings)", "Angular page", "Shows summary line and search and listings table")
+  Component(bar, "jb-admin-shell", "components library", "Shows Listings - Reports - Featured")
   Component(client, "AdminApi", "Typed HTTP client", "Calls the /api/admin endpoints")
 }
 Container_Boundary(api, "Jubilee API") {

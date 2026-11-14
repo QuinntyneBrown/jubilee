@@ -3,7 +3,7 @@
 LAYOUT_WITH_LEGEND()
 title Components — Feature businesses
 Container_Boundary(admin, "Admin application") {
-  Component(page, "AdminFeaturedPage", "Angular page", "Picks up to five live listings and a start date")
+  Component(page, "RecordsPage (Featured slots)", "Angular page", "Picks up to five live listings and a start date")
   Component(aclient, "AdminApi", "Typed HTTP client", "Calls /api/admin/featured and featured-weeks")
 }
 Container_Boundary(web, "Jubilee app") {

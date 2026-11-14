@@ -1,0 +1,11 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System context — Work in the tables
+Person(staff, "Staff member", "Jubilee team (moderator) or administrator (admin)")
+System(jubilee, "Jubilee", "The admin application, the API and the worker")
+System_Ext(mail, "E-mail service", "Delivers the weekly export link")
+Rel(staff, jubilee, "Reads, searches, exports and changes records in", "HTTPS")
+Rel(jubilee, mail, "Sends the weekly link through", "SMTP")
+Rel(mail, staff, "Delivers the link to")
+@enduml

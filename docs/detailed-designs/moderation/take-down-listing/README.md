@@ -2,6 +2,8 @@
 
 ## Overview
 
+> Since ADR 0074 the admin application is schema-driven: this feature happens in the Listings record (`/listings/:id`), where "Take down" is a record action, drawn by the screens of `admin/work-in-the-tables`. The behaviour, commands and audit records below are unchanged; the screen names are the new ones.
+
 A listing is live as soon as its owner publishes it; nobody verifies it first
 (ADR 0057). Every owner agrees to the statement of faith and to deal honestly
 with every customer when they list (`L2-075`), and the Jubilee team looks
@@ -31,7 +33,7 @@ takedown handler writes the listing, the owner's notification, the e-mail and
 the audit record in one save; `Jubilee Worker` sends the e-mail from the
 outbox as it sends every other e-mail.
 
-- **`AdminListingPage`** — Angular page of the admin application at
+- **`RecordPage` (a listing)** — Angular page of the admin application at
   `/listings/:id`, under the breadcrumb "Listings › {name}". Its header shows
   the name, the subtitle "{category} · published {when} · {status}" (the status
   a `jb-badge`), and the action "Take down listing". The Owner card gives
@@ -126,7 +128,7 @@ outbox as it sends every other e-mail.
 
 For a software platform (kind `platform`, ADR 0072), `AdminListingDto` carries
 `Kind` `platform` and `Platform` (`AdminListingPlatform`: `Website`, `Does`,
-`For` and `Pricing`), null for every other kind. `AdminListingPage` shows the
+`For` and `Pricing`), null for every other kind. `RecordPage` (a listing) shows the
 header as for any listing, "Software platforms · published {when} ·
 {status}", "Take down listing", the Owner card and the flags of `L2-072`. Its
 preview "How members see it" shows the line, "Web address", "What it does",
@@ -205,7 +207,7 @@ record to the `Jubilee database` and drops the directory read cache in the
 
 ### Components
 
-`AdminListingPage` opens `TakeDownListingDialog`. The controller sends one
+`RecordPage` (a listing) opens `TakeDownListingDialog`. The controller sends one
 query and one command; the takedown handler mutates `Listing` and writes the
 notification, outbox e-mail and audit record, the save interceptor drops the
 directory cache, and `OutboxDispatcherJob` sends the e-mail.

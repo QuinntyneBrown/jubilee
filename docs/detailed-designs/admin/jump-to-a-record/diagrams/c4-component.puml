@@ -1,0 +1,20 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Jump to a record
+Container_Boundary(web, "Jubilee Admin Web") {
+  Component(service, "JumpService", "Angular service", "Listens for Ctrl K and Cmd K, opens the dialog, navigates")
+  Component(palette, "jb-command-palette", "components library", "Field, listbox, options, nothing matches")
+  Component(catalog, "AdminCatalogService", "Angular service", "Tables for the table matches")
+  Component(client, "AdminTablesApi", "api library", "jump(q)")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(handler, "JumpQuery handler", "MediatR", "Records by ID or name in readable tables")
+}
+ContainerDb(db, "Database", "SQL Server")
+Rel(service, palette, "Opens in a CDK dialog")
+Rel(service, catalog, "Matches tables from")
+Rel(service, client, "Searches records through")
+Rel(client, handler, "GET /api/admin/jump", "JSON/HTTPS")
+Rel(handler, db, "Reads", "IAppDbContext")
+@enduml
