@@ -123,9 +123,16 @@ public static class StaffPolicies
     public const string Moderator = "staff-moderator";
     public const string Admin = "staff-admin";
 
+    /// <summary>Any staff session: the admin application's tables check the role per table (L2-284, ADR 0074).</summary>
+    public const string Staff = "staff-any";
+
     public static AuthorizationBuilder AddStaffPolicies(this AuthorizationBuilder builder) => builder
         .AddPolicy(Moderator, Policy(Application.Abstractions.Viewer.ModeratorRole))
-        .AddPolicy(Admin, Policy("admin"));
+        .AddPolicy(Admin, Policy("admin"))
+        .AddPolicy(Staff, new AuthorizationPolicyBuilder(StaffSession.Scheme)
+            .RequireAuthenticatedUser()
+            .RequireClaim(StaffSession.RoleClaim, Application.Abstractions.Viewer.ModeratorRole, "admin")
+            .Build());
 
     private static AuthorizationPolicy Policy(string role) => new AuthorizationPolicyBuilder(StaffSession.Scheme)
         .RequireAuthenticatedUser()
