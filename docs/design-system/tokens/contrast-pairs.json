@@ -555,6 +555,24 @@
       "bg": "--color-bg-canvas",
       "min": 3,
       "note": "the accent word of a merchandise heading (large text)"
+    },
+    {
+      "fg": "--color-danger-icon",
+      "bg": "--color-bg-canvas",
+      "min": 3,
+      "note": "admin system list: a failed job or a message the outbox gave up on"
+    },
+    {
+      "fg": "--color-warning-icon",
+      "bg": "--color-bg-canvas",
+      "min": 3,
+      "note": "admin system list: a message the outbox is retrying"
+    },
+    {
+      "fg": "--color-danger-border",
+      "bg": "--color-bg-canvas",
+      "min": 1,
+      "note": "danger-outline button edge (Delete on an admin record): decorative; the label in --color-danger-fg on canvas (4.5:1) identifies the control, so 1.4.11 does not need the edge"
     }
   ]
 }
