@@ -810,7 +810,7 @@ a[data-state="hover"] { color: var(--color-fg-link-hover); text-decoration-thick
 
 /* ---------- Fixes found in the screenshot sweep ------------------------------------------------------ */
 .detail-head__actions { flex-wrap: wrap; }
-.dialog__panel :focus-visible { outline-offset: var(--focus-ring-offset); }
+.dialog__panel :focus-visible:not(.input, .select, .textarea) { outline-offset: var(--focus-ring-offset); }
 @media (max-width: 39.99rem) { .detail-head__actions .btn--primary { flex-basis: 100%; } }
 .empty__text, .alert__body, .toast__text { overflow-wrap: anywhere; }
 
@@ -1550,6 +1550,8 @@ a.rating-link:hover .rating-link__count, a.rating-link[data-state="hover"] .rati
 /* Records: the heading row, the search and columns, the status chips, the table. */
 .records-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: var(--space-5) var(--space-6); }
 .records-head__actions { display: flex; flex: none; align-items: center; gap: var(--space-2); }
+/* On a phone the actions wrap under the heading, at the start of their row: an end menu opens from the trigger's start instead of off the page. */
+@media (width < 40rem) { .records-head__actions .menu-anchor > .menu--end { left: 0; right: auto; transform-origin: top left; } }
 .records-tools { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); margin-top: var(--space-8); }
 .records-tools__search { flex: 1; min-width: 0; }
 .records-tools__search .input { border-radius: var(--radius-full); }

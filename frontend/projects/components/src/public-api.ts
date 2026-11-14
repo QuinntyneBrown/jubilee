@@ -213,5 +213,6 @@ export * from './lib/record-grid/record-grid';
 export * from './lib/record-fields/record-fields';
 export * from './lib/bulk-bar/bulk-bar';
 export * from './lib/doomed-list/doomed-list';
+export * from './lib/export-menu/export-menu';
 export * from './lib/record-system/record-system';
 export * from './lib/record-aside/record-aside';

@@ -3,6 +3,7 @@ import { AdminRecordConfirmDeleteScreen } from '../../pages/admin-record.page';
 import {
   AdminConfirmDeleteOneScreen,
   AdminConfirmDeleteScreen,
+  AdminExportReasonScreen,
 } from '../../pages/admin-records.page';
 import { RequestItemDialog } from '../../pages/messages.page';
 
@@ -44,6 +45,13 @@ parity('dialog', {
       region: (screen: AdminRecordConfirmDeleteScreen) =>
         screen.dialog.root.locator('.dialog__panel'),
       widths: [1280],
+    },
+    {
+      // A private table asks why before it exports (L2-279 AC4).
+      name: 'export-reason',
+      route: 'admin-records.export-reason',
+      screen: (page) => new AdminExportReasonScreen(page),
+      region: (screen: AdminExportReasonScreen) => screen.dialog.root.locator('.dialog__panel'),
     },
   ],
   reference: {

@@ -2,6 +2,7 @@ import type { Locator, Page } from '@playwright/test';
 import type { Region, Screen } from '../fixtures/visual';
 import { AdminShellPage } from './admin-shell.page';
 import { DeleteRecordsDialog } from './delete-records.dialog';
+import { ExportReasonDialog } from './export-reason.dialog';
 
 /**
  * A table of the admin application, `/{table}` (L2-276 to L2-281): its heading with the group, the
@@ -55,6 +56,8 @@ export class AdminRecordsPage extends AdminShellPage implements Screen {
   readonly foot: Locator;
   /** The Columns menu, "Show in table" (L2-278 AC1). */
   readonly columnsMenu: Locator;
+  readonly exportMenu: Locator;
+  readonly exportSelected: Locator;
   readonly resetColumns: Locator;
   /** "{from}–{to} of {total}" in the foot. */
   readonly range: Locator;
@@ -85,7 +88,6 @@ export class AdminRecordsPage extends AdminShellPage implements Screen {
     this.heading = this.main.getByRole('heading', { level: 1 });
     this.lead = this.main.locator('.admin-heading__lead');
     this.lockTag = this.heading.locator('.lock-tag');
-    this.exportButton = this.main.getByRole('button', { name: 'Export' });
     this.newRecord = this.main.getByRole('link', { name: /^New / });
     this.tools = this.main.locator('.records-tools');
     this.search = this.main.getByRole('searchbox');
@@ -102,6 +104,8 @@ export class AdminRecordsPage extends AdminShellPage implements Screen {
     this.empty = this.records.locator('.records__empty');
     this.foot = this.records.locator('.records__foot');
     this.columnsMenu = page.getByRole('menu', { name: 'Columns' });
+    this.exportButton = this.head.getByRole('button', { name: 'Export' });
+    this.exportMenu = page.getByRole('menu', { name: 'Export' });
     this.resetColumns = this.columnsMenu.getByRole('menuitem', { name: 'Reset to default' });
     this.range = this.foot.locator('.records__range > span');
     this.rowsButton = this.foot.getByRole('button', { name: /^Rows per page/ });
@@ -118,6 +122,7 @@ export class AdminRecordsPage extends AdminShellPage implements Screen {
     this.statusMenu = page.getByRole('menu', { name: /^Set / });
     this.clearSelection = this.bulkBar.getByRole('button', { name: 'Clear selection' });
     this.deleteSelected = this.bulkBar.getByRole('button', { name: 'Delete' });
+    this.exportSelected = this.bulkBar.getByRole('button', { name: 'Export' });
   }
 
   /** The cells of a row of the table. */
@@ -219,6 +224,12 @@ export class AdminRecordsPage extends AdminShellPage implements Screen {
     return menu;
   }
 
+  /** Opens Export and chooses an item of its menu (L2-279 AC1). */
+  async exportAs(item: string | RegExp): Promise<void> {
+    await this.exportButton.click();
+    await this.exportMenu.getByRole('menuitem', { name: item }).click();
+  }
+
   /** Checks the rows with these names, in the table or, under 768 px, the list (L2-280 AC3). */
   async select(...names: string[]): Promise<void> {
     for (const name of names) {
@@ -304,6 +315,54 @@ export class AdminBulkStatusMenuScreen extends AdminSelectedScreen {
 
   override regions(): Region[] {
     return [{ name: 'status-menu', locator: this.statusMenu }];
+  }
+}
+
+/** The Members table with Export open (L2-279 AC1). */
+export class AdminExportMenuScreen extends AdminRecordsPage {
+  override async ready(): Promise<void> {
+    await super.ready();
+    if (await this.exportMenu.isVisible()) return; // the mock is drawn open
+    await this.exportButton.click();
+    await this.exportMenu.waitFor();
+  }
+
+  override regions(): Region[] {
+    return [{ name: 'export-menu', locator: this.exportMenu }];
+  }
+}
+
+/** The Export menu once "Email me this weekly" is on: it offers to stop it (L2-279 AC3). */
+export class AdminExportWeeklyScreen extends AdminRecordsPage {
+  override async ready(): Promise<void> {
+    await super.ready();
+    if (await this.exportMenu.isVisible()) return; // the mock is drawn open
+    await this.exportAs('Email me this weekly');
+    await this.exportButton.click();
+    await this.exportMenu.getByRole('menuitem', { name: 'Stop the weekly email' }).waitFor();
+  }
+
+  override regions(): Region[] {
+    return [{ name: 'export-menu', locator: this.exportMenu }];
+  }
+}
+
+/** "CSV, every message" chosen in the Messages table: the dialog asks why (L2-279 AC4). */
+export class AdminExportReasonScreen extends AdminRecordsPage {
+  readonly dialog = new ExportReasonDialog(this.page);
+
+  override async ready(): Promise<void> {
+    if (await this.dialog.title.isVisible()) return; // the mock is drawn open
+    await super.ready();
+    // Chosen with the keyboard, as the mock draws the reason field focused.
+    await this.exportButton.click();
+    await this.exportMenu.getByRole('menuitem', { name: /^CSV, every message/ }).focus();
+    await this.page.keyboard.press('Enter');
+    await this.dialog.title.waitFor();
+  }
+
+  override regions(): Region[] {
+    return [{ name: 'export-reason', locator: this.dialog.root.locator('.dialog__panel') }];
   }
 }
 

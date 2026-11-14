@@ -37,6 +37,8 @@ export class BulkBar {
   readonly statusChosen = output<string>();
   readonly cleared = output<void>();
   readonly deleteChosen = output<void>();
+  /** "Export": a CSV of the selected rows (L2-279 AC2). */
+  readonly exportChosen = output<void>();
 
   protected readonly upward: ConnectedPosition[] = [
     { originX: 'start', originY: 'top', overlayX: 'start', overlayY: 'bottom', offsetY: -8 },

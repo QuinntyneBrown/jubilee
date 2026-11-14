@@ -55,6 +55,7 @@ export interface AdminTable {
   canEdit: boolean;
   canCreate: boolean;
   canDelete: boolean;
+  weeklyExport: boolean;
 }
 
 export interface AdminGroup {
@@ -118,6 +119,7 @@ const table = (
     canEdit: !readOnly && fields.some((f) => f.editable),
     canCreate: false,
     canDelete: false,
+    weeklyExport: false,
     ...extra,
   };
 };
@@ -135,6 +137,11 @@ const MEMBER_FIELDS = [
   created,
   field('emailConfirmed', 'Email confirmed', 'bool', { searchable: false }),
 ];
+
+/** Messages: private, exported only with a reason (L2-279 AC4). */
+export const MESSAGES = table('messages', 'Messages', 'Message', 'Requests & messaging', 14388, {
+  private: true,
+});
 
 /** Members, as the first table of Accounts (L2-276 AC2). */
 export const MEMBERS = table('members', 'Members', 'Member', 'Accounts', 2431, {
@@ -257,7 +264,7 @@ export function catalogFor(staff: StaffMember): AdminGroup[] {
     ['Listings', [LISTINGS, FEATURED_SLOTS]],
     [
       'Requests & messaging',
-      [table('requests', 'Requests', 'Request', 'Requests & messaging', 9800)],
+      [table('requests', 'Requests', 'Request', 'Requests & messaging', 9800), MESSAGES],
     ],
     ['Reviews', [table('reviews', 'Reviews', 'Review', 'Reviews', 640)]],
     [
@@ -436,7 +443,7 @@ export type SaveAnswer = 'ok' | 'refused' | 'slow';
 
 /** A change or a creation the admin application sent. */
 export interface AdminSave {
-  method: 'PATCH' | 'POST';
+  method: 'PATCH' | 'POST' | 'PUT' | 'DELETE';
   path: string;
   values: Record<string, unknown>;
 }
@@ -477,6 +484,8 @@ export interface FakeAdminTables {
   refusal: Record<string, string>;
   /** Every change and creation sent, in order. */
   saves: AdminSave[];
+  /** The path and query of every export, such as `/members/export?format=csv` (L2-279 AC2). */
+  exports: string[];
   /** The rows deleted, by table, until "Undo" brings them back (L2-281 AC3). */
   deleted: Record<string, AdminRow[]>;
   /** The path and query of every request for rows, such as `/members?page=1&size=25`. */
@@ -574,11 +583,15 @@ export async function stubAdminTables(
     saveAnswer: options.saveAnswer ?? 'ok',
     refusal: options.refusal ?? {},
     saves: [],
+    exports: [],
     deleted: {},
     rowRequests: [],
     catalogReads: 0,
   };
-  const groups = mock ? (mockTables.groups as AdminGroup[]) : catalogFor(staffMember);
+  // A copy per test: "Email me this weekly" changes its table (L2-279 AC3).
+  const groups = structuredClone(
+    mock ? (mockTables.groups as AdminGroup[]) : catalogFor(staffMember),
+  );
   const tables = groups.flatMap((g) => g.tables);
 
   await page.route('**/api/admin/tables', (route: Route) => {
@@ -614,6 +627,31 @@ export async function stubAdminTables(
       const chosen = (fake.rows[key] ?? []).filter((r) => body.ids.includes(r.id));
       for (const r of chosen) r.values[field] = body.status;
       return route.fulfill({ json: { count: chosen.length } });
+    }
+    if (id === 'export') {
+      // The file is built on the server (L2-279 AC2); a private table needs a reason (AC4).
+      // Recorded in one spelling (a space as `+`), as the server reads it either way.
+      fake.exports.push(`/${key}/export?${url.searchParams.toString()}`);
+      if (known.private && !url.searchParams.get('reason')) {
+        return route.fulfill(problem(400, 'REASON_REQUIRED', 'Say why you are exporting it.'));
+      }
+      const format = url.searchParams.get('format') === 'json' ? 'json' : 'csv';
+      const name = `${key}-2026-11-14.${format}`;
+      return route.fulfill({
+        status: 200,
+        contentType: format === 'json' ? 'application/json' : 'text/csv',
+        headers: {
+          'content-disposition': `attachment; filename=${name}; filename*=UTF-8''${name}`,
+        },
+        body: format === 'json' ? '[]' : 'ID,Name\r\n',
+      });
+    }
+    if (id === 'weekly-export') {
+      // "Email me this weekly" and "Stop the weekly email" (L2-279 AC3).
+      const method = route.request().method() as 'PUT' | 'DELETE';
+      fake.saves.push({ method, path: `/${key}/weekly-export`, values: {} });
+      known.weeklyExport = method === 'PUT';
+      return route.fulfill({ status: 204 });
     }
     if (route.request().method() === 'POST' && (id === 'delete' || id === 'restore')) {
       // The selected rows deleted, or brought back by "Undo" (L2-281 AC3).

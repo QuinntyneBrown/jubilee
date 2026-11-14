@@ -56,6 +56,16 @@
   outline-offset: var(--focus-ring-offset);
 }
 
+.bulk-bar__btn--export {
+  display: none;
+}
+
+@media (min-width: 40rem) {
+  .bulk-bar__btn--export {
+    display: inline-flex;
+  }
+}
+
 .bulk-bar__btn--danger {
   color: var(--color-danger-icon-inverse);
 }

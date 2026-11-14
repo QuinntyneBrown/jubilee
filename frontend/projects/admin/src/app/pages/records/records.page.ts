@@ -24,6 +24,8 @@ import {
   BulkBar,
   Button,
   EmptyState,
+  ExportChoice,
+  ExportMenu,
   Icon,
   LockTag,
   RecordsColumn,
@@ -41,6 +43,7 @@ import {
 import { distinctUntilChanged, map, Subscription } from 'rxjs';
 import { AdminCatalogService } from '../../services/admin-catalog.service';
 import { AdminDeletionService } from '../../services/admin-deletion.service';
+import { AdminExportService } from '../../services/admin-export.service';
 import { AdminPreferencesService } from '../../services/admin-preferences.service';
 import { AdminScreenService } from '../../services/admin-screen.service';
 import { StaffSessionService } from '../../services/staff-session.service';
@@ -63,6 +66,7 @@ import { NotFoundPage } from '../not-found/not-found.page';
     AdminPage,
     Button,
     EmptyState,
+    ExportMenu,
     Icon,
     LockTag,
     RecordsFilter,
@@ -88,6 +92,8 @@ export class RecordsPage {
   private readonly preferences = inject(AdminPreferencesService);
   private readonly toasts = inject(ToastService);
   private readonly deletion = inject(AdminDeletionService);
+  private readonly exporter = inject(AdminExportService);
+  private readonly route = inject(ActivatedRoute);
 
   protected readonly key = signal('');
   protected readonly state = signal<LoadState<AdminRows>>({ status: 'loading' });
@@ -104,6 +110,11 @@ export class RecordsPage {
   protected readonly selected = signal<readonly string[]>([]);
 
   protected readonly table = computed(() => this.catalog.table(this.key()));
+
+  /** How many rows the search and the filter match, or null when neither is on (L2-279 AC1). */
+  protected readonly matching = computed(() =>
+    this.q().trim() || this.status() ? this.total() : null,
+  );
 
   /** The keys of the columns shown: the staff member's choice of the table's fields, else its defaults. */
   private readonly shownKeys = computed(() => {
@@ -186,8 +197,22 @@ export class RecordsPage {
       const table = this.table();
       if (table) this.title.setTitle(`${table.label} · Jubilee admin`);
     });
-    inject(ActivatedRoute)
-      .paramMap.pipe(
+    // The link of the weekly e-mail, `?export=csv`, downloads every record once (L2-279 AC3).
+    let linked = this.route.snapshot.queryParamMap.get('export') === 'csv';
+    effect(() => {
+      const table = this.table();
+      if (!linked || !table) return;
+      linked = false;
+      this.exporter.download(table, { format: 'csv' });
+      void this.router.navigate([], {
+        relativeTo: this.route,
+        queryParams: { export: null },
+        queryParamsHandling: 'merge',
+        replaceUrl: true,
+      });
+    });
+    this.route.paramMap
+      .pipe(
         map((params) => params.get('table') ?? ''),
         distinctUntilChanged(),
         takeUntilDestroyed(),
@@ -305,6 +330,27 @@ export class RecordsPage {
       table,
       this.rows().filter((r) => ids.includes(r.id)),
     );
+  }
+
+  /** Downloads the file Export's menu chose: every record, or the rows matching (L2-279 AC1, AC2). */
+  protected download(table: AdminTable, choice: ExportChoice): void {
+    const q = this.q().trim();
+    const status = this.status();
+    this.exporter.download(
+      table,
+      choice.matching
+        ? { format: choice.format, q: q || undefined, status: status ?? undefined }
+        : { format: choice.format },
+    );
+  }
+
+  /** "Export" in the bar: the selected rows, as CSV (L2-279 AC2). */
+  protected downloadSelected(table: AdminTable): void {
+    this.exporter.download(table, { format: 'csv', ids: this.selected() });
+  }
+
+  protected weekly(table: AdminTable, on: boolean): void {
+    this.exporter.weekly(table, on);
   }
 
   protected load(): void {

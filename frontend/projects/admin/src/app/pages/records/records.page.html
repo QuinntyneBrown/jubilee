@@ -19,9 +19,16 @@
             }
             {{ table.sentence }}
           </div>
-          <button slot="actions" jb-button type="button" aria-haspopup="menu" aria-expanded="false">
-            <svg jb-icon name="download"></svg>Export<svg jb-icon name="chevron-down"></svg>
-          </button>
+          <div
+            slot="actions"
+            jb-export-menu
+            [singular]="table.singular.toLowerCase()"
+            [total]="table.count"
+            [matching]="matching()"
+            [weekly]="table.weeklyExport"
+            (downloaded)="download(table, $event)"
+            (weeklyChanged)="weekly(table, $event)"
+          ></div>
           @if (table.canCreate) {
             <a slot="actions" jb-button variant="primary" routerLink="new"
               ><svg jb-icon name="plus"></svg>New {{ table.singular.toLowerCase() }}</a
@@ -107,6 +114,7 @@
             (cleared)="selected.set([])"
             [deletable]="table.canDelete"
             (deleteChosen)="removeSelected(table)"
+            (exportChosen)="downloadSelected(table)"
           ></div>
         }
       </div>

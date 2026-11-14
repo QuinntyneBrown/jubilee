@@ -54,6 +54,8 @@ export interface AdminTable {
   canEdit: boolean;
   canCreate: boolean;
   canDelete: boolean;
+  /** The staff member gets a link to its CSV every Monday (L2-279 AC3). */
+  weeklyExport: boolean;
 }
 
 export interface AdminGroup {
@@ -159,4 +161,14 @@ export type AdminValues = Record<string, string | null>;
 /** How many records a change of the selection reached (L2-280 AC4). */
 export interface AdminCount {
   count: number;
+}
+
+/** What an export holds: every record, the matching ones (`q`, `status`) or the selected `ids` (L2-279 AC2). */
+export interface AdminExportQuery {
+  format: 'csv' | 'json';
+  q?: string;
+  status?: string | null;
+  ids?: readonly string[];
+  /** Why private data is exported; kept in Audit records (L2-279 AC4). */
+  reason?: string;
 }

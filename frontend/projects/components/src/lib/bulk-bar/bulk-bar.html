@@ -19,6 +19,9 @@
       </jb-menu>
     </ng-template>
   }
+  <button class="bulk-bar__btn bulk-bar__btn--export" type="button" (click)="exportChosen.emit()">
+    <svg jb-icon name="download"></svg>Export
+  </button>
   @if (deletable()) {
     <button class="bulk-bar__btn bulk-bar__btn--danger" type="button" (click)="deleteChosen.emit()">
       <svg jb-icon name="trash-can"></svg>Delete

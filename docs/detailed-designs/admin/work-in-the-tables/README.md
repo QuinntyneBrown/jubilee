@@ -130,9 +130,15 @@ and those a new record is given (`creatable`).
   saved, opens the record with "Saved". A reference's select offers the first 250 records of its
   table as "{name} · {ID}".
 - **`DeleteRecordsDialog`** (`dialogs/delete-records`) — CDK alert dialog of `L2-281` AC1 and AC2.
+- **`AdminExportService`** (admin application) — downloads an export: asks for the reason first
+  where the table is private (`ExportReasonDialog`, `dialogs/export-reason`, `L2-279` AC4), calls
+  the export endpoint and saves the file under the name of its `Content-Disposition`; turns "Email
+  me this weekly" on or off and refreshes the catalog. The link of the weekly e-mail,
+  `/{table}?export=csv`, downloads every record once and leaves `/{table}` in the address.
 - **Components** (`components`): `jb-records-table` (`records`, the `cell--*` values, the phone
   list, skeleton rows, the empty state), `jb-status-pill` (`status status--{tone}`), `jb-lock-tag`,
-  `jb-record-head`, `jb-record-fields`, `jb-backlinks`, `jb-history`, `jb-bulk-bar`, `jb-doomed`,
+  `jb-record-head`, `jb-record-fields`, `jb-backlinks`, `jb-history`, `jb-bulk-bar`, `jb-doomed-list`,
+  `jb-export-menu` (Export and its menu, the matching rows first while a search or a filter is on),
   reusing `jb-menu`, `jb-chip`, `jb-checkbox`, `jb-switch`, `jb-select`, `jb-input`,
   `jb-textarea`, `jb-skeleton`, `jb-empty-state` and `jb-toast-region`.
 
@@ -173,6 +179,14 @@ gap.
   launch sign-ups skip deleted rows, so a member can save again what was deleted. If they do,
   "Undo" of the old one would break the index and is refused with `JB-ADM-504`. <TO SUPPLY>
   whether "Undo" should then drop the older copy.
+- **Export's menu on a phone**: the menu is aligned to Export's end edge, as the mocks draw it. On a
+  phone Export starts its row under the heading, so the menu opens from its start edge instead
+  (the application falls back to it wherever the end edge would leave the page).
+- **The reason field focused in a dialog**: a field's focus ring sits on its border, as everywhere
+  else; the design system's rule that sets the ring off inside a dialog applies to the other
+  controls only.
+- **"Type delete to confirm"**: the label is plain text, as its accessible name reads; the mock's
+  `<code>` around "delete" is dropped because `jb-field` takes its label as text.
 
 ## Requirements
 

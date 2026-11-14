@@ -1,5 +1,5 @@
 // Acceptance Test
-// Traces to: L2-099, L2-106, L2-188, L2-272, L2-276, L2-277, L2-278, L2-280, L2-281, L2-282, L2-283,
+// Traces to: L2-099, L2-106, L2-188, L2-272, L2-276, L2-277, L2-278, L2-279, L2-280, L2-281, L2-282, L2-283,
 // L2-284
 // Description: the schema-driven admin application (ADR 0074): its shell with the sidebar of
 // tables in their groups, what a role may read, and one table read from the catalog.
@@ -17,6 +17,7 @@ import { ada, miriam } from '../fixtures/staff';
 import { AdminRecordPage } from '../pages/admin-record.page';
 import { AdminRecordsPage } from '../pages/admin-records.page';
 import { DeleteRecordsDialog } from '../pages/delete-records.dialog';
+import { ExportReasonDialog } from '../pages/export-reason.dialog';
 import { Toasts } from '../pages/toasts';
 
 test.describe('the shell of the admin application (L2-272)', () => {
@@ -1358,5 +1359,143 @@ test.describe('delete records (L2-281)', () => {
     await jb.gotoAdmin(`/feedback/${FEEDBACK_ROW.id}`);
     await expect(record.heading).toBeVisible();
     await expect(record.delete).toHaveCount(0);
+  });
+});
+
+test.describe('export a table (L2-279)', () => {
+  const [ruth, naomi] = MEMBER_ROWS;
+
+  test('AC1: Export offers CSV and JSON of every record with the count, and the weekly e-mail', async ({
+    page,
+    jb,
+  }) => {
+    const records = new AdminRecordsPage(page);
+    await records.setWidth(1280);
+    await stubAdminTables(page, ada);
+    await jb.gotoAdmin('/members');
+
+    await records.exportButton.click();
+
+    await expect(records.exportMenu.locator('.menu__label')).toHaveText('Download');
+    await expect(records.exportMenu.getByRole('menuitem')).toHaveText([
+      /CSV, every member\s*2,431/,
+      /JSON, every field\s*2,431/,
+      'Email me this weekly',
+    ]);
+  });
+
+  test('AC1: with a search, Export offers the matching rows first', async ({ page, jb }) => {
+    const records = new AdminRecordsPage(page);
+    await records.setWidth(1280);
+    const fake = await stubAdminTables(page, ada);
+    await jb.gotoAdmin('/members');
+    await records.search.fill('ruth');
+    await expect(records.row('Naomi Laurent')).toHaveCount(0);
+
+    await records.exportButton.click();
+    await expect(records.exportMenu.getByRole('menuitem').first()).toHaveText(
+      /CSV, matching rows\s*1/,
+    );
+    const download = page.waitForEvent('download');
+    await records.exportMenu.getByRole('menuitem', { name: /^CSV, matching rows/ }).click();
+
+    expect((await download).suggestedFilename()).toBe('members-2026-11-14.csv');
+    expect(fake.exports).toEqual(['/members/export?format=csv&q=ruth']);
+  });
+
+  test('AC2: CSV and JSON download the files the server builds', async ({ page, jb }) => {
+    const records = new AdminRecordsPage(page);
+    await records.setWidth(1280);
+    const fake = await stubAdminTables(page, ada);
+    await jb.gotoAdmin('/members');
+
+    let download = page.waitForEvent('download');
+    await records.exportAs(/^CSV, every member/);
+    expect((await download).suggestedFilename()).toBe('members-2026-11-14.csv');
+
+    download = page.waitForEvent('download');
+    await records.exportAs(/^JSON, every field/);
+    expect((await download).suggestedFilename()).toBe('members-2026-11-14.json');
+    expect(fake.exports).toEqual(['/members/export?format=csv', '/members/export?format=json']);
+  });
+
+  test('AC2: Export in the selection bar downloads the selected rows', async ({ page, jb }) => {
+    const records = new AdminRecordsPage(page);
+    await records.setWidth(1280);
+    const fake = await stubAdminTables(page, ada);
+    await jb.gotoAdmin('/members');
+    await records.select('Ruth Chen', 'Naomi Laurent');
+
+    const download = page.waitForEvent('download');
+    await records.exportSelected.click();
+
+    expect((await download).suggestedFilename()).toBe('members-2026-11-14.csv');
+    expect(fake.exports).toEqual([`/members/export?format=csv&ids=${ruth.id}&ids=${naomi.id}`]);
+  });
+
+  test('AC3: "Email me this weekly" turns on, and the same menu stops it', async ({ page, jb }) => {
+    const records = new AdminRecordsPage(page);
+    await records.setWidth(1280);
+    const fake = await stubAdminTables(page, ada);
+    await jb.gotoAdmin('/members');
+
+    await records.exportAs('Email me this weekly');
+
+    await expect(
+      new Toasts(page).withTitle('Every Monday at 08:00 you’ll get a link to this table’s CSV'),
+    ).toBeVisible();
+    await records.exportButton.click();
+    await expect(records.exportMenu.getByRole('menuitem').last()).toHaveText(
+      'Stop the weekly email',
+    );
+    await records.exportMenu.getByRole('menuitem', { name: 'Stop the weekly email' }).click();
+
+    await expect(new Toasts(page).withTitle('The weekly email is stopped')).toBeVisible();
+    expect(fake.saves).toEqual([
+      { method: 'PUT', path: '/members/weekly-export', values: {} },
+      { method: 'DELETE', path: '/members/weekly-export', values: {} },
+    ]);
+  });
+
+  test('AC3: the link of the weekly e-mail downloads the CSV', async ({ page, jb }) => {
+    await new AdminRecordsPage(page).setWidth(1280);
+    const fake = await stubAdminTables(page, ada);
+
+    const download = page.waitForEvent('download');
+    await jb.gotoAdmin('/members?export=csv');
+
+    expect((await download).suggestedFilename()).toBe('members-2026-11-14.csv');
+    expect(fake.exports).toEqual(['/members/export?format=csv']);
+    await expect(page).toHaveURL(/\/members$/);
+  });
+
+  test('AC4: a private table asks why before it exports, and sends the reason', async ({
+    page,
+    jb,
+  }) => {
+    const records = new AdminRecordsPage(page);
+    const dialog = new ExportReasonDialog(page);
+    await records.setWidth(1280);
+    const fake = await stubAdminTables(page, ada, { rows: { messages: [] } });
+    await jb.gotoAdmin('/messages');
+
+    await records.exportAs(/^CSV, every message/);
+
+    await expect(dialog.title).toHaveText('Why export messages?');
+    await expect(dialog.description).toHaveText(
+      'Messages are private. Your reason is kept in Audit records with the export, under your name.',
+    );
+    await expect(dialog.export).toHaveAttribute('aria-disabled', 'true');
+    expect(fake.exports).toEqual([]);
+
+    await dialog.reason.fill('Report JB-4411 asks for the thread');
+    const download = page.waitForEvent('download');
+    await dialog.export.click();
+
+    expect((await download).suggestedFilename()).toBe('messages-2026-11-14.csv');
+    expect(fake.exports).toEqual([
+      '/messages/export?format=csv&reason=Report+JB-4411+asks+for+the+thread',
+    ]);
+    await expect(dialog.title).toHaveCount(0);
   });
 });

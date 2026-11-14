@@ -1,4 +1,4 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
 import { Injectable, InjectionToken, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import {
@@ -7,6 +7,7 @@ import {
   AdminRows,
   AdminRowsQuery,
   AdminCount,
+  AdminExportQuery,
   AdminValues,
 } from '../models/admin-tables';
 
@@ -28,6 +29,10 @@ export interface AdminTablesApi {
   remove(table: string, ids: readonly string[]): Observable<AdminCount>;
   /** Brings back records just deleted: "Undo" (L2-281 AC3). */
   restore(table: string, ids: readonly string[]): Observable<AdminCount>;
+  /** The table as a file built on the server, named by the answer (L2-279 AC2). */
+  export(table: string, query: AdminExportQuery): Observable<HttpResponse<Blob>>;
+  /** Turns "Email me this weekly" on or off (L2-279 AC3). */
+  setWeeklyExport(table: string, on: boolean): Observable<void>;
 }
 
 export const ADMIN_TABLES_API = new InjectionToken<AdminTablesApi>('ADMIN_TABLES_API');
@@ -85,5 +90,23 @@ export class HttpAdminTablesApi implements AdminTablesApi {
     return this.http.post<AdminCount>(`/api/admin/tables/${encodeURIComponent(table)}/restore`, {
       ids,
     });
+  }
+
+  export(table: string, query: AdminExportQuery): Observable<HttpResponse<Blob>> {
+    let params = new HttpParams().set('format', query.format);
+    if (query.q) params = params.set('q', query.q);
+    if (query.status) params = params.set('status', query.status);
+    for (const id of query.ids ?? []) params = params.append('ids', id);
+    if (query.reason) params = params.set('reason', query.reason);
+    return this.http.get(`/api/admin/tables/${encodeURIComponent(table)}/export`, {
+      params,
+      observe: 'response',
+      responseType: 'blob',
+    });
+  }
+
+  setWeeklyExport(table: string, on: boolean): Observable<void> {
+    const url = `/api/admin/tables/${encodeURIComponent(table)}/weekly-export`;
+    return on ? this.http.put<void>(url, null) : this.http.delete<void>(url);
   }
 }
