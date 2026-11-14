@@ -222,10 +222,11 @@ test.describe('choose the view, the fit and the size (L2-264)', () => {
     await jb.goto('/purpose-tee');
 
     await tee.chooseFit('Youth');
+    await expect(tee.sizeStatus).toHaveText('Every Youth size is sold out. Choose another fit.');
+    await expect(tee.sizes.getByRole('radio')).toHaveCount(5);
     for (const radio of await tee.sizes.getByRole('radio').all()) {
       await expect(radio).toBeDisabled();
     }
-    await expect(tee.sizeStatus).toHaveText('Every Youth size is sold out. Choose another fit.');
   });
 });
 
