@@ -1,0 +1,9 @@
+<form
+  jb-search-field
+  class="records-tools__search"
+  [label]="'Search ' + unit()"
+  [placeholder]="'Search ' + unit() + ' by any field'"
+  [value]="value()"
+  (typed)="typed.emit($event)"
+></form>
+<div class="records-tools__columns"><ng-content select="[slot=columns]" /></div>

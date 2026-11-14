@@ -5,9 +5,11 @@ import {
   computed,
   inject,
   input,
+  output,
 } from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
+import { Button } from '../button/button';
 import { Icon } from '../icon/icon';
 import { Skeleton } from '../skeleton/skeleton';
 import { StatusPill } from '../status-pill/status-pill';
@@ -33,6 +35,21 @@ export interface RecordsColumn {
   key: string;
   label: string;
   type: RecordsColumnType;
+  /** False for a column the server cannot sort by; its heading is not a button. */
+  sortable?: boolean;
+}
+
+/** How the table is sorted: by a column, ascending or descending (L2-277 AC5). */
+export interface RecordsSort {
+  key: string;
+  dir: 'asc' | 'desc';
+}
+
+/** What a table without rows says, and the action that clears what hid them (L2-277 AC3). */
+export interface RecordsEmpty {
+  title: string;
+  text: string;
+  action?: string;
 }
 
 /** A reference: the record's name, or deleted; a name is null when the role may not read its table. */
@@ -134,12 +151,14 @@ export function cellOf(type: RecordsColumnType, value: unknown): Cell {
  * a column of checkboxes when `selectable` and a last column of row actions; a row's name links to
  * its record and choosing the row opens it. Below 768 px it is a list of names, IDs and statuses.
  * A table wider than the card scrolls inside it. While `loading`, six rows of skeletons fill the
- * columns. `error` replaces everything with the `error` slot; the `empty` slot follows rows that
- * are none; the `foot` slot (the pagination) closes the card.
+ * columns. `error` replaces everything with the `error` slot; with no rows the card says `empty`
+ * and its action emits `emptyAction`; the `foot` slot (the pagination) closes the card. A sortable
+ * column's heading is a button that sorts ascending, then descending, then not at all, emitting
+ * `sorted` and saying the order with `aria-sort`.
  */
 @Component({
   selector: 'div[jb-records-table]',
-  imports: [NgTemplateOutlet, RouterLink, Icon, Skeleton, StatusPill],
+  imports: [NgTemplateOutlet, RouterLink, Button, Icon, Skeleton, StatusPill],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'records' },
   templateUrl: './records-table.html',
@@ -158,6 +177,11 @@ export class RecordsTable {
   readonly selectable = input(false, { transform: booleanAttribute });
   readonly loading = input(false, { transform: booleanAttribute });
   readonly error = input(false, { transform: booleanAttribute });
+  readonly sort = input<RecordsSort | null>(null);
+  readonly empty = input<RecordsEmpty | null>(null);
+
+  readonly sorted = output<RecordsSort | null>();
+  readonly emptyAction = output<void>();
 
   protected readonly skeletons = [0, 1, 2, 3, 4, 5];
   protected readonly widths = [50, 70, 30] as const;
@@ -186,6 +210,21 @@ export class RecordsTable {
       })),
     })),
   );
+
+  protected ariaSort(column: RecordsColumn): 'ascending' | 'descending' | 'none' | null {
+    if (column.sortable === false) return null;
+    const sort = this.sort();
+    if (sort?.key !== column.key) return 'none';
+    return sort.dir === 'asc' ? 'ascending' : 'descending';
+  }
+
+  /** Ascending, then descending, then not at all (L2-277 AC5). */
+  protected sortBy(column: RecordsColumn): void {
+    const sort = this.sort();
+    if (sort?.key !== column.key) this.sorted.emit({ key: column.key, dir: 'asc' });
+    else if (sort.dir === 'asc') this.sorted.emit({ key: column.key, dir: 'desc' });
+    else this.sorted.emit(null);
+  }
 
   protected width(row: number, column: number): 30 | 50 | 70 {
     return this.widths[(row + column) % 3];

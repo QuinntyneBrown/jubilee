@@ -201,3 +201,5 @@ export * from './lib/records-table/records-table';
 export * from './lib/status-pill/status-pill';
 export * from './lib/admin-page/admin-page';
 export * from './lib/records-head/records-head';
+export * from './lib/records-tools/records-tools';
+export * from './lib/records-filter/records-filter';

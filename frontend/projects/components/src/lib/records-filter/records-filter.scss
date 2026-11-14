@@ -1,0 +1,10 @@
+// Block: records-filter. The status chips under the search of a table of the admin application.
+// Like the mock's row, it reaches a focus ring's width past the column on each side.
+:host {
+  display: block;
+  margin: var(--space-4) calc(-1 * var(--space-1)) 0;
+}
+
+.records-filter__row {
+  margin: 0;
+}

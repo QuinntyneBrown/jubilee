@@ -41,6 +41,8 @@ export interface AdminTable {
   singular: string;
   group: string;
   sentence: string;
+  /** What an empty table says after "No {table} yet." (L2-099 AC4). */
+  empty: string | null;
   count: number;
   fields: AdminField[];
   defaultColumns: string[];
@@ -102,6 +104,7 @@ const table = (
     singular,
     group,
     sentence: `The ${label.toLowerCase()} of Jubilee.`,
+    empty: null,
     count,
     fields,
     defaultColumns: fields.slice(0, 6).map((f) => f.key),
@@ -162,6 +165,7 @@ const LISTING_FIELDS = [
 export const LISTINGS = table('listings', 'Listings', 'Listing', 'Listings', 184_212, {
   sentence:
     'Every shop, service and space on Jubilee. Unpublishing hides it from Browse immediately.',
+  empty: 'A listing appears here as soon as its owner publishes it.',
   fields: LISTING_FIELDS,
   defaultColumns: ['id', 'name', 'kind', 'status', 'ownerId', 'category', 'neighbourhood'],
   statusField: 'status',
@@ -341,6 +345,30 @@ const problem = (status: number, code: string, title: string) => ({
   body: JSON.stringify({ title, status, code, correlationId: 'e2e' }),
 });
 
+const text = (value: unknown): string =>
+  value !== null && typeof value === 'object' && 'name' in value
+    ? String((value as { name: unknown }).name ?? '')
+    : String(value ?? '');
+
+/** The rows that match `q` and `status`, sorted by `sort` and `dir`, as the API answers them. */
+function answerRows(table: AdminTable, rows: AdminRow[], params: URLSearchParams): AdminRow[] {
+  const q = (params.get('q') ?? '').toLowerCase();
+  const status = params.get('status');
+  const sort = params.get('sort');
+  const down = params.get('dir') === 'desc';
+  let found = rows.filter(
+    (row) =>
+      (!q || Object.values(row.values).some((v) => text(v).toLowerCase().includes(q))) &&
+      (!status || !table.statusField || row.values[table.statusField] === status),
+  );
+  if (sort) {
+    found = [...found].sort(
+      (a, b) => text(a.values[sort]).localeCompare(text(b.values[sort])) * (down ? -1 : 1),
+    );
+  }
+  return found;
+}
+
 /** Answers the session, the catalog and the rows for a staff member. */
 export async function stubAdminTables(
   page: Page,
@@ -389,7 +417,8 @@ export async function stubAdminTables(
     if (fake.answer === 'slow') return; // never answered: the table stays loading
     const size = Number(url.searchParams.get('size') ?? 25);
     const pageNumber = Number(url.searchParams.get('page') ?? 1);
-    const rows = fake.rows[key] ?? [];
+    // The server searches, filters and sorts every record of the table (L2-277 AC6).
+    const rows = answerRows(known, fake.rows[key] ?? [], url.searchParams);
     return route.fulfill({
       json: { rows, total: rows.length, page: pageNumber, size },
     });

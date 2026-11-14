@@ -10,6 +10,7 @@
           "singular": "Member",
           "group": "Accounts",
           "sentence": "Everyone with a Jubilee account: shoppers, renters and the people behind each listing.",
+          "empty": null,
           "count": 2418,
           "fields": [
             {
@@ -160,6 +161,7 @@
           "singular": "Staff member",
           "group": "Accounts",
           "sentence": "People who can sign in to this admin, and what they are allowed to change.",
+          "empty": null,
           "count": 9,
           "fields": [
             {
@@ -266,6 +268,7 @@
           "singular": "Session",
           "group": "Accounts",
           "sentence": "Signed-in devices. Revoking one signs that device out on its next request.",
+          "empty": null,
           "count": 3127,
           "fields": [
             {
@@ -383,6 +386,7 @@
           "singular": "Sign-in failure",
           "group": "Accounts",
           "sentence": "Failed sign-in attempts, kept 90 days. Five in ten minutes locks the email.",
+          "empty": null,
           "count": 412,
           "fields": [
             {
@@ -478,6 +482,7 @@
           "singular": "Link token",
           "group": "Accounts",
           "sentence": "One-time sign-in and email-verification links. Each works once and lasts 15 minutes.",
+          "empty": null,
           "count": 864,
           "fields": [
             {
@@ -584,6 +589,7 @@
           "singular": "Password reset request",
           "group": "Accounts",
           "sentence": "Requests to reset a password, with whether the link was used.",
+          "empty": null,
           "count": 157,
           "fields": [
             {
@@ -690,6 +696,7 @@
           "singular": "Security alert",
           "group": "Accounts",
           "sentence": "Things that look wrong: brute force, impossible travel, many accounts from one device.",
+          "empty": null,
           "count": 23,
           "fields": [
             {
@@ -796,6 +803,7 @@
           "singular": "Consent record",
           "group": "Accounts",
           "sentence": "What each member agreed to, and when. Kept for CASL and PIPEDA, never edited, only superseded.",
+          "empty": null,
           "count": 4930,
           "fields": [
             {
@@ -902,6 +910,7 @@
           "singular": "Statement agreement",
           "group": "Accounts",
           "sentence": "Members who agreed to the Jubilee statement of faith and community standards.",
+          "empty": null,
           "count": 1806,
           "fields": [
             {
@@ -986,6 +995,7 @@
           "singular": "Data export",
           "group": "Accounts",
           "sentence": "Member requests for a copy of their data. PIPEDA gives us 30 days.",
+          "empty": null,
           "count": 38,
           "fields": [
             {
@@ -1098,6 +1108,7 @@
           "singular": "Listing",
           "group": "Listings",
           "sentence": "Every shop, service and space on Jubilee. Unpublishing hides it from Browse immediately.",
+          "empty": null,
           "count": 386,
           "fields": [
             {
@@ -1267,6 +1278,7 @@
           "singular": "Listing draft",
           "group": "Listings",
           "sentence": "Listings started but never submitted. Autosaved every 10 seconds while the seller types.",
+          "empty": null,
           "count": 74,
           "fields": [
             {
@@ -1373,6 +1385,7 @@
           "singular": "Listing submission",
           "group": "Listings",
           "sentence": "Listings sent for review. Approve publishes; reject returns it to the seller with your note.",
+          "empty": null,
           "count": 412,
           "fields": [
             {
@@ -1486,6 +1499,7 @@
           "singular": "Listing slug",
           "group": "Listings",
           "sentence": "Public URLs for listings. Old slugs redirect to the current one.",
+          "empty": null,
           "count": 431,
           "fields": [
             {
@@ -1570,6 +1584,7 @@
           "singular": "Listing photo",
           "group": "Listings",
           "sentence": "Cover and gallery photos on listings. Each is scanned for faces of children and street numbers.",
+          "empty": null,
           "count": 2204,
           "fields": [
             {
@@ -1676,6 +1691,7 @@
           "singular": "Listing view",
           "group": "Listings",
           "sentence": "Page views on listings, one row per visit. Rolled up nightly into response stats.",
+          "empty": null,
           "count": 184220,
           "fields": [
             {
@@ -1760,6 +1776,7 @@
           "singular": "Product",
           "group": "Listings",
           "sentence": "Things shops sell. Price and stock are what Browse and the listing page show.",
+          "empty": null,
           "count": 1142,
           "fields": [
             {
@@ -1877,6 +1894,7 @@
           "singular": "Product photo",
           "group": "Listings",
           "sentence": "Photos on products, in display order.",
+          "empty": null,
           "count": 3016,
           "fields": [
             {
@@ -1961,6 +1979,7 @@
           "singular": "Service",
           "group": "Listings",
           "sentence": "Bookable offerings on service listings, with how they are priced.",
+          "empty": null,
           "count": 618,
           "fields": [
             {
@@ -2067,6 +2086,7 @@
           "singular": "Delivery method",
           "group": "Listings",
           "sentence": "How a shop gets things to buyers: pickup, local delivery or shipping.",
+          "empty": null,
           "count": 507,
           "fields": [
             {
@@ -2162,6 +2182,7 @@
           "singular": "Stock alert",
           "group": "Listings",
           "sentence": "Members waiting for a product to come back. Sent once when stock goes above zero.",
+          "empty": null,
           "count": 96,
           "fields": [
             {
@@ -2246,6 +2267,7 @@
           "singular": "Featured slot",
           "group": "Listings",
           "sentence": "Places on Browse and Home where a listing is promoted, by date range.",
+          "empty": null,
           "count": 52,
           "fields": [
             {
@@ -2352,6 +2374,7 @@
           "singular": "Response time stat",
           "group": "Listings",
           "sentence": "How fast each listing answers requests, over the last 30 days. Recomputed nightly.",
+          "empty": null,
           "count": 386,
           "fields": [
             {
@@ -2460,6 +2483,7 @@
           "singular": "Request",
           "group": "Requests & messaging",
           "sentence": "Orders, bookings and rental enquiries from members to listings.",
+          "empty": null,
           "count": 1934,
           "fields": [
             {
@@ -2577,6 +2601,7 @@
           "singular": "Request transition",
           "group": "Requests & messaging",
           "sentence": "Each status change on a request, who made it and why.",
+          "empty": null,
           "count": 5210,
           "fields": [
             {
@@ -2672,6 +2697,7 @@
           "singular": "Conversation",
           "group": "Requests & messaging",
           "sentence": "Message threads between a member and a listing, opened by a request or a question.",
+          "empty": null,
           "count": 1702,
           "fields": [
             {
@@ -2778,6 +2804,7 @@
           "singular": "Message",
           "group": "Requests & messaging",
           "sentence": "Individual messages. Open only with a reason: staff reads are written to the audit log.",
+          "empty": null,
           "count": 14388,
           "fields": [
             {
@@ -2873,6 +2900,7 @@
           "singular": "Message attachment",
           "group": "Requests & messaging",
           "sentence": "Files sent in messages. Scanned for malware before the recipient can open them.",
+          "empty": null,
           "count": 2066,
           "fields": [
             {
@@ -2974,6 +3002,7 @@
           "singular": "Review",
           "group": "Reviews",
           "sentence": "Star ratings and written reviews on listings. Hiding one removes it from the rating too.",
+          "empty": null,
           "count": 2871,
           "fields": [
             {
@@ -3097,6 +3126,7 @@
           "singular": "Listing report",
           "group": "Moderation",
           "sentence": "Listings that members have reported. One report groups every entry about the same listing.",
+          "empty": null,
           "count": 141,
           "fields": [
             {
@@ -3203,6 +3233,7 @@
           "singular": "Listing report entry",
           "group": "Moderation",
           "sentence": "Each member’s individual report, with their words.",
+          "empty": null,
           "count": 233,
           "fields": [
             {
@@ -3287,6 +3318,7 @@
           "singular": "Review report",
           "group": "Moderation",
           "sentence": "Reviews flagged by sellers or members as unfair, abusive or fake.",
+          "empty": null,
           "count": 64,
           "fields": [
             {
@@ -3382,6 +3414,7 @@
           "singular": "Conversation report",
           "group": "Moderation",
           "sentence": "Members reporting a message thread for harassment, spam or off-platform payment.",
+          "empty": null,
           "count": 37,
           "fields": [
             {
@@ -3477,6 +3510,7 @@
           "singular": "Report action",
           "group": "Moderation",
           "sentence": "What moderators did about a report, and the note left for the member.",
+          "empty": null,
           "count": 198,
           "fields": [
             {
@@ -3578,6 +3612,7 @@
           "singular": "Saved item",
           "group": "Member activity",
           "sentence": "Listings and products members have saved for later.",
+          "empty": null,
           "count": 8920,
           "fields": [
             {
@@ -3662,6 +3697,7 @@
           "singular": "Recent search",
           "group": "Member activity",
           "sentence": "What members typed into search, kept 30 days to power suggestions.",
+          "empty": null,
           "count": 21530,
           "fields": [
             {
@@ -3746,6 +3782,7 @@
           "singular": "Notification",
           "group": "Member activity",
           "sentence": "In-app, email and push notifications sent to members.",
+          "empty": null,
           "count": 30412,
           "fields": [
             {
@@ -3858,6 +3895,7 @@
           "singular": "Feedback",
           "group": "Feedback",
           "sentence": "Ratings, bug reports and kudos sent from the app’s feedback button.",
+          "empty": null,
           "count": 289,
           "fields": [
             {
@@ -3964,6 +4002,7 @@
           "singular": "Feedback screenshot",
           "group": "Feedback",
           "sentence": "Screenshots attached to feedback, with the page they were taken on.",
+          "empty": null,
           "count": 97,
           "fields": [
             {
@@ -4054,6 +4093,7 @@
           "singular": "Merch product",
           "group": "Merch",
           "sentence": "Jubilee’s own merch: tees, mugs and stickers sold on the marketing site.",
+          "empty": null,
           "count": 6,
           "fields": [
             {
@@ -4149,6 +4189,7 @@
           "singular": "Merch variant",
           "group": "Merch",
           "sentence": "Size and colourway combinations, each with its own stock.",
+          "empty": null,
           "count": 21,
           "fields": [
             {
@@ -4255,6 +4296,7 @@
           "singular": "Merch order",
           "group": "Merch",
           "sentence": "Orders from the merch store, paid through Stripe.",
+          "empty": null,
           "count": 214,
           "fields": [
             {
@@ -4361,6 +4403,7 @@
           "singular": "Merch order line",
           "group": "Merch",
           "sentence": "Each variant and quantity on a merch order.",
+          "empty": null,
           "count": 503,
           "fields": [
             {
@@ -4451,6 +4494,7 @@
           "singular": "Launch subscriber",
           "group": "Launch",
           "sentence": "Emails collected before launch who want to hear when Jubilee opens in their area.",
+          "empty": null,
           "count": 3184,
           "fields": [
             {
@@ -4546,6 +4590,7 @@
           "singular": "Business pre-registration",
           "group": "Launch",
           "sentence": "Businesses who signed up to list before launch, waiting for an invite.",
+          "empty": null,
           "count": 268,
           "fields": [
             {
@@ -4652,6 +4697,7 @@
           "singular": "Access request",
           "group": "Launch",
           "sentence": "People asking to join during invite-only beta. Approving sends a sign-up link.",
+          "empty": null,
           "count": 91,
           "fields": [
             {
@@ -4764,6 +4810,7 @@
           "singular": "Content version",
           "group": "Site & content",
           "sentence": "Published copy for site pages and emails. Restoring a version publishes it again.",
+          "empty": null,
           "count": 142,
           "fields": [
             {
@@ -4870,6 +4917,7 @@
           "singular": "Maintenance window",
           "group": "Site & content",
           "sentence": "Planned downtime. Members see a banner 24 hours before it starts.",
+          "empty": null,
           "count": 7,
           "fields": [
             {
@@ -4982,6 +5030,7 @@
           "singular": "Audit record",
           "group": "System",
           "sentence": "Every change made in this admin and every staff read of private data. Cannot be edited.",
+          "empty": null,
           "count": 48113,
           "fields": [
             {
@@ -5088,6 +5137,7 @@
           "singular": "Outbox message",
           "group": "System",
           "sentence": "Events waiting to be delivered to email, push and webhooks. Retried with backoff.",
+          "empty": null,
           "count": 1290,
           "fields": [
             {
@@ -5194,6 +5244,7 @@
           "singular": "Job run",
           "group": "System",
           "sentence": "Scheduled and background jobs: what ran, how long it took, and whether it failed.",
+          "empty": null,
           "count": 9874,
           "fields": [
             {

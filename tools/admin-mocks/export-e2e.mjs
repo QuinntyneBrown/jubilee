@@ -42,6 +42,7 @@ const tableOf = (e) => ({
   singular: e.singular,
   group: e.group,
   sentence: e.description,
+  empty: null,
   count: e.count,
   fields: e.fields.map((f) => ({
     key: f.key,

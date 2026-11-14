@@ -36,6 +36,9 @@ public abstract class AdminTable
 
     public string Sentence { get; }
 
+    /// <summary>What an empty table says after "No {table} yet." (L2-099 AC4); null when the table has no words of its own.</summary>
+    public string? Empty { get; init; }
+
     public abstract IReadOnlyList<AdminField> Fields { get; }
 
     /// <summary>The fields shown by default, in order (L2-276 AC3).</summary>

@@ -41,7 +41,7 @@ test.describe('keep listings honest: the Listings table (L2-099)', () => {
     ]);
     await expect(records.bodyRows.first()).toContainText('Luzandre.com');
     // No sort is asked for, so the database's order applies: newest first.
-    expect(fake.rowRequests).toEqual(['/listings']);
+    expect(fake.rowRequests).toEqual(['/listings?page=1&size=25']);
   });
 
   test('AC5: listings that cannot load say so with JB-ADM-503, and Try again reads them again', async ({

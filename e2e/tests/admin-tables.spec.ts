@@ -1,5 +1,5 @@
 // Acceptance Test
-// Traces to: L2-188, L2-272, L2-276, L2-284
+// Traces to: L2-099, L2-188, L2-272, L2-276, L2-277, L2-284
 // Description: the schema-driven admin application (ADR 0074): its shell with the sidebar of
 // tables in their groups, what a role may read, and one table read from the catalog.
 import { LISTING_ROWS, MEMBER_ROWS, stubAdminTables } from '../fixtures/admin-tables';
@@ -380,10 +380,153 @@ test.describe('a table of Jubilee’s records (L2-276)', () => {
     await jb.gotoAdmin('/members');
 
     await expect(records.heading).toHaveText('Members');
+    await expect(records.search).toBeVisible();
+    await expect(records.statusFilter).toBeVisible();
     await expect(records.error).toContainText('We couldn’t load members');
     await expect(records.error).toContainText('JB-ADM-503');
     fake.answer = 'ok';
     await records.retry().click();
     await expect(records.bodyRows).toHaveCount(2);
+  });
+});
+
+test.describe('search, filter and sort a table (L2-277)', () => {
+  test('AC1: the search shows only the rows with a field that contains it, ignoring case', async ({
+    page,
+    jb,
+  }) => {
+    const records = new AdminRecordsPage(page);
+    await records.setWidth(1280);
+    const fake = await stubAdminTables(page, ada);
+    await jb.gotoAdmin('/members');
+    await expect(records.bodyRows).toHaveCount(2);
+
+    await expect(records.search).toHaveAccessibleName('Search members');
+    await expect(records.search).toHaveAttribute('placeholder', 'Search members by any field');
+    await records.searchFor('RUTH.C@');
+
+    await expect(records.bodyRows).toHaveCount(1);
+    await expect(records.row('Ruth Chen')).toBeVisible();
+    expect(decodeURIComponent(fake.rowRequests.at(-1) ?? '')).toContain('q=RUTH.C@');
+    expect(fake.rowRequests.at(-1)).toContain('page=1');
+  });
+
+  test('AC2: the status chips filter the table, the chosen one pressed', async ({ page, jb }) => {
+    const records = new AdminRecordsPage(page);
+    await records.setWidth(1280);
+    const fake = await stubAdminTables(page, ada);
+    await jb.gotoAdmin('/members');
+
+    await expect(records.statusFilter).toHaveAccessibleName('Filter by status');
+    await expect(records.statusChips).toHaveText(['All', 'Active', 'Unconfirmed', 'Deleted']);
+    await expect(records.chip('All')).toHaveAttribute('aria-pressed', 'true');
+
+    await records.chip('Unconfirmed').click();
+
+    await expect(records.chip('Unconfirmed')).toHaveAttribute('aria-pressed', 'true');
+    await expect(records.chip('All')).toHaveAttribute('aria-pressed', 'false');
+    await expect(records.bodyRows).toHaveCount(1);
+    await expect(records.row('Naomi Laurent')).toBeVisible();
+    expect(fake.rowRequests.at(-1)).toContain('status=unconfirmed');
+  });
+
+  test('AC3: no match says so, and Clear search and filters brings every row back', async ({
+    page,
+    jb,
+  }) => {
+    const records = new AdminRecordsPage(page);
+    await records.setWidth(1280);
+    await stubAdminTables(page, ada);
+    await jb.gotoAdmin('/members');
+    await records.chip('Active').click();
+    await records.searchFor('pastor mike');
+
+    await expect(records.empty.first()).toContainText('No members match “pastor mike”');
+    await expect(records.empty.first()).toContainText(
+      'Search looks at every field, including IDs and emails.',
+    );
+    await expect(records.bodyRows).toHaveCount(0);
+    await expect(records.foot).toHaveCount(0);
+
+    await records.clearSearchAndFilters().click();
+
+    await expect(records.search).toHaveValue('');
+    await expect(records.chip('All')).toHaveAttribute('aria-pressed', 'true');
+    await expect(records.bodyRows).toHaveCount(2);
+  });
+
+  test('AC3: a filter that matches nothing says "match these filters"', async ({ page, jb }) => {
+    const records = new AdminRecordsPage(page);
+    await records.setWidth(1280);
+    await stubAdminTables(page, ada);
+    await jb.gotoAdmin('/members');
+
+    await records.chip('Deleted').click();
+
+    await expect(records.empty.first()).toContainText('No members match these filters');
+  });
+
+  test('AC5: a column heading sorts ascending, then descending, then not at all', async ({
+    page,
+    jb,
+  }) => {
+    const records = new AdminRecordsPage(page);
+    await records.setWidth(1280);
+    const fake = await stubAdminTables(page, ada);
+    await jb.gotoAdmin('/members');
+    await expect(records.header('Name')).toHaveAttribute('aria-sort', 'none');
+
+    await records.sortBy('Name');
+    await expect(records.header('Name')).toHaveAttribute('aria-sort', 'ascending');
+    await expect(records.bodyRows.first()).toContainText('Naomi Laurent');
+    expect(fake.rowRequests.at(-1)).toContain('sort=name&dir=asc');
+
+    await records.sortBy('Name');
+    await expect(records.header('Name')).toHaveAttribute('aria-sort', 'descending');
+    await expect(records.bodyRows.first()).toContainText('Ruth Chen');
+    expect(fake.rowRequests.at(-1)).toContain('sort=name&dir=desc');
+
+    await records.sortBy('Name');
+    await expect(records.header('Name')).toHaveAttribute('aria-sort', 'none');
+    expect(fake.rowRequests.at(-1)).not.toContain('sort=');
+  });
+});
+
+test.describe('the Listings table, searched and filtered (L2-099)', () => {
+  test('AC2: a status chip shows only the listings with that status', async ({ page, jb }) => {
+    const records = new AdminRecordsPage(page);
+    await records.setWidth(1280);
+    await stubAdminTables(page, miriam);
+    await jb.gotoAdmin('/listings');
+
+    await records.chip('Taken down').click();
+
+    await expect(records.bodyRows).toHaveCount(1);
+    await expect(records.row('Grace Bakery')).toBeVisible();
+  });
+
+  test('AC3: a search with no match says "No listings match"', async ({ page, jb }) => {
+    const records = new AdminRecordsPage(page);
+    await records.setWidth(1280);
+    await stubAdminTables(page, miriam);
+    await jb.gotoAdmin('/listings');
+
+    await records.searchFor('bicycles');
+
+    await expect(records.empty.first()).toContainText('No listings match “bicycles”');
+    await expect(records.clearSearchAndFilters()).toBeVisible();
+  });
+
+  test('AC4: no listing and no search says when a listing appears', async ({ page, jb }) => {
+    const records = new AdminRecordsPage(page);
+    await records.setWidth(1280);
+    await stubAdminTables(page, miriam, { rows: { listings: [] } });
+    await jb.gotoAdmin('/listings');
+
+    await expect(records.empty.first()).toContainText('No listings yet');
+    await expect(records.empty.first()).toContainText(
+      'A listing appears here as soon as its owner publishes it.',
+    );
+    await expect(records.clearSearchAndFilters()).toHaveCount(0);
   });
 });

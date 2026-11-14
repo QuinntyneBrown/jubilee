@@ -29,6 +29,21 @@
           }
         </div>
         <div
+          jb-records-tools
+          [unit]="table.label.toLowerCase()"
+          [value]="q()"
+          (typed)="search($event)"
+        ></div>
+        @if (statusField(); as field) {
+          <div
+            jb-records-filter
+            [field]="field.label.toLowerCase()"
+            [options]="field.options ?? []"
+            [value]="status()"
+            (chosen)="filter($event)"
+          ></div>
+        }
+        <div
           jb-records-table
           [table]="table.key"
           [caption]="table.label"
@@ -38,6 +53,10 @@
           [selectable]="table.canChange"
           [loading]="state().status === 'loading'"
           [error]="state().status === 'error'"
+          [sort]="sort()"
+          [empty]="empty()"
+          (sorted)="sortBy($event)"
+          (emptyAction)="clear()"
         >
           @if (errorReference(); as reference) {
             <div

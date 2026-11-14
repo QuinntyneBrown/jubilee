@@ -9,7 +9,7 @@ public sealed record AdminFieldDto(
     IReadOnlyList<string>? Options, string? RefTable);
 
 public sealed record AdminTableDto(
-    string Key, string Label, string Singular, string Group, string Sentence, int Count,
+    string Key, string Label, string Singular, string Group, string Sentence, string? Empty, int Count,
     IReadOnlyList<AdminFieldDto> Fields, IReadOnlyList<string> DefaultColumns, string? StatusField,
     bool ReadOnly, bool Private, bool CanChange, bool CanEdit, bool CanCreate, bool CanDelete);
 
@@ -60,7 +60,7 @@ public static class AdminTables
     {
         var canChange = AdminRights.CanChange(staff, table);
         return new AdminTableDto(
-            table.Key, table.Label, table.Singular, table.Group, table.Sentence, count,
+            table.Key, table.Label, table.Singular, table.Group, table.Sentence, table.Empty, count,
             [.. table.Fields.Select(f => new AdminFieldDto(
                 f.Key, f.Label, Wire(f.Type), f.System, f.Searchable, f.Sortable, f.Editable && canChange, f.Options, f.RefTable))],
             table.DefaultColumns, table.StatusField,

@@ -50,6 +50,18 @@ public sealed class AdminTablesTests : IClassFixture<JubileeApiFactory>, IAsyncL
             listings.GetProperty("defaultColumns").EnumerateArray().Select(c => c.GetString()));
     }
 
+    // L2-099 AC4: an empty Listings table says when a listing appears; a table without its own words has none
+    [Fact]
+    public async Task L2_099_AC4_the_listings_table_says_when_a_listing_appears()
+    {
+        var catalog = await Json(await Miriam().GetAsync("/api/admin/tables"));
+
+        Assert.Equal(
+            "A listing appears here as soon as its owner publishes it.",
+            Table(catalog, "listings").GetProperty("empty").GetString());
+        Assert.Equal(JsonValueKind.Null, Table(catalog, "job-runs").GetProperty("empty").ValueKind);
+    }
+
     // L2-272 AC1: the top bar names the environment the API runs in ("Production" in production)
     [Fact]
     public async Task L2_272_AC1_the_staff_session_names_the_environment()

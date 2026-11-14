@@ -40,6 +40,8 @@ export interface AdminTable {
   singular: string;
   group: string;
   sentence: string;
+  /** What an empty table says after "No {table} yet." (L2-099 AC4), or null. */
+  empty: string | null;
   count: number;
   fields: AdminField[];
   defaultColumns: string[];

@@ -53,7 +53,10 @@ internal static class ListingsTables
                 LF.Text("takedownReason", "Takedown reason", l => l.TakedownReason, AdminFieldType.Long, searchable: false),
                 LF.When("createdAt", "Created", l => l.CreatedAt, system: true),
             ],
-            columns: 7, nameFields: ["name"]),
+            columns: 7, nameFields: ["name"])
+        {
+            Empty = "A listing appears here as soon as its owner publishes it.",
+        },
 
         new AdminTable<ListingDraft>(
             "listing-drafts", "Listing drafts", "Listing draft", Group,

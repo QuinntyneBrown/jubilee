@@ -1,0 +1,10 @@
+<div jb-chip-row plain class="records-filter__row">
+  <button jb-chip type="button" [selected]="value() === null" (click)="chosen.emit(null)">
+    All
+  </button>
+  @for (option of options(); track option) {
+    <button jb-chip type="button" [selected]="value() === option" (click)="chosen.emit(option)">
+      {{ capitalise(option) }}
+    </button>
+  }
+</div>

@@ -35,9 +35,13 @@ export class AdminRecordsPage extends AdminShellPage implements Screen {
   readonly lockTag: Locator;
   readonly exportButton: Locator;
   readonly newRecord: Locator;
+  /** The search and the Columns menu. */
+  readonly tools: Locator;
   readonly search: Locator;
   readonly columnsButton: Locator;
   readonly statusChips: Locator;
+  /** The group of status chips, named "Filter by {status field}". */
+  readonly statusFilter: Locator;
   /** The card that holds the rows, the empty state or the error. */
   readonly records: Locator;
   readonly table: Locator;
@@ -61,9 +65,11 @@ export class AdminRecordsPage extends AdminShellPage implements Screen {
     this.lockTag = this.heading.locator('.lock-tag');
     this.exportButton = this.main.getByRole('button', { name: 'Export' });
     this.newRecord = this.main.getByRole('link', { name: /^New / });
+    this.tools = this.main.locator('.records-tools');
     this.search = this.main.getByRole('searchbox');
     this.columnsButton = this.main.getByRole('button', { name: /^Columns/ });
     this.statusChips = this.main.locator('.records-filter .chip');
+    this.statusFilter = this.main.getByRole('group', { name: /^Filter by / });
     this.records = this.main.locator('.records');
     this.table = this.records.locator('.records__table table');
     this.columnHeaders = this.table.locator('thead th');
@@ -92,6 +98,32 @@ export class AdminRecordsPage extends AdminShellPage implements Screen {
     const index = headers.findIndex((h) => h.trim() === column);
     if (index < 0) throw new Error(`No column "${column}" in ${headers.join(', ')}`);
     return row.locator('td').nth(index);
+  }
+
+  /** A status chip by its words ("All", "Active"). */
+  chip(name: string): Locator {
+    return this.statusFilter.getByRole('button', { name, exact: true });
+  }
+
+  /** The heading cell of a column, which says how the table is sorted (`aria-sort`). */
+  header(column: string): Locator {
+    return this.table.locator('thead th').filter({
+      // The arrow of a sorted column is part of the button's name.
+      has: this.page.getByRole('button', { name: new RegExp(`^${column}(?: [↑↓])?$`) }),
+    });
+  }
+
+  /** Sorts by a column: ascending, then descending, then not at all (L2-277 AC5). */
+  async sortBy(column: string): Promise<void> {
+    await this.header(column).getByRole('button').click();
+  }
+
+  async searchFor(text: string): Promise<void> {
+    await this.search.fill(text);
+  }
+
+  clearSearchAndFilters(): Locator {
+    return this.empty.first().getByRole('button', { name: 'Clear search and filters' });
   }
 
   checkbox(row: Locator): Locator {

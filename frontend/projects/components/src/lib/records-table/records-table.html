@@ -21,8 +21,15 @@
             <th
               scope="col"
               [class.records__num]="column.type === 'number' || column.type === 'money'"
+              [attr.aria-sort]="ariaSort(column)"
             >
-              {{ column.label }}
+              @if (column.sortable === false) {
+                {{ column.label }}
+              } @else {
+                <button class="records__sort" type="button" (click)="sortBy(column)">
+                  {{ column.label }}
+                </button>
+              }
             </th>
           }
           <th scope="col"><span class="visually-hidden">Actions</span></th>
@@ -73,6 +80,9 @@
         }
       </tbody>
     </table>
+    @if (!loading() && rows().length === 0) {
+      <ng-container [ngTemplateOutlet]="emptyTemplate" />
+    }
   </div>
   @if (!loading()) {
     <ul class="records__list">
@@ -96,11 +106,10 @@
             <svg jb-icon name="chevron-right" size="sm" class="records__chevron"></svg
           ></a>
         </li>
+      } @empty {
+        <li><ng-container [ngTemplateOutlet]="emptyTemplate" /></li>
       }
     </ul>
-    @if (rows().length === 0) {
-      <ng-content select="[slot=empty]" />
-    }
     <ng-content select="[slot=foot]" />
   }
 }
@@ -145,5 +154,17 @@
     @default {
       {{ cell.text }}
     }
+  }
+</ng-template>
+
+<ng-template #emptyTemplate>
+  @if (empty(); as empty) {
+    <div class="records__empty">
+      <p class="records__empty-title">{{ empty.title }}</p>
+      <p class="records__empty-text">{{ empty.text }}</p>
+      @if (empty.action; as action) {
+        <button jb-button size="sm" type="button" (click)="emptyAction.emit()">{{ action }}</button>
+      }
+    </div>
   }
 </ng-template>
