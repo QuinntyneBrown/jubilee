@@ -199,8 +199,8 @@ differ or leave a gap.
   /api/listings/{slug}/reviews` (an empty list, no summary,
   `not-offered`), and the page does not call it.
 - **Secondary button style**: "Visit {host}" after "Give on {host}" is a
-  secondary `jb-button`; the variant is `<TO SUPPLY>` from the mock
-  `pages/nonprofit/default.html`.
+  `jb-button` of the default variant at size `lg` (`btn btn--lg` in the mock
+  `pages/nonprofit/default.html`); with no page for giving it is the primary.
 - **Deferred** (ADR 0074): taking, holding, counting or receipting donations;
   checking a registered charity; a charity registration number; reviews of
   non-profits; events, volunteer sign-ups and campaigns; and any link between

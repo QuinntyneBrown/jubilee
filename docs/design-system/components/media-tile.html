@@ -202,6 +202,12 @@
         <div style="inline-size: calc(var(--space-24) * 2);"><div class="media media--gold"><span class="media__tag">Software</span><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div></div>
       </div>
         <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;div style="inline-size: calc(var(--space-24) * 2);"&gt;&lt;div class="media media--gold"&gt;&lt;span class="media__tag"&gt;Software&lt;/span&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;rect x="2" y="3" width="20" height="14" rx="2"/&gt;&lt;path d="M8 21h8M12 17v4"/&gt;&lt;/svg&gt;&lt;/div&gt;&lt;/div&gt;</code></pre></details></div>
+          <h3>Non-profits</h3>
+      <p>The thirteenth category tile (L2-289 AC2, ADR 0074): the green tone, the <code>hands</code> icon and the short label “Non-profit”. It stands for a non-profit on its card, on its page, on the browse home’s “Non-profits in Toronto” shelf, in search, in the admin record’s preview and in the listing form’s preview until its leader adds a cover photo. The tone is shared with Financial &amp; insurance; the icon and the tag tell them apart, so colour is never the only sign.</p>
+      <div class="ds-example"><div class="ds-example__canvas">
+        <div style="inline-size: calc(var(--space-24) * 2);"><div class="media media--green"><span class="media__tag">Non-profit</span><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 11s-3-1.9-3-4.2A1.8 1.8 0 0 1 12 5.7a1.8 1.8 0 0 1 3 1.1C15 9.1 12 11 12 11z"/><path d="M3 14h3l4 3h5a1.5 1.5 0 0 0 0-3h-3M6 14v6M10 17l7.5-3.5a1.5 1.5 0 0 1 2 2L13 20H6"/></svg></div></div>
+      </div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;div style="inline-size: calc(var(--space-24) * 2);"&gt;&lt;div class="media media--green"&gt;&lt;span class="media__tag"&gt;Non-profit&lt;/span&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M12 11s-3-1.9-3-4.2A1.8 1.8 0 0 1 12 5.7a1.8 1.8 0 0 1 3 1.1C15 9.1 12 11 12 11z"/&gt;&lt;path d="M3 14h3l4 3h5a1.5 1.5 0 0 0 0-3h-3M6 14v6M10 17l7.5-3.5a1.5 1.5 0 0 1 2 2L13 20H6"/&gt;&lt;/svg&gt;&lt;/div&gt;&lt;/div&gt;</code></pre></details></div>
     </section>
     <section class="ds-section" id="sizes"><h2><a href="#sizes">Sizes</a></h2>
       <p>Width always comes from the container; the modifier fixes the shape.</p>
@@ -348,6 +354,7 @@
         <li><a href="../../mocks/pages/my-products/default.html">pages/my-products/default</a> (thumbs)</li>
         <li><a href="../../mocks/pages/saved/default.html">pages/saved/default</a> (ink tile in a saved card)</li>
         <li><a href="../../mocks/pages/category/software-platforms.html">pages/category/software-platforms</a>, <a href="../../mocks/pages/platform/default.html">pages/platform/default</a> (the gold “Software” tile with the monitor icon)</li>
+        <li><a href="../../mocks/pages/category/non-profits.html">pages/category/non-profits</a>, <a href="../../mocks/pages/nonprofit/default.html">pages/nonprofit/default</a> (the green “Non-profit” tile with the hands icon)</li>
       </ul>
       <p>Drift fixed during extraction: <code>.media--ink</code> was used 114 times but never defined; it is now defined on the brand tokens. The mocks emit an empty class slot (<code>class="media media--green "</code>) everywhere, which is harmless but should not be copied. No mock shows a real photo, so there was no rule for one: <code>.media &gt; img</code> needs <code>width: 100%; height: 100%; object-fit: cover;</code> in the CSS (proposed).</p>
     </section>
