@@ -75,14 +75,8 @@ type Cell =
   | { kind: 'deleted' };
 
 const ZONE = 'America/Toronto';
-const DAY = new Intl.DateTimeFormat('en-GB', {
-  day: 'numeric',
-  month: 'short',
-  year: 'numeric',
-  timeZone: ZONE,
-});
-const MOMENT = new Intl.DateTimeFormat('en-GB', {
-  day: 'numeric',
+const PARTS = new Intl.DateTimeFormat('en-GB', {
+  day: '2-digit',
   month: 'short',
   year: 'numeric',
   hour: '2-digit',
@@ -92,11 +86,13 @@ const MOMENT = new Intl.DateTimeFormat('en-GB', {
 });
 const MONEY = new Intl.NumberFormat('en-CA', { style: 'currency', currency: 'CAD' });
 
-/** A date as the tables show it: "14 Nov 2026", or "14 Nov 2026, 09:44" with its time, in Toronto. */
+/** A date as the design shows it: "14 Nov 2026", or "14 Nov 2026 09:44" with its time, in Toronto. */
 export function formatAdminDate(value: string, withTime: boolean): string {
   const date = new Date(value.length === 10 ? `${value}T12:00:00Z` : value);
   if (Number.isNaN(date.getTime())) return value;
-  return (withTime ? MOMENT : DAY).format(date);
+  const part = Object.fromEntries(PARTS.formatToParts(date).map((p) => [p.type, p.value]));
+  const day = `${part['day']} ${part['month']} ${part['year']}`;
+  return withTime ? `${day} ${part['hour']}:${part['minute']}` : day;
 }
 
 function isRef(value: unknown): value is RecordsRef {

@@ -5,7 +5,7 @@
 import { writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { ENTITIES, GROUPS, entitiesIn, lookup, rowName } from './entities.mjs';
+import { ENTITIES, GROUPS, backlinks, entitiesIn, lookup, rowName } from './entities.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const out = join(here, '..', '..', 'e2e', 'fixtures', 'api', 'admin-mock-tables.json');
@@ -81,5 +81,20 @@ const rows = Object.fromEntries(
   ]),
 );
 
-writeFileSync(out, `${JSON.stringify({ groups, rows }, null, 2)}\n`);
+// What points at each record, as the record's "Points here" draws it (L2-282 AC4).
+const pointsHere = Object.fromEntries(
+  ENTITIES.flatMap((e) =>
+    e.rows.map((row) => [
+      `${kebab(e.key)}/${row.id}`,
+      backlinks(e.key, row.id).map((b) => ({
+        table: kebab(b.entity.key),
+        label: b.entity.label,
+        field: b.field,
+        count: b.count,
+      })),
+    ]),
+  ),
+);
+
+writeFileSync(out, `${JSON.stringify({ groups, rows, pointsHere }, null, 2)}\n`);
 console.log(`Wrote ${groups.flatMap((g) => g.tables).length} tables to ${out}`);

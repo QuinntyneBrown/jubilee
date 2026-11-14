@@ -1,0 +1,10 @@
+@for (item of values(); track item.label) {
+  <span
+    >{{ item.label }}
+    @if (item.code) {
+      <code class="record-system__code">{{ item.value }}</code>
+    } @else {
+      <b class="record-system__value">{{ item.value }}</b>
+    }
+  </span>
+}

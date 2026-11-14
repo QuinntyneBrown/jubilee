@@ -1,0 +1,12 @@
+// Block: record-grid. The fields of a record and, from 1024 px, the aside beside them.
+:host {
+  display: grid;
+  gap: var(--space-8);
+  margin-top: var(--space-6);
+}
+
+@media (min-width: 64rem) {
+  :host {
+    grid-template-columns: minmax(0, 1fr) 18.75rem;
+  }
+}

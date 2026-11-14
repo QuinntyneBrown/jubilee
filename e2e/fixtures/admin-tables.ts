@@ -177,12 +177,13 @@ const ORDER_FIELDS = [
   field('total', 'Total', 'money', { searchable: false }),
   field('lines', 'Lines', 'number', { searchable: false }),
   created,
+  field('memberId', 'Member', 'ref', { refTable: 'members', searchable: false }),
 ];
 
 /** Merch orders, whose totals are money and whose lines are a number. */
 export const MERCH_ORDERS = table('merch-orders', 'Merch orders', 'Merch order', 'Merch', 41, {
   fields: ORDER_FIELDS,
-  defaultColumns: ORDER_FIELDS.map((f) => f.key),
+  defaultColumns: ORDER_FIELDS.slice(0, 5).map((f) => f.key),
 });
 
 /** Staff: read-only for every role (L2-284 AC1), and never read by a moderator. */
@@ -274,6 +275,13 @@ export const MEMBER_ROWS: AdminRow[] = [
   },
 ];
 
+/** A run of a job, a record of a read-only table. */
+export const JOB_RUN_ROW: AdminRow = {
+  id: 'job_9874',
+  name: 'job_9874',
+  values: { id: 'job_9874', name: 'exports.build', createdAt: '2026-11-14T14:30:00+00:00' },
+};
+
 /** As many members as a test needs to turn pages: "Member 001", "Member 002"… */
 export function manyMembers(count: number): AdminRow[] {
   return Array.from({ length: count }, (_, i) => {
@@ -344,11 +352,40 @@ export const ORDER_ROWS: AdminRow[] = [
       total: 1248.5,
       lines: 3,
       createdAt: '2026-11-12T15:30:00+00:00',
+      memberId: {
+        table: 'members',
+        id: '6f1c2a90-0d1e-4c55-9a7a-1b2c3d4e5f60',
+        name: 'Ruth Chen',
+        deleted: false,
+      },
     },
   },
 ];
 
 export type RowsAnswer = 'ok' | 'fails' | 'forbidden' | 'not-found' | 'slow';
+
+/** How a record is answered: as found, failing, or never. */
+export type RecordAnswer = 'ok' | 'fails' | 'slow';
+
+export interface AdminPointer {
+  table: string;
+  label: string;
+  field: string;
+  count: number;
+}
+
+export interface AdminHistoryLine {
+  at: string;
+  actor: string;
+  what: string;
+  text: string;
+}
+
+/** What a record adds to its row: what points at it and its history (L2-282 AC4, AC5). */
+export interface RecordExtras {
+  pointsHere?: AdminPointer[];
+  history?: AdminHistoryLine[];
+}
 
 export interface FakeAdminTables {
   staff: FakeStaff;
@@ -356,6 +393,10 @@ export interface FakeAdminTables {
   rows: Record<string, AdminRow[]>;
   /** How the next request for rows is answered. */
   answer: RowsAnswer;
+  /** How the next request for a record is answered. */
+  recordAnswer: RecordAnswer;
+  /** The pointers and history of records, by `{table}/{id}`. */
+  records: Record<string, RecordExtras>;
   /** The path and query of every request for rows, such as `/members?page=1&size=25`. */
   rowRequests: string[];
   catalogReads: number;
@@ -395,7 +436,7 @@ function answerRows(table: AdminTable, rows: AdminRow[], params: URLSearchParams
 export async function stubAdminTables(
   page: Page,
   staffMember: StaffMember,
-  options: Partial<Pick<FakeAdminTables, 'rows' | 'answer'>> & {
+  options: Partial<Pick<FakeAdminTables, 'rows' | 'answer' | 'recordAnswer' | 'records'>> & {
     /** 'mock' answers with the admin mocks' own tables and rows, for parity (ADR 0036). */
     data?: 'tests' | 'mock';
   } = {},
@@ -409,6 +450,16 @@ export async function stubAdminTables(
         ? (mockTables.rows as Record<string, AdminRow[]>)
         : { members: MEMBER_ROWS, listings: LISTING_ROWS, 'merch-orders': ORDER_ROWS }),
     answer: options.answer ?? 'ok',
+    recordAnswer: options.recordAnswer ?? 'ok',
+    records:
+      options.records ??
+      (mock
+        ? Object.fromEntries(
+            Object.entries(mockTables.pointsHere as Record<string, AdminPointer[]>).map(
+              ([key, pointsHere]) => [key, { pointsHere }],
+            ),
+          )
+        : {}),
     rowRequests: [],
     catalogReads: 0,
   };
@@ -418,6 +469,46 @@ export async function stubAdminTables(
   await page.route('**/api/admin/tables', (route: Route) => {
     fake.catalogReads++;
     return route.fulfill({ json: { groups } });
+  });
+
+  // One record: its row, with what points at it and its history (L2-282).
+  await page.route('**/api/admin/tables/*/*', async (route: Route) => {
+    const url = new URL(route.request().url());
+    const [key, id] = url.pathname.split('/').slice(-2).map(decodeURIComponent);
+    const known = tables.find((t) => t.key === key);
+    if (!known) {
+      return route.fulfill(
+        key === 'staff'
+          ? problem(403, 'FORBIDDEN', 'Your staff role may not read this table.')
+          : problem(404, 'NOT_FOUND', 'There is no such table.'),
+      );
+    }
+    if (fake.recordAnswer === 'slow') return; // never answered: the record stays loading
+    if (fake.recordAnswer === 'fails') {
+      return route.fulfill(
+        problem(503, 'JB-ADM-504', `We couldn't load ${known.singular.toLowerCase()} ${id}.`),
+      );
+    }
+    const row = (fake.rows[key] ?? []).find((r) => r.id === id);
+    if (!row) return route.fulfill(problem(404, 'NOT_FOUND', 'There is no such record.'));
+    const extras = fake.records[`${key}/${id}`] ?? {};
+    const created = row.values['createdAt'];
+    const what = `created this ${known.singular.toLowerCase()}`;
+    return route.fulfill({
+      json: {
+        table: key,
+        id,
+        name: row.name,
+        status: known.statusField ? (row.values[known.statusField] ?? null) : null,
+        values: row.values,
+        pointsHere: extras.pointsHere ?? [],
+        history:
+          extras.history ??
+          (typeof created === 'string'
+            ? [{ at: created, actor: 'Jubilee', what, text: `Jubilee ${what}` }]
+            : []),
+      },
+    });
   });
 
   await page.route('**/api/admin/tables/*', async (route: Route) => {

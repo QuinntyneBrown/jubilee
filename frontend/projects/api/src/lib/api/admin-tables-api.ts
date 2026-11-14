@@ -1,7 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, InjectionToken, inject } from '@angular/core';
 import { Observable } from 'rxjs';
-import { AdminCatalog, AdminRows, AdminRowsQuery } from '../models/admin-tables';
+import { AdminCatalog, AdminRecord, AdminRows, AdminRowsQuery } from '../models/admin-tables';
 
 /** Contract of the schema-driven tables of the admin application (L2-276 to L2-284, ADR 0074). */
 export interface AdminTablesApi {
@@ -9,6 +9,8 @@ export interface AdminTablesApi {
   catalog(): Observable<AdminCatalog>;
   /** A page of a table, searched, filtered and sorted by the database. */
   rows(table: string, query?: AdminRowsQuery): Observable<AdminRows>;
+  /** One record, its pointers and its history (L2-282). */
+  record(table: string, id: string): Observable<AdminRecord>;
 }
 
 export const ADMIN_TABLES_API = new InjectionToken<AdminTablesApi>('ADMIN_TABLES_API');
@@ -28,5 +30,11 @@ export class HttpAdminTablesApi implements AdminTablesApi {
         params = params.set(key, String(value));
     }
     return this.http.get<AdminRows>(`/api/admin/tables/${encodeURIComponent(table)}`, { params });
+  }
+
+  record(table: string, id: string): Observable<AdminRecord> {
+    return this.http.get<AdminRecord>(
+      `/api/admin/tables/${encodeURIComponent(table)}/${encodeURIComponent(id)}`,
+    );
   }
 }

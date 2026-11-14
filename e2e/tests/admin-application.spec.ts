@@ -51,7 +51,7 @@ test.describe('the admin application (L2-188)', () => {
     jb,
   }) => {
     const shell = new AdminShellPage(page);
-    await stubAdmin(page);
+    await stubAdminTables(page, miriam);
     await jb.gotoAdmin('/no-such-page/at-all');
 
     await expect(shell.statusHeading).toHaveText('We couldn’t find that page.');

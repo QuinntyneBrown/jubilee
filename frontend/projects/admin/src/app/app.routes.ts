@@ -115,6 +115,13 @@ export const routes: Routes = [
         title: 'Tables · Jubilee admin',
       },
       {
+        // One record of any table (L2-282).
+        path: ':table/:id',
+        loadComponent: () => import('./pages/record/record.page').then((m) => m.RecordPage),
+        data: data({ shell: 'admin', page: 'admin-record' }),
+        title: 'Record · Jubilee admin',
+      },
+      {
         path: '**',
         loadComponent: () => import('./pages/not-found/not-found.page').then((m) => m.NotFoundPage),
         data: data({ shell: 'admin', page: 'admin-not-found' }),

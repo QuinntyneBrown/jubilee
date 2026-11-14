@@ -37,4 +37,9 @@ public sealed class AdminTablesController(ISender sender) : ControllerBase
         string table, [FromQuery] string? q, [FromQuery] string? status, [FromQuery] string? sort, [FromQuery] string? dir,
         [FromQuery] int? page, [FromQuery] int? size, CancellationToken cancellationToken) =>
         sender.Send(new GetAdminRowsQuery(User.ToStaff(), table, q, status, sort, dir, page, size), cancellationToken);
+
+    [HttpGet("{table}/{id}")]
+    [ErrorReference("JB-ADM-504")]
+    public Task<AdminRecordDto> Record(string table, string id, CancellationToken cancellationToken) =>
+        sender.Send(new GetAdminRecordQuery(User.ToStaff(), table, id), cancellationToken);
 }

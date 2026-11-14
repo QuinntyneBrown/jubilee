@@ -864,6 +864,10 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
       return void (await stubAdminTables(page, ada, { data: 'mock' }));
     case 'admin-records-loading':
       return void (await stubAdminTables(page, ada, { data: 'mock', answer: 'slow' }));
+    case 'admin-record-loading':
+      return void (await stubAdminTables(page, ada, { data: 'mock', recordAnswer: 'slow' }));
+    case 'admin-record-error':
+      return void (await stubAdminTables(page, ada, { data: 'mock', recordAnswer: 'fails' }));
     case 'admin-records-error':
       return void (await stubAdminTables(page, ada, { data: 'mock', answer: 'fails' }));
     case 'admin-records-forbidden':

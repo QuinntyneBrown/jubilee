@@ -1,0 +1,20 @@
+// Block: record-system. The ID and the timestamps of a record, in one line.
+:host {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-6);
+  margin: var(--space-4) 0 0;
+  padding-inline: var(--space-1);
+  font: var(--text-caption);
+  color: var(--color-fg-muted);
+}
+
+.record-system__value {
+  color: var(--color-fg-default);
+  font-weight: var(--font-weight-regular);
+}
+
+.record-system__code {
+  color: var(--color-fg-default);
+  font-size: inherit;
+}

@@ -89,6 +89,33 @@ export interface AdminRows {
 }
 
 /** What a page of rows is asked for with (L2-277, L2-278). */
+/** A table whose records reference a record, through a field, with how many (L2-282 AC4). */
+export interface AdminPointer {
+  table: string;
+  label: string;
+  field: string;
+  count: number;
+}
+
+/** One line of a record's history (L2-282 AC5). */
+export interface AdminHistoryLine {
+  at: string;
+  actor: string;
+  what: string;
+  text: string;
+}
+
+/** One record of a table, as `GET /api/admin/tables/{table}/{id}` answers (L2-282). */
+export interface AdminRecord {
+  table: string;
+  id: string;
+  name: string;
+  status: string | null;
+  values: Record<string, unknown>;
+  pointsHere: AdminPointer[];
+  history: AdminHistoryLine[];
+}
+
 export interface AdminRowsQuery {
   q?: string;
   status?: string;

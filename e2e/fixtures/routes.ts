@@ -189,6 +189,8 @@ export type StubName =
   | 'admin-records-loading'
   | 'admin-records-error'
   | 'admin-records-forbidden'
+  | 'admin-record-loading'
+  | 'admin-record-error'
   | 'admin-listing'
   | 'admin-listing-taken-down'
   | 'admin-listing-error'
@@ -1929,6 +1931,34 @@ export const routes = {
   'admin-records.not-found': {
     app: '/no-such-table',
     mock: 'pages/admin-records/not-found.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'admin-records',
+  },
+  'admin-record': {
+    app: '/members/mem_8F2kQa',
+    mock: 'pages/admin-record/default.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'admin-records',
+  },
+  'admin-record.loading': {
+    app: '/members/mem_8F2kQa',
+    mock: 'pages/admin-record/loading.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'admin-record-loading',
+  },
+  'admin-record.error': {
+    app: '/members/mem_8F2kQa',
+    mock: 'pages/admin-record/error.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'admin-record-error',
+  },
+  'admin-record.job-runs': {
+    app: '/job-runs/job_9874',
+    mock: 'pages/admin-record/job-runs.html',
     who: 'visitor',
     site: 'admin',
     stub: 'admin-records',

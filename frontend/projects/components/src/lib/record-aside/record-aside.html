@@ -1,0 +1,30 @@
+<section>
+  <h2 class="record-aside__title">Points here</h2>
+  @if (pointsHere().length) {
+    <ul class="backlinks">
+      @for (pointer of pointsHere(); track pointer.table + pointer.field) {
+        <li>
+          <a class="backlinks__link" [routerLink]="['/', pointer.table]"
+            ><span class="backlinks__table">{{ pointer.label }}</span
+            ><span class="backlinks__as">as {{ lower(pointer.field) }}</span
+            ><span class="backlinks__n">{{ pointer.count }}</span></a
+          >
+        </li>
+      }
+    </ul>
+  } @else {
+    <p class="record-aside__empty">No other records reference this one.</p>
+  }
+</section>
+<section>
+  <h2 class="record-aside__title">History</h2>
+  <ol class="history">
+    @for (line of history(); track $index) {
+      <li class="history__line">
+        <b class="history__who">{{ line.actor }}</b
+        >&ngsp;<span class="history__what">{{ line.what }}</span>
+        <div class="history__when">{{ line.when }}</div>
+      </li>
+    }
+  </ol>
+</section>

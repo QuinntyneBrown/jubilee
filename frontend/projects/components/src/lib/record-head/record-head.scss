@@ -1,0 +1,72 @@
+// Block: record-head. The name, status and ID of a record, with its actions.
+:host {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-top: var(--space-4);
+}
+
+.record-head__main {
+  min-width: 0;
+}
+
+.record-head__title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1) var(--space-3);
+}
+
+.record-head__heading {
+  min-width: 0;
+  margin: 0;
+  font-family: var(--font-family-display);
+  font-weight: var(--font-weight-bold);
+  font-stretch: var(--font-stretch-wide);
+  font-size: var(--font-size-4xl);
+  line-height: 1.05;
+  letter-spacing: var(--letter-spacing-tighter);
+  overflow-wrap: anywhere;
+}
+
+.record-head__id {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-height: var(--target-min);
+  margin-top: var(--space-1);
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--color-fg-muted);
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-xs);
+  cursor: pointer;
+}
+
+.record-head__id:hover {
+  color: var(--color-fg-default);
+}
+
+.record-head__id:focus-visible {
+  outline: var(--focus-ring-width) solid var(--color-focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.record-head__copy {
+  width: 0.9em;
+  height: 0.9em;
+}
+
+.record-head__actions {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.record-head__actions:empty {
+  display: none;
+}

@@ -1,5 +1,7 @@
 // Block: records. The rows of a table of the admin application in their card (L2-276): a table
 // from 768 px, which scrolls sideways inside the card, and a list below it.
+@use './cells';
+
 :host {
   position: relative;
   display: block;
@@ -166,56 +168,7 @@
 }
 
 // The cells, each drawn by its type (L2-276 AC3).
-.cell--muted {
-  color: var(--color-fg-muted);
-  white-space: nowrap;
-  font-variant-numeric: tabular-nums;
-}
-
-.cell--mono {
-  font-family: var(--font-family-mono);
-  font-size: var(--font-size-xs);
-  color: var(--color-fg-muted);
-}
-
-.cell--num {
-  font-variant-numeric: tabular-nums;
-}
-
-.cell--empty,
-.cell--deleted {
-  color: var(--color-fg-subtle);
-}
-
-.cell--deleted {
-  font-style: italic;
-}
-
-.cell--long {
-  white-space: pre-wrap;
-  line-height: var(--line-height-relaxed);
-}
-
-.cell--yes {
-  color: var(--color-success-icon);
-}
-
-.cell--no {
-  color: var(--color-fg-subtle);
-}
-
-.cell--ref {
-  color: var(--color-fg-default);
-  font-weight: var(--font-weight-medium);
-  text-decoration: underline;
-  text-decoration-color: var(--color-border-strong);
-  text-underline-offset: 0.2em;
-
-  &:hover {
-    color: var(--color-fg-link);
-    text-decoration-color: currentColor;
-  }
-}
+@include cells.cells;
 
 .records__sort {
   all: unset;

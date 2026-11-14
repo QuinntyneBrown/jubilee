@@ -7,7 +7,8 @@ import {
   input,
 } from '@angular/core';
 
-export type ButtonVariant = 'default' | 'primary' | 'ghost' | 'danger' | 'link';
+export type ButtonVariant =
+  'default' | 'primary' | 'ghost' | 'danger' | 'danger-outline' | 'ink' | 'link';
 export type ButtonSize = 'sm' | 'md' | 'lg';
 
 /**
@@ -36,6 +37,8 @@ export type ButtonSize = 'sm' | 'md' | 'lg';
     '[class.btn--primary]': 'variant() === "primary"',
     '[class.btn--ghost]': 'variant() === "ghost"',
     '[class.btn--danger]': 'variant() === "danger"',
+    '[class.btn--danger-outline]': 'variant() === "danger-outline"',
+    '[class.btn--ink]': 'variant() === "ink"',
     '[class.btn--link]': 'variant() === "link"',
     '[class.btn--sm]': 'size() === "sm"',
     '[class.btn--lg]': 'size() === "lg"',

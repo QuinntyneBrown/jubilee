@@ -1,0 +1,26 @@
+<div class="record-head__main">
+  @if (loading()) {
+    <h1 class="visually-hidden">{{ loadingLabel() }}</h1>
+    <span jb-skeleton shape="h1"></span>
+  } @else {
+    <div class="record-head__title">
+      <h1 class="record-head__heading">{{ heading() }}</h1>
+      @if (status(); as status) {
+        <span jb-status-pill [value]="status"></span>
+      }
+    </div>
+    <button
+      class="record-head__id"
+      type="button"
+      title="Copy ID"
+      [attr.aria-label]="'Copy ID ' + id()"
+      [cdkCopyToClipboard]="id()"
+      (cdkCopyToClipboardCopied)="$event && copied.emit()"
+    >
+      {{ id() }}<svg jb-icon name="copy" class="record-head__copy"></svg>
+    </button>
+  }
+</div>
+@if (!loading()) {
+  <div class="record-head__actions"><ng-content select="[slot=actions]" /></div>
+}

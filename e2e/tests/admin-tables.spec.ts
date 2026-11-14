@@ -1,10 +1,18 @@
 // Acceptance Test
-// Traces to: L2-099, L2-188, L2-272, L2-276, L2-277, L2-278, L2-284
+// Traces to: L2-099, L2-188, L2-272, L2-276, L2-277, L2-278, L2-282, L2-284
 // Description: the schema-driven admin application (ADR 0074): its shell with the sidebar of
 // tables in their groups, what a role may read, and one table read from the catalog.
-import { LISTING_ROWS, manyMembers, MEMBER_ROWS, stubAdminTables } from '../fixtures/admin-tables';
+import {
+  JOB_RUN_ROW,
+  LISTING_ROWS,
+  manyMembers,
+  MEMBER_ROWS,
+  ORDER_ROWS,
+  stubAdminTables,
+} from '../fixtures/admin-tables';
 import { ADMIN_URL, expect, test } from '../fixtures/jb-test';
 import { ada, miriam } from '../fixtures/staff';
+import { AdminRecordPage } from '../pages/admin-record.page';
 import { AdminRecordsPage } from '../pages/admin-records.page';
 
 test.describe('the shell of the admin application (L2-272)', () => {
@@ -325,7 +333,7 @@ test.describe('a table of Jubilee’s records (L2-276)', () => {
     await expect(await records.cell(order, 'Total')).toHaveCSS('text-align', 'right');
     await expect((await records.cell(order, 'Lines')).locator('.cell--num')).toHaveText('3');
     await expect((await records.cell(order, 'Created')).locator('.cell--muted')).toHaveText(
-      '12 Nov 2026, 10:30',
+      '12 Nov 2026 10:30',
     );
   });
 
@@ -710,5 +718,179 @@ test.describe('columns and pages of a table (L2-278)', () => {
     // Another table keeps its own defaults.
     await jb.gotoAdmin('/listings');
     await expect(records.columnsButton).toHaveText(/Columns\s*7/);
+  });
+});
+
+test.describe('a record (L2-282)', () => {
+  const ruth = MEMBER_ROWS[0];
+
+  test('AC1: a record shows the way back, its name, status and ID', async ({ page, jb }) => {
+    const record = new AdminRecordPage(page);
+    await record.setWidth(1280);
+    await stubAdminTables(page, ada);
+    await jb.gotoAdmin(`/members/${ruth.id}`);
+
+    await expect(record.back).toHaveText('Members');
+    await expect(record.back).toHaveAttribute('href', '/members');
+    await expect(record.here).toHaveText(ruth.id);
+    await expect(record.heading).toHaveText('Ruth Chen');
+    await expect(record.status).toHaveText('active');
+    await expect(record.copyId).toHaveAccessibleName(`Copy ID ${ruth.id}`);
+    await expect(page).toHaveTitle('Ruth Chen · Members · Jubilee admin');
+    await expect(page.locator('body')).toHaveAttribute('data-page', 'admin-record');
+  });
+
+  test('AC1: a record of a read-only table says so', async ({ page, jb }) => {
+    const record = new AdminRecordPage(page);
+    await record.setWidth(1280);
+    await stubAdminTables(page, ada, { rows: { 'job-runs': [JOB_RUN_ROW] } });
+    await jb.gotoAdmin(`/job-runs/${JOB_RUN_ROW.id}`);
+
+    await expect(record.lockTag).toHaveText('Read-only');
+  });
+
+  test('AC3: the fields show each value by its type, and the system values below', async ({
+    page,
+    jb,
+  }) => {
+    const record = new AdminRecordPage(page);
+    await record.setWidth(1280);
+    await stubAdminTables(page, ada);
+    await jb.gotoAdmin(`/members/${ruth.id}`);
+
+    await expect(record.field('Email')).toHaveText('ruth.c@outlook.com');
+    await expect(record.field('Status').locator('.status')).toHaveText('active');
+    await expect(record.field('Phone').getByRole('img', { name: 'None' })).toBeVisible();
+    await expect(record.field('Email confirmed').getByRole('img', { name: 'Yes' })).toBeVisible();
+    await expect(record.field('ID')).toHaveCount(0);
+    await expect(record.system).toContainText(`ID ${ruth.id}`);
+    await expect(record.system).toContainText('Created 10 Sept 2026 10:20');
+  });
+
+  test('AC3: a reference opens the record it points at', async ({ page, jb }) => {
+    const record = new AdminRecordPage(page);
+    await record.setWidth(1280);
+    await stubAdminTables(page, ada);
+    await jb.gotoAdmin(`/merch-orders/${ORDER_ROWS[0].id}`);
+
+    await record.field('Member').getByRole('link', { name: 'Ruth Chen' }).click();
+
+    await expect(page).toHaveURL(new RegExp(`/members/${ruth.id}$`));
+    await expect(record.heading).toHaveText('Ruth Chen');
+  });
+
+  test('AC4: Points here lists each table that references the record, as which field', async ({
+    page,
+    jb,
+  }) => {
+    const record = new AdminRecordPage(page);
+    await record.setWidth(1280);
+    await stubAdminTables(page, ada, {
+      records: {
+        [`members/${ruth.id}`]: {
+          pointsHere: [{ table: 'listings', label: 'Listings', field: 'Owner', count: 1 }],
+        },
+      },
+    });
+    await jb.gotoAdmin(`/members/${ruth.id}`);
+
+    await expect(record.pointers).toHaveCount(1);
+    await expect(record.pointers.first()).toHaveText(/Listings\s*as owner\s*1/);
+    await record.pointers.first().getByRole('link').click();
+    await expect(page).toHaveURL(/\/listings$/);
+  });
+
+  test('AC4: with nothing pointing here it says so', async ({ page, jb }) => {
+    const record = new AdminRecordPage(page);
+    await record.setWidth(1280);
+    await stubAdminTables(page, ada);
+    await jb.gotoAdmin(`/members/${MEMBER_ROWS[1].id}`);
+
+    await expect(record.noPointers).toBeVisible();
+  });
+
+  test('AC5: History lists the changes and the creation, newest first', async ({ page, jb }) => {
+    const record = new AdminRecordPage(page);
+    await record.setWidth(1280);
+    await stubAdminTables(page, ada, {
+      records: {
+        [`members/${ruth.id}`]: {
+          history: [
+            {
+              at: '2026-11-12T15:30:00+00:00',
+              actor: 'Ada Nwosu',
+              what: 'changed Phone from — to 416-555-0144',
+              text: 'Ada Nwosu changed Phone from — to 416-555-0144',
+            },
+            {
+              at: '2026-09-10T14:20:00+00:00',
+              actor: 'Jubilee',
+              what: 'created this member',
+              text: 'Jubilee created this member',
+            },
+          ],
+        },
+      },
+    });
+    await jb.gotoAdmin(`/members/${ruth.id}`);
+
+    await expect(record.history).toHaveCount(2);
+    await expect(record.history.nth(0)).toContainText(
+      'Ada Nwosu changed Phone from — to 416-555-0144',
+    );
+    await expect(record.history.nth(0)).toContainText('12 Nov 2026 10:30');
+    await expect(record.history.nth(1)).toContainText('Jubilee created this member');
+  });
+
+  test('AC6: while loading the breadcrumb stays and the rest is skeletons under aria-busy', async ({
+    page,
+    jb,
+  }) => {
+    const record = new AdminRecordPage(page);
+    await record.setWidth(1280);
+    await stubAdminTables(page, ada, { recordAnswer: 'slow' });
+    await jb.gotoAdmin(`/members/${ruth.id}`);
+
+    await expect(record.back).toHaveText('Members');
+    await expect(record.column).toHaveAttribute('aria-busy', 'true');
+    await expect(record.heading).toHaveText('Loading member…');
+  });
+
+  test('AC6: a record that fails says so with JB-ADM-504, and Try again reads it again', async ({
+    page,
+    jb,
+  }) => {
+    const record = new AdminRecordPage(page);
+    await record.setWidth(1280);
+    const fake = await stubAdminTables(page, ada, { recordAnswer: 'fails' });
+    await jb.gotoAdmin(`/members/${ruth.id}`);
+
+    await expect(record.error).toContainText(`We couldn’t load member ${ruth.id}`);
+    await expect(record.error).toContainText('JB-ADM-504');
+    fake.recordAnswer = 'ok';
+    await record.retry().click();
+    await expect(record.heading).toHaveText('Ruth Chen');
+  });
+
+  test('AC6: a record that does not exist is not found', async ({ page, jb }) => {
+    const record = new AdminRecordPage(page);
+    await record.setWidth(1280);
+    await stubAdminTables(page, ada);
+    await jb.gotoAdmin('/members/no-such-member');
+
+    await expect(record.heading).toHaveText('We couldn’t find that page.');
+    await expect(page.locator('body')).toHaveAttribute('data-page', 'admin-not-found');
+  });
+
+  test('L2-276 AC4: choosing a row opens its record', async ({ page, jb }) => {
+    const records = new AdminRecordsPage(page);
+    const record = new AdminRecordPage(page);
+    await records.setWidth(1280);
+    await stubAdminTables(page, ada);
+    await jb.gotoAdmin('/members');
+
+    await records.row('Naomi Laurent').locator('td').nth(3).click();
+
+    await expect(record.heading).toHaveText('Naomi Laurent');
   });
 });

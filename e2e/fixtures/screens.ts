@@ -13,6 +13,7 @@ import {
   AdminRowsMenuScreen,
   AdminStaffMenuScreen,
 } from '../pages/admin-records.page';
+import { AdminRecordPage } from '../pages/admin-record.page';
 import { AdminPoliciesPage } from '../pages/admin-policies.page';
 import { AdminPolicyPage } from '../pages/admin-policy.page';
 import {
@@ -282,6 +283,10 @@ export const screens: {
   { key: 'admin-records.page-size-menu', screen: (page) => new AdminRowsMenuScreen(page) },
   { key: 'admin-records.forbidden', screen: (page) => new AdminShellPage(page) },
   { key: 'admin-records.not-found', screen: (page) => new AdminShellPage(page) },
+  { key: 'admin-record', screen: (page) => new AdminRecordPage(page) },
+  { key: 'admin-record.loading', screen: (page) => new AdminRecordPage(page) },
+  { key: 'admin-record.error', screen: (page) => new AdminRecordPage(page) },
+  { key: 'admin-record.job-runs', screen: (page) => new AdminRecordPage(page) },
   { key: 'admin-records.listings', screen: (page) => new AdminRecordsPage(page) },
   { key: 'admin-records.job-runs', screen: (page) => new AdminRecordsPage(page) },
   { key: 'admin-moved', screen: (page) => new AdminMovedPage(page) },
