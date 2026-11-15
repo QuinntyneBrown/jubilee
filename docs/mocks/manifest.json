@@ -548,6 +548,134 @@
       ]
     },
     {
+      "id": "events",
+      "kind": "page",
+      "title": "Events",
+      "route": "/events",
+      "states": [
+        "default",
+        "visitor",
+        "filtered",
+        "streamed",
+        "no-results",
+        "empty",
+        "loading",
+        "error",
+        "none-going",
+        "happening-full",
+        "offline"
+      ],
+      "requirements": [
+        "L2-299",
+        "L2-300",
+        "L2-301",
+        "L2-302",
+        "L2-303",
+        "L2-304",
+        "L2-305",
+        "L2-312",
+        "L2-313",
+        "L2-314"
+      ]
+    },
+    {
+      "id": "event",
+      "kind": "page",
+      "title": "Event",
+      "route": "/events/:slug",
+      "states": [
+        "default",
+        "going",
+        "stream-open",
+        "visitor",
+        "priced",
+        "ended",
+        "cancelled",
+        "live",
+        "loading",
+        "error",
+        "offline"
+      ],
+      "requirements": [
+        "L2-302",
+        "L2-304",
+        "L2-305",
+        "L2-306",
+        "L2-307",
+        "L2-312",
+        "L2-314"
+      ],
+      "not_applicable": {
+        "empty": "An event always has its fields; an unknown slug is the not-found page (L2-306 AC5)."
+      }
+    },
+    {
+      "id": "host-event",
+      "kind": "page",
+      "title": "Host an event",
+      "route": "/events/new",
+      "states": [
+        "default",
+        "streamed",
+        "hybrid",
+        "first-time",
+        "invalid",
+        "busy",
+        "unconfirmed",
+        "draft-restored"
+      ],
+      "requirements": [
+        "L2-307",
+        "L2-308",
+        "L2-314"
+      ],
+      "not_applicable": {
+        "loading": "The form opens with the member’s name already known; nothing is fetched.",
+        "empty": "A new form is its own empty state.",
+        "error": "Nothing loads; a failure to publish is a toast over the form."
+      }
+    },
+    {
+      "id": "edit-event",
+      "kind": "page",
+      "title": "Edit event",
+      "route": "/events/:slug/edit",
+      "states": [
+        "default",
+        "invalid",
+        "busy",
+        "locked",
+        "loading"
+      ],
+      "requirements": [
+        "L2-308",
+        "L2-309",
+        "L2-310",
+        "L2-314"
+      ],
+      "not_applicable": {
+        "empty": "An event being edited always has its stored values.",
+        "error": "A failure to load is the event page’s error state; a failure to save is a toast."
+      }
+    },
+    {
+      "id": "my-events",
+      "kind": "page",
+      "title": "Your events",
+      "route": "/my-events",
+      "states": [
+        "default",
+        "empty",
+        "loading",
+        "error",
+        "whos-going"
+      ],
+      "requirements": [
+        "L2-309",
+        "L2-314"
+      ]
+    },
+    {
       "id": "messages",
       "kind": "page",
       "title": "Messages",
@@ -951,6 +1079,8 @@
         "product-photos",
         "services",
         "delivery-methods",
+        "events",
+        "event-rsvps",
         "stock-alerts",
         "featured-slots",
         "response-time-stats",
@@ -1035,6 +1165,8 @@
         "product-photos",
         "services",
         "delivery-methods",
+        "events",
+        "event-rsvps",
         "stock-alerts",
         "featured-slots",
         "response-time-stats",
@@ -1228,7 +1360,11 @@
         "busy",
         "invalid",
         "failed",
-        "success"
+        "success",
+        "event"
+      ],
+      "requirements": [
+        "L2-311"
       ]
     },
     {
@@ -1262,12 +1398,18 @@
       "title": "Sign in required",
       "opens_from": "browse",
       "states": [
-        "default"
+        "default",
+        "rsvp",
+        "host-event"
       ],
       "not_applicable": {
         "busy": "This overlay only navigates or copies; it makes no request.",
         "invalid": "This overlay has no inputs to validate."
-      }
+      },
+      "requirements": [
+        "L2-300",
+        "L2-304"
+      ]
     },
     {
       "id": "user-menu",
@@ -1462,6 +1604,22 @@
         "invalid",
         "busy",
         "error"
+      ]
+    },
+    {
+      "id": "take-down-event",
+      "kind": "dialog",
+      "title": "Take down event",
+      "opens_from": "admin-record",
+      "states": [
+        "default",
+        "invalid",
+        "busy",
+        "error"
+      ],
+      "requirements": [
+        "L2-101",
+        "L2-311"
       ]
     },
     {
@@ -1842,6 +2000,58 @@
         "failed",
         "rate-limited",
         "error"
+      ]
+    },
+    {
+      "id": "leave-unsaved",
+      "kind": "dialog",
+      "title": "Leave without saving",
+      "opens_from": "account",
+      "states": [
+        "default",
+        "event"
+      ],
+      "not_applicable": {
+        "busy": "Leaving or staying makes no request.",
+        "invalid": "This dialog has no inputs to validate."
+      },
+      "requirements": [
+        "L2-307"
+      ]
+    },
+    {
+      "id": "cancel-event",
+      "kind": "dialog",
+      "title": "Cancel event",
+      "opens_from": "my-events",
+      "states": [
+        "default",
+        "busy",
+        "failed"
+      ],
+      "requirements": [
+        "L2-309",
+        "L2-310",
+        "L2-314"
+      ],
+      "not_applicable": {
+        "invalid": "The only input is an optional note, capped at 300 characters as it is typed."
+      }
+    },
+    {
+      "id": "event-toast",
+      "kind": "notification",
+      "title": "Event toast",
+      "opens_from": "events",
+      "states": [
+        "success",
+        "danger",
+        "warning",
+        "info"
+      ],
+      "requirements": [
+        "L2-304",
+        "L2-306"
       ]
     }
   ]

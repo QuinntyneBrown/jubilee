@@ -70,6 +70,7 @@
       <li><a href="../components/divider.html">Divider</a></li>
       <li><a href="../components/layout-primitives.html">Layout primitives</a></li>
       <li><a href="../components/auth-layout.html">Auth layout</a></li>
+      <li><a href="../components/events-layout.html">Events layout</a></li>
       <li><a href="../components/table.html">Table</a></li>
       <li><a href="../components/list.html">List</a></li>
       <li><a href="../components/description-list.html">Description list</a></li>
@@ -112,6 +113,13 @@
       <li><a href="../components/bag-button.html">Bag button</a></li>
       <li><a href="../components/bag-line.html">Bag line</a></li>
       <li><a href="../components/merch-story.html">Merchandise story</a></li>
+      <li><a href="../components/event-feature.html">Event feature card</a></li>
+      <li><a href="../components/event-row.html">Event row</a></li>
+      <li><a href="../components/event-place.html">Event place</a></li>
+      <li><a href="../components/topic-tag.html">Topic tag</a></li>
+      <li><a href="../components/rsvp-button.html">RSVP button</a></li>
+      <li><a href="../components/going-list.html">You’re going</a></li>
+      <li><a href="../components/host-cta.html">Running something?</a></li>
       <li><a href="../components/hero-band.html">Hero band</a></li>
       <li><a href="../components/lockup.html">Lockup</a></li>
       <li><a href="../components/toast.html">Toast</a></li>
@@ -188,6 +196,17 @@
       </div>
         <div class="ds-example__caption"><span>Error: danger-tinted disc, <code>role="alert"</code>, Try again and a way out.</span></div>
         <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;div class="empty empty--error" role="alert"&gt;&lt;div class="empty__icon" aria-hidden="true"&gt;&lt;svg class="icon icon--lg" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;circle cx="12" cy="12" r="9"/&gt;&lt;path d="M12 7v6M12 16h.01"/&gt;&lt;/svg&gt;&lt;/div&gt;&lt;h2 class="empty__title"&gt;We couldn’t load your requests&lt;/h2&gt;&lt;p class="empty__text"&gt;Nothing is lost. Check your connection and try again. If it keeps happening, tell us and quote &lt;code&gt;JB-REQ-503&lt;/code&gt;.&lt;/p&gt;&lt;div class="empty__actions"&gt;&lt;a class="btn btn--primary" href="../../mocks/pages/requests/default.html"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M4 12a8 8 0 0 1 14-5l2 2M20 5v4h-4M20 12a8 8 0 0 1-14 5l-2-2M4 19v-4h4"/&gt;&lt;/svg&gt;Try again&lt;/a&gt;&lt;a class="btn" href="../../mocks/pages/browse/default.html"&gt;Back to browse&lt;/a&gt;&lt;/div&gt;&lt;/div&gt;</code></pre></details></div>
+      <h3>Beside a gold rule (<code>--rule</code>)</h3>
+      <div class="ds-example"><div class="ds-example__canvas">
+        <div style="width: 100%; min-width: 0;"><div class="empty empty--rule"><p class="empty__title">Nothing coming up for that mix yet.</p><p class="empty__text">New events are added every week. Try a wider filter in the meantime.</p><div class="empty__actions"><button class="btn btn--link" type="button">Show everything</button></div></div></div>
+      </div>
+        <div class="ds-example__caption"><span>No results on Events: left-aligned beside a gold rule, no icon, a link button that resets the filters (L2-303 AC1).</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;div style=&quot;width: 100%; min-width: 0;&quot;&gt;&lt;div class=&quot;empty empty--rule&quot;&gt;&lt;p class=&quot;empty__title&quot;&gt;Nothing coming up for that mix yet.&lt;/p&gt;&lt;p class=&quot;empty__text&quot;&gt;New events are added every week. Try a wider filter in the meantime.&lt;/p&gt;&lt;div class=&quot;empty__actions&quot;&gt;&lt;button class=&quot;btn btn--link&quot; type=&quot;button&quot;&gt;Show everything&lt;/button&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;</code></pre></details></div>
+      <div class="ds-example"><div class="ds-example__canvas">
+        <div style="width: 100%; min-width: 0;"><div class="empty empty--rule"><p class="empty__title">Nothing coming up yet.</p><p class="empty__text">New events are added every week. Running something? <a href="../../mocks/pages/host-event/default.html">Host it here.</a></p></div></div>
+      </div>
+        <div class="ds-example__caption"><span>No event at all: no reset, an inline link to host instead (L2-303 AC2).</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;div style=&quot;width: 100%; min-width: 0;&quot;&gt;&lt;div class=&quot;empty empty--rule&quot;&gt;&lt;p class=&quot;empty__title&quot;&gt;Nothing coming up yet.&lt;/p&gt;&lt;p class=&quot;empty__text&quot;&gt;New events are added every week. Running something? &lt;a href=&quot;../../mocks/pages/host-event/default.html&quot;&gt;Host it here.&lt;/a&gt;&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;</code></pre></details></div>
     </section>
     <section class="ds-section" id="sizes"><h2><a href="#sizes">Sizes</a></h2>
       <div class="ds-example"><div class="ds-example__canvas">
@@ -265,6 +284,7 @@
         <li>Error: "We couldn’t load your requests. Nothing is lost." plus a reference code like <code>JB-REQ-503</code>.</li>
         <li>Never blame the person; never "No data".</li>
       </ul>
+      <ul><li><code>--rule</code>: the title is a sentence with a full stop (“Nothing coming up for that mix yet.”), as the Events frame writes it; it is a paragraph, not a heading, because “Next up · 0 events” above it is the heading.</li></ul>
     </section>
     <section class="ds-section" id="do-dont"><h2><a href="#do-dont">Do and don't</a></h2>
       <div class="ds-dodont">
@@ -288,6 +308,7 @@
           <tr><td>Icon</td><td><code>--icon-size-lg</code></td><td colspan="2"><span data-token="--icon-size-lg"></span></td></tr>
         </tbody>
       </table></div>
+      <p><code>--rule</code>: the rule is <code>--border-width-thick</code> in <code>--color-accent</code> (decorative: the words carry the state), padding <code>--space-2</code> / <code>--space-5</code>, title <code>--text-body</code> semibold, text <code>--text-body-sm</code>.</p>
     </section>
     <section class="ds-section" id="code"><h2><a href="#code">Code</a></h2>
       <pre><code>&lt;div class="empty"&gt;
@@ -301,6 +322,7 @@
         <tr><td><code>.empty__icon</code> <code>__title</code> <code>__text</code> <code>__actions</code></td><td>Parts.</td></tr>
         <tr><td><code>.empty--compact</code></td><td>Less padding for panels.</td></tr>
         <tr><td><code>.empty--error</code></td><td>Danger disc; pair with <code>role="alert"</code>.</td></tr>
+        <tr><td><code>.empty--rule</code></td><td>Left-aligned beside a gold rule, no icon: an empty list inside a page that keeps its other columns (Events).</td></tr>
       </tbody></table></div>
     </section>
     <section class="ds-section" id="sources"><h2><a href="#sources">Sources</a></h2>
@@ -312,6 +334,8 @@
         <li><a href="../../mocks/pages/requests/error.html">pages/requests/error</a> (load error)</li>
         <li><a href="../../mocks/pages/conversation/error.html">pages/conversation/error</a> (load error with code)</li>
         <li><a href="../../mocks/pages/notifications/empty.html">pages/notifications/empty</a> (first use)</li>
+        <li><a href="../../mocks/pages/events/no-results.html">pages/events/no-results</a> (<code>--rule</code>, no results)</li>
+        <li><a href="../../mocks/pages/events/empty.html">pages/events/empty</a> (<code>--rule</code>, first use)</li>
       </ul>
       <p>Drift fixed during extraction: error empty states link <em>Try again</em> to <code>default.html</code> as an <code>&lt;a&gt;</code>; in the product it is a <code>&lt;button&gt;</code> that retries in place (the mocks are static). <code>.empty__text</code> caps at a raw <code>36ch</code> and the disc size is <code>calc(--avatar-size-md + --space-6)</code>; both are acceptable but undocumented elsewhere. Otherwise the 68 mocks are consistent: every error variant has <code>role="alert"</code> and a reference code.</p>
     </section>
