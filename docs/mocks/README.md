@@ -206,9 +206,9 @@ controls carry a darker edge (`--color-accent-border`) and gold is never used fo
   4. *Who's going* is a state of Your events (`my-events/whos-going`), not a dialog.
   5. *"Take down event"* sits on the admin record beside Delete; whether staff may delete an event
      at all is for ADR 0075 to say.
-  6. *Mocks ahead of the app.* Until the app has Events, five component-parity cases are marked
+  6. *Mocks ahead of the app.* Until the app has Events, eight component-parity cases are marked
      `knownDifference` (search-field top-bar, record-aside and record-grid member, dialog
-     delete-one, delete-selection and delete-record). The change that builds Events removes the marks.
+     delete-one, delete-selection and delete-record, admin-shell sidebar and drawer). The change that builds Events removes the marks.
 
 No `docs/specs` exist yet, so the screen list was derived from the product description and the
 Magic Patterns design reference. These assumptions shaped it; each one is a decision to confirm.
