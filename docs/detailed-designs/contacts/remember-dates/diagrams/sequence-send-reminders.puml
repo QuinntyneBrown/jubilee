@@ -18,7 +18,7 @@ actor "Member" as actor
 box "Frontend — Jubilee Web application" #E0F2FE
   participant "Jubilee service worker" as sw
 end box
-box "Backend — Jubilee API application" #D1FADF
+box "Backend — Jubilee Worker application" #D1FADF
   participant "ContactRemindersJob" as jobhost
 end box
 box "Backend — Jubilee Application and Domain" #ECFDF3
