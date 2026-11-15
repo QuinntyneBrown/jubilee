@@ -22,6 +22,7 @@ import {
   rowName,
 } from "./entities.mjs";
 import { QUEUES, verb } from "./overview.mjs";
+import { buildSurveyScreens } from "./surveys.mjs";
 import {
   NONPROFIT_DESCRIPTION,
   NONPROFIT_ITEM,
@@ -163,12 +164,15 @@ function shell({
   staffMenu = false,
 }) {
   const activeGroup =
-    !active || active === "overview" ? "" : getEntity(active).group;
+    !active || active === "overview" || active === "surveys"
+      ? ""
+      : getEntity(active).group;
   const open = new Set([activeGroup || "Accounts", "Moderation"]);
   const nav = (
     id,
   ) => `<nav class="admin-nav" aria-label="Tables"><div class="admin-nav__scroll">
 <a class="admin-nav__item" href="${OVERVIEW}"${active === "overview" ? ' aria-current="page"' : ""}><span class="admin-nav__label">Overview</span></a>
+<a class="admin-nav__item" href="../admin-surveys/default.html"${active === "surveys" ? ' aria-current="page"' : ""}><span class="admin-nav__label">Surveys</span><span class="admin-nav__count" aria-label="3 live">3</span></a>
 <ul class="admin-nav__groups">${GROUPS.map((g, gi) => {
     const isOpen = open.has(g);
     const listId = `${id}-g${gi}`;
@@ -1329,10 +1333,38 @@ function rewrapDialogs(screens) {
   }
 }
 
+// The survey screens (Magic Patterns frames "Surveys", "Survey Builder", "Survey Results").
+const SURVEY_DIRS = [
+  "admin-surveys",
+  "admin-survey-builder",
+  "admin-survey-results",
+];
+function buildSurveys() {
+  return buildSurveyScreens({
+    esc,
+    num,
+    icon,
+    MARK,
+    shell,
+    page,
+    toast,
+    writePage(screen, state, html) {
+      const dir = join(PAGES, screen);
+      mkdirSync(dir, { recursive: true });
+      writeFileSync(join(dir, `${state}.html`), html);
+    },
+  });
+}
+
 function main() {
-  for (const dir of ["admin-overview", "admin-records", "admin-record"])
+  for (const dir of [
+    "admin-overview",
+    "admin-records",
+    "admin-record",
+    ...SURVEY_DIRS,
+  ])
     rmSync(join(PAGES, dir), { recursive: true, force: true });
-  const built = [buildOverview(), buildRecords(), buildRecord()];
+  const built = [buildOverview(), buildRecords(), buildRecord(), ...buildSurveys()];
   const path = join(MOCKS, "manifest.json");
   const manifest = JSON.parse(readFileSync(path, "utf8"));
   const list = manifest.screens;

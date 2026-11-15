@@ -281,7 +281,8 @@
         "feedback-launcher",
         "rooms-term",
         "rooms-empty",
-        "saved-hearts"
+        "saved-hearts",
+        "survey-card"
       ],
       "requirements": [
         "L2-231",
@@ -533,6 +534,37 @@
         "loading": "The form needs what GET /api/listings/{slug}/reviews/new answers; it shows the page skeleton of L2-123 like every page, drawn on business/loading.",
         "empty": "A form has nothing to be empty.",
         "error": "A failed load shows the error page of L2-125 (pages/error); a failed post is the failed state."
+      }
+    },
+    {
+      "id": "survey",
+      "kind": "page",
+      "title": "Survey",
+      "route": "/surveys/:slug",
+      "states": [
+        "intro",
+        "question",
+        "invalid",
+        "multi",
+        "multi-full",
+        "scale",
+        "optional",
+        "last",
+        "sending",
+        "failed",
+        "done",
+        "rating",
+        "expired",
+        "already-answered",
+        "signed-out",
+        "not-found",
+        "loading"
+      ],
+      "requirements": [],
+      "not_applicable": {
+        "default": "A survey always starts on its intro; intro is the default state.",
+        "empty": "A survey cannot be published without questions (the builder starts every draft with three).",
+        "error": "A survey that fails to load shows the app’s error page (pages/server-error); failing to send is the failed state."
       }
     },
     {
@@ -1217,6 +1249,89 @@
       ],
       "not_applicable": {
         "empty": "A record screen shows one record; a table with no records is the table’s empty state."
+      }
+    },
+    {
+      "id": "admin-surveys",
+      "kind": "page",
+      "title": "Admin surveys",
+      "route": "/surveys (admin application)",
+      "states": [
+        "default",
+        "filtered",
+        "no-results",
+        "reordered",
+        "delivery-rules",
+        "delivery-rules-invalid",
+        "rules-saved",
+        "empty",
+        "loading",
+        "error"
+      ],
+      "requirements": [],
+      "not_applicable": {
+        "forbidden": "Every member of staff can read surveys; the admin sign-in (admin-sign-in/not-staff) keeps everyone else out."
+      }
+    },
+    {
+      "id": "admin-survey-builder",
+      "kind": "page",
+      "title": "Admin survey builder",
+      "route": "/surveys/new, /surveys/:id/edit (admin application)",
+      "states": [
+        "default",
+        "collapsed",
+        "draft",
+        "new",
+        "add-menu",
+        "type-menu",
+        "scheduled",
+        "audience",
+        "audience-custom",
+        "schedule",
+        "missing-expiry",
+        "saved",
+        "publish-confirm",
+        "publishing",
+        "update-confirm",
+        "loading",
+        "error",
+        "not-found"
+      ],
+      "requirements": [],
+      "not_applicable": {
+        "empty": "The builder is never empty: a new survey, or a draft without questions, starts from three starter questions (new, draft)."
+      }
+    },
+    {
+      "id": "admin-survey-results",
+      "kind": "page",
+      "title": "Admin survey results",
+      "route": "/surveys/:id (admin application)",
+      "states": [
+        "default",
+        "responses",
+        "responses-unfinished",
+        "anonymous",
+        "short-answers",
+        "paused",
+        "closed",
+        "expired",
+        "no-responses",
+        "actions-menu",
+        "extend-expiry",
+        "extend-invalid",
+        "extended",
+        "close-early",
+        "closed-now",
+        "paused-now",
+        "loading",
+        "error",
+        "not-found"
+      ],
+      "requirements": [],
+      "not_applicable": {
+        "empty": "A survey with no answers is the no-responses state."
       }
     },
     {
