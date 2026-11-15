@@ -19,6 +19,7 @@ const PAGES = join(MOCKS, "pages");
 const ID = "survey";
 const TITLE = "Survey";
 const HOME = "../browse/survey-card.html";
+const REQ = "L2-333 L2-334 L2-335 L2-336";
 
 const esc = (s) =>
   String(s ?? "")
@@ -142,6 +143,7 @@ function end({ badge, badgeTone = "", title, lead, facts = "", cta }) {
 const BACK_HOME = `<a class="btn btn--ink btn--lg" href="${HOME}">Back to Jubilee</a>`;
 
 const FACTS = `<dl class="survey-flow__facts"><div><dt>Length</dt><dd>${gala.questions.length} questions, about 2 minutes</dd></div><div><dt>Open until</dt><dd>${esc(gala.expiresAt.replace(", 23:59", ""))}</dd></div><div><dt>Who sees it</dt><dd>${gala.anonymous ? "Anonymous to our team" : "Our team, with your name"}</dd></div></dl>`;
+const GUEST_FACTS = `<dl class="survey-flow__facts"><div><dt>Length</dt><dd>${gala.questions.length} questions, about 2 minutes</dd></div><div><dt>Open until</dt><dd>${esc(gala.expiresAt.replace(", 23:59", ""))}</dd></div><div><dt>Account</dt><dd>None needed</dd></div></dl>`;
 const INTRO_LEAD =
   "We’re planning the Christmas Gala on Saturday 13 December, and we’d rather plan it with you. Your answers decide what’s on the night.";
 
@@ -237,15 +239,44 @@ const STATES = {
       cta: BACK_HOME,
     }),
   },
+  "guest-intro": {
+    description: "The intro of a survey shared by link, opened by someone who isn’t logged in.",
+    body: end({
+      title: gala.title,
+      lead: esc(INTRO_LEAD),
+      facts: GUEST_FACTS,
+      cta: `<a class="btn btn--primary btn--lg" href="question.html">Start</a><a class="btn btn--ghost btn--lg" href="../sign-in/default.html">Log in to answer as a member</a>`,
+    }),
+    note: "Drawn from the intro, for a survey whose audience is “Anyone with the link” (admin-survey-builder/audience-link). A guest answers the same questions; nothing asks for their name or e-mail. The questions are the member’s states.",
+  },
+  "guest-done": {
+    description: "Thanks to a guest, after the answers are sent.",
+    body: end({
+      badge: "check",
+      title: "Thank you.",
+      lead: "We read every answer, and we’ll share what we heard in the next community update. Jubilee is Toronto’s Christian marketplace: join free to find Christian-owned businesses and hear about gatherings like this one.",
+      cta: `<a class="btn btn--ink btn--lg" href="../sign-up/default.html">Join Jubilee</a><a class="btn btn--ghost btn--lg" href="../browse/signed-out.html">Look around first</a>`,
+    }),
+    note: "A guest’s thanks has no name and no ticket line: Jubilee has no address to e-mail them.",
+  },
+  "guest-already-answered": {
+    description: "A guest opens a link survey they already answered on this device.",
+    body: end({
+      badge: "check",
+      title: "You’ve already answered",
+      lead: "Answers were sent from this device on Tuesday 18 November. Each person answers once, so every voice counts the same.",
+      cta: `<a class="btn btn--ink btn--lg" href="../browse/signed-out.html">Look around Jubilee</a>`,
+    }),
+  },
   "signed-out": {
-    description: "The survey opened from a link by someone who isn’t logged in.",
+    description: "A survey for members, opened from a link by someone who isn’t logged in.",
     body: end({
       title: gala.title,
       lead: `${esc(INTRO_LEAD)} Surveys are for Jubilee members, so log in first: each member answers once.`,
       facts: FACTS,
       cta: `<a class="btn btn--primary btn--lg" href="../sign-in/default.html">Log in to answer</a><a class="btn btn--ghost btn--lg" href="../sign-up/default.html">Join Jubilee</a>`,
     }),
-    note: "Drawn from the intro; the design has no signed-out frame. After logging in the member comes back here to Start. See the open questions in README.md.",
+    note: "Drawn from the intro; the design has no signed-out frame. A survey whose audience is members asks a guest to log in; after logging in they come back here to Start. A link survey opens on guest-intro instead.",
   },
   "not-found": {
     description: "A survey link that leads nowhere.",
@@ -253,7 +284,7 @@ const STATES = {
       badge: "search",
       badgeTone: "quiet",
       title: "We can’t find that survey",
-      lead: "The link may be mistyped, or the survey was removed. Surveys from Jubilee always reach you in the app, by email or by push.",
+      lead: "The link may be mistyped, or the survey was removed. Surveys from Jubilee always reach you in the app or by email.",
       cta: BACK_HOME,
     }),
   },
@@ -274,7 +305,7 @@ function page(state, { description, body, note }) {
 <meta name="mock:kind" content="page">
 <meta name="mock:screen" content="${ID}">
 <meta name="mock:state" content="${state}">
-<meta name="mock:requirements" content="">
+<meta name="mock:requirements" content="${REQ}">
 <meta name="description" content="${esc(description)}">
 <link rel="stylesheet" href="../../../design-system/tokens/tokens.css">
 <link rel="stylesheet" href="../../../design-system/assets/components.css">
@@ -350,7 +381,7 @@ function main() {
     title: TITLE,
     route: "/surveys/:slug",
     states: ORDER,
-    requirements: [],
+    requirements: REQ.split(" "),
     not_applicable: {
       default: "A survey always starts on its intro; intro is the default state.",
       empty: "A survey cannot be published without questions (the builder starts every draft with three).",

@@ -556,11 +556,19 @@
         "rating",
         "expired",
         "already-answered",
+        "guest-intro",
+        "guest-done",
+        "guest-already-answered",
         "signed-out",
         "not-found",
         "loading"
       ],
-      "requirements": [],
+      "requirements": [
+        "L2-333",
+        "L2-334",
+        "L2-335",
+        "L2-336"
+      ],
       "not_applicable": {
         "default": "A survey always starts on its intro; intro is the default state.",
         "empty": "A survey cannot be published without questions (the builder starts every draft with three).",
@@ -1268,7 +1276,13 @@
         "loading",
         "error"
       ],
-      "requirements": [],
+      "requirements": [
+        "L2-315",
+        "L2-316",
+        "L2-317",
+        "L2-318",
+        "L2-319"
+      ],
       "not_applicable": {
         "forbidden": "Every member of staff can read surveys; the admin sign-in (admin-sign-in/not-staff) keeps everyone else out."
       }
@@ -1288,6 +1302,7 @@
         "scheduled",
         "audience",
         "audience-custom",
+        "audience-link",
         "schedule",
         "missing-expiry",
         "saved",
@@ -1298,7 +1313,16 @@
         "error",
         "not-found"
       ],
-      "requirements": [],
+      "requirements": [
+        "L2-320",
+        "L2-321",
+        "L2-322",
+        "L2-323",
+        "L2-324",
+        "L2-325",
+        "L2-326",
+        "L2-327"
+      ],
       "not_applicable": {
         "empty": "The builder is never empty: a new survey, or a draft without questions, starts from three starter questions (new, draft)."
       }
@@ -1311,6 +1335,7 @@
       "states": [
         "default",
         "responses",
+        "responses-guests",
         "responses-unfinished",
         "anonymous",
         "short-answers",
@@ -1329,7 +1354,13 @@
         "error",
         "not-found"
       ],
-      "requirements": [],
+      "requirements": [
+        "L2-328",
+        "L2-329",
+        "L2-330",
+        "L2-331",
+        "L2-332"
+      ],
       "not_applicable": {
         "empty": "A survey with no answers is the no-responses state."
       }
