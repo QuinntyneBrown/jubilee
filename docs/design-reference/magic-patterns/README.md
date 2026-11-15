@@ -252,35 +252,6 @@ ADR 0066 records why. The parity specs of the reviews components carry these as 
 | Select with a chevron ("Most relevant") | the system select with its drawn arrow | Select component |
 | The posted state, filters, edit, remove, reply and report | drawn in the mocks only | The frames have no such states |
 
-## Contacts: what the product changes from the frames
-
-The Contacts prototype is drawn in another Magic Patterns workspace, the Popkin design
-(<https://www.magicpatterns.com/os/w6gEtuA7JFtm4ez5vPayq7>), synced as code to
-`QuinntyneBrown/Popkin-Community-Platform` (commit `fd9c177`, 15 November 2026). Its frames are
-Today, People, Contact Profile, Add Contact, Log Entry, Key Dates, Follow-ups, Habits, Groups and
-Connections, reached from "Your Popkins". The requirements are L1-036 and L2-299 to L2-323. No
-captures are kept yet: the mocks are drawn first, and the captures are taken from a published
-preview of the prototype once there is one.
-
-| Frame | Product | Why |
-|---|---|---|
-| "Popkin" in copy ("Popkin remembers their birthdays…") | "Jubilee" | The product's name |
-| "Your Popkins" back link; "Contacts" in the home bar | "Browse" back link; "Contacts" in the account menu and under "You" (L2-299) | Jubilee has no Popkins; Contacts belongs to the account |
-| "Import from your Popkins" and "23 people from your Popkins are ready to import." | "Import from your conversations", the businesses a member deals with and an owner's customers, with only what the member already sees (L2-302) | Jubilee's own conversations are the people a member already knows here; L2-145 keeps a member's phone and e-mail from businesses |
-| "Also in your Popkin “Lakeside Weekend”" | "Also on Jubilee: {name}", opening the conversation | The same |
-| "Open “Thursday Night Group”" and "Start a Popkin with them" on a group | absent | Jubilee has no group conversations (L1-009) |
-| "Message" and "Call" with no rule | the Jubilee conversation when linked, else `sms:`; `tel:`; disabled without a phone, saying why (L2-305) | Jubilee sends nothing to a contact (L2-320 AC3) |
-| "She’s into …" | "{first name} is into …" | Jubilee stores no pronouns and guesses none |
-| "Last time: she asked you to do a reading at her wedding." | "Last time: {title of the latest conversation} ({date})." | The line is worked out from the timeline, not written for it |
-| "Morning, Mara" at any hour | "Morning", "Afternoon" or "Evening" by the time in Toronto | The greeting is true at every hour |
-| The quick-add fields on Follow-ups and a profile save in place | Enter opens "New follow-up" (L2-314) | No inline forms in pages (AGENTS.md) |
-| "Phone · 40 min" on a timeline entry | how it happened only ("Phone") | Log asks no duration |
-| No "How you met" on Add Contact, though the profile shows it | "How you met" in Details | A shown fact needs a field to set it |
-| "+44" phone placeholder, UK sample people and places | "+1"; the mocks' sample is Toronto's | Jubilee is in Toronto |
-| "Phone notifications" with no permission step | asks the browser and says so when it is blocked (L2-312 AC2) | Web Push needs the browser's permission |
-| No star control, edit, delete or empty states but Today's | "More" with Closest and delete (L2-319), item menus, every empty state (L2-301) | The frames have no such states; the mocks draw them |
-| Habits on a phone highlights "Today"; Connections highlights "Groups" | the same (L2-299 AC5) | Kept from the frame |
-
 ## Known differences
 
 **No Verified mark (ADR 0057).** Jubilee ships without listing verification, so the "Verified"
