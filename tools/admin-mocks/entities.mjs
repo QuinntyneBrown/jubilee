@@ -253,6 +253,32 @@ const listings = [
       ['dlv_503', 'lst_flower', 'local delivery', '$15.00', 'Within 15 km of North York', 1, true],
     ],
   }),
+  // Events (L1-036, L2-311 AC3): the events members host and who said they are going. The street
+  // address and the stream link are shown to staff as text; "Take down event" opens take-down-event.
+  entity({
+    key: 'events', label: 'Events', singular: 'Event', group: 'Listings', count: 214,
+    description: 'Gatherings members host: worship nights, meetups and workshops. Taking one down removes it from Events at once and tells everyone going.',
+    fields: ['id', 'title', 'host', 'memberId:ref:members', 'topic:status', 'format:status', 'status:status', 'startsAt:datetime', 'going:number', 'places:number', 'venue', 'area', 'streetAddress:long', 'streamLink:mono', 'slug:mono', 'createdAt:datetime'],
+    cols: 8,
+    options: { topic: ['Christian', 'Tech', 'Entrepreneur'], format: ['in Toronto', 'streamed', 'in Toronto and streamed'], status: ['draft', 'live', 'cancelled', 'taken down', 'ended'] },
+    rows: [
+      ['evt_214', 'Worship Night on Ossington', 'Grace Toronto Church', 'mem_Q7hP2c', 'Christian', 'in Toronto and streamed', 'live', '13 Nov 19:30', 142, null, 'The Loft at 180 Ossington', 'Trinity Bellwoods', '180 Ossington Ave', 'https://live.gracetoronto.example/worship', 'worship-night-on-ossington', '28 Oct 10:12'],
+      ['evt_213', 'Faith & Code: Building with AI responsibly', 'Kingdom Devs TO', 'mem_3Lw9Tb', 'Tech', 'in Toronto and streamed', 'live', '14 Nov 18:30', 88, 120, 'MaRS Discovery District', 'Discovery District', '101 College St', 'https://stream.kingdomdevs.example/faith-code', 'faith-and-code', '24 Oct 21:40'],
+      ['evt_212', 'Founders’ Breakfast', 'Jubilee Business Circle', 'mem_8F2kQa', 'Entrepreneur', 'in Toronto', 'live', '15 Nov 08:00', 24, 30, 'Sam James Coffee Bar', 'Harbord Village', '297 Harbord St', '', 'founders-breakfast', '20 Oct 07:15'],
+      ['evt_211', 'Pitch Practice Night', 'Legacy Financial', 'mem_Vx41Rd', 'Entrepreneur', 'in Toronto and streamed', 'live', '18 Nov 19:00', 47, null, 'Centre for Social Innovation', 'Annex', '720 Bathurst St', 'https://meet.legacyfin.example/pitch', 'pitch-practice-night', '19 Oct 16:02'],
+      ['evt_209', 'Hack Night for nonprofits', 'Kingdom Devs TO', 'mem_3Lw9Tb', 'Tech', 'in Toronto', 'cancelled', '22 Nov 13:00', 52, 60, 'Shopify Toronto', 'King West', '620 King St W', '', 'hack-night-for-nonprofits', '12 Oct 12:30'],
+    ],
+  }),
+  entity({
+    key: 'eventRsvps', label: 'Event RSVPs', singular: 'Event RSVP', group: 'Listings', count: 3981,
+    description: 'Members who said they are going. Taking an RSVP back deletes it; the host sees names only.',
+    fields: ['id', 'eventId:ref:events', 'memberId:ref:members', 'messageSentAt:datetime', 'reminderSentAt:datetime', 'createdAt:datetime'],
+    rows: [
+      ['rsv_3981', 'evt_214', 'mem_2NbYuf', '17 Nov 20:01', '', '17 Nov 20:00'],
+      ['rsv_3980', 'evt_212', 'mem_Kd8sWg', '16 Nov 19:20', '', '16 Nov 19:20'],
+      ['rsv_3979', 'evt_211', 'mem_c9JmEe', '09 Nov 12:10', '', '09 Nov 12:09'],
+    ],
+  }),
   entity({
     key: 'stockAlerts', label: 'Stock alerts', singular: 'Stock alert', group: 'Listings', count: 96,
     description: 'Members waiting for a product to come back. Sent once when stock goes above zero.',

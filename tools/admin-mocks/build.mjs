@@ -1030,7 +1030,10 @@ function recordMain(e, mode, phase) {
           : "Save changes"
     }</button>`;
   else
-    actions = `${phase === "saved" ? `<span class="record-head__saved" role="status">${icon("check")}Saved</span>` : ""}<a class="btn btn--danger-outline" href="${
+    actions = `${phase === "saved" ? `<span class="record-head__saved" role="status">${icon("check")}Saved</span>` : ""}${
+      // An event is taken down, not deleted, by the Jubilee team (L2-311 AC3, AC4).
+      e.key === "events" ? `<a class="btn btn--danger-outline" href="../../dialogs/take-down-event/default.html">${icon("trash")}Take down event</a>` : ""
+    }<a class="btn btn--danger-outline" href="${
       e.key === "members" ? "confirm-delete.html" : "#"
     }">${icon("trash")}Delete</a><a class="btn btn--ink" href="${e.key === "members" ? "edit.html" : "#"}">${icon("pencil")}Edit</a>`;
 
@@ -1268,6 +1271,7 @@ const REPLACED = [
 // mock's own and is left as it is.
 const DIALOGS = {
   "take-down-listing": "listings",
+  "take-down-event": "events",
   "report-action": "listingReports",
   "publish-policy": "contentVersions",
 };
