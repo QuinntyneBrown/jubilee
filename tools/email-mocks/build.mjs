@@ -24,6 +24,8 @@ const labels = [
   ['/account/data/', 'Download your data'],
   ['/sign-in', 'Sign in to Jubilee'],
   ['/purpose-tee/thanks', 'See your order'],
+  ['/surveys/', 'Answer the survey'],
+  ['admin.jubilee.to/surveys/', 'See the results'],
 ];
 
 const encode = (text) =>
@@ -163,6 +165,33 @@ Women's M × 1
 Shirts $50.00 · shipping $9.00 · tax $7.67 · total $66.67 CAD
 
 The stock is already lowered. Refunds and exchanges are made in the Stripe dashboard.${end}`],
+  // Surveys (L2-337): the invite and the one reminder follow the "Surveys" e-mail switch and carry the
+  // unsubscribe link; the owner's summary goes to staff when a survey closes.
+  ['survey-invite', 'A few questions from Jubilee: Christmas Gala', `Hi Joanna,
+
+We’re planning the Christmas Gala on Saturday 13 December, and we’d rather plan it with you. Your answers decide what’s on the night.
+
+5 questions, about 2 minutes. Open until Friday 21 November.
+
+${base}/surveys/christmas-gala${end}`, unsubscribe],
+  ['survey-reminder', 'Still time to answer: Christmas Gala', `Hi Joanna,
+
+The Christmas Gala survey closes on Friday 21 November. If you have 2 minutes, your answers decide what’s on the night.
+
+${base}/surveys/christmas-gala
+
+This is the only reminder we’ll send.${end}`, unsubscribe],
+  ['survey-closed-summary', 'Survey closed: Christmas Gala: what would bring you?', `Hi Ada,
+
+Christmas Gala: what would bring you? closed on Friday 21 November at 23:59, Toronto time.
+
+Responses: 600 of 600 wanted
+Finished by: 82% of those who started
+Top answer to question 1: Yes, I’ll be there (48%)
+
+The results and every response stay in the admin application. Nothing is deleted.
+
+https://admin.jubilee.to/surveys/srv_gala25${end}`],
   ['owner-tip', 'A tip for your Jubilee listing: show your work with photos', `Hi Naomi,\n\nA member who has never met you sees your listing first. Photos of your work, your shop or your team tell them what you do before they write to you.\n\nAdd photos to Luzandre.com and choose the one that leads.\n\nAdd photos: ${base}/my-business/listing\n\nThis is tip 1 of 4. We send one a month.${end}`, unsubscribe, address],
 ];
 

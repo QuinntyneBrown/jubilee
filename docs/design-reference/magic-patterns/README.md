@@ -104,6 +104,21 @@ copy and filters and changes these, by decision (L2-299 to L2-314):
 | No capacity, no ended, cancelled or full state | "Full", "Happening now", ended and cancelled are drawn in the mocks only (L2-300, L2-304, L2-306) | Production states the sample data never reaches |
 | The where filter's buttons are about 36 px tall | at least 44 px to touch (L2-301 AC1) | WCAG and L2-162 |
 
+## Surveys: what the product changes from the frames
+
+Surveys (L1-037) are drawn in the Magic OS only: the admin prototype's frames "Surveys", "Survey
+Builder" and "Survey Results", and the app's "Survey" with the `survey` card of "Browse". None is
+captured here, so the survey components compare with the mocks only. The mocks keep the frames'
+layout and copy and change these, by decision (L2-315 to L2-340):
+
+| Frame | Product | Why |
+|---|---|---|
+| A survey reaches members by a card on Home, an e-mail, a push notification or a sheet after something they do | the card on Home and the e-mail only, with one e-mailed reminder (L2-325 AC5, L2-337) | Jubilee sends no push, and the sheet has no frame |
+| Every respondent is a member | a survey for "Anyone with the link" can be answered without an account, once on each device (L2-335) | The team asks the wider community, as Purpose Tee buyers need no account (L1-034) |
+| Each response shows the member's church | the name only, "Respondent {n}" or "Guest" (L2-330 AC2) | A member's home church is private (L1-020) |
+| "Next" is disabled until a required question is answered | it is dimmed but stays focusable, and pressing it says "Choose an answer to go on." (L2-334 AC3) | A keyboard or screen-reader user learns what is missing |
+| The delivery rules hold back push at night | no such rule (L2-319) | No push |
+
 ## Captures of one component (ADR 0060)
 
 A component the frames above do not show is compared with the reference as soon as its capture is

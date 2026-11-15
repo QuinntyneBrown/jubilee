@@ -15,8 +15,8 @@ import {
   typeLabel,
 } from "./surveys-data.mjs";
 
-// Requirements for surveys are not written yet (see docs/mocks/README.md, open questions).
-const SURVEY_REQ = "";
+// The survey requirements (L1-037) each screen serves.
+const SURVEY_REQ = { "admin-surveys": "L2-315 L2-316 L2-317 L2-318 L2-319", "admin-survey-builder": "L2-320 L2-321 L2-322 L2-323 L2-324 L2-325 L2-326 L2-327", "admin-survey-results": "L2-328 L2-329 L2-330 L2-331 L2-332" };
 
 export const SURVEY_ICONS = {
   arrowUp: '<path d="m5 12 7-7 7 7"/><path d="M12 19V5"/>',
@@ -128,14 +128,14 @@ export function buildSurveyScreens(h) {
           title,
           state: s,
           states,
-          requirements: SURVEY_REQ,
+          requirements: SURVEY_REQ[id],
           description: d.description,
           body: d.body,
           note: d.note ?? "",
         }),
       );
     }
-    const entry = { id, kind: "page", title, route, states, requirements: [] };
+    const entry = { id, kind: "page", title, route, states, requirements: SURVEY_REQ[id].split(" ") };
     if (notApplicable) entry.not_applicable = notApplicable;
     built.push(entry);
   };
@@ -179,7 +179,7 @@ export function buildSurveyScreens(h) {
       .filter((s) => !q || `${s.title} ${s.audience} ${s.owner}`.toLowerCase().includes(q.toLowerCase()));
     const head = `<div class="records-head"><div class="admin-heading"><p class="admin-heading__eyebrow">Member research</p><h1 class="admin-heading__title">Surveys</h1><p class="admin-heading__lead">${
       empty
-        ? "Ask members a few questions in the app, by email or by push. Each survey has its own audience, window and expiry."
+        ? "Ask members a few questions in the app or by email. Each survey has its own audience, window and expiry."
         : `<strong>${live.length} running at once.</strong> A member sees at most one survey every 7 days; where several apply, the higher one in the list below goes first.`
     }</p></div><div class="records-head__actions"><a class="btn" href="../admin-surveys/delivery-rules.html">${icon("sliders")}Delivery rules</a><a class="btn btn--primary" href="../admin-survey-builder/new.html">${icon("plus")}New survey</a></div></div>`;
     if (empty)
@@ -212,7 +212,7 @@ export function buildSurveyScreens(h) {
     return dialog({
       title: "Delivery rules",
       desc: "Apply to every survey, so members running into several at once aren’t asked twice in a week.",
-      body: `${invalid ? `<div class="alert alert--danger" role="alert">${icon("warning")}<div class="alert__body"><span class="alert__title">Fix one thing to save</span><a href="#rule-days">Days between surveys must be a whole number from 1 to 60.</a></div></div>` : ""}<ul class="setting-rows setting-rows--flush"><li class="setting-row"><span class="setting-row__text"><label class="setting-row__label" for="rule-days">One survey per member every</label><span class="setting-row__hint" id="rule-days-hint">Counts from the last one they were shown, answered or not.</span>${invalid ? '<span class="field__error" id="rule-days-error">Use a whole number of days from 1 to 60.</span>' : ""}</span><span class="setting-row__control"><input class="input" id="rule-days" inputmode="numeric" value="${esc(days)}" aria-describedby="rule-days-hint${invalid ? " rule-days-error" : ""}"${invalid ? ' aria-invalid="true" autofocus' : ""}>days</span></li><li class="setting-row"><span class="setting-row__text"><span class="setting-row__label">When surveys overlap</span><span class="setting-row__hint">Show the highest priority first. Lower ones wait their turn until they expire.</span></span></li><li class="setting-row"><span class="setting-row__text"><label class="setting-row__label" for="rule-new">Leave new members alone for 3 days</label><span class="setting-row__hint">Except surveys triggered by sign up itself.</span></span>${switchCtl("rule-new", true)}</li><li class="setting-row"><span class="setting-row__text"><label class="setting-row__label" for="rule-quiet">No push between 21:00 and 8:00</label><span class="setting-row__hint">In each member’s own time zone.</span></span>${switchCtl("rule-quiet", true)}</li></ul>`,
+      body: `${invalid ? `<div class="alert alert--danger" role="alert">${icon("warning")}<div class="alert__body"><span class="alert__title">Fix one thing to save</span><a href="#rule-days">Days between surveys must be a whole number from 1 to 60.</a></div></div>` : ""}<ul class="setting-rows setting-rows--flush"><li class="setting-row"><span class="setting-row__text"><label class="setting-row__label" for="rule-days">One survey per member every</label><span class="setting-row__hint" id="rule-days-hint">Counts from the last one they were shown, answered or not.</span>${invalid ? '<span class="field__error" id="rule-days-error">Use a whole number of days from 1 to 60.</span>' : ""}</span><span class="setting-row__control"><input class="input" id="rule-days" inputmode="numeric" value="${esc(days)}" aria-describedby="rule-days-hint${invalid ? " rule-days-error" : ""}"${invalid ? ' aria-invalid="true" autofocus' : ""}>days</span></li><li class="setting-row"><span class="setting-row__text"><span class="setting-row__label">When surveys overlap</span><span class="setting-row__hint">Show the highest priority first. Lower ones wait their turn until they expire.</span></span></li><li class="setting-row"><span class="setting-row__text"><label class="setting-row__label" for="rule-new">Leave new members alone for 3 days</label><span class="setting-row__hint">Except surveys triggered by sign up itself.</span></span>${switchCtl("rule-new", true)}</li></ul>`,
       footer: `<a class="btn btn--ghost" href="default.html">Cancel</a><a class="btn btn--ink" href="${invalid ? "delivery-rules-invalid.html" : "rules-saved.html"}">Save rules</a>`,
     });
   }
@@ -361,12 +361,13 @@ export function buildSurveyScreens(h) {
   function audienceTab(s, { segment = "all", isNew = false } = {}) {
     const anonymous = isNew ? false : s.anonymous;
     const base = segment === "custom" ? 1240 : (SEGMENTS.find((x) => x.key === segment)?.reach ?? 0);
+    const isLink = segment === "link";
     const rules = [
       { field: "Church", op: "is", value: "Jesus House Toronto" },
       { field: "Last active", op: "within", value: "30 days" },
     ];
     const fields = ["Church", "City", "Last active", "Joined", "Has a listing", "Bought merch", "Attended event"];
-    return `<div class="survey-builder__tab"><section aria-labelledby="who"><div class="survey-builder__split"><h2 class="survey-builder__heading" id="who">Who should be asked?</h2><p class="survey-builder__reach" aria-live="polite">About <b>${num(base)}</b> members</p></div><ul class="segment-list">${SEGMENTS.map(
+    return `<div class="survey-builder__tab"><section aria-labelledby="who"><div class="survey-builder__split"><h2 class="survey-builder__heading" id="who">Who should be asked?</h2><p class="survey-builder__reach" aria-live="polite">${isLink ? "<b>Anyone</b> who opens the link" : `About <b>${num(base)}</b> members`}</p></div><ul class="segment-list">${SEGMENTS.map(
       (g) =>
         `<li><label class="segment-list__item"><input type="radio" name="segment"${g.key === segment ? " checked" : ""}><span class="segment-list__text"><span class="setting-row__label">${esc(g.label)}</span><span class="setting-row__hint">${esc(g.hint)}</span></span><span class="segment-list__reach">${g.reach ? num(g.reach) : ""}</span></label></li>`,
     ).join("")}</ul>${
@@ -377,8 +378,10 @@ export function buildSurveyScreens(h) {
                 `<div class="rule-box__row"><select class="select" aria-label="Condition ${i + 1} field">${fields.map((f) => `<option${f === r.field ? " selected" : ""}>${f}</option>`).join("")}</select><span class="rule-box__op">${r.op}</span><input class="input" value="${esc(r.value)}" aria-label="Condition ${i + 1} value"><button class="btn btn--ghost btn--icon btn--sm" type="button" aria-label="Remove condition ${i + 1}">${icon("x")}</button></div>`,
             )
             .join("")}<button class="btn btn--ghost btn--sm question__more" type="button">${icon("plus")}Add a condition</button></fieldset>`
-        : ""
-    }</section><section aria-labelledby="how-many"><h2 class="survey-builder__heading" id="how-many">How many of them</h2><p class="survey-builder__lead" id="how-many-hint">Ask a random share when you don’t need everyone, so the rest are free for the next survey.</p><div class="survey-builder__sample"><input type="range" id="sample" min="5" max="100" step="5" value="100" aria-label="Share of the audience" aria-describedby="how-many-hint"><output for="sample">100%</output></div></section><ul class="setting-rows"><li class="setting-row"><span class="setting-row__text"><label class="setting-row__label" for="anon">Anonymous answers</label><span class="setting-row__hint">Staff see answers without names. Can’t be turned off once answers arrive.</span></span>${switchCtl("anon", anonymous, "", !isNew && s.responses ? " disabled" : "")}</li><li class="setting-row"><span class="setting-row__text"><label class="setting-row__label" for="skip-recent">Skip members who answered a survey in the last 30 days</label><span class="setting-row__hint">On top of the one-a-week delivery rule.</span></span>${switchCtl("skip-recent", true)}</li></ul></div>`;
+        : isLink
+          ? `<div class="field"><label class="field__label" for="share-link">The survey’s link</label><p class="field__help" id="share-link-help">Members and guests can answer; no account needed. A guest answers once on each device.</p><div class="cluster"><input class="input" id="share-link" readonly value="https://jubilee.to/s/${esc(s.slug)}" aria-describedby="share-link-help"><button class="btn" type="button">${icon("copy")}Copy link</button></div></div>`
+          : ""
+    }</section>${isLink ? "" : `<section aria-labelledby="how-many"><h2 class="survey-builder__heading" id="how-many">How many of them</h2><p class="survey-builder__lead" id="how-many-hint">Ask a random share when you don’t need everyone, so the rest are free for the next survey.</p><div class="survey-builder__sample"><input type="range" id="sample" min="5" max="100" step="5" value="100" aria-label="Share of the audience" aria-describedby="how-many-hint"><output for="sample">100%</output></div></section>`}<ul class="setting-rows"><li class="setting-row"><span class="setting-row__text"><label class="setting-row__label" for="anon">Anonymous answers</label><span class="setting-row__hint">Staff see answers without names. Can’t be turned off once answers arrive.</span></span>${switchCtl("anon", anonymous, "", !isNew && s.responses ? " disabled" : "")}</li><li class="setting-row"><span class="setting-row__text"><label class="setting-row__label" for="skip-recent">Skip members who answered a survey in the last 30 days</label><span class="setting-row__hint">On top of the one-a-week delivery rule.</span></span>${switchCtl("skip-recent", true)}</li></ul></div>`;
   }
 
   function scheduleTab(s, { error = false, isNew = false, title } = {}) {
@@ -391,7 +394,7 @@ export function buildSurveyScreens(h) {
     const order = [...others.slice(0, at), { id: "me", title }, ...others.slice(at)];
     const channel = (id, on, label, hint, more = "") =>
       `<li class="setting-row setting-row--lead setting-row--wrap"><input class="setting-row__check" type="checkbox" id="ch-${id}"${on ? " checked" : ""}><span class="setting-row__text"><label class="setting-row__label" for="ch-${id}">${label}</label><span class="setting-row__hint">${hint}</span></span>${on && more ? `<span class="setting-row__more">${more}</span>` : ""}</li>`;
-    return `<div class="survey-builder__tab survey-builder__tab--schedule"><section aria-labelledby="when"><h2 class="survey-builder__heading" id="when">When it runs</h2><p class="survey-builder__lead">Times are Toronto time. Members see it in their own.</p><div class="survey-builder__grid"><fieldset class="question__set"><legend class="field__label">Opens</legend><label class="choice"><input type="radio" name="opens"${opensDate ? "" : " checked"}><span class="choice__text">As soon as it’s published</span></label><label class="choice"><input type="radio" name="opens"${opensDate ? " checked" : ""}><span class="choice__text">On a date</span></label>${opensDate ? `<input class="input" type="datetime-local" value="${opensAt}" aria-label="Opens at">` : ""}</fieldset><div class="field"><label class="field__label" for="expires">Expires <span class="required">required</span></label><input class="input" id="expires" type="datetime-local" value="${expiresAt}"${error ? ' aria-invalid="true" aria-describedby="expires-error" autofocus' : ""}>${error ? '<p class="field__error" id="expires-error">Pick the last moment members can answer.</p>' : ""}<div class="survey-builder__picks" role="group" aria-label="Quick expiry">${["+1 week", "+2 weeks", "+30 days"].map((l) => `<button class="chip chip--sm" type="button">${l}</button>`).join("")}</div></div></div><ul class="setting-rows survey-builder__rows"><li class="setting-row setting-row--lead setting-row--wrap">${switchCtl("cap", s.cap !== null, "", "")}<span class="setting-row__text"><label class="setting-row__label" for="cap">Close early at a number of responses</label><span class="setting-row__hint">Whichever comes first: this or the expiry date.</span></span>${s.cap !== null ? `<span class="setting-row__control"><input class="input input--wide" inputmode="numeric" value="${s.cap}" aria-label="Response cap"></span>` : ""}</li><li class="setting-row setting-row--lead">${switchCtl("grace", true)}<span class="setting-row__text"><label class="setting-row__label" for="grace">Let members who started finish within 1 hour of expiry</label><span class="setting-row__hint">New members stop seeing it at the expiry time either way.</span></span></li><li class="setting-row setting-row--lead">${switchCtl("digest", true)}<span class="setting-row__text"><label class="setting-row__label" for="digest">Email the owner a summary when it closes</label><span class="setting-row__hint">Results stay in the admin after expiry. Nothing is deleted.</span></span></li></ul></section><section aria-labelledby="how"><h2 class="survey-builder__heading" id="how">How members get it</h2><ul class="setting-rows survey-builder__rows">${channel("home", true, "Card on Home", "Shown on their next visit, until they answer or dismiss it.")}${channel("after", false, "After something they do", "A sheet that slides up at the moment it’s relevant.")}${channel("email", s.id === "srv_gala25", "Email", "One email with a link. Respects their email preferences.")}${channel("push", s.id === "srv_worship", "Push notification", "Held back during quiet hours, 21:00 to 8:00.")}</ul><label class="switch survey-builder__remind"><input type="checkbox" role="switch" checked><span>Remind once, 3 days later, if they haven’t answered</span></label></section><section aria-labelledby="priority"><h2 class="survey-builder__heading" id="priority">Priority among running surveys</h2><p class="survey-builder__lead">When a member qualifies for more than one, they get the highest first and the rest wait at least 7 days.</p><ol class="priority-list">${order
+    return `<div class="survey-builder__tab survey-builder__tab--schedule"><section aria-labelledby="when"><h2 class="survey-builder__heading" id="when">When it runs</h2><p class="survey-builder__lead">Times are Toronto time. Members see it in their own.</p><div class="survey-builder__grid"><fieldset class="question__set"><legend class="field__label">Opens</legend><label class="choice"><input type="radio" name="opens"${opensDate ? "" : " checked"}><span class="choice__text">As soon as it’s published</span></label><label class="choice"><input type="radio" name="opens"${opensDate ? " checked" : ""}><span class="choice__text">On a date</span></label>${opensDate ? `<input class="input" type="datetime-local" value="${opensAt}" aria-label="Opens at">` : ""}</fieldset><div class="field"><label class="field__label" for="expires">Expires <span class="required">required</span></label><input class="input" id="expires" type="datetime-local" value="${expiresAt}"${error ? ' aria-invalid="true" aria-describedby="expires-error" autofocus' : ""}>${error ? '<p class="field__error" id="expires-error">Pick the last moment members can answer.</p>' : ""}<div class="survey-builder__picks" role="group" aria-label="Quick expiry">${["+1 week", "+2 weeks", "+30 days"].map((l) => `<button class="chip chip--sm" type="button">${l}</button>`).join("")}</div></div></div><ul class="setting-rows survey-builder__rows"><li class="setting-row setting-row--lead setting-row--wrap">${switchCtl("cap", s.cap !== null, "", "")}<span class="setting-row__text"><label class="setting-row__label" for="cap">Close early at a number of responses</label><span class="setting-row__hint">Whichever comes first: this or the expiry date.</span></span>${s.cap !== null ? `<span class="setting-row__control"><input class="input input--wide" inputmode="numeric" value="${s.cap}" aria-label="Response cap"></span>` : ""}</li><li class="setting-row setting-row--lead">${switchCtl("grace", true)}<span class="setting-row__text"><label class="setting-row__label" for="grace">Let members who started finish within 1 hour of expiry</label><span class="setting-row__hint">New members stop seeing it at the expiry time either way.</span></span></li><li class="setting-row setting-row--lead">${switchCtl("digest", true)}<span class="setting-row__text"><label class="setting-row__label" for="digest">Email the owner a summary when it closes</label><span class="setting-row__hint">Results stay in the admin after expiry. Nothing is deleted.</span></span></li></ul></section><section aria-labelledby="how"><h2 class="survey-builder__heading" id="how">How members get it</h2><ul class="setting-rows survey-builder__rows">${channel("home", true, "Card on Home", "Shown on their next visit, until they answer or dismiss it.")}${channel("email", s.id === "srv_gala25" || s.id === "srv_worship", "Email", "One email with a link. Respects their email preferences.")}</ul><label class="switch survey-builder__remind"><input type="checkbox" role="switch" checked><span>Email a reminder once, 3 days later, if they haven’t answered</span></label></section><section aria-labelledby="priority"><h2 class="survey-builder__heading" id="priority">Priority among running surveys</h2><p class="survey-builder__lead">When a member qualifies for more than one, they get the highest first and the rest wait at least 7 days.</p><ol class="priority-list">${order
       .map((o, i) => {
         const me = o.id === "me";
         return `<li class="priority-list__item${me ? " priority-list__item--self" : ""}"><span class="priority-list__n">${i + 1}</span><span class="priority-list__name">${esc(o.title)}${me ? ' <span class="badge badge--warning">This survey</span>' : ""}</span>${me ? `<span class="priority-list__moves"><button class="btn btn--ghost btn--icon btn--sm" type="button" aria-label="Raise priority"${i === 0 ? " disabled" : ""}>${icon("arrowUp")}</button><button class="btn btn--ghost btn--icon btn--sm" type="button" aria-label="Lower priority"${i === order.length - 1 ? " disabled" : ""}>${icon("arrowDown")}</button></span>` : ""}</li>`;
@@ -472,7 +475,7 @@ export function buildSurveyScreens(h) {
 
   {
     const id = "admin-survey-builder";
-    const states = ["default", "collapsed", "draft", "new", "add-menu", "type-menu", "scheduled", "audience", "audience-custom", "schedule", "missing-expiry", "saved", "publish-confirm", "publishing", "update-confirm", "loading", "error", "not-found"];
+    const states = ["default", "collapsed", "draft", "new", "add-menu", "type-menu", "scheduled", "audience", "audience-custom", "audience-link", "schedule", "missing-expiry", "saved", "publish-confirm", "publishing", "update-confirm", "loading", "error", "not-found"];
     const defs = {
       default: {
         description: "The builder on a live survey (Christmas Gala), question 1 open.",
@@ -509,6 +512,11 @@ export function buildSurveyScreens(h) {
         description: "The Audience tab of the Christmas Gala survey.",
         body: screen(builderMain({ tab: "audience" })),
         note: "Anonymous answers can’t change once answers have arrived, so the switch is disabled here.",
+      },
+      "audience-link": {
+        description: "The Audience tab with Anyone with the link chosen.",
+        body: screen(builderMain({ surveyId: "srv_next", tab: "audience", segment: "link", saved: "Saved yesterday" })),
+        note: "A link survey reaches members and people without an account. It has no audience share to pick: everyone who opens the link may answer, once.",
       },
       "audience-custom": {
         description: "The Audience tab with Custom rules chosen.",
@@ -622,7 +630,7 @@ export function buildSurveyScreens(h) {
 
   function responses(s, { only = "all" } = {}) {
     const rows = PEOPLE.map((p, i) => ({
-      who: s.anonymous ? `Respondent ${s.responses - i}` : p.name,
+      who: s.anonymous ? `Respondent ${s.responses - i}` : s.link && i % 3 === 1 ? "Guest" : p.name,
       church: p.church,
       when: p.when,
       via: s.channels[i % s.channels.length],
@@ -634,7 +642,7 @@ export function buildSurveyScreens(h) {
     return `<div class="chip-row" role="group" aria-label="Show responses">${chip("all", "All", "responses.html")}${chip("complete", "Finished", "responses.html")}${chip("partial", "Started, not finished", "responses-unfinished.html")}</div><ul class="response-list" aria-label="Responses, newest first">${rows
       .map(
         (r, i) =>
-          `<li><button class="response__toggle" type="button" aria-expanded="${i === 0}"${i === 0 ? ` aria-controls="resp-${i}"` : ""}>${icon("chevronRight")}<span class="response__who"><span class="response__name">${esc(r.who)}</span>${s.anonymous ? "" : `<span class="response__church">${esc(r.church)}</span>`}</span><span class="response__first">${esc(r.answers[0] ?? "")}</span><span class="response__via">${esc(r.via)}</span><span class="response__when${r.complete ? "" : " response__when--open"}">${r.complete ? esc(r.when) : "Not finished"}</span></button>${
+          `<li><button class="response__toggle" type="button" aria-expanded="${i === 0}"${i === 0 ? ` aria-controls="resp-${i}"` : ""}>${icon("chevronRight")}<span class="response__who"><span class="response__name">${esc(r.who)}</span></span><span class="response__first">${esc(r.answers[0] ?? "")}</span><span class="response__via">${esc(r.via)}</span><span class="response__when${r.complete ? "" : " response__when--open"}">${r.complete ? esc(r.when) : "Not finished"}</span></button>${
             i === 0
               ? `<dl class="response__answers" id="resp-${i}">${s.questions
                   .map(
@@ -687,7 +695,9 @@ export function buildSurveyScreens(h) {
         ? `<div class="progress progress--success" role="progressbar" aria-label="Responses towards the cap" aria-valuemin="0" aria-valuemax="${s.cap}" aria-valuenow="${Math.min(s.responses, s.cap)}"><div class="progress__bar" style="--value: ${Math.min(100, (s.responses / s.cap) * 100).toFixed(1)}%"></div></div>`
         : ""
     }<p class="survey-headline__rates">${
-      s.responses
+      s.responses && !s.reach
+        ? `Answered by anyone with the link · <strong>${Math.round((s.responses / started) * 100)}%</strong> of those who started finished · median 1m 40s`
+        : s.responses
         ? `<strong>${rate.toFixed(1)}%</strong> of ${num(s.reach)} members asked · <strong>${Math.round((s.responses / started) * 100)}%</strong> of those who started finished · median 1m 40s`
         : `No answers yet. ${num(s.reach)} members will be asked; most answer within a day of seeing it.`
     }</p></div><div class="survey-headline__window">${
@@ -734,7 +744,7 @@ export function buildSurveyScreens(h) {
 
   {
     const id = "admin-survey-results";
-    const states = ["default", "responses", "responses-unfinished", "anonymous", "short-answers", "paused", "closed", "expired", "no-responses", "actions-menu", "extend-expiry", "extend-invalid", "extended", "close-early", "closed-now", "paused-now", "loading", "error", "not-found"];
+    const states = ["default", "responses", "responses-guests", "responses-unfinished", "anonymous", "short-answers", "paused", "closed", "expired", "no-responses", "actions-menu", "extend-expiry", "extend-invalid", "extended", "close-early", "closed-now", "paused-now", "loading", "error", "not-found"];
     const defs = {
       default: {
         description: "Results of the live Christmas Gala survey: the headline and the summary of each question.",
@@ -745,6 +755,11 @@ export function buildSurveyScreens(h) {
         description: "The Responses tab, the newest response open.",
         body: screen(resultsMain({ tab: "responses" })),
         note: "A response opens in place to show every answer. Named surveys show the member’s church (see the open questions in README.md).",
+      },
+      "responses-guests": {
+        description: "Responses of a survey shared by link (Purpose Tee), with guests among them.",
+        body: screen(resultsMain({ surveyId: "srv_tee", tab: "responses" })),
+        note: "A guest is shown as “Guest”. No response ever shows a member’s church (L1-020).",
       },
       "responses-unfinished": {
         description: "Responses filtered to those started and not finished.",
