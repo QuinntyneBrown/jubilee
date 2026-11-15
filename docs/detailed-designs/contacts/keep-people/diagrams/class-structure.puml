@@ -1,0 +1,70 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Keep people
+
+
+enum Circle {
+  Family
+  Friends
+  Work
+  Neighbours
+  Clubs
+}
+class Contact {
+  +Guid Id
+  +Guid MemberId
+  +string Name
+  +string? Relation
+  +Circle Circle
+  +string Colour
+  +string? PhotoKey
+  +string? Phone
+  +string? Email
+  +string? City
+  +string? HowMet
+  +IReadOnlyList<string> Loves
+  +bool Starred
+  +DateOnly AddedOn
+  +DateOnly? LastTalkedOn
+  +Rename(name: string): void
+  +Star(): void
+  +Unstar(): void
+}
+class SaveContactCommand {
+  +Guid MemberId
+  +Guid? ContactId
+  +ContactFields Fields
+  +IReadOnlyList<KeyDateInput> Dates
+  +IReadOnlyList<ConnectionInput> Connections
+  +IReadOnlyList<Guid> GroupIds
+}
+class SaveContactCommandHandler {
+  +Handle(command: SaveContactCommand): Task<ContactDto>
+}
+class DeleteContactCommandHandler {
+  +Handle(command: DeleteContactCommand): Task
+}
+class StarContactCommandHandler {
+  +Handle(command: StarContactCommand): Task
+}
+class ContactLimits {
+  +int MaxContacts = 2000
+  +int MaxClosest = 12
+  +int MaxDates = 20
+}
+Contact --> Circle
+SaveContactCommandHandler ..> SaveContactCommand : handles
+SaveContactCommandHandler --> Contact : creates / mutates
+SaveContactCommandHandler ..> ContactLimits : enforces
+StarContactCommandHandler ..> ContactLimits : enforces
+DeleteContactCommandHandler --> Contact : removes
+@enduml

@@ -1,0 +1,27 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — View a contact
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(page, "ContactPersonPage", "Angular page", "Identity, actions, About, history (L2-305)")
+  Component(tabs, "jb-tabs", "Library component", "Timeline, Follow-ups, Memories & files (L2-306)")
+  Component(timeline, "jb-timeline", "Library component", "Entries on a line, milestones in cards")
+  Component(bars, "jb-period-bars", "Library component", "Last 12 periods of a habit")
+  Component(client, "HttpContactsApi", "CONTACTS_API", "person(id)")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(ctrl, "ContactsController", "ASP.NET Core controller", "GET /api/contacts/{id}")
+  Component(handler, "GetContactProfileQueryHandler", "MediatR handler", "The whole profile in one read")
+  Component(links, "ContactMediaLinks", "Application service", "Signs photo links for 10 minutes")
+  ComponentDb(db, "Jubilee database", "SQL Server", "Contacts tables")
+}
+Rel(page, tabs, "Composes")
+Rel(page, timeline, "Composes")
+Rel(page, bars, "Composes")
+Rel(page, client, "person(id)")
+Rel(client, ctrl, "GET", "JSON/HTTPS")
+Rel(ctrl, handler, "Sends GetContactProfileQuery")
+Rel(handler, db, "Reads the caller's rows", "EF Core")
+Rel(handler, links, "Signs photo links")
+@enduml

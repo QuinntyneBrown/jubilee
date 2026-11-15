@@ -1,0 +1,51 @@
+@startuml
+title UML sequence behaviour — Open a contact's profile
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend — Jubilee Web application" #E0F2FE
+  participant "ContactPersonPage" as page
+  participant "HttpContactsApi" as client
+end box
+box "Backend — Jubilee API application" #D1FADF
+  participant "ContactsController" as ctrl
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "GetContactProfileQueryHandler" as handler
+  participant "ContactActions" as actions
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+
+actor -> page : Open a row, a card or a chip
+page -> client : person(id)
+client -> ctrl : GET /api/contacts/{id}
+ctrl -> handler : Send GetContactProfileQuery(caller, id)
+handler -> db : Load the contact where MemberId = caller
+alt Not the caller's
+  db --> handler : Nothing
+  handler --> ctrl : NotFound; log the attempt (L2-320 AC1, L2-133 AC2)
+  ctrl --> client : 404
+  client --> page : Not-found state
+else The caller's
+  handler -> db : Dates, habit, connections, groups, entries, follow-ups, memories
+  handler -> actions : Message: linked conversation, else sms:, else none (L2-305 AC3)
+  handler -> actions : Call: tel: or none (L2-305 AC4)
+  handler --> ctrl : ContactProfileDto
+  ctrl --> client : 200
+  client --> page : Render identity, About, Key dates, habit, tabs (L2-305, L2-306)
+end
+@enduml

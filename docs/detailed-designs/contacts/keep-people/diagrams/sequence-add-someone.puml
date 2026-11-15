@@ -1,0 +1,54 @@
+@startuml
+title UML sequence behaviour — Add someone
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend — Jubilee Web application" #E0F2FE
+  participant "ContactEditPage" as page
+  participant "HttpContactsApi" as client
+end box
+box "Backend — Jubilee API application" #D1FADF
+  participant "ContactsController" as ctrl
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "SaveContactCommandHandler" as handler
+  participant "SaveContactValidator" as val
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+
+actor -> page : Fill Who, dates, connections, details; press "Save"
+page -> page : No name: "Add a name so you can find them later." and focus (L2-304 AC6)
+page -> client : create(fields, dates, connections, groups)
+page --> actor : "Saving…", disabled (L2-127)
+client -> ctrl : POST /api/contacts
+ctrl -> handler : Send SaveContactCommand(caller)
+handler -> val : Validate lengths, phone, e-mail, 10 loves, 20 dates
+alt Invalid
+  val --> handler : Field errors
+  handler --> ctrl : 422 with field codes (L2-320 AC4)
+  ctrl --> client : ProblemDetails
+  client --> page : Show each message under its field
+else Valid
+  handler -> db : Count the caller's contacts (at most 2,000, L2-320 AC5)
+  handler -> db : Connections and groups must be the caller's own (404 otherwise, L2-320 AC1)
+  handler -> db : Insert contact, dates, connections, memberships
+  db --> handler : Commit
+  handler --> ctrl : ContactDto
+  ctrl --> client : 201 Created
+  client --> page : Open the profile, toast "{first name} added." (L2-304 AC7)
+end
+@enduml

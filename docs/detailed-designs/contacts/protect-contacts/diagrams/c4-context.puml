@@ -1,0 +1,12 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Protect contacts
+
+Person(member, "Member", "A signed-in account holder keeping their own contacts")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace, with each member's private Contacts")
+System_Ext(mail, "E-mail provider", "<TO SUPPLY>")
+
+Rel(member, jubilee, "Downloads, deletes and signs out of", "HTTPS")
+Rel(jubilee, mail, "Sends the download link through")
+@enduml

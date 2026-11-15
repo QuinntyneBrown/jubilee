@@ -1,0 +1,55 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Map connections
+
+
+enum ConnectionKind {
+  Family
+  Partner
+  Friends
+  Work
+}
+class Connection {
+  +Guid Id
+  +Guid MemberId
+  +Guid FromContactId
+  +Guid ToContactId
+  +string Words
+  +ConnectionKind Kind
+  +bool PromisedIntroduction
+}
+class ConnectionMapDto {
+  +IReadOnlyList<MapPersonDto> People
+  +IReadOnlyList<MapLineDto> Lines
+  +bool Trimmed
+}
+class MapPersonDto {
+  +Guid? ContactId
+  +string Name
+  +double X
+  +double Y
+}
+class MapLineDto {
+  +Guid? From
+  +Guid To
+  +string Words
+  +ConnectionKind Kind
+  +bool Dotted
+}
+class ConnectionMapLayout {
+  +Place(people: Contact[]): MapPersonDto[]
+}
+Connection --> ConnectionKind
+ConnectionMapDto "1" *-- "*" MapPersonDto
+ConnectionMapDto "1" *-- "*" MapLineDto
+ConnectionMapLayout ..> MapPersonDto : produces
+@enduml

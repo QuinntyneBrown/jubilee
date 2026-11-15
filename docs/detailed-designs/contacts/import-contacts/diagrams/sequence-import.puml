@@ -1,0 +1,49 @@
+@startuml
+title UML sequence behaviour — Import from your conversations
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend — Jubilee Web application" #E0F2FE
+  participant "ImportContactsDialog" as dialog
+  participant "HttpContactsApi" as client
+end box
+box "Backend — Jubilee API application" #D1FADF
+  participant "ContactImportsController" as ctrl
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "ImportContactsCommandHandler" as handler
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+
+actor -> dialog : Press "Import {n} people" (L2-302 AC2)
+dialog -> client : import(picks, idempotency key)
+client -> ctrl : POST /api/contacts/imports
+ctrl -> ctrl : Require a session; replay a repeated key (L2-132, L2-302 AC6)
+ctrl -> handler : Send ImportContactsCommand
+handler -> db : Load each pick among the caller's own conversations and requests
+db --> handler : Businesses and customers the caller already sees
+alt Business
+  handler -> handler : Name, public phone and website, "Work", "Business you deal with" (L2-302 AC3)
+else Customer of the caller's listing
+  handler -> handler : Inbox name only, "Customer of {listing}", no e-mail or phone (L2-302 AC4, L2-145)
+end
+handler -> db : Skip anyone already imported; add the rest in one unit of work
+db --> handler : Commit
+handler --> ctrl : Count imported
+ctrl --> client : 201 { imported: n }
+client --> dialog : Close; open People with toast "{n} people imported." (L2-302 AC5)
+@enduml

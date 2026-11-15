@@ -1,0 +1,22 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Protect contacts
+
+Container_Boundary(api, "Jubilee API") {
+  Component(scope, "ContactsScope", "Application service", "Every query starts at the caller's MemberId")
+  Component(export, "DataExportBuilder", "Existing service", "Adds the contacts section (L2-321 AC1)")
+  Component(deletion, "AccountDeletion", "Existing service", "Deletes Contacts and push subscriptions")
+  Component(erasure, "AccountErasure", "Existing service", "Erases contact media within 30 days")
+  Component(limits, "ContactsRateLimit", "Rate-limit policy", "300 writes per 10 minutes")
+  ComponentDb(db, "Jubilee database", "SQL Server", "Contacts tables")
+  ComponentDb(media, "Media storage", "Object storage", "Contact photos and files")
+}
+Container_Boundary(admin, "Jubilee Admin Web") {
+  Component(tables, "Admin tables registry", "Schema-driven admin", "Lists no Contacts table (L2-320 AC2)")
+}
+Rel(scope, db, "Filters by MemberId", "EF Core")
+Rel(export, scope, "Reads through")
+Rel(deletion, db, "Deletes", "EF Core")
+Rel(erasure, media, "Erases keys in")
+@enduml

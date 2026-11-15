@@ -1,0 +1,55 @@
+@startuml
+title UML sequence behaviour — Add a photo or a file
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend — Jubilee Web application" #E0F2FE
+  participant "AddMemoryDialog" as dialog
+  participant "HttpContactsApi" as client
+end box
+box "Backend — Jubilee API application" #D1FADF
+  participant "ContactMemoriesController" as ctrl
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "AddMemoryCommandHandler" as handler
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  participant "IMalwareScanner" as scan
+  database "Media storage" as media
+  database "Jubilee database" as db
+end box
+
+actor -> dialog : Choose Photo or File, title and date; press "Add"
+dialog -> client : addMemory(contactId, file, title, date)
+client -> ctrl : POST /api/contacts/{id}/memories (multipart)
+ctrl -> handler : Send AddMemoryCommand(caller)
+handler -> db : Contact among the caller's own; usage under 500 MB; 60 an hour (L2-310 AC5)
+alt Over quota or rate
+  handler --> ctrl : 413 QUOTA_EXCEEDED or 429
+else Within
+  handler -> handler : Magic bytes: PDF, JPEG or PNG, 10 MB; photo by L2-138 AC1 (L2-310 AC2, AC3)
+  handler -> scan : Scan before storing
+  alt Infected or no answer
+    scan --> handler : Infected / timeout
+    handler --> ctrl : 422 FAILED_SCAN or 503 SCAN_UNAVAILABLE; nothing stored
+  else Clean
+    handler -> media : Put under a random 128-bit name, private (L2-310 AC4)
+    handler -> db : Add the memory and its size
+    handler --> ctrl : MemoryDto with a signed link valid 10 minutes
+  end
+end
+ctrl --> client : 201 or ProblemDetails
+client --> dialog : Close and show it, or the message of L2-310 AC5
+@enduml

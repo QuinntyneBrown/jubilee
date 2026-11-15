@@ -1,0 +1,27 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Keep memories and files
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(dialog, "AddMemoryDialog", "CDK dialog", "Photo, File or Note (L2-310 AC1)")
+  Component(client, "HttpContactsApi", "CONTACTS_API", "addMemory()")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(ctrl, "ContactMemoriesController", "ASP.NET Core controller", "POST /api/contacts/{id}/memories")
+  Component(handler, "AddMemoryCommandHandler", "MediatR handler", "Checks, scans, stores, counts quota")
+  Component(img, "IImageProcessor", "Abstraction", "Re-encodes photos, strips metadata")
+  Component(scan, "IMalwareScanner", "Abstraction", "FAILED_SCAN or SCAN_UNAVAILABLE")
+  Component(store, "IMediaStore", "Abstraction", "Private store, random 128-bit names")
+  Component(links, "ContactMediaLinks", "Application service", "Signed links valid 10 minutes, owner only")
+  ComponentDb(db, "Jubilee database", "SQL Server", "Memory rows and usage")
+}
+Rel(dialog, client, "addMemory()")
+Rel(client, ctrl, "POST multipart", "HTTPS")
+Rel(ctrl, handler, "Sends AddMemoryCommand")
+Rel(handler, img, "Photos through")
+Rel(handler, scan, "Every upload through")
+Rel(handler, store, "Stores bytes in")
+Rel(handler, db, "Writes the memory", "EF Core")
+Rel(ctrl, links, "Signs reads with")
+@enduml

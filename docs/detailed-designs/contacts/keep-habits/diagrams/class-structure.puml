@@ -1,0 +1,51 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Keep habits
+
+
+enum Cadence {
+  Weekly
+  Fortnightly
+  Monthly
+}
+class Habit {
+  +Guid Id
+  +Guid MemberId
+  +Guid ContactId
+  +string Title
+  +Cadence Cadence
+  +DateOnly StartedOn
+  +DayOfWeek Weekday
+  +int? WeekOfMonth
+}
+class KeptPeriod {
+  +Guid HabitId
+  +DateOnly PeriodStart
+  +KeptBy By
+}
+enum KeptBy {
+  MetUp
+  Conversation
+}
+class HabitCadence {
+  +PeriodOf(habit: Habit, day: DateOnly): DateOnly
+  +NextDue(habit: Habit, today: DateOnly): DateOnly
+  +OverdueDays(habit: Habit, today: DateOnly): int
+  +Streak(habit: Habit, kept: KeptPeriod[]): int
+  +LastTwelve(habit: Habit, kept: KeptPeriod[]): bool[]
+  +Label(habit: Habit): string
+}
+Habit --> Cadence
+Habit "1" *-- "*" KeptPeriod
+KeptPeriod --> KeptBy
+HabitCadence ..> Habit : reads
+@enduml

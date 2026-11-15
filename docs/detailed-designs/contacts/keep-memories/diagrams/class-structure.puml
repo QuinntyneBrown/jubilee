@@ -1,0 +1,49 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Keep memories and files
+
+
+enum MemoryKind {
+  Photo
+  File
+  Note
+}
+class Memory {
+  +Guid Id
+  +Guid MemberId
+  +Guid ContactId
+  +MemoryKind Kind
+  +string Title
+  +string? Text
+  +string? MediaKey
+  +long? Bytes
+  +string? ContentType
+  +DateOnly Date
+}
+class AddMemoryCommandHandler {
+  +Handle(command: AddMemoryCommand): Task<MemoryDto>
+}
+class ContactMediaQuota {
+  +long MaxBytes = 524288000
+  +int MaxUploadsPerHour = 60
+  +Check(memberId: Guid, bytes: long): Task
+}
+interface IMalwareScanner
+interface IMediaStore
+interface IImageProcessor
+Memory --> MemoryKind
+AddMemoryCommandHandler --> Memory : creates
+AddMemoryCommandHandler ..> ContactMediaQuota : checks
+AddMemoryCommandHandler ..> IMalwareScanner : scans
+AddMemoryCommandHandler ..> IMediaStore : stores
+AddMemoryCommandHandler ..> IImageProcessor : re-encodes
+@enduml

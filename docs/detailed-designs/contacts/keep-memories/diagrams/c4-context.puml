@@ -1,0 +1,12 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Keep memories and files
+
+Person(member, "Member", "A signed-in account holder keeping their own contacts")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace, with each member's private Contacts")
+System_Ext(scanner, "Malware scanner", "<TO SUPPLY>")
+
+Rel(member, jubilee, "Keeps photos, files and notes about a contact in", "HTTPS")
+Rel(jubilee, scanner, "Scans each upload with")
+@enduml

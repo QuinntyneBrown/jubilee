@@ -1,0 +1,28 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Keep habits
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(page, "ContactsHabitsPage", "Angular page", "The habit slipping, then the rest (L2-315)")
+  Component(dialog, "NewHabitDialog", "CDK dialog", "New habit, a bottom sheet on a phone (L2-316)")
+  Component(bars, "jb-period-bars", "Library component", "12 periods, the current dashed")
+  Component(client, "HttpContactsApi", "CONTACTS_API", "habits(), startHabit(), keep()")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(ctrl, "ContactHabitsController", "ASP.NET Core controller", "/api/contacts/habits")
+  Component(keep, "KeepHabitCommandHandler", "MediatR handler", "We met up, and undo")
+  Component(start, "StartHabitCommandHandler", "MediatR handler", "One per contact, 50 per member")
+  Component(cadence, "HabitCadence", "Domain service", "Periods, due date, overdue days, streak")
+  ComponentDb(db, "Jubilee database", "SQL Server", "Habits and kept periods")
+}
+Rel(page, bars, "Composes")
+Rel(page, dialog, "Opens")
+Rel(page, client, "Calls")
+Rel(client, ctrl, "Calls", "JSON/HTTPS")
+Rel(ctrl, keep, "Sends KeepHabitCommand")
+Rel(ctrl, start, "Sends StartHabitCommand")
+Rel(keep, cadence, "Finds the current period with")
+Rel(keep, db, "Writes", "EF Core")
+Rel(start, db, "Writes", "EF Core")
+@enduml

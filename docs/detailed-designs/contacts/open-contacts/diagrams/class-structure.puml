@@ -1,0 +1,81 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Open Contacts and Today
+
+
+class ContactsTodayDto {
+  +string Greeting
+  +DateOnly Today
+  +bool HasContacts
+  +int ImportableCount
+  +KeyDateDto? Next
+  +IReadOnlyList<KeyDateDto> ComingUp
+  +IReadOnlyList<FollowUpDto> DueToday
+  +HabitDto? OverdueHabit
+  +IReadOnlyList<TimelineEntryDto> Recently
+  +IReadOnlyList<ContactSummaryDto> Quiet
+  +ReminderNoteDto? Reminder
+  +int FollowUpBadge
+}
+class GetContactsTodayQuery {
+  +Guid MemberId
+}
+class GetContactsTodayQueryHandler {
+  +Handle(query: GetContactsTodayQuery): Task<ContactsTodayDto>
+}
+class ContactsCalendar {
+  +NextOccurrence(date: KeyDate, today: DateOnly): DateOnly
+  +DaysUntil(date: KeyDate, today: DateOnly): int
+  +QuietDays(contact: Contact, today: DateOnly): int
+  +Greeting(now: DateTimeOffset): string
+}
+class Contact {
+  +Guid Id
+  +Guid MemberId
+  +string Name
+  +string? Relation
+  +Circle Circle
+  +bool Starred
+  +DateOnly AddedOn
+  +DateOnly? LastTalkedOn
+}
+class KeyDate {
+  +Guid Id
+  +Guid MemberId
+  +DateKind Kind
+  +string Title
+  +int Month
+  +int Day
+  +int? Year
+  +bool Repeats
+  +ReminderLead Reminder
+}
+class ContactsNav {
+  +active: ContactsSection
+  +badge: number
+}
+enum ContactsSection {
+  Today
+  People
+  Dates
+  FollowUps
+  Habits
+  Groups
+  Connections
+}
+GetContactsTodayQueryHandler ..> GetContactsTodayQuery : handles
+GetContactsTodayQueryHandler ..> ContactsCalendar : uses
+GetContactsTodayQueryHandler --> ContactsTodayDto : builds
+GetContactsTodayQueryHandler --> Contact : reads
+GetContactsTodayQueryHandler --> KeyDate : reads
+ContactsNav --> ContactsSection : marks
+@enduml

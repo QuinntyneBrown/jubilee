@@ -1,0 +1,49 @@
+@startuml
+title UML sequence behaviour — Delete a contact
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend — Jubilee Web application" #E0F2FE
+  participant "DeleteContactDialog" as dialog
+  participant "HttpContactsApi" as client
+end box
+box "Backend — Jubilee API application" #D1FADF
+  participant "ContactsController" as ctrl
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "DeleteContactCommandHandler" as handler
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+  database "Media storage" as media
+end box
+
+actor -> dialog : Choose "Delete {first name}" in More (L2-319 AC1)
+dialog -> client : deletionSummary(id)
+client -> ctrl : GET /api/contacts/{id}/deletion
+ctrl --> client : Counts of dates, follow-ups, entries, memories
+dialog --> actor : Consequence with counts; "Keep {first name}" focused (L2-319 AC2, L2-129)
+actor -> dialog : Press "Delete"
+dialog -> client : remove(id)
+client -> ctrl : DELETE /api/contacts/{id}
+ctrl -> handler : Send DeleteContactCommand(caller, id)
+handler -> db : Find the contact among the caller's own (404 otherwise)
+handler -> db : Delete contact, dates, entries, follow-ups, habit, memories, connections, memberships
+db --> handler : Commit
+handler -> db : Queue media keys for erasure within 24 hours (L2-319 AC3)
+handler --> ctrl : Done
+ctrl --> client : 204
+client --> dialog : Open People, toast "{first name} deleted."
+@enduml

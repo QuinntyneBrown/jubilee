@@ -1,0 +1,30 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Follow up
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(page, "ContactsFollowUpsPage", "Angular page", "Groups by when, Everything or Promises (L2-313)")
+  Component(dialog, "NewFollowUpDialog", "CDK dialog", "New follow-up (L2-314 AC1)")
+  Component(client, "HttpContactsApi", "CONTACTS_API", "followUps(), addFollowUp(), markDone()")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(ctrl, "ContactFollowUpsController", "ASP.NET Core controller", "/api/contacts/follow-ups")
+  Component(list, "ListFollowUpsQueryHandler", "MediatR handler", "Overdue, Today, This week, Later")
+  Component(add, "AddFollowUpCommandHandler", "MediatR handler", "Stores a follow-up")
+  Component(done, "SetFollowUpDoneCommandHandler", "MediatR handler", "Done or not done")
+  Component(when, "FollowUpBuckets", "Domain service", "Due text and group in Toronto time")
+  ComponentDb(db, "Jubilee database", "SQL Server", "Follow-ups")
+}
+Rel(page, dialog, "Opens on Enter")
+Rel(page, client, "Calls")
+Rel(dialog, client, "addFollowUp()")
+Rel(client, ctrl, "Calls", "JSON/HTTPS")
+Rel(ctrl, list, "Sends ListFollowUpsQuery")
+Rel(ctrl, add, "Sends AddFollowUpCommand")
+Rel(ctrl, done, "Sends SetFollowUpDoneCommand")
+Rel(list, when, "Groups with")
+Rel(list, db, "Reads", "EF Core")
+Rel(add, db, "Writes", "EF Core")
+Rel(done, db, "Writes", "EF Core")
+@enduml

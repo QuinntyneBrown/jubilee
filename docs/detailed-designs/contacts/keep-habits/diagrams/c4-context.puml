@@ -1,0 +1,11 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Keep habits
+
+Person(member, "Member", "A signed-in account holder keeping their own contacts")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace, with each member's private Contacts")
+
+
+Rel(member, jubilee, "Keeps habits of seeing people in", "HTTPS")
+@enduml

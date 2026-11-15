@@ -1,0 +1,45 @@
+@startuml
+title UML sequence behaviour — Keep a habit with We met up
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend — Jubilee Web application" #E0F2FE
+  participant "ContactsHabitsPage" as page
+  participant "HttpContactsApi" as client
+end box
+box "Backend — Jubilee API application" #D1FADF
+  participant "ContactHabitsController" as ctrl
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "KeepHabitCommandHandler" as handler
+  participant "HabitCadence" as cadence
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+
+actor -> page : Press "We met up"
+page -> client : keep(habitId)
+client -> ctrl : PUT /api/contacts/habits/{id}/kept
+ctrl -> handler : Send KeepHabitCommand(caller)
+handler -> db : Habit among the caller's own
+handler -> cadence : Current period in Toronto time
+cadence --> handler : Period start
+handler -> db : Insert KeptPeriod(MetUp) if absent; contact LastTalkedOn = today (L2-315 AC4)
+db --> handler : Saved
+handler --> ctrl : HabitDto with streak and last 12
+ctrl --> client : 200
+client --> page : "Logged for this fortnight", "Done", bars filled
+@enduml

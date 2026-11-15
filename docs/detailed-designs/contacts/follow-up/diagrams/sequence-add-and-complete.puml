@@ -1,0 +1,55 @@
+@startuml
+title UML sequence behaviour — Add and complete a follow-up
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend — Jubilee Web application" #E0F2FE
+  participant "ContactsFollowUpsPage" as page
+  participant "NewFollowUpDialog" as dialog
+  participant "HttpContactsApi" as client
+end box
+box "Backend — Jubilee API application" #D1FADF
+  participant "ContactFollowUpsController" as ctrl
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "AddFollowUpCommandHandler" as add
+  participant "SetFollowUpDoneCommandHandler" as done
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+
+actor -> page : Type in "Call Sam about the reference…" and press Enter
+page -> dialog : Open "New follow-up" with the text (L2-314 AC1)
+actor -> dialog : Choose who and when; press "Add follow-up"
+dialog -> client : addFollowUp(contactId, text, dueOn, promise, from)
+client -> ctrl : POST /api/contacts/follow-ups
+ctrl -> add : Send AddFollowUpCommand(caller)
+add -> db : Contact among the caller's own; text at most 200
+db --> add : Saved
+ctrl --> client : 201
+client --> page : Refresh groups; empty the field (L2-314 AC2)
+actor -> page : Press "Mark done"
+page --> actor : Struck through at once, "Mark not done" (L2-314 AC4)
+page -> client : markDone(id, true)
+client -> ctrl : PUT /api/contacts/follow-ups/{id}/done
+ctrl -> done : Send SetFollowUpDoneCommand(caller)
+alt Fails
+  ctrl --> client : Error
+  client --> page : Put it back; toast "Try again"
+else Saved
+  ctrl --> client : 204
+end
+@enduml

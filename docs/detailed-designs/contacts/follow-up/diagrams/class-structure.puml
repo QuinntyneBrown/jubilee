@@ -1,0 +1,50 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Follow up
+
+
+class FollowUp {
+  +Guid Id
+  +Guid MemberId
+  +Guid ContactId
+  +string Text
+  +DateOnly DueOn
+  +bool Promise
+  +string? From
+  +DateTimeOffset? DoneAt
+  +MarkDone(at: DateTimeOffset): void
+  +Reopen(): void
+}
+enum FollowUpBucket {
+  Overdue
+  Today
+  ThisWeek
+  Later
+}
+class FollowUpBuckets {
+  +BucketOf(dueOn: DateOnly, today: DateOnly): FollowUpBucket
+  +DueText(dueOn: DateOnly, today: DateOnly): string
+}
+class FollowUpsDto {
+  +int Open
+  +int Promises
+  +IReadOnlyList<FollowUpGroupDto> Groups
+  +int Done
+}
+class SetFollowUpDoneCommand {
+  +Guid FollowUpId
+  +bool Done
+}
+FollowUpBuckets --> FollowUpBucket
+FollowUpsDto ..> FollowUpBucket
+SetFollowUpDoneCommand ..> FollowUp : changes
+@enduml

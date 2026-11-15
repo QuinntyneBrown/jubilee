@@ -1,0 +1,31 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Keep people
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(people, "ContactsPeoplePage", "Angular page", "Search, circles, Closest, list (L2-303)")
+  Component(edit, "ContactEditPage", "Angular page", "Add someone and Edit (L2-304)")
+  Component(del, "DeleteContactDialog", "CDK dialog", "Delete with live counts (L2-319)")
+  Component(client, "HttpContactsApi", "CONTACTS_API", "list(), create(), update(), remove(), star()")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(ctrl, "ContactsController", "ASP.NET Core controller", "/api/contacts and /api/contacts/{id}")
+  Component(save, "SaveContactCommandHandler", "MediatR handler", "Creates or updates a contact with dates and connections")
+  Component(val, "SaveContactValidator", "FluentValidation", "Limits of L2-304, codes of L2-320 AC4")
+  Component(remove, "DeleteContactCommandHandler", "MediatR handler", "Deletes the contact and all of theirs")
+  Component(list, "ListContactsQueryHandler", "MediatR handler", "All of the caller's contacts in one read")
+  ComponentDb(db, "Jubilee database", "SQL Server", "Contacts tables")
+}
+Rel(people, client, "list()")
+Rel(edit, client, "create(), update()")
+Rel(del, client, "remove()")
+Rel(client, ctrl, "Calls", "JSON/HTTPS")
+Rel(ctrl, list, "Sends ListContactsQuery")
+Rel(ctrl, save, "Sends SaveContactCommand")
+Rel(save, val, "Validates with")
+Rel(ctrl, remove, "Sends DeleteContactCommand")
+Rel(list, db, "Reads", "EF Core")
+Rel(save, db, "Writes", "EF Core")
+Rel(remove, db, "Deletes", "EF Core")
+@enduml

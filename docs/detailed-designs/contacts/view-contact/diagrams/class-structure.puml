@@ -1,0 +1,51 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — View a contact
+
+
+class ContactProfileDto {
+  +ContactDto Contact
+  +LinkedConversationDto? AlsoOnJubilee
+  +IReadOnlyList<KeyDateDto> Dates
+  +HabitDto? Habit
+  +IReadOnlyList<ConnectionDto> PeopleAround
+  +IReadOnlyList<GroupChipDto> Groups
+  +IReadOnlyList<TimelineEntryDto> Timeline
+  +IReadOnlyList<FollowUpDto> FollowUps
+  +IReadOnlyList<MemoryDto> Memories
+  +string MessageHref
+  +string? CallHref
+}
+class LinkedConversationDto {
+  +Guid ConversationId
+  +string Name
+}
+class ContactActions {
+  +MessageHref(contact: Contact): string?
+  +CallHref(contact: Contact): string?
+}
+class GetContactProfileQueryHandler {
+  +Handle(query: GetContactProfileQuery): Task<ContactProfileDto>
+}
+class TimelineEntry {
+  +Guid Id
+  +Guid ContactId
+  +EntryKind Kind
+  +DateTimeOffset OccurredAt
+  +string Title
+  +string? Body
+}
+GetContactProfileQueryHandler --> ContactProfileDto : builds
+GetContactProfileQueryHandler ..> ContactActions : uses
+ContactProfileDto --> LinkedConversationDto
+ContactProfileDto "1" --> "*" TimelineEntry : as DTOs
+@enduml

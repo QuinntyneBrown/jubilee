@@ -1,0 +1,46 @@
+@startuml
+title UML sequence behaviour — Open a group
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend — Jubilee Web application" #E0F2FE
+  participant "ContactsGroupsPage" as page
+  participant "HttpContactsApi" as client
+end box
+box "Backend — Jubilee API application" #D1FADF
+  participant "ContactGroupsController" as ctrl
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "GetContactGroupQueryHandler" as handler
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+
+actor -> page : Choose a group
+alt 1024 px or wider
+  page -> page : Keep the list, mark it aria-current (L2-317 AC3)
+else Narrower
+  page -> page : Navigate to /contacts/groups/{id} with back link "Groups"
+end
+page -> client : group(id)
+client -> ctrl : GET /api/contacts/groups/{id}
+ctrl -> handler : Send GetContactGroupQuery(caller)
+handler -> db : Group among the caller's own (404 otherwise)
+handler -> db : People with relation and Last talked; up to 3 dates of its people
+handler --> ctrl : ContactGroupDto
+ctrl --> client : 200
+client --> page : Kind, name, Add people, people, place and note, Coming up (L2-317 AC4)
+@enduml

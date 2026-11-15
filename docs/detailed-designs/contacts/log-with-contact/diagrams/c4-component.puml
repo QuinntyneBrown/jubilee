@@ -1,0 +1,24 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Log a conversation or a milestone
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(page, "ContactLogPage", "Angular page", "Conversation and Milestone tabs (L2-307)")
+  Component(client, "HttpContactsApi", "CONTACTS_API", "logConversation(), logMilestone()")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(ctrl, "ContactTimelineController", "ASP.NET Core controller", "POST /api/contacts/{id}/timeline")
+  Component(convo, "LogConversationCommandHandler", "MediatR handler", "Entry, follow-ups, dates, Last talked")
+  Component(mile, "LogMilestoneCommandHandler", "MediatR handler", "Entry and the yearly date")
+  Component(titles, "YearlyTitles", "Domain service", "work anniversary, wedding anniversary, ...")
+  ComponentDb(db, "Jubilee database", "SQL Server", "Timeline, follow-ups, key dates")
+}
+Rel(page, client, "Calls")
+Rel(client, ctrl, "POST", "JSON/HTTPS")
+Rel(ctrl, convo, "Sends LogConversationCommand")
+Rel(ctrl, mile, "Sends LogMilestoneCommand")
+Rel(mile, titles, "Names the yearly date with")
+Rel(convo, db, "Writes in one unit of work", "EF Core")
+Rel(mile, db, "Writes in one unit of work", "EF Core")
+@enduml

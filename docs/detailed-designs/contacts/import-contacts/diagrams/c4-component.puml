@@ -1,0 +1,26 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Import from your conversations
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(today, "ContactsTodayPage", "Angular page", "Offers Import from your conversations")
+  Component(dialog, "ImportContactsDialog", "CDK dialog", "Ticks people to import (L2-302 AC2)")
+  Component(client, "HttpContactsApi", "CONTACTS_API", "importable(), import()")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(ctrl, "ContactImportsController", "ASP.NET Core controller", "GET and POST /api/contacts/imports")
+  Component(list, "GetImportableContactsQueryHandler", "MediatR handler", "Businesses messaged, an owner's customers")
+  Component(run, "ImportContactsCommandHandler", "MediatR handler", "Copies only what the member already sees")
+  Component(idem, "IdempotencyFilter", "ASP.NET Core filter", "One import per key (L2-132)")
+  ComponentDb(db, "Jubilee database", "SQL Server", "Conversations, requests, listings, contacts")
+}
+Rel(today, dialog, "Opens")
+Rel(dialog, client, "Calls")
+Rel(client, ctrl, "GET /importable, POST /imports", "JSON/HTTPS")
+Rel(ctrl, idem, "Passes through")
+Rel(ctrl, list, "Sends GetImportableContactsQuery")
+Rel(ctrl, run, "Sends ImportContactsCommand")
+Rel(list, db, "Reads the caller's conversations", "EF Core")
+Rel(run, db, "Adds contacts", "EF Core")
+@enduml

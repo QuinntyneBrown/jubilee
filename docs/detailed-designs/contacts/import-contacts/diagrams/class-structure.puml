@@ -1,0 +1,53 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Import from your conversations
+
+
+class ImportableContactDto {
+  +string Source
+  +Guid SourceId
+  +string Name
+  +string Origin
+}
+enum ImportSource {
+  Business
+  Customer
+}
+class ImportContactsCommand {
+  +Guid MemberId
+  +IReadOnlyList<ImportPick> Picks
+}
+class ImportPick {
+  +ImportSource Source
+  +Guid SourceId
+}
+class ImportContactsCommandHandler {
+  +Handle(command: ImportContactsCommand): Task<int>
+}
+class Contact {
+  +Guid Id
+  +Guid MemberId
+  +string Name
+  +string Relation
+  +Circle Circle
+  +string? Phone
+  +string? Website
+  +Guid? LinkedConversationId
+  +ImportSource? ImportedFrom
+  +Guid? ImportedSourceId
+}
+ImportContactsCommand "1" *-- "*" ImportPick
+ImportPick --> ImportSource
+ImportContactsCommandHandler ..> ImportContactsCommand : handles
+ImportContactsCommandHandler --> Contact : creates
+ImportableContactDto --> ImportSource
+@enduml

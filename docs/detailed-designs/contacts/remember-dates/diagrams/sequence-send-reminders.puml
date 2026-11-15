@@ -1,0 +1,50 @@
+@startuml
+title UML sequence behaviour — Send the day's reminders
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend — Jubilee Web application" #E0F2FE
+  participant "Jubilee service worker" as sw
+end box
+box "Backend — Jubilee API application" #D1FADF
+  participant "ContactRemindersJob" as jobhost
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "SendContactRemindersCommandHandler" as handler
+  participant "ScheduledJobs" as jobs
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+  participant "Web Push services" as push
+end box
+
+jobhost -> handler : 9:00 a.m. Toronto, or later the same day after downtime (L2-312 AC6)
+handler -> jobs : RunOnceAtAsync("contacts.reminders", today 9:00 Toronto)
+jobs -> db : Claim the occurrence (L2-182)
+handler -> db : Dates whose reminder falls today; follow-ups and habits due today
+loop Each reminder
+  handler -> db : Insert SentContactReminder(member, source, id, day); skip on duplicate key
+  handler -> db : Create in-app notification "{title} on {weekday}" or "Today: …" (L2-312 AC4, AC5)
+  opt Phone notifications on
+    handler -> push : Encrypted payload: the line and the address only (RFC 8291, L2-312 AC7)
+    alt Subscription gone (404 or 410)
+      push --> handler : Gone
+      handler -> db : Delete the subscription
+    end
+  end
+end
+push -> sw : Push event
+sw -> actor : Show the notification; a tap opens the profile
+@enduml

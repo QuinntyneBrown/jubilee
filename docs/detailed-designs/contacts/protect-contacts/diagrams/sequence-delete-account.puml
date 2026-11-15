@@ -1,0 +1,48 @@
+@startuml
+title UML sequence behaviour — Delete an account with its contacts
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend — Jubilee Web application" #E0F2FE
+  participant "DeleteAccountDialog" as dialog
+  participant "HttpAccountApi" as client
+end box
+box "Backend — Jubilee API application" #D1FADF
+  participant "AccountController" as ctrl
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "DeleteAccountCommandHandler" as handler
+  participant "AccountDeletion" as deletion
+  participant "AccountErasure" as erasure
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+  database "Media storage" as media
+end box
+
+actor -> dialog : Type DELETE and confirm (L2-017)
+dialog -> client : deleteAccount()
+client -> ctrl : DELETE /api/account
+ctrl -> handler : Send DeleteAccountCommand
+handler -> deletion : ApplyAsync(member)
+deletion -> db : Delete contacts, dates, entries, follow-ups, habits, groups, connections, memories (L2-321 AC2)
+deletion -> db : Delete push subscriptions at once
+deletion -> db : Record media keys for erasure
+handler --> ctrl : Deleted
+ctrl --> client : 204
+client --> dialog : /welcome; device cleared, no Contacts copy (L2-321 AC3)
+== Within 30 days ==
+erasure -> media : Erase every contact photo and file (L2-017 AC6)
+@enduml

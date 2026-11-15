@@ -63,6 +63,23 @@ and observability are marked `<TO SUPPLY>` in the feature designs.
 | [Sign in](accounts/sign-in/README.md) | `L2-006`, `L2-007`, `L2-012`, `L2-141`, `L2-137`, `L2-010`, `L2-187` |
 | [Sign in as staff](accounts/sign-in-as-staff/README.md) | `L2-189`, `L2-190`, `L2-193`, `L2-098` |
 
+### contacts
+
+| Feature | L2 requirements cited |
+|---|---|
+| [Follow up](contacts/follow-up/README.md) | `L2-313`, `L2-314`, `L2-299`, `L2-130` |
+| [Group contacts](contacts/group-contacts/README.md) | `L2-317`, `L2-320`, `L2-323` |
+| [Import from your conversations](contacts/import-contacts/README.md) | `L2-302`, `L2-145`, `L2-132`, `L2-320` |
+| [Keep habits](contacts/keep-habits/README.md) | `L2-315`, `L2-316`, `L2-305`, `L2-312` |
+| [Keep memories and files](contacts/keep-memories/README.md) | `L2-310`, `L2-138`, `L2-306`, `L2-319` |
+| [Keep people](contacts/keep-people/README.md) | `L2-303`, `L2-304`, `L2-319`, `L2-126`, `L2-127`, `L2-129`, `L2-320` |
+| [Log a conversation or a milestone](contacts/log-with-contact/README.md) | `L2-307`, `L2-308`, `L2-309`, `L2-305` |
+| [Map connections](contacts/map-connections/README.md) | `L2-318`, `L2-320`, `L2-323` |
+| [Open Contacts and Today](contacts/open-contacts/README.md) | `L2-299`, `L2-300`, `L2-301`, `L2-019`, `L2-322`, `L2-323` |
+| [Protect contacts](contacts/protect-contacts/README.md) | `L2-320`, `L2-321`, `L2-322`, `L2-323`, `L2-017`, `L2-018`, `L2-133`, `L2-150` |
+| [Remember dates](contacts/remember-dates/README.md) | `L2-311`, `L2-312`, `L2-016`, `L2-064`, `L2-068`, `L2-182`, `L2-322` |
+| [View a contact](contacts/view-contact/README.md) | `L2-305`, `L2-306`, `L2-320`, `L2-129` |
+
 ### design-system
 
 | Feature | L2 requirements cited |

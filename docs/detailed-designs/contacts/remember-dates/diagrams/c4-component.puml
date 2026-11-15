@@ -1,0 +1,29 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Remember dates
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(page, "ContactsDatesPage", "Angular page", "Months, filters, Reminders panel (L2-311)")
+  Component(add, "AddDateDialog", "CDK dialog", "Add a date (L2-311 AC5)")
+  Component(push, "ContactsPushRegistration", "Angular service on SwPush", "Asks permission, subscribes (L2-312 AC2)")
+  Component(client, "HttpContactsApi", "CONTACTS_API", "dates(), addDate(), settings()")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(ctrl, "ContactDatesController", "ASP.NET Core controller", "/api/contacts/dates, /api/contacts/settings, /api/contacts/push")
+  Component(dates, "ListKeyDatesQueryHandler", "MediatR handler", "Next 12 months, ages, counts")
+  Component(job, "SendContactRemindersCommandHandler", "MediatR handler run by the worker", "9:00 a.m. Toronto, once per reminder")
+  Component(week, "SendWeekAheadCommandHandler", "MediatR handler run by the worker", "Mondays 8:00 a.m. Toronto")
+  Component(sender, "IWebPushSender", "Abstraction", "VAPID, encrypted payloads")
+  ComponentDb(db, "Jubilee database", "SQL Server", "Key dates, settings, subscriptions, sent reminders")
+}
+Rel(page, client, "Calls")
+Rel(add, client, "addDate()")
+Rel(push, client, "subscribe()")
+Rel(client, ctrl, "Calls", "JSON/HTTPS")
+Rel(ctrl, dates, "Sends ListKeyDatesQuery")
+Rel(dates, db, "Reads", "EF Core")
+Rel(job, db, "Claims and records each reminder", "EF Core")
+Rel(job, sender, "Pushes through")
+Rel(week, db, "Queues e-mail in the outbox", "EF Core")
+@enduml

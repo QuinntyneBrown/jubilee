@@ -1,0 +1,46 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Group contacts
+
+
+enum GroupKind {
+  Household
+  SmallGroup
+  Team
+  Club
+}
+class ContactGroup {
+  +Guid Id
+  +Guid MemberId
+  +string Name
+  +GroupKind Kind
+  +string Emoji
+  +string ColourToken
+  +string? Place
+  +string? Note
+}
+class GroupMembership {
+  +Guid GroupId
+  +Guid ContactId
+}
+class Contact {
+  +Guid Id
+  +string Name
+}
+class SaveContactGroupCommandHandler {
+  +Handle(command: SaveContactGroupCommand): Task<ContactGroupDto>
+}
+ContactGroup --> GroupKind
+ContactGroup "1" *-- "0..100" GroupMembership
+GroupMembership --> Contact
+SaveContactGroupCommandHandler --> ContactGroup : creates / mutates
+@enduml

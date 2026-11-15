@@ -1,0 +1,25 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Open Contacts and Today
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(menu, "AccountMenu", "Angular component", "Links Contacts after Saved (L2-019)")
+  Component(shell, "jb-contacts-nav", "Library component", "Sidebar, rail or tab bar by viewport (L2-299)")
+  Component(today, "ContactsTodayPage", "Angular page", "Today and its empty state (L2-300, L2-301)")
+  Component(client, "HttpContactsApi", "CONTACTS_API", "Typed calls to /api/contacts")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(ctrl, "ContactsController", "ASP.NET Core controller", "GET /api/contacts/today")
+  Component(handler, "GetContactsTodayQueryHandler", "MediatR handler", "Builds Today for the caller only")
+  Component(clock, "ContactsCalendar", "Domain service", "Next occurrences, quiet days, greeting in Toronto time")
+  ComponentDb(db, "Jubilee database", "SQL Server", "Contacts tables")
+}
+Rel(menu, today, "Navigates to /contacts")
+Rel(today, shell, "Composes")
+Rel(today, client, "today()")
+Rel(client, ctrl, "GET /api/contacts/today", "JSON/HTTPS")
+Rel(ctrl, handler, "Sends GetContactsTodayQuery")
+Rel(handler, clock, "Works out dates and quiet days")
+Rel(handler, db, "Reads the caller's rows", "EF Core")
+@enduml

@@ -1,0 +1,77 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Remember dates
+
+
+enum DateKind {
+  Birthday
+  Anniversary
+  Other
+}
+enum ReminderLead {
+  OnTheDay
+  OneDayBefore
+  ThreeDaysBefore
+  OneWeekBefore
+  TwoWeeksBefore
+}
+class KeyDate {
+  +Guid Id
+  +Guid MemberId
+  +DateKind Kind
+  +string Title
+  +string? Detail
+  +int Month
+  +int Day
+  +int? Year
+  +bool Repeats
+  +ReminderLead Reminder
+  +NextOn(today: DateOnly): DateOnly
+  +ReachedOn(on: DateOnly): int?
+}
+class KeyDatePerson {
+  +Guid KeyDateId
+  +Guid ContactId
+}
+class ContactSettings {
+  +Guid MemberId
+  +ReminderLead Birthdays
+  +ReminderLead Anniversaries
+  +ReminderLead Milestones
+  +bool PhoneNotifications
+  +bool MondayEmail
+}
+class PushSubscription {
+  +Guid Id
+  +Guid MemberId
+  +string Endpoint
+  +string P256dh
+  +string Auth
+}
+class SentContactReminder {
+  +Guid MemberId
+  +string Source
+  +Guid SourceId
+  +DateOnly Day
+}
+class SendContactRemindersCommandHandler {
+  +Handle(command: SendContactRemindersCommand): Task<int>
+}
+KeyDate --> DateKind
+KeyDate --> ReminderLead
+KeyDate "1" *-- "1..2" KeyDatePerson
+ContactSettings --> ReminderLead
+SendContactRemindersCommandHandler --> KeyDate : reads
+SendContactRemindersCommandHandler --> SentContactReminder : claims once
+SendContactRemindersCommandHandler --> PushSubscription : pushes to
+SendContactRemindersCommandHandler ..> ContactSettings : honours
+@enduml

@@ -1,0 +1,48 @@
+@startuml
+title UML sequence behaviour — Turn on phone notifications
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend — Jubilee Web application" #E0F2FE
+  participant "ContactsDatesPage" as page
+  participant "ContactsPushRegistration" as reg
+  participant "HttpContactsApi" as client
+end box
+box "Backend — Jubilee API application" #D1FADF
+  participant "ContactDatesController" as ctrl
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "SavePushSubscriptionCommandHandler" as handler
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+
+actor -> page : Turn "Phone notifications" on
+page -> reg : enable()
+reg -> reg : SwPush.requestSubscription(VAPID public key)
+alt Browser refuses
+  reg --> page : Denied
+  page --> actor : Switch off; "Your browser is blocking notifications from Jubilee. …" (L2-312 AC2)
+else Allowed
+  reg -> client : subscribe(endpoint, keys)
+  client -> ctrl : PUT /api/contacts/push
+  ctrl -> handler : Send SavePushSubscriptionCommand(caller)
+  handler -> db : Upsert subscription; PhoneNotifications = true
+  db --> handler : Saved
+  ctrl --> client : 204
+  page --> actor : Switch on, "Saved"
+end
+@enduml

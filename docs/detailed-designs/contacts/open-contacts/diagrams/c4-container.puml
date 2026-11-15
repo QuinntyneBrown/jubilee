@@ -1,0 +1,20 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Open Contacts and Today
+
+Person(member, "Member", "Keeps their own contacts")
+System_Boundary(jubilee, "Jubilee") {
+  Container(web, "Jubilee Web", "Angular", "The Contacts screens under /contacts")
+  Container(sw, "Jubilee service worker", "Angular service worker", "Caches the app shell, never /api/contacts")
+  Container(api, "Jubilee API", "ASP.NET Core", "/api/contacts endpoints, scoped to the caller")
+  
+  ContainerDb(db, "Jubilee database", "SQL Server", "Contacts records, one member's rows apart from every other's")
+  
+  
+}
+Rel(member, web, "Uses", "HTTPS")
+Rel(web, api, "Calls", "JSON/HTTPS")
+Rel(api, db, "Reads and writes", "EF Core")
+Rel(web, sw, "Registers")
+@enduml

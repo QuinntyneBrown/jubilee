@@ -1,0 +1,48 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Protect contacts
+
+
+class ContactsScope {
+  +Contacts(memberId: Guid): IQueryable<Contact>
+  +Owned<T>(memberId: Guid): IQueryable<T>
+}
+interface IMemberOwned {
+  +Guid MemberId
+}
+class Contact
+class KeyDate
+class TimelineEntry
+class FollowUp
+class Habit
+class ContactGroup
+class Connection
+class Memory
+class PushSubscription
+class ContactsExportSection {
+  +Contacts: ContactExport[]
+  +Groups: GroupExport[]
+  +Settings: ContactSettings
+  +MediaCount: int
+}
+IMemberOwned <|.. Contact
+IMemberOwned <|.. KeyDate
+IMemberOwned <|.. TimelineEntry
+IMemberOwned <|.. FollowUp
+IMemberOwned <|.. Habit
+IMemberOwned <|.. ContactGroup
+IMemberOwned <|.. Connection
+IMemberOwned <|.. Memory
+IMemberOwned <|.. PushSubscription
+ContactsScope ..> IMemberOwned : filters
+ContactsExportSection ..> ContactsScope : built through
+@enduml

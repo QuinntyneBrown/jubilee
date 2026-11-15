@@ -1,0 +1,47 @@
+@startuml
+title UML sequence behaviour — Connect two people
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend — Jubilee Web application" #E0F2FE
+  participant "ContactsConnectionsPage" as page
+  participant "ConnectDialog" as dialog
+  participant "HttpContactsApi" as client
+end box
+box "Backend — Jubilee API application" #D1FADF
+  participant "ContactConnectionsController" as ctrl
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "ConnectContactsCommandHandler" as handler
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+
+actor -> page : Focus a person; press "Connect" (L2-318 AC4)
+page -> dialog : Open "Connect {first name}"
+actor -> dialog : Choose the other, words, kind, and maybe "This is an introduction I’ve promised"
+dialog -> client : connect(from, to, words, kind, promised)
+client -> ctrl : POST /api/contacts/connections
+ctrl -> handler : Send ConnectContactsCommand(caller)
+handler -> db : Both contacts among the caller's own; words 1–40 (L2-320 AC1, AC4)
+handler -> db : Add the connection
+opt Promised introduction
+  handler -> db : Add promise "Introduce {first} to {other first}" (L2-318 AC6)
+end
+handler -> db : Commit
+ctrl --> client : 201
+client --> page : Redraw the map; the line dotted for an introduction
+@enduml

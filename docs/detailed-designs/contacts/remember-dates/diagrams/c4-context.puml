@@ -1,0 +1,14 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Remember dates
+
+Person(member, "Member", "A signed-in account holder keeping their own contacts")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace, with each member's private Contacts")
+System_Ext(push, "Web Push services", "Browser vendors' push services")
+System_Ext(mail, "E-mail provider", "<TO SUPPLY>")
+
+Rel(member, jubilee, "Keeps dates and chooses reminders in", "HTTPS")
+Rel(jubilee, push, "Sends encrypted reminders through")
+Rel(jubilee, mail, "Sends the Monday e-mail through")
+@enduml

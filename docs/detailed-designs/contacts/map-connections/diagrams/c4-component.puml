@@ -1,0 +1,28 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Map connections
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(page, "ContactsConnectionsPage", "Angular page", "Filters, map, focus panel (L2-318)")
+  Component(map, "jb-connection-map", "Library component", "SVG lines hidden from AT, people as buttons")
+  Component(dialog, "ConnectDialog", "CDK dialog", "Connect {first name} (L2-318 AC6)")
+  Component(client, "HttpContactsApi", "CONTACTS_API", "connections(), connect(), disconnect()")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(ctrl, "ContactConnectionsController", "ASP.NET Core controller", "/api/contacts/connections")
+  Component(get, "GetConnectionMapQueryHandler", "MediatR handler", "People placed by circle, at most 60")
+  Component(layout, "ConnectionMapLayout", "Domain service", "Deterministic positions on 1000 x 680")
+  Component(connect, "ConnectContactsCommandHandler", "MediatR handler", "Connection and, for an intro, a promise")
+  ComponentDb(db, "Jubilee database", "SQL Server", "Connections, contacts, follow-ups")
+}
+Rel(page, map, "Composes")
+Rel(page, dialog, "Opens")
+Rel(page, client, "Calls")
+Rel(client, ctrl, "Calls", "JSON/HTTPS")
+Rel(ctrl, get, "Sends GetConnectionMapQuery")
+Rel(get, layout, "Places people with")
+Rel(ctrl, connect, "Sends ConnectContactsCommand")
+Rel(get, db, "Reads", "EF Core")
+Rel(connect, db, "Writes", "EF Core")
+@enduml

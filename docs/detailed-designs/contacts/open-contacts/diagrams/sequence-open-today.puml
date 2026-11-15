@@ -1,0 +1,53 @@
+@startuml
+title UML sequence behaviour — Open Today
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend — Jubilee Web application" #E0F2FE
+  participant "AccountMenu" as menu
+  participant "ContactsTodayPage" as page
+  participant "HttpContactsApi" as client
+end box
+box "Backend — Jubilee API application" #D1FADF
+  participant "ContactsController" as ctrl
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "GetContactsTodayQueryHandler" as handler
+  participant "ContactsCalendar" as cal
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+
+actor -> menu : Choose "Contacts" (L2-019, L2-299 AC1)
+menu -> page : Navigate to /contacts
+page -> client : today()
+client -> ctrl : GET /api/contacts/today
+ctrl -> ctrl : Require a session (401 without, L2-299 AC2)
+ctrl -> handler : Send GetContactsTodayQuery(caller)
+handler -> db : Load the caller's contacts, dates, follow-ups, habits, entries
+db --> handler : Rows where MemberId = caller
+handler -> cal : Next dates in 12 months, quiet > 30 days, greeting in Toronto time
+cal --> handler : Ordered dates, quiet contacts
+alt No contacts
+  handler -> db : Count importable people (L2-302 AC1)
+  handler --> ctrl : Empty Today with ImportableCount (L2-301)
+else Contacts
+  handler --> ctrl : Next, Coming up, To do today, Recently, quiet, badge (L2-300)
+end
+ctrl --> client : 200 ContactsTodayDto
+client --> page : Today
+page --> actor : Render greeting, cards and the reminder note (L2-300 AC7)
+@enduml

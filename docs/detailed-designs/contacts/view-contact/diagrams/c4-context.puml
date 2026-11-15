@@ -1,0 +1,12 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — View a contact
+
+Person(member, "Member", "A signed-in account holder keeping their own contacts")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace, with each member's private Contacts")
+System_Ext(phone, "Phone and messages", "The member's own phone apps")
+
+Rel(member, jubilee, "Reads a contact's profile in", "HTTPS")
+Rel(jubilee, phone, "Hands Call and Message to, via tel: and sms:")
+@enduml

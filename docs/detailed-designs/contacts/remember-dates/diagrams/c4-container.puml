@@ -1,0 +1,26 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Remember dates
+
+Person(member, "Member", "Keeps their own contacts")
+System_Boundary(jubilee, "Jubilee") {
+  Container(web, "Jubilee Web", "Angular", "The Contacts screens under /contacts")
+  Container(sw, "Jubilee service worker", "Angular service worker", "Caches the app shell, never /api/contacts")
+  Container(api, "Jubilee API", "ASP.NET Core", "/api/contacts endpoints, scoped to the caller")
+  Container(worker, "Jubilee Worker", ".NET worker service", "Scheduled jobs and outbox dispatch")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Contacts records, one member's rows apart from every other's")
+  
+  Container_Ext(push, "Web Push services", "RFC 8030", "Deliver push to devices")
+  Container_Ext(mail, "E-mail provider", "<TO SUPPLY>", "Delivers e-mail")
+}
+Rel(member, web, "Uses", "HTTPS")
+Rel(web, api, "Calls", "JSON/HTTPS")
+Rel(api, db, "Reads and writes", "EF Core")
+Rel(web, sw, "Registers")
+Rel(worker, db, "Reads and writes", "EF Core")
+
+Rel(worker, push, "Sends reminders", "RFC 8291")
+Rel(worker, mail, "Sends the week ahead", "HTTPS")
+Rel(push, sw, "Delivers to")
+@enduml

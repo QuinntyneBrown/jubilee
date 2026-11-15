@@ -1,0 +1,49 @@
+@startuml
+title UML sequence behaviour — Log a milestone
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend — Jubilee Web application" #E0F2FE
+  participant "ContactLogPage" as page
+  participant "HttpContactsApi" as client
+end box
+box "Backend — Jubilee API application" #D1FADF
+  participant "ContactTimelineController" as ctrl
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "LogMilestoneCommandHandler" as handler
+  participant "YearlyTitles" as titles
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+
+actor -> page : Choose a kind, say what happened and when; press "Save"
+page -> client : logMilestone(id, kind, what, when, note, photo, everyYear)
+client -> ctrl : POST /api/contacts/{id}/timeline/milestones
+ctrl -> handler : Send LogMilestoneCommand(caller)
+handler -> db : Load the contact among the caller's own
+handler -> handler : Required what, at most 120; when no later than today (L2-309 AC2)
+handler -> db : Add the entry; Last talked unchanged (L2-309 AC4)
+opt Remember this every year
+  handler -> titles : "{first name}’s work anniversary", "... wedding anniversary" or what happened (L2-309 AC3)
+  titles --> handler : Title
+  handler -> db : Add a yearly date with reminder "1 day before"
+end
+handler -> db : Commit
+handler --> ctrl : TimelineEntryDto
+ctrl --> client : 201
+client --> page : Profile on Timeline with the milestone first
+@enduml

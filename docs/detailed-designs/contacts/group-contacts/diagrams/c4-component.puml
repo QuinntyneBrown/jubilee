@@ -1,0 +1,24 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Group contacts
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(page, "ContactsGroupsPage", "Angular page", "List and detail, split from 1024 px (L2-317)")
+  Component(dialog, "GroupEditorDialog", "CDK dialog", "New group and Edit")
+  Component(client, "HttpContactsApi", "CONTACTS_API", "groups(), group(), saveGroup(), addPeople()")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(ctrl, "ContactGroupsController", "ASP.NET Core controller", "/api/contacts/groups")
+  Component(get, "GetContactGroupQueryHandler", "MediatR handler", "People, place, note, coming up")
+  Component(save, "SaveContactGroupCommandHandler", "MediatR handler", "50 groups, 100 people each")
+  ComponentDb(db, "Jubilee database", "SQL Server", "Groups and memberships")
+}
+Rel(page, dialog, "Opens")
+Rel(page, client, "Calls")
+Rel(client, ctrl, "Calls", "JSON/HTTPS")
+Rel(ctrl, get, "Sends GetContactGroupQuery")
+Rel(ctrl, save, "Sends SaveContactGroupCommand")
+Rel(get, db, "Reads", "EF Core")
+Rel(save, db, "Writes", "EF Core")
+@enduml

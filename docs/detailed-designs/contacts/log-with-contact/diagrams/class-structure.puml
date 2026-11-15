@@ -1,0 +1,71 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Log a conversation or a milestone
+
+
+enum EntryKind {
+  Conversation
+  Milestone
+}
+enum Via {
+  InPerson
+  Phone
+  Video
+  Messages
+}
+enum MilestoneKind {
+  NewJob
+  Wedding
+  NewBaby
+  Moved
+  Graduated
+  SomethingElse
+}
+class TimelineEntry {
+  +Guid Id
+  +Guid MemberId
+  +Guid ContactId
+  +EntryKind Kind
+  +Via? Via
+  +MilestoneKind? Milestone
+  +DateTimeOffset OccurredAt
+  +string Title
+  +string? Body
+  +string? PhotoKey
+}
+class LogConversationCommand {
+  +Guid ContactId
+  +Via Via
+  +DateTimeOffset OccurredAt
+  +string Text
+  +IReadOnlyList<FollowUpInput> Promises
+  +IReadOnlyList<KeyDateInput> Dates
+}
+class LogMilestoneCommand {
+  +Guid ContactId
+  +MilestoneKind Kind
+  +string WhatHappened
+  +DateOnly When
+  +string? Note
+  +string? PhotoKey
+  +bool EveryYear
+}
+class YearlyTitles {
+  +For(kind: MilestoneKind, firstName: string, what: string): string
+}
+TimelineEntry --> EntryKind
+TimelineEntry --> Via
+TimelineEntry --> MilestoneKind
+LogConversationCommand ..> TimelineEntry : becomes
+LogMilestoneCommand ..> TimelineEntry : becomes
+LogMilestoneCommand ..> YearlyTitles : names date with
+@enduml
