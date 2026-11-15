@@ -31,6 +31,14 @@ export class NotificationSettingsPage extends ShellPage implements Screen {
     this.switches = this.main.locator('.switch');
   }
 
+  /** The drawn switch (its track) of the setting with this label, for example "New businesses". */
+  switchTrack(label: string): Locator {
+    // The inner locator is matched inside each track, so it starts from the page, not from main.
+    return this.switches.filter({
+      has: this.page.getByRole('switch', { name: new RegExp(`^${label}`) }),
+    });
+  }
+
   /** The switch with this label, for example "New messages". */
   switch(label: string): Locator {
     return this.main.getByRole('switch', { name: new RegExp(`^${label}`) });

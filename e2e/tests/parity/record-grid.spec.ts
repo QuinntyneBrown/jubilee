@@ -9,6 +9,8 @@ parity('record-grid', {
       route: 'admin-record',
       screen: (page) => new AdminRecordPage(page),
       region: (screen: AdminRecordPage) => screen.grid,
+      knownDifference:
+        "The mock's member record counts the member's Events (L2-311); the app has no Events yet.",
     },
   ],
   reference: {

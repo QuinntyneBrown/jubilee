@@ -13,6 +13,8 @@ parity('search-field', {
       screen: (page) => new BrowsePage(page),
       region: (screen: BrowsePage) => screen.searchField,
       widths: [1280],
+      knownDifference:
+        "The mock's top bar has the Events link (L2-299), which narrows the search field; the app has no Events yet.",
     },
     {
       name: 'hero',

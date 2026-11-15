@@ -44,6 +44,13 @@ export interface ParityCase<T extends Screen = Screen> {
    * has no address of its own (a form submitted with errors). The mock is already in the state.
    */
   arrange?: (screen: T) => Promise<void>;
+  /**
+   * Set while the mock shows a feature the app does not have yet, which changes this region:
+   * what differs and the requirements that will bring the app level with the mock. The
+   * comparison is then reported as a known failure (`fixme`) instead of failing the run. The
+   * threshold stays; the entry goes in the change that builds the feature.
+   */
+  knownDifference?: string;
 }
 
 /** The crop of a reference image that shows one case of the component. The reference is light only. */
@@ -140,6 +147,7 @@ export function parity(component: string, { cases, reference }: ParityOptions): 
       for (const width of item.widths ?? parityWidths) {
         for (const theme of themes) {
           test(`${item.name} matches its mock at ${width} px, ${theme}`, async ({ page, jb }) => {
+            test.fixme(!!item.knownDifference, item.knownDifference);
             if ('absent' in reference && capturedCrops(component, [item]).length === 0) {
               test.info().annotations.push({
                 type: 'magic-patterns',
