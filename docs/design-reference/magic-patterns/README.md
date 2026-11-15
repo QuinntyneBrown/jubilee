@@ -46,6 +46,9 @@ app with. Each is a full-page capture of one frame of the published design,
 | `listing-reviews-section-1280.png` | The Reviews section of the Listing, cropped | 1280 px | light | 12 November 2026 |
 | `write-review-360.png` | Write a Review (Legacy Financial), nothing chosen | 360 px | light | 12 November 2026 |
 | `write-review-1280.png` | Write a Review (Legacy Financial), nothing chosen | 1280 px | light | 12 November 2026 |
+| `events-360.png` | Events, both filters at their defaults, two events going | 360 px | light | 15 November 2026 |
+| `events-1280.png` | Events, both filters at their defaults, two events going | 1280 px | light | 15 November 2026 |
+| `events-streamed-entrepreneur-1280.png` | Events, "Streamed" and "Entrepreneur" chosen | 1280 px | light | 15 November 2026 |
 
 The published site opens on Sign up. "Log in" under the form shows Log in, and "Create a free
 account" shows Sign up again, at the same URL. The prototype's own "Log in" button, pressed with
@@ -80,6 +83,26 @@ The published Sign up and home have changed since `sign-up-*.png` and `home-*.pn
 (Sign up now asks "I'm here to", the home heading now reads "Hire, shop and find a place to live
 …" and has the rooms shelf); those files are kept until their parity crops are checked against a
 new capture. `sign-up-intents-1280.png` and `browse-rooms-shelf-*.png` show the current frames.
+
+The Events frame (L1-036) is reached from the home by "Events" in the top bar (1280 px) or the
+tab bar (360 px). Its source is the OS file `qf3qiiuBuWkY1UKpG3nexk`; the published bundle also
+draws a loading skeleton and the empty state "Nothing coming up for that mix yet.", which no
+choice of filters on the sample events reaches and which are therefore not captured. The 360 px
+capture shows the tab bar where the first viewport ended, as the earlier ones do.
+
+## Events: what the product changes from the frame
+
+The frame keeps its RSVPs in the page and draws only the list. The product keeps its layout,
+copy and filters and changes these, by decision (L2-299 to L2-314):
+
+| Frame | Product | Why |
+|---|---|---|
+| "Host an event" opens "List your business" | it opens a form of its own, `/events/new` (L2-307), drawn in the mocks from the listing form | An event is not a listing; it has a day, a place or a stream and no category |
+| The rows of "You’re going" have a chevron and lead nowhere | each row and each title opens the event page, `/events/{slug}` (L2-306), drawn in the mocks from the feature card and the business frames | The address and the stream link must live somewhere a member can return to |
+| The top bar's "Create a listing" | "List your business" (or "My business"), as L2-112 has it; only "Events" is added | The frame's label is not the requirement's |
+| RSVP is a toggle in the page with no sign-in | a visitor's RSVP opens the sign-in prompt and is made once on return (L2-304 AC4) | Who is going is a member's own data |
+| No capacity, no ended, cancelled or full state | "Full", "Happening now", ended and cancelled are drawn in the mocks only (L2-300, L2-304, L2-306) | Production states the sample data never reaches |
+| The where filter's buttons are about 36 px tall | at least 44 px to touch (L2-301 AC1) | WCAG and L2-162 |
 
 ## Captures of one component (ADR 0060)
 
