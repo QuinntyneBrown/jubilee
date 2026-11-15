@@ -52,6 +52,26 @@
     }
   });
 
+  // A table heading's Export menu opens as jb-export-menu does (L2-279 AC1): its end on the
+  // button's end, or from the button's start where the button sits in the left half of the main
+  // region (on a phone, or when the heading's actions wrap under the title), so that it never
+  // covers the sidebar of tables.
+  function placeHeadingMenus() {
+    document.querySelectorAll('.records-head__actions .menu-anchor').forEach(function (anchor) {
+      var menu = anchor.querySelector(':scope > .menu');
+      if (!menu) return;
+      if (!menu.dataset.drawnEnd) menu.dataset.drawnEnd = String(menu.classList.contains('menu--end'));
+      if (menu.dataset.drawnEnd !== 'true') return;
+      var button = anchor.getBoundingClientRect();
+      var region = (anchor.closest('main') || document.body).getBoundingClientRect();
+      var startsLeft = button.left + button.width / 2 < region.left + region.width / 2;
+      menu.classList.toggle('menu--end', !startsLeft);
+    });
+  }
+  placeHeadingMenus();
+  window.addEventListener('resize', placeHeadingMenus);
+  if (document.fonts) document.fonts.ready.then(placeHeadingMenus);
+
   // Carry the current theme across sibling-state links so a review stays consistent.
   document.querySelectorAll('.mock-bar a[href]').forEach(function (link) {
     link.addEventListener('click', function () {
