@@ -18,6 +18,8 @@ parity('admin-shell', {
       screen: (page) => new AdminRecordsPage(page),
       region: (screen: AdminRecordsPage) => screen.sidebar,
       widths: [1280],
+      knownDifference:
+        "The mock's sidebar lists the Events and Event RSVPs tables (L2-311); the app has no Events yet.",
     },
     {
       name: 'drawer',
@@ -25,6 +27,8 @@ parity('admin-shell', {
       screen: (page) => new AdminOverviewDrawerScreen(page),
       region: (screen: AdminOverviewDrawerScreen) => screen.drawer.locator('.admin-drawer__panel'),
       widths: [360],
+      knownDifference:
+        "The mock's sidebar lists the Events and Event RSVPs tables (L2-311); the app has no Events yet.",
     },
   ],
   reference: {

@@ -31,12 +31,16 @@ parity('dialog', {
       region: (screen: AdminConfirmDeleteOneScreen) => screen.dialog.root.locator('.dialog__panel'),
       // The row's actions are in the table, from 768 px; on a phone a record is deleted from its page.
       widths: [1280],
+      knownDifference:
+        "The mock counts the member's Events among the records that point here (L2-311); the app has no Events yet.",
     },
     {
       name: 'delete-selection',
       route: 'admin-records.confirm-delete',
       screen: (page) => new AdminConfirmDeleteScreen(page),
       region: (screen: AdminConfirmDeleteScreen) => screen.dialog.root.locator('.dialog__panel'),
+      knownDifference:
+        "The mock counts the member's Events among the records that point here (L2-311); the app has no Events yet.",
     },
     {
       name: 'delete-record',
@@ -45,6 +49,8 @@ parity('dialog', {
       region: (screen: AdminRecordConfirmDeleteScreen) =>
         screen.dialog.root.locator('.dialog__panel'),
       widths: [1280],
+      knownDifference:
+        "The mock counts the member's Events among the records that point here (L2-311); the app has no Events yet.",
     },
     {
       // A private table asks why before it exports (L2-279 AC4).

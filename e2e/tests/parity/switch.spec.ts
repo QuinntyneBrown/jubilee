@@ -14,7 +14,7 @@ parity('switch', {
       name: 'off',
       route: 'preferences',
       screen: (page) => new NotificationSettingsPage(page),
-      region: (screen: NotificationSettingsPage) => screen.switches.nth(3),
+      region: (screen: NotificationSettingsPage) => screen.switchTrack('New businesses'),
     },
   ],
   reference: {
