@@ -14,7 +14,8 @@ parity('switch', {
       name: 'off',
       route: 'preferences',
       screen: (page) => new NotificationSettingsPage(page),
-      region: (screen: NotificationSettingsPage) => screen.switches.nth(3),
+      // Picked by its setting, not its place: the mock lists "Event reminders" (L1-036) above it.
+      region: (screen: NotificationSettingsPage) => screen.switchControl('New businesses'),
     },
   ],
   reference: {

@@ -36,6 +36,13 @@ export class NotificationSettingsPage extends ShellPage implements Screen {
     return this.main.getByRole('switch', { name: new RegExp(`^${label}`) });
   }
 
+  /** The switch control, as drawn, of the setting with this label, for example "New businesses". */
+  switchControl(label: string): Locator {
+    return this.switches.filter({
+      has: this.page.getByRole('switch', { name: new RegExp(`^${label}`) }),
+    });
+  }
+
   async ready(): Promise<void> {
     await this.main.locator('h1').first().waitFor({ state: 'attached' });
   }
